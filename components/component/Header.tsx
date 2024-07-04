@@ -31,24 +31,22 @@ export default function Header() {
             <MailIcon className="h-6 w-6 text-muted-foreground" />
           </Link>
 
-          <Link href="#" className="flex items-center gap-2" prefetch={false}>
-            <div>
-              <ClerkLoading>
-                <div
-                  className="inline-block h-6 w-6 animate-spin rounded-full border-4 border-solid border-current border-e-transparent align-[-0.125em] text-surface motion-reduce:animate-[spin_1.5s_linear_infinite] dark:text-white"
-                  role="status"
-                ></div>
-              </ClerkLoading>
-              <SignedIn>
-                <UserButton />
-              </SignedIn>
-              <SignedOut>
-                <div className="w-20">
-                  <Link href={"/sign-in"}>ログイン</Link>
-                </div>
-              </SignedOut>
-            </div>
-          </Link>
+          <div>
+            <ClerkLoading>
+              <div
+                className="inline-block h-6 w-6 animate-spin rounded-full border-4 border-solid border-current border-e-transparent align-[-0.125em] text-surface motion-reduce:animate-[spin_1.5s_linear_infinite] dark:text-white"
+                role="status"
+              ></div>
+            </ClerkLoading>
+            <SignedIn>
+              <UserButton />
+            </SignedIn>
+            <SignedOut>
+              <div className="w-20">
+                <Link href={"/sign-in"}>ログイン</Link>
+              </div>
+            </SignedOut>
+          </div>
         </div>
       </div>
     </header>
