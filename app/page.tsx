@@ -1,7 +1,8 @@
-import Header from "@/components/component/Header";
 import LeftSidebar from "@/components/component/LeftSidebar";
 import MainContent from "@/components/component/MainContent";
 import RightSidebar from "@/components/component/RightSidebar";
+
+//https://github.com/safak/next-social/blob/completed/src/app/profile/%5Busername%5D/page.tsx
 
 export default function Home() {
   return (
