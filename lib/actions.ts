@@ -4,7 +4,7 @@ import { auth } from "@clerk/nextjs/server";
 import prisma from "./client";
 import { z } from "zod";
 
-export const addPostAction = async (formData: FormData) => {
+export async function addPostAction(formData: FormData) {
   const postText = formData.get("post") as string;
   const PostTextSchema = z.string().min(1).max(255);
 
@@ -31,4 +31,4 @@ export const addPostAction = async (formData: FormData) => {
   } catch (err) {
     console.log(err);
   }
-};
+}
