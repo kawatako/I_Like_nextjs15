@@ -74,9 +74,9 @@ export default async function PostList({ username }: { username?: string }) {
 
   return (
     <div className="space-y-4">
-      {posts.map((post) => (
-        <Post key={post.id} post={post} />
-      ))}
+      {posts.length
+        ? posts.map((post) => <Post key={post.id} post={post} />)
+        : "No posts found!"}
     </div>
   );
 }

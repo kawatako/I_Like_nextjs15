@@ -1,7 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { Button } from "../ui/button";
 import CommentList from "./CommentList";
-import { ClockIcon, HeartIcon, MessageCircleIcon, Share2Icon } from "./Icons";
+import { ClockIcon } from "./Icons";
+import PostInteraction from "./PostInteraction";
 
 export default function Post({ post }: any) {
   return (
@@ -21,15 +21,11 @@ export default function Post({ post }: any) {
       </div>
       <div className="flex items-center justify-between mt-4">
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon">
-            <HeartIcon className="h-5 w-5 text-muted-foreground" />
-          </Button>
-          <Button variant="ghost" size="icon">
-            <MessageCircleIcon className="h-5 w-5 text-muted-foreground" />
-          </Button>
-          <Button variant="ghost" size="icon">
-            <Share2Icon className="h-5 w-5 text-muted-foreground" />
-          </Button>
+          <PostInteraction
+            postId={post.id}
+            likes={post.likes.map((like: any) => like.userId)}
+            commentNumber={post._count.replies}
+          />
         </div>
         <div className="flex items-center gap-2 text-muted-foreground">
           <ClockIcon className="h-5 w-5" />
