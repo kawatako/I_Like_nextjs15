@@ -12,7 +12,7 @@ export default function Post({ post }: any) {
           <AvatarFallback>AC</AvatarFallback>
         </Avatar>
         <div>
-          <h3 className="text-lg font-bold">{post.author.name}</h3>
+          <h3 className="text-lg font-bold">{post.author.username}</h3>
           <p className="text-muted-foreground">{post.author.username}</p>
         </div>
       </div>
@@ -36,7 +36,7 @@ export default function Post({ post }: any) {
           <span>{post.timestamp}</span>
         </div>
       </div>
-      {post.comments && <CommentList comments={post.comments} />}
+      {post.comments && <CommentList replies={post.replies} />}
     </div>
   );
 }

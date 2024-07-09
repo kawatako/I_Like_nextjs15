@@ -3,16 +3,16 @@
 import { auth } from "@clerk/nextjs/server";
 import prisma from "./client";
 import { z } from "zod";
+import { resolve } from "path";
+import { time } from "console";
+import { revalidatePath } from "next/cache";
 
 type State = {
   error?: string;
   success: boolean;
 };
 
-export async function addPostAction(
-  prevState: State,
-  formData: FormData
-): Promise<State> {
+export async function addPostAction(formData: FormData): Promise<State> {
   const PostTextSchema = z
     .string()
     .min(1, "ポスト内容を入力してください。")
@@ -27,12 +27,16 @@ export async function addPostAction(
       throw new Error("User is not authenticated");
     }
 
+    // await new Promise((resolve) => setTimeout(resolve, 3000));
+
     await prisma.post.create({
       data: {
         authorId: userId,
         content: postText,
       },
     });
+
+    revalidatePath("/");
 
     return {
       success: true,
