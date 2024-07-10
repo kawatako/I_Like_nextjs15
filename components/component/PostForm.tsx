@@ -6,22 +6,33 @@ import { Input } from "@/components/ui/input";
 import { addPostAction } from "@/lib/actions";
 import { useCallback, useRef, useState } from "react";
 import { SubmitButton } from "./SubmitButton";
+import { useFormState } from "react-dom";
 
 export default function PostForm() {
-  const [error, setError] = useState<string | undefined>(undefined);
+  const initialState = {
+    error: undefined,
+    success: false,
+  };
+  // const [error, setError] = useState<string | undefined>(undefined);
   const formRef = useRef<HTMLFormElement>(null);
 
-  const handleSubmit = useCallback(async (formData: FormData) => {
-    const result = await addPostAction(formData);
-    if (!result.success) {
-      setError(result.error);
-    } else {
-      setError(undefined);
-      if (formRef.current) {
-        formRef.current.reset();
-      }
-    }
-  }, []);
+  // const handleSubmit = useCallback(async (formData: FormData) => {
+  //   const result = await addPostAction(formData);
+  //   if (!result.success) {
+  //     setError(result.error);
+  //   } else {
+  //     setError(undefined);
+  //     if (formRef.current) {
+  //       formRef.current.reset();
+  //     }
+  //   }
+  // }, []);
+
+  const [state, formAction] = useFormState(addPostAction, initialState);
+
+  if (state.success && formRef.current) {
+    formRef.current.reset();
+  }
 
   return (
     <div>
@@ -32,7 +43,7 @@ export default function PostForm() {
         </Avatar>
         <form
           ref={formRef}
-          action={handleSubmit}
+          action={formAction}
           className="flex items-center flex-1"
         >
           <Input
@@ -48,8 +59,10 @@ export default function PostForm() {
           <SubmitButton />
         </form>
       </div>
-      {error && (
-        <p className="text-red-500 mt-1 flex items-center ml-14">{error}</p>
+      {state.error && (
+        <p className="text-red-500 mt-1 flex items-center ml-14">
+          {state.error}
+        </p>
       )}
     </div>
   );

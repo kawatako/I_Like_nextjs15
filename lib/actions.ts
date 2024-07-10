@@ -10,7 +10,10 @@ type State = {
   success: boolean;
 };
 
-export async function addPostAction(formData: FormData): Promise<State> {
+export async function addPostAction(
+  prevState: State,
+  formData: FormData
+): Promise<State> {
   const PostTextSchema = z
     .string()
     .min(1, "ポスト内容を入力してください。")
