@@ -1,6 +1,11 @@
 "use client";
 
-import React, { useOptimistic, useState, useTransition } from "react";
+import React, {
+  startTransition,
+  useOptimistic,
+  useState,
+  useTransition,
+} from "react";
 import { HeartIcon, MessageCircleIcon, Share2Icon } from "./Icons";
 import { Button } from "../ui/button";
 import { likeAction } from "@/lib/actions";
@@ -18,35 +23,35 @@ const PostInteraction = ({
   commentNumber: number;
 }) => {
   const { userId } = useAuth();
-  const [isPending, startTransition] = useTransition();
   //   const [likeState, setLikeState] = useState({
   //     likeCount: likes.length,
   //     isLiked: userId ? likes.includes(userId) : false,
   //   });
-  const initialState = {
+  const initialLikeState = {
     likeCount: likes.length,
     isLiked: userId ? likes.includes(userId) : false,
   };
 
-  const [optimisticLikes, addOptimisticLike] = useOptimistic(
-    initialState,
-    (state, newIsLiked: boolean) => ({
-      likeCount: newIsLiked ? state.likeCount + 1 : state.likeCount - 1,
-      isLiked: !newIsLiked,
-    })
+  console.log(initialLikeState);
+
+  const [optimisticLikes, addOptimisticLike] = useOptimistic<any, any>(
+    initialLikeState,
+    (currentState, newState) => {
+      return newState;
+    }
   );
 
   const handleLikeSubmit = async () => {
     const newIsLiked = !optimisticLikes.isLiked;
-    addOptimisticLike(newIsLiked);
-
     startTransition(async () => {
+      addOptimisticLike(newIsLiked);
       try {
         await likeAction(postId);
       } catch (err) {
         console.log(err);
       }
     });
+
     // try {
     //   await likeAction(postId);
     //   // setLikeState((state) => ({
