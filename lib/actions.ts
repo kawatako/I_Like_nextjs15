@@ -3,11 +3,16 @@
 import { auth } from "@clerk/nextjs/server";
 import prisma from "./client";
 import { z } from "zod";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 type State = {
   error?: string;
   success: boolean;
+};
+
+type LikeState = {
+  likes: string[];
+  error?: string | undefined;
 };
 
 export async function addPostAction(
@@ -38,6 +43,7 @@ export async function addPostAction(
     });
 
     revalidatePath("/");
+    // revalidateTag("posts");
 
     return {
       success: true,
@@ -65,10 +71,18 @@ export async function addPostAction(
   }
 }
 
-export const likeAction = async (postId: string) => {
+export const likeAction = async (
+  prevState: LikeState,
+  formData: FormData
+  // postId: string
+) => {
   const { userId } = auth();
 
-  if (!userId) throw new Error("User is not authenticated");
+  if (!userId) {
+    return { likes: [], error: "User is not authenticated" };
+  }
+
+  const postId = formData.get("postId") as string;
 
   try {
     const existingLike = await prisma.like.findFirst({
@@ -84,6 +98,11 @@ export const likeAction = async (postId: string) => {
           id: existingLike.id,
         },
       });
+
+      return {
+        likes: prevState.likes.filter((id) => id !== userId),
+        error: undefined,
+      };
     } else {
       await prisma.like.create({
         data: {
@@ -91,9 +110,14 @@ export const likeAction = async (postId: string) => {
           userId,
         },
       });
+
+      return {
+        likes: [...prevState.likes, userId],
+        error: undefined,
+      };
     }
   } catch (err) {
     console.log(err);
-    throw new Error("Something went wrong");
+    return { ...prevState, error: "Something went wrong" };
   }
 };

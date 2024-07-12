@@ -1,0 +1,55 @@
+import { unstable_cache } from "next/cache";
+import prisma from "./client";
+
+//home timeline
+export async function fetchPosts(userId: string | null, username?: string) {
+  if (!username && userId) {
+    const following = await prisma.follow.findMany({
+      where: {
+        followerId: userId,
+      },
+      select: {
+        followingId: true,
+      },
+    });
+
+    const followingIds = following.map((f) => f.followingId);
+    const ids = [userId, ...followingIds]; //自分とフォローしているユーザーのIDを取得(timelineに表示するため)
+
+    return await prisma.post.findMany({
+      where: {
+        authorId: {
+          in: ids,
+        },
+      },
+      include: {
+        author: true,
+        likes: {
+          select: {
+            userId: true,
+          },
+        },
+        //返信数の取得
+        _count: {
+          select: {
+            replies: true,
+          },
+        },
+      },
+      // //作成日時の降順(最新のものから)ソート
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+  }
+}
+
+// export const getCachedPosts = unstable_cache(
+//   async (userId: string | null, username?: string) =>
+//     fetchPosts(userId, username),
+//   ["posts"],
+//   {
+//     // revalidate: 60,
+//     tags: ["posts"],
+//   }
+// );

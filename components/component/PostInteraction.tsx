@@ -2,6 +2,7 @@
 
 import React, {
   startTransition,
+  useId,
   useOptimistic,
   useState,
   useTransition,
@@ -10,8 +11,12 @@ import { HeartIcon, MessageCircleIcon, Share2Icon } from "./Icons";
 import { Button } from "../ui/button";
 import { likeAction } from "@/lib/actions";
 import { useAuth } from "@clerk/nextjs";
+import { useFormState } from "react-dom";
 
-//https://github.com/safak/next-social/blob/completed/src/lib/actions.ts
+type LikeState = {
+  likes: string[];
+  error?: string | undefined;
+};
 
 const PostInteraction = ({
   postId,
@@ -22,68 +27,40 @@ const PostInteraction = ({
   likes: string[];
   commentNumber: number;
 }) => {
-  const { userId } = useAuth();
   //   const [likeState, setLikeState] = useState({
   //     likeCount: likes.length,
   //     isLiked: userId ? likes.includes(userId) : false,
   //   });
-  const initialLikeState = {
-    likeCount: likes.length,
-    isLiked: userId ? likes.includes(userId) : false,
+
+  const { userId } = useAuth();
+
+  const initialState = {
+    likes,
+    error: undefined,
   };
 
-  console.log(initialLikeState);
-
-  const [optimisticLikes, addOptimisticLike] = useOptimistic<any, any>(
-    initialLikeState,
-    (currentState, newState) => {
-      return newState;
-    }
-  );
-
-  const handleLikeSubmit = async () => {
-    const newIsLiked = !optimisticLikes.isLiked;
-    startTransition(async () => {
-      addOptimisticLike(newIsLiked);
-      try {
-        await likeAction(postId);
-      } catch (err) {
-        console.log(err);
-      }
-    });
-
-    // try {
-    //   await likeAction(postId);
-    //   // setLikeState((state) => ({
-    //   //   likeCount: likeState.isLiked
-    //   //     ? state.likeCount - 1
-    //   //     : state.likeCount + 1,
-    //   //   isLiked: !state.isLiked,
-    //   // }));
-    // } catch (err) {
-    //   console.log(err);
-    // }
-  };
+  const [state, formAction] = useFormState(likeAction, initialState);
+  const isLiked = userId ? state.likes.includes(userId) : false;
 
   return (
     <div className="flex items-center">
-      <form action={handleLikeSubmit}>
+      <form
+        action={formAction}
+        // onSubmit={handleLikeSubmit}
+      >
+        <input type="hidden" name="postId" value={postId} />
         <Button variant="ghost" size="icon">
           <HeartIcon
             className={`h-5 w-5 ${
-              optimisticLikes.isLiked
-                ? "text-destructive"
-                : "text-muted-foreground"
+              isLiked ? "text-destructive" : "text-muted-foreground"
             }`}
-            fill={optimisticLikes.isLiked ? "currentColor" : "none"}
-            stroke={optimisticLikes.isLiked ? "none" : "currentColor"}
+            fill={isLiked ? "currentColor" : "none"}
+            stroke={isLiked ? "none" : "currentColor"}
           />
         </Button>
       </form>
-      <span
-        className={`-ml-1 ${optimisticLikes.isLiked ? "text-destructive" : ""}`}
-      >
-        {optimisticLikes.likeCount}
+      <span className={`-ml-1 ${isLiked ? "text-destructive" : ""}`}>
+        {state.likes.length}
       </span>
       <Button variant="ghost" size="icon">
         <MessageCircleIcon className="h-5 w-5 text-muted-foreground" />

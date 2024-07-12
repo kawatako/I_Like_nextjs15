@@ -2,6 +2,7 @@
 import { auth } from "@clerk/nextjs/server";
 import Post from "./Post";
 import prisma from "@/lib/client";
+import { fetchPosts } from "@/lib/postDataFetcher";
 
 export default async function PostList({ username }: { username?: string }) {
   // const posts = [
@@ -25,56 +26,15 @@ export default async function PostList({ username }: { username?: string }) {
   //   },
   // ];
 
-  let posts: any[] = [];
-
   const { userId } = auth();
 
-  //home timeline
-  if (!username && userId) {
-    const following = await prisma.follow.findMany({
-      where: {
-        followerId: userId,
-      },
-      select: {
-        followingId: true,
-      },
-    });
+  const posts = await fetchPosts(userId, username);
 
-    const followingIds = following.map((f) => f.followingId);
-    const ids = [userId, ...followingIds]; //自分とフォローしているユーザーのIDを取得(timelineに表示するため)
-
-    posts = await prisma.post.findMany({
-      where: {
-        authorId: {
-          in: ids,
-        },
-      },
-      include: {
-        author: true,
-        likes: {
-          select: {
-            userId: true,
-          },
-        },
-        //返信数の取得
-        _count: {
-          select: {
-            replies: true,
-          },
-        },
-      },
-      // //作成日時の降順(最新のものから)ソート
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
-  }
-
-  console.log(posts);
+  console.log(posts?.map((post) => post.likes));
 
   return (
     <div className="space-y-4">
-      {posts.length
+      {posts
         ? posts.map((post) => <Post key={post.id} post={post} />)
         : "No posts found!"}
     </div>
