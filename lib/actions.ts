@@ -72,7 +72,6 @@ export async function addPostAction(
 }
 
 export const likeAction = async (
-  prevState: LikeState,
   formData: FormData
   // postId: string
 ) => {
@@ -99,10 +98,11 @@ export const likeAction = async (
         },
       });
 
-      return {
-        likes: prevState.likes.filter((id) => id !== userId),
-        error: undefined,
-      };
+      // return {
+      //   likes: prevState.likes.filter((id) => id !== userId),
+      //   error: undefined,
+      // };
+      revalidatePath("/");
     } else {
       await prisma.like.create({
         data: {
@@ -111,13 +111,15 @@ export const likeAction = async (
         },
       });
 
-      return {
-        likes: [...prevState.likes, userId],
-        error: undefined,
-      };
+      // return {
+      //   likes: [...prevState.likes, userId],
+      //   error: undefined,
+      // };
+
+      revalidatePath("/");
     }
   } catch (err) {
     console.log(err);
-    return { ...prevState, error: "Something went wrong" };
+    // return { ...prevState, error: "Something went wrong" };
   }
 };

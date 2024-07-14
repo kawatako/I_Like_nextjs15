@@ -13,18 +13,21 @@ import { likeAction } from "@/lib/actions";
 import { useAuth } from "@clerk/nextjs";
 import { useFormState } from "react-dom";
 
-type LikeState = {
-  likes: string[];
-  error?: string | undefined;
-};
-
+interface LikeState {
+  count: number;
+  isLiked: boolean;
+}
 const PostInteraction = ({
   postId,
-  likes,
+  // likes,
+  initialLikes,
+  // initialIsLiked,
   commentNumber,
 }: {
   postId: string;
-  likes: string[];
+  // likes: string[];
+  initialLikes: string[];
+  // initialIsLiked: boolean;
   commentNumber: number;
 }) => {
   //   const [likeState, setLikeState] = useState({
@@ -34,33 +37,63 @@ const PostInteraction = ({
 
   const { userId } = useAuth();
 
-  const initialState = {
-    likes,
-    error: undefined,
+  const initialState: LikeState = {
+    count: initialLikes.length,
+    isLiked: userId ? initialLikes.includes(userId) : false,
   };
 
-  const [state, formAction] = useFormState(likeAction, initialState);
-  const isLiked = userId ? state.likes.includes(userId) : false;
+  // const initialState = {
+
+  //   likes,
+  //   error: undefined,
+  // };
+
+  // const [state, formAction] = useFormState(likeAction, initialState);
+
+  const [optimisticLike, addOptimisticLike] = useOptimistic<LikeState, void>(
+    initialState,
+    //updateFn
+    (currentState) => ({
+      count: currentState.isLiked
+        ? currentState.count - 1
+        : currentState.count + 1,
+      isLiked: !currentState.isLiked,
+    })
+  );
+
+  const handleLikeSubmit = async (formData: FormData) => {
+    addOptimisticLike();
+
+    try {
+      await likeAction(formData);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <div className="flex items-center">
       <form
-        action={formAction}
-        // onSubmit={handleLikeSubmit}
+        // action={formAction}
+        action={handleLikeSubmit}
       >
         <input type="hidden" name="postId" value={postId} />
         <Button variant="ghost" size="icon">
           <HeartIcon
             className={`h-5 w-5 ${
-              isLiked ? "text-destructive" : "text-muted-foreground"
+              optimisticLike.isLiked
+                ? "text-destructive"
+                : "text-muted-foreground"
             }`}
-            fill={isLiked ? "currentColor" : "none"}
-            stroke={isLiked ? "none" : "currentColor"}
+            fill={optimisticLike.isLiked ? "currentColor" : "none"}
+            stroke={optimisticLike.isLiked ? "none" : "currentColor"}
           />
         </Button>
       </form>
-      <span className={`-ml-1 ${isLiked ? "text-destructive" : ""}`}>
-        {state.likes.length}
+      <span
+        className={`-ml-1 ${optimisticLike.isLiked ? "text-destructive" : ""}`}
+      >
+        {optimisticLike.count}
       </span>
       <Button variant="ghost" size="icon">
         <MessageCircleIcon className="h-5 w-5 text-muted-foreground" />
