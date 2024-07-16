@@ -21,7 +21,7 @@ export default function RootLayout({
       <html lang="ja" className="h-full">
         <body className={`${inter.className} flex flex-col h-full`}>
           <Header />
-          <main className="flex-1">{children}</main>
+          <main className="flex-1 overflow-hidden">{children}</main>
         </body>
       </html>
     </ClerkProvider>

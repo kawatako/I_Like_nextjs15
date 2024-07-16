@@ -30,8 +30,6 @@ export default async function PostList({ username }: { username?: string }) {
 
   const posts = await fetchPosts(userId, username);
 
-  console.log(posts?.map((post) => post.likes));
-
   return (
     <div className="space-y-4">
       {posts

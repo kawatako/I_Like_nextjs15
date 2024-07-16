@@ -3,6 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import CommentList from "./CommentList";
 import { ClockIcon } from "./Icons";
 import PostInteraction from "./PostInteraction";
+import Link from "next/link";
 
 export default function Post({ post }: any) {
   // const { userId } = auth();
@@ -13,10 +14,12 @@ export default function Post({ post }: any) {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
       <div className="flex items-center gap-4 mb-4">
-        <Avatar className="w-10 h-10">
-          <AvatarImage src="/placeholder-user.jpg" />
-          <AvatarFallback>AC</AvatarFallback>
-        </Avatar>
+        <Link href={`/profile/${post.author.username}`}>
+          <Avatar className="w-10 h-10">
+            <AvatarImage src={post.author.image} />
+            <AvatarFallback>AC</AvatarFallback>
+          </Avatar>
+        </Link>
         <div>
           <h3 className="text-lg font-bold">{post.author.username}</h3>
           <p className="text-muted-foreground">{post.author.username}</p>
@@ -30,9 +33,9 @@ export default function Post({ post }: any) {
           <PostInteraction
             postId={post.id}
             // likes={post.likes.map((like: any) => like.userId)}
-            initialLikes={post.likes.map((like:any) => like.userId)}
+            initialLikes={post.likes.map((like: any) => like.userId)}
             // initialIsLiked={initialIsLiked}
-      
+
             commentNumber={post._count.replies}
           />
         </div>
