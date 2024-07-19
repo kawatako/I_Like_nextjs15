@@ -1,209 +1,91 @@
 import Link from "next/link";
-import { Input } from "@/components/ui/input";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import Image from "next/image";
+import PostList from "@/components/component/PostList";
+import prisma from "@/lib/client";
+import { notFound } from "next/navigation";
 
-export default function ProfilePage() {
+export default async function ProfilePage({
+  params,
+}: {
+  params: { username: string };
+}) {
+  const username = params.username;
+
+  const user = await prisma.user.findFirst({
+    where: {
+      username,
+    },
+    include: {
+      _count: {
+        select: {
+          following: true,
+          followedBy: true,
+          posts: true,
+        },
+      },
+    },
+  });
+
+  if (!user) {
+    return notFound();
+  }
+
   return (
     <div className="flex flex-col min-h-[100dvh]">
       <main className="flex-1">
-        <div className="container py-12 md:py-16 lg:py-20">
+        <div className="container py-6 md:py-10 lg:py-12">
           <div className="grid gap-6 md:grid-cols-[1fr_300px]">
             <div>
-              <div className="flex flex-col items-center md:items-start">
-                <h1 className="text-3xl font-bold">Acme Inc</h1>
-                <div className="text-muted-foreground">@acmeinc</div>
+              <div className="flex items-center gap-6">
+                <Avatar className="w-24 h-24 mb-4 md:mb-0">
+                  <AvatarImage
+                    src={user.image || "/placeholder-user.jpg"}
+                    alt="Acme Inc Profile"
+                  />
+                  <AvatarFallback>AI</AvatarFallback>
+                </Avatar>
+                <div>
+                  <h1 className="text-3xl font-bold">{user.username}</h1>
+                  <div className="text-muted-foreground">@{user.username}</div>
+                </div>
               </div>
-              <div className="mt-4 text-muted-foreground">
-                Acme Inc is a leading provider of innovative products and
-                services. We are committed to excellence and customer
-                satisfaction.
-              </div>
+
               <div className="mt-4 flex items-center gap-4 text-muted-foreground">
                 <div>
                   <MapPinIcon className="w-4 h-4 mr-1 inline" />
-                  San Francisco, CA
+                  xxxxxxxxx
                 </div>
                 <div>
                   <LinkIcon className="w-4 h-4 mr-1 inline" />
-                  acmeinc.com
+                  xxxxxx.com
                 </div>
               </div>
               <div className="mt-6 flex items-center gap-6">
                 <div className="flex flex-col items-center">
-                  <div className="text-2xl font-bold">100</div>
+                  <div className="text-2xl font-bold">{user._count.posts}</div>
                   <div className="text-muted-foreground">Posts</div>
                 </div>
                 <div className="flex flex-col items-center">
-                  <div className="text-2xl font-bold">1.2K</div>
+                  <div className="text-2xl font-bold">
+                    {user._count.following}
+                  </div>
                   <div className="text-muted-foreground">Followers</div>
                 </div>
                 <div className="flex flex-col items-center">
-                  <div className="text-2xl font-bold">500</div>
+                  <div className="text-2xl font-bold">
+                    {user._count.followedBy}
+                  </div>
                   <div className="text-muted-foreground">Following</div>
                 </div>
               </div>
-              <div className="mt-6">
-                <Tabs defaultValue="posts">
-                  <TabsList>
-                    <TabsTrigger value="posts">Posts</TabsTrigger>
-                    <TabsTrigger value="media">Media</TabsTrigger>
-                    <TabsTrigger value="likes">Likes</TabsTrigger>
-                  </TabsList>
-                  <TabsContent value="posts">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                      <Card>
-                        <CardContent className="p-0">
-                          <Image
-                            src="/placeholder.svg"
-                            width={400}
-                            height={400}
-                            alt="Post"
-                            className="object-cover aspect-square"
-                          />
-                        </CardContent>
-                        <CardFooter className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <Avatar className="w-8 h-8">
-                              <AvatarImage src="/placeholder-user.jpg" />
-                              <AvatarFallback>AC</AvatarFallback>
-                            </Avatar>
-                            <div className="text-sm font-medium">Acme Inc</div>
-                          </div>
-                          <Button variant="ghost" size="icon">
-                            <MoveHorizontalIcon className="w-4 h-4" />
-                          </Button>
-                        </CardFooter>
-                      </Card>
-                      <Card>
-                        <CardContent className="p-0">
-                          <Image
-                            src="/placeholder.svg"
-                            width={400}
-                            height={400}
-                            alt="Post"
-                            className="object-cover aspect-square"
-                          />
-                        </CardContent>
-                        <CardFooter className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <Avatar className="w-8 h-8">
-                              <AvatarImage src="/placeholder-user.jpg" />
-                              <AvatarFallback>AC</AvatarFallback>
-                            </Avatar>
-                            <div className="text-sm font-medium">Acme Inc</div>
-                          </div>
-                          <Button variant="ghost" size="icon">
-                            <MoveHorizontalIcon className="w-4 h-4" />
-                          </Button>
-                        </CardFooter>
-                      </Card>
-                      <Card>
-                        <CardContent className="p-0">
-                          <Image
-                            src="/placeholder.svg"
-                            width={400}
-                            height={400}
-                            alt="Post"
-                            className="object-cover aspect-square"
-                          />
-                        </CardContent>
-                        <CardFooter className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <Avatar className="w-8 h-8">
-                              <AvatarImage src="/placeholder-user.jpg" />
-                              <AvatarFallback>AC</AvatarFallback>
-                            </Avatar>
-                            <div className="text-sm font-medium">Acme Inc</div>
-                          </div>
-                          <Button variant="ghost" size="icon">
-                            <MoveHorizontalIcon className="w-4 h-4" />
-                          </Button>
-                        </CardFooter>
-                      </Card>
-                    </div>
-                  </TabsContent>
-                  <TabsContent value="media">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                      <Card>
-                        <CardContent className="p-0">
-                          <Image
-                            src="/placeholder.svg"
-                            width={400}
-                            height={400}
-                            alt="Media"
-                            className="object-cover aspect-square"
-                          />
-                        </CardContent>
-                      </Card>
-                      <Card>
-                        <CardContent className="p-0">
-                          <Image
-                            src="/placeholder.svg"
-                            width={400}
-                            height={400}
-                            alt="Media"
-                            className="object-cover aspect-square"
-                          />
-                        </CardContent>
-                      </Card>
-                      <Card>
-                        <CardContent className="p-0">
-                          <Image
-                            src="/placeholder.svg"
-                            width={400}
-                            height={400}
-                            alt="Media"
-                            className="object-cover aspect-square"
-                          />
-                        </CardContent>
-                      </Card>
-                    </div>
-                  </TabsContent>
-                  <TabsContent value="likes">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                      <Card>
-                        <CardContent className="p-0">
-                          <Image
-                            src="/placeholder.svg"
-                            width={400}
-                            height={400}
-                            alt="Liked Post"
-                            className="object-cover aspect-square"
-                          />
-                        </CardContent>
-                      </Card>
-                      <Card>
-                        <CardContent className="p-0">
-                          <Image
-                            src="/placeholder.svg"
-                            width={400}
-                            height={400}
-                            alt="Liked Post"
-                            className="object-cover aspect-square"
-                          />
-                        </CardContent>
-                      </Card>
-                      <Card>
-                        <CardContent className="p-0">
-                          <Image
-                            src="/placeholder.svg"
-                            width={400}
-                            height={400}
-                            alt="Liked Post"
-                            className="object-cover aspect-square"
-                          />
-                        </CardContent>
-                      </Card>
-                    </div>
-                  </TabsContent>
-                </Tabs>
+
+              <div className="mt-6 h-[500px] overflow-y-auto">
+                <PostList username={username} />
               </div>
             </div>
-            <div className="sticky top-20 self-start space-y-6">
+            <div className="sticky top-14 self-start space-y-6">
               <Button className="w-full">Follow</Button>
               <div>
                 <h3 className="text-lg font-bold">Suggested</h3>
@@ -263,7 +145,7 @@ export default function ProfilePage() {
   );
 }
 
-function LinkIcon(props) {
+function LinkIcon(props: any) {
   return (
     <svg
       {...props}
@@ -283,7 +165,7 @@ function LinkIcon(props) {
   );
 }
 
-function MapPinIcon(props) {
+function MapPinIcon(props: any) {
   return (
     <svg
       {...props}
@@ -303,7 +185,7 @@ function MapPinIcon(props) {
   );
 }
 
-function MountainIcon(props) {
+function MountainIcon(props: any) {
   return (
     <svg
       {...props}
@@ -322,7 +204,7 @@ function MountainIcon(props) {
   );
 }
 
-function MoveHorizontalIcon(props) {
+function MoveHorizontalIcon(props: any) {
   return (
     <svg
       {...props}
@@ -343,7 +225,7 @@ function MoveHorizontalIcon(props) {
   );
 }
 
-function PlusIcon(props) {
+function PlusIcon(props: any) {
   return (
     <svg
       {...props}
@@ -363,7 +245,7 @@ function PlusIcon(props) {
   );
 }
 
-function SearchIcon(props) {
+function SearchIcon(props: any) {
   return (
     <svg
       {...props}
