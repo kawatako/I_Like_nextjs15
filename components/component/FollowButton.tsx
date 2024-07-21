@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { handleFollowAction } from "@/lib/actions";
+import { followAction } from "@/lib/actions";
 
 interface FollowButtonProps {
   isFollowing: boolean;
@@ -20,7 +20,7 @@ const FollowButton = ({
 
   return (
     <div>
-      <form action={handleFollowAction.bind(null, userId)}>
+      <form action={followAction.bind(null, userId)}>
         {isCurrentUser ? (
           <Button className="w-full">Edit Profile</Button>
         ) : isFollowing ? (

@@ -114,7 +114,7 @@ export const likeAction = async (
   }
 };
 
-export const handleFollowAction = async (userId: string) => {
+export const followAction = async (userId: string) => {
   const { userId: currentUserId } = auth();
 
   if (!currentUserId) {
