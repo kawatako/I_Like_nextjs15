@@ -5,6 +5,10 @@ import Image from "next/image";
 import PostList from "@/components/component/PostList";
 import prisma from "@/lib/client";
 import { notFound } from "next/navigation";
+import { auth } from "@clerk/nextjs/server";
+import FollowButton from "@/components/component/FollowButton";
+
+//https://github.com/safak/next-social/blob/completed/src/components/rightMenu/UserInfoCardInteraction.tsx
 
 export default async function ProfilePage({
   params,
@@ -12,6 +16,11 @@ export default async function ProfilePage({
   params: { username: string };
 }) {
   const username = params.username;
+  const { userId: currentUserId } = auth();
+
+  if (!currentUserId) {
+    notFound();
+  }
 
   const user = await prisma.user.findFirst({
     where: {
@@ -25,12 +34,20 @@ export default async function ProfilePage({
           posts: true,
         },
       },
+      followedBy: {
+        where: {
+          followerId: currentUserId,
+        },
+      },
     },
   });
 
   if (!user) {
     return notFound();
   }
+
+  const isCurrentUser = currentUserId === user.id;
+  const isFollowing = user.followedBy.length > 0;
 
   return (
     <div className="flex flex-col min-h-[100dvh]">
@@ -86,7 +103,11 @@ export default async function ProfilePage({
               </div>
             </div>
             <div className="sticky top-14 self-start space-y-6">
-              <Button className="w-full">Follow</Button>
+              <FollowButton
+                isFollowing={isFollowing}
+                userId={user.id}
+                isCurrentUser={isCurrentUser}
+              />
               <div>
                 <h3 className="text-lg font-bold">Suggested</h3>
                 <div className="mt-4 space-y-4">

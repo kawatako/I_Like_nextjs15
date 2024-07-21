@@ -98,10 +98,6 @@ export const likeAction = async (
         },
       });
 
-      // return {
-      //   likes: prevState.likes.filter((id) => id !== userId),
-      //   error: undefined,
-      // };
       revalidatePath("/");
     } else {
       await prisma.like.create({
@@ -111,15 +107,52 @@ export const likeAction = async (
         },
       });
 
-      // return {
-      //   likes: [...prevState.likes, userId],
-      //   error: undefined,
-      // };
-
       revalidatePath("/");
     }
   } catch (err) {
     console.log(err);
-    // return { ...prevState, error: "Something went wrong" };
+  }
+};
+
+export const handleFollowAction = async (userId: string) => {
+  const { userId: currentUserId } = auth();
+
+  if (!currentUserId) {
+    throw new Error("User is not authenticated");
+  }
+
+  try {
+    //unfollow
+    const existingFollow = await prisma.follow.findFirst({
+      where: {
+        followerId: currentUserId,
+        followingId: userId,
+      },
+    });
+
+    if (existingFollow) {
+      await prisma.follow.delete({
+        where: {
+          followerId_followingId: {
+            followerId: currentUserId,
+            followingId: userId,
+          },
+        },
+      });
+    } else {
+      //follow
+      await prisma.follow.create({
+        data: {
+          followerId: currentUserId,
+          followingId: userId,
+        },
+      });
+    }
+
+    revalidatePath(`/profile/${userId}`);
+    revalidatePath(`/profile/${currentUserId}`);
+  } catch (err) {
+    console.log(err);
+    throw new Error("Something went wrong");
   }
 };
