@@ -18,31 +18,36 @@ const FollowButton = ({
 }: FollowButtonProps) => {
   const [hover, setHover] = useState(false);
 
+  const getButtonContent = () => {
+    if (isCurrentUser) {
+      return "プロフィール編集";
+    }
+    if (isFollowing) {
+      return hover ? "フォローを外す" : "フォロー中";
+    }
+    return "フォローする";
+  };
+
+  const getButtonVariant = (): "default" | "outline" | "secondary" => {
+    if (isCurrentUser) {
+      return "secondary";
+    }
+    if (isFollowing) {
+      return "outline";
+    }
+    return "default";
+  };
+
   return (
-    <div>
-      <form action={followAction.bind(null, userId)}>
-        {isCurrentUser ? (
-          <Button className="w-full">Edit Profile</Button>
-        ) : isFollowing ? (
-          <Button
-            className={cn(
-              buttonVariants({ variant: isFollowing ? "outline" : "default" }),
-              "w-full",
-              isFollowing
-                ? "bg-white hover:bg-gray-100 text-gray-800 hover:text-white"
-                : " text-white",
-              "transition-colors duration-200 hover:bg-slate-700"
-            )}
-            onMouseEnter={() => setHover(true)}
-            onMouseLeave={() => setHover(false)}
-          >
-            {hover ? "フォローを外す" : "フォロー中"}
-          </Button>
-        ) : (
-          <Button className="w-full">フォローする</Button>
-        )}
-      </form>
-    </div>
+    <form action={followAction.bind(null, userId)}>
+      <Button
+        variant={getButtonVariant()}
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
+      >
+        {getButtonContent()}
+      </Button>
+    </form>
   );
 };
 
