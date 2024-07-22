@@ -117,6 +117,10 @@ export const likeAction = async (
 export const followAction = async (userId: string) => {
   const { userId: currentUserId } = auth();
 
+  if (!userId) {
+    throw new Error("User is not Found");
+  }
+
   if (!currentUserId) {
     throw new Error("User is not authenticated");
   }

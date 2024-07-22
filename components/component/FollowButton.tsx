@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import React, { useOptimistic, useState } from "react";
+import { Button } from "@/components/ui/button";
 import { followAction } from "@/lib/actions";
 
 interface FollowButtonProps {
@@ -16,14 +15,19 @@ const FollowButton = ({
   userId,
   isCurrentUser,
 }: FollowButtonProps) => {
-  const [hover, setHover] = useState(false);
+  const [optimisticFollow, addOptimisticFollow] = useOptimistic<
+    { isFollowing: boolean },
+    void
+  >({ isFollowing }, (currentState) => ({
+    isFollowing: !currentState.isFollowing,
+  }));
 
   const getButtonContent = () => {
     if (isCurrentUser) {
       return "プロフィール編集";
     }
-    if (isFollowing) {
-      return hover ? "フォローを外す" : "フォロー中";
+    if (optimisticFollow.isFollowing) {
+      return "フォロー中";
     }
     return "フォローする";
   };
@@ -32,19 +36,27 @@ const FollowButton = ({
     if (isCurrentUser) {
       return "secondary";
     }
-    if (isFollowing) {
+    if (optimisticFollow.isFollowing) {
       return "outline";
     }
     return "default";
   };
 
+  const handleFollowAction = async (formData: FormData) => {
+    if (!isCurrentUser) {
+      addOptimisticFollow();
+    }
+    try {
+      await followAction(userId);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
-    <form action={followAction.bind(null, userId)}>
-      <Button
-        variant={getButtonVariant()}
-        onMouseEnter={() => setHover(true)}
-        onMouseLeave={() => setHover(false)}
-      >
+    // <form action={followAction.bind(null, userId)}>
+    <form action={handleFollowAction}>
+      <Button className="w-full" variant={getButtonVariant()}>
         {getButtonContent()}
       </Button>
     </form>

@@ -17,6 +17,7 @@ interface LikeState {
   count: number;
   isLiked: boolean;
 }
+
 const PostInteraction = ({
   postId,
   // likes,
