@@ -1,5 +1,5 @@
 import { unstable_cache } from "next/cache";
-import prisma from "./client";
+import prisma from "../client";
 
 //home timeline
 export async function fetchPosts(userId: string | null, username?: string) {
@@ -69,13 +69,3 @@ export async function fetchPosts(userId: string | null, username?: string) {
     });
   }
 }
-
-// export const getCachedPosts = unstable_cache(
-//   async (userId: string | null, username?: string) =>
-//     fetchPosts(userId, username),
-//   ["posts"],
-//   {
-//     // revalidate: 60,
-//     tags: ["posts"],
-//   }
-// );

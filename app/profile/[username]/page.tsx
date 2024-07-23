@@ -1,7 +1,5 @@
-import Link from "next/link";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
 import PostList from "@/components/component/PostList";
 import prisma from "@/lib/client";
 import { notFound } from "next/navigation";

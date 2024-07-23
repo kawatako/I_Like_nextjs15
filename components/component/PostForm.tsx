@@ -7,8 +7,13 @@ import { addPostAction } from "@/lib/actions";
 import { useCallback, useRef, useState } from "react";
 import { SubmitButton } from "./SubmitButton";
 import { useFormState } from "react-dom";
+import { UserData } from "@/types/user";
 
-export default function PostForm() {
+interface LeftSidebarProps {
+  currentLoginUserData: UserData | null;
+}
+
+export default function PostForm({ currentLoginUserData }: LeftSidebarProps) {
   const initialState = {
     error: undefined,
     success: false,
@@ -38,7 +43,7 @@ export default function PostForm() {
     <div>
       <div className="flex items-center gap-4">
         <Avatar className="w-10 h-10">
-          <AvatarImage src="/placeholder-user.jpg" />
+          <AvatarImage src={currentLoginUserData?.image ?? undefined} />
           <AvatarFallback>AC</AvatarFallback>
         </Avatar>
         <form

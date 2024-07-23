@@ -2,7 +2,7 @@
 import { auth } from "@clerk/nextjs/server";
 import Post from "./Post";
 import prisma from "@/lib/client";
-import { fetchPosts } from "@/lib/postDataFetcher";
+import { fetchPosts } from "@/lib/post/postService";
 
 export default async function PostList({ username }: { username?: string }) {
   // const posts = [
