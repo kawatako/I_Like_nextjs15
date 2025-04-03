@@ -1,5 +1,5 @@
-import PostForm from "./PostForm";
-import PostList from "./PostList";
+import PostForm from "../posts/PostForm";
+import PostList from "../posts/PostList";
 
 //https://github.com/safak/next-social/blob/completed/src
 

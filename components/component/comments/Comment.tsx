@@ -1,7 +1,7 @@
 // components/Comment.tsx
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { Button } from "../ui/button";
-import { HeartIcon } from "./Icons";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { HeartIcon } from "@/components/component/Icons";
 
 export default function Comment({ reply }: any) {
   return (

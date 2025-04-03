@@ -5,7 +5,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { addPostAction } from "@/lib/actions";
 import { useCallback, useRef, useState } from "react";
-import { SubmitButton } from "./SubmitButton";
+import { SubmitButton } from "../SubmitButton";
 import { useFormState } from "react-dom";
 import { UserData } from "@/types/user";
 

@@ -1,7 +1,7 @@
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import CommentList from "./CommentList";
-import { ClockIcon } from "./Icons";
-import PostInteraction from "./PostInteraction";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import CommentList from "../comments/CommentList";
+import { ClockIcon } from "@/components/component/Icons";
+import PostInteraction from "../likes/PostInteraction";
 import Link from "next/link";
 
 export default function Post({ post }: any) {
