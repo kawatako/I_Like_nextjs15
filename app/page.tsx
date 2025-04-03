@@ -1,6 +1,6 @@
-import LeftSidebar from "@/components/component/LeftSidebar";
-import MainContent from "@/components/component/MainContent";
-import RightSidebar from "@/components/component/RightSidebar";
+import LeftSidebar from "@/components/component/layouts/LeftSidebar";
+import MainContent from "@/components/component/layouts/MainContent";
+import RightSidebar from "@/components/component/layouts/RightSidebar";
 import { getCurrentLoginUserData } from "@/lib/user/userService";
 import { auth } from "@clerk/nextjs/server";
 import { notFound, redirect } from "next/navigation";

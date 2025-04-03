@@ -4,7 +4,7 @@ import PostList from "@/components/component/PostList";
 import prisma from "@/lib/client";
 import { notFound } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
-import FollowButton from "@/components/component/FollowButton";
+import FollowButton from "@/components/component/Follows/FollowButton";
 
 //https://github.com/safak/next-social/blob/completed/src/components/rightMenu/UserInfoCardInteraction.tsx
 

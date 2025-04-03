@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { LogInIcon, SearchIcon, BellIcon, MailIcon } from "./Icons";
+import { LogInIcon, SearchIcon, BellIcon, MailIcon } from "../Icons";
 import { ClerkLoading } from "@clerk/nextjs";
 import { SignedIn, SignedOut, UserButton } from "@clerk/clerk-react";
 

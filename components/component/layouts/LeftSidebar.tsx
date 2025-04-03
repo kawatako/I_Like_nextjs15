@@ -9,7 +9,7 @@ import {
   MessageCircleIcon,
   HeartIcon,
   SettingsIcon,
-} from "./Icons";
+} from "../Icons";
 
 interface UserData {
   id: string;
