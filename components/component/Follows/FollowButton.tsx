@@ -2,7 +2,7 @@
 
 import React, { useOptimistic, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { followAction } from "@/lib/actions";
+import { followAction } from "@/lib/actions/followActions";
 
 interface FollowButtonProps {
   isFollowing: boolean;

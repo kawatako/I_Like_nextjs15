@@ -3,7 +3,7 @@
 // components/PostForm.tsx
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
-import { addPostAction } from "@/lib/actions";
+import { addPostAction } from "@/lib/actions/postActions";
 import { useCallback, useRef, useState } from "react";
 import { SubmitButton } from "../SubmitButton";
 import { useFormState } from "react-dom";
