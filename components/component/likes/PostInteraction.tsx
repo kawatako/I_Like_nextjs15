@@ -9,7 +9,7 @@ import React, {
 } from "react";
 import { HeartIcon, MessageCircleIcon, Share2Icon } from "../Icons";
 import { Button } from "@/components/ui/button";
-import { likeAction } from "@/lib/actions";
+import { likeAction } from "@/lib/actions/likeActions";
 import { useAuth } from "@clerk/nextjs";
 import { useFormState } from "react-dom";
 
