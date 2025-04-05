@@ -158,3 +158,85 @@ Node.js バージョン:
 まとめ:
 
 このプロジェクトは、Next.js (App Router) + TypeScript をベースに、認証に Clerk、データベースに Supabase (PostgreSQL) + Prisma、スタイリングに Tailwind CSS、UI コンポーネント基盤に shadcn/ui (Radix UI + Lucide) を採用した、モダンで一般的な構成と言えます。Server Actions や Zod も活用されていますね。
+
+
+
+# 実装イメージ
+フェーズ 1: データベース (モデル) の準備
+
+目標: ランキング機能に必要なデータを保存するためのテーブル構造を定義する。
+作業:
+schema.prisma ファイルを開く。
+Sentiment Enum (LIKE/DISLIKE) を定義する。
+RankingList モデル（リストのタイトル情報）を定義する ( sentiment, subject, description?, isPublic?, authorId (User.id参照), createdAt, updatedAt フィールドを含む)。 User モデルとのリレーションも定義。
+RankedItem モデル（リスト内の各アイテム情報）を定義する ( itemName, rank, imageUrl?, linkUrl?, itemDescription?, listId, createdAt フィールドを含む)。RankingList モデルとのリレーション (onDelete: Cascade) も定義。
+既存の User モデルに rankingLists: RankingList[] を追加してリレーションを定義。
+itemName や subject, rank など、検索や表示で使いそうなフィールドにインデックス (@@index) を設定。
+影響ファイル: prisma/schema.prisma
+DBモデル: User (修正), RankingList (新規), RankedItem (新規), Sentiment (新規 Enum)
+次のアクション: npx prisma migrate dev --name add_ranking_models を実行してDBにテーブルを作成し、Prisma Client を更新。
+フェーズ 2: ランキングリスト作成機能 (UI & サーバーアクション)
+
+目標: ユーザーが新しいランキングリスト（好き/嫌い選択 + テーマ入力）を作成できるようにする。
+作業:
+リスト作成用の Server Action (createRankingListAction) を作成する。
+lib/actions/rankingActions.ts (新規作成) または既存の lib/actions.ts に追記。
+入力 (sentiment, subject) を受け取り、認証 (auth()) でユーザーIDを取得。
+clerkId から User の内部 id を検索。
+prisma.rankingList.create を使ってデータを保存。
+Zod などでバリデーションを追加。
+エラーハンドリング。
+成功したら revalidatePath で関連ページ（プロフィールなど）を再検証。
+リスト作成フォームの UI コンポーネント (RankingListForm.tsx) を作成する。
+components/component/ranking/ (新規作成) フォルダなどが適切か。
+"use client" コンポーネント。
+sentiment 用の選択肢（ラジオボタン等）と subject 用のテキスト入力。
+useFormState (React) と createRankingListAction を連携させる。
+送信ボタンには SubmitButton.tsx を利用。
+リスト作成フォームを表示するためのページ（例: app/rankings/create/page.tsx）またはモーダルを作成。
+影響ファイル: lib/actions/rankingActions.ts (新規 or 修正), components/component/ranking/RankingListForm.tsx (新規), app/rankings/create/page.tsx (新規 or 代替UI)
+DBモデル: RankingList, User
+フェーズ 3: ランキングアイテム追加・順位付け機能 (UI & サーバーアクション)
+
+目標: 作成したリストにアイテム（アイテム名＋順位など）を追加・保存できるようにする。
+作業:
+アイテム追加用の Server Action (addRankedItemAction) を作成する。
+lib/actions/rankingActions.ts に追記。
+入力 (listId, itemName, rank など) を受け取り、認証と権限（リストの所有者か）をチェック。
+prisma.rankedItem.create でデータを保存。バリデーション、エラーハンドリング、revalidatePath。
+リスト編集画面の UI コンポーネント (RankingListEditView.tsx など) を作成。
+components/component/ranking/ などに新規作成。
+指定された listId のリスト情報と既存アイテム一覧を表示。
+アイテム追加フォーム (RankedItemForm.tsx を作成または統合) を表示。
+アイテムの順位 (rank) を入力できるようにする。
+(将来的に) アイテムの編集・削除ボタンを追加。
+(将来的に) ドラッグ＆ドロップなどの順位変更 UI を追加。
+リスト編集画面を表示するためのページ（例: app/rankings/[listId]/edit/page.tsx）を作成。
+影響ファイル: lib/actions/rankingActions.ts (修正), components/component/ranking/RankingListEditView.tsx (新規), components/component/ranking/RankedItemForm.tsx (新規), app/rankings/[listId]/edit/page.tsx (新規)
+DBモデル: RankedItem, RankingList
+フェーズ 4: プロフィールページでのランキング表示
+
+目標: ユーザーのプロフィールページに、その人が作成したランキングリスト一覧を表示する。
+作業:
+指定されたユーザー名 (username) または clerkId に紐づく RankingList の一覧（タイトル、感情など）を取得する関数を lib/user/userService.ts に追加（例: getRankingListsByUser)。
+app/profile/[username]/page.tsx を修正。
+上記関数を呼び出してリストデータを取得。
+取得したリストデータを表示用コンポーネントに渡す。
+プロフィールにリスト一覧を表示するコンポーネント (ProfileRankingListDisplay.tsx など) を作成。
+components/component/ranking/ などに新規作成。
+リストのタイトルなどを表示。各リストの詳細ページへのリンクを設置。
+(将来的に) リスト詳細表示ページ (app/rankings/[listId]/page.tsx) やモーダルを作成。
+影響ファイル: lib/user/userService.ts (修正), app/profile/[username]/page.tsx (修正), components/component/ranking/ProfileRankingListDisplay.tsx (新規)
+DBモデル: RankingList, User, RankedItem (詳細表示時)
+フェーズ 5: ランキング作成時のタイムライン投稿機能
+
+目標: ランキングリスト作成・保存時に、任意でタイムラインに報告を投稿できるようにする。
+作業:
+createRankingListAction (フェーズ2で作成) を修正。
+フォームから「投稿するかどうか」と「追加コメント」を受け取る。
+prisma.rankingList.create 成功後、もし投稿するオプションが有効なら、prisma.post.create を使って投稿データを作成（既存の addPostAction のロジックを参考・流用）。投稿内容にはリストへのリンクを含める。
+RankingListForm.tsx (フェーズ2で作成) を修正。
+「タイムラインに投稿する」チェックボックスと、コメント入力欄を追加。
+影響ファイル: lib/actions/rankingActions.ts (修正), components/component/ranking/RankingListForm.tsx (修正)
+DBモデル: Post, RankingList
+サジェスト機能、みんなのランキング、トレンド機能は、これらのコア機能ができた後の次のステップとして実装していく形になります。
