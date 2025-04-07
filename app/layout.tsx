@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/component/layouts/Header";
 import { ClerkProvider } from "@clerk/nextjs";
+import { Toaster } from "@/components/ui/toaster";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,6 +23,7 @@ export default function RootLayout({
         <body className={`${inter.className} flex flex-col h-full`}>
           <Header />
           <main className="flex-1 md:overflow-hidden">{children}</main>
+          <Toaster /> 
         </body>
       </html>
     </ClerkProvider>
