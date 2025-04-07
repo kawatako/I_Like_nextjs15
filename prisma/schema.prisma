@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -12,8 +9,14 @@ datasource db {
 
 // ランキングの感情（好き/嫌い）を表す Enum
 enum Sentiment {
-  LIKE     // "好き"
-  DISLIKE  // "嫌い"
+  LIKE
+  DISLIKE
+}
+
+// ランキングリストの公開状態 Enum
+enum ListStatus {
+  DRAFT     // 下書き
+  PUBLISHED // 公開済み
 }
 
 model User {
@@ -30,20 +33,22 @@ model User {
   replies    Reply[]
   followedBy Follow[] @relation("FollowedBy")
   following  Follow[] @relation("Following")
-  rankingLists RankingList[]
+  rankingLists RankingList[] // User が作成したランキングリスト
 }
 
 // ランキングリストを表すモデル
 model RankingList {
   id          String   @id @default(cuid())
-  sentiment   Sentiment // 「好き」か「嫌い」か
-  subject     String    // 自由入力されるテーマ部分 (例: "2025年上半期の映画")
-  description String?   // リストの説明 (任意)
-  isPublic    Boolean  @default(true) // 公開/非公開設定 (デフォルトは公開)
+  sentiment   Sentiment
+  subject     String
+  description String?
+  // isPublic    Boolean  @default(true) // ★ 削除 ★
+  status      ListStatus @default(DRAFT) // 公開状態 (デフォルトは下書き)
+  listImageUrl String?  // ★ 追加: リストのイメージ画像URL (任意)
 
   // 作成者 (User) へのリレーション (Userの主キー 'id' を参照)
   authorId    String
-  author      User     @relation(fields: [authorId], references: [id], onDelete: Cascade) // ユーザー削除時にリストも削除する場合 Cascade (Restrictも検討可)
+  author      User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
   // このリストに含まれるアイテム (RankedItem) へのリレーション
   items       RankedItem[]
@@ -51,36 +56,36 @@ model RankingList {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  // 検索や表示の効率化のためのインデックス
   @@index([subject])
   @@index([authorId])
-  @@index([createdAt]) // 新着順表示用
+  @@index([status])
+  @@index([createdAt])
 }
 
 // ランキングリスト内の各アイテムを表すモデル
 model RankedItem {
   id              String   @id @default(cuid())
-  itemName        String   // アイテム名 (自由入力、サジェスト対象)
-  rank            Int      // 順位 (同順位を許容)
-  imageUrl        String?  // アイテム画像URL
-  linkUrl         String?  // 関連リンクURL
-  itemDescription String?  // アイテムに関するユーザーのコメント
+  itemName        String
+  rank            Int
+  imageUrl        String?  // ★アイテム画像URL (任意) - これは残す
+  // linkUrl         String?  // ← これは削除済み
+  itemDescription String?
 
-  // 属する RankingList へのリレーション
   listId        String
-  rankingList   RankingList @relation(fields: [listId], references: [id], onDelete: Cascade) // リスト削除時にアイテムも削除
+  rankingList   RankingList @relation(fields: [listId], references: [id], onDelete: Cascade)
 
   createdAt     DateTime    @default(now())
 
-  // 検索や表示の効率化のためのインデックス
-  @@index([itemName]) // アイテム名サジェスト用
-  @@index([listId, rank]) // 特定リストの順位順表示用
+  @@index([itemName])
+  @@index([listId, rank])
 }
 
+// --- 既存のモデル (Post, Like, Reply, Follow) ---
+// ... (変更なし、ただし onDelete の見直しは推奨) ...
 model Post {
   id        String   @id @default(cuid())
   content   String
-  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade) // User 削除時に Post も削除する場合
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -92,9 +97,9 @@ model Post {
 
 model Like {
   id        String   @id @default(cuid())
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade) // User 削除時に Like も削除する場合
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
-  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade) // Post 削除時に Like も削除
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId    String
   createdAt DateTime @default(now())
 
@@ -105,24 +110,24 @@ model Like {
 model Reply {
   id        String   @id @default(cuid())
   content   String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade) // User 削除時に Reply も削除する場合
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
-  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade) // Post 削除時に Reply も削除
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([postId]) 
-  @@index([userId]) 
+  @@index([postId])
+  @@index([userId])
 }
 
 model Follow {
-  follower    User     @relation("Following", fields: [followerId], references: [id], onDelete: Cascade) // User 削除時に Follow も削除する場合
+  follower    User     @relation("Following", fields: [followerId], references: [id], onDelete: Cascade)
   followerId  String
-  following   User     @relation("FollowedBy", fields: [followingId], references: [id], onDelete: Cascade) // User 削除時に Follow も削除する場合
+  following   User     @relation("FollowedBy", fields: [followingId], references: [id], onDelete: Cascade)
   followingId String
   createdAt   DateTime @default(now())
 
   @@id([followerId, followingId])
-  @@index([followingId]) 
+  @@index([followingId])
 }
