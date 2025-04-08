@@ -20,7 +20,7 @@ export async function addPostAction(
   try {
     const postText = PostTextSchema.parse(formData.get("post") as string);
 
-    const { userId: clerkId } = auth();
+    const { userId: clerkId } = await auth();
     if (!clerkId) {
       return { success: false, error: "ログインしてください。" };
     }

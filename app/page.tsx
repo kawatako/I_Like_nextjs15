@@ -6,7 +6,7 @@ import { auth } from "@clerk/nextjs/server";
 import { notFound, redirect } from "next/navigation";
 
 export default async function Home() {
-  const { userId } = auth();
+  const { userId } = await auth();
   if (!userId) {
     redirect("/sign-in");
   }

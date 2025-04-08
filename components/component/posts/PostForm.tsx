@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { addPostAction } from "@/lib/actions/postActions";
 import { useCallback, useRef, useState } from "react";
 import { SubmitButton } from "../SubmitButton";
-import { useFormState } from "react-dom";
+import { useActionState } from "react";
 import { UserData } from "@/types/user";
 
 interface LeftSidebarProps {
@@ -20,7 +20,7 @@ export default function PostForm({ currentLoginUserData }: LeftSidebarProps) {
   };
   const formRef = useRef<HTMLFormElement>(null);
 
-  const [state, formAction] = useFormState(addPostAction, initialState);
+  const [state, formAction] = useActionState(addPostAction, initialState);
 
   if (state.success && formRef.current) {
     formRef.current.reset();

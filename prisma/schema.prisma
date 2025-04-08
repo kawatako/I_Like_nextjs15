@@ -26,6 +26,8 @@ model User {
   name       String?
   bio        String?
   image      String?
+  coverImageUrl String?
+  socialLinks   Json?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   posts      Post[]

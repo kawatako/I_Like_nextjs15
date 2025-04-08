@@ -14,7 +14,7 @@ type FollowActionResult = {
 export const followAction = async (
     clerkIdToFollow: string // フォロー対象の Clerk ID
 ): Promise<FollowActionResult> => {
-  const { userId: currentClerkId } = auth(); // 自分の Clerk ID
+  const { userId: currentClerkId } = await auth(); // 自分の Clerk ID
 
   if (!currentClerkId) {
     return { success: false, error: "ログインしてください。" };

@@ -11,7 +11,7 @@ import { saveRankingListItemsAction } from "@/lib/actions/rankingActions";
 import { useToast } from "@/components/hooks/use-toast";
 import { PlusIcon, TrashIcon, GripVertical } from "lucide-react";
 import { deleteRankingListAction } from "@/lib/actions/rankingActions"; 
-import { useFormState } from "react-dom"; // useFormState をインポート
+import { useActionState } from "react";
 
 // dnd-kit のインポート
 import {
@@ -126,7 +126,7 @@ export function RankingListEditView({ rankingList }: RankingListEditViewProps) {
   const sentimentLabel = rankingList.sentiment === Sentiment.LIKE ? "好きな" : "嫌いな";
 
   // 削除ボタンの処理
-  const [deleteState, deleteFormAction] = useFormState(deleteRankingListAction, { success: false });
+  const [deleteState, deleteFormAction] = useActionState(deleteRankingListAction, { success: false });
   
     // 削除ボタンが押されたときの処理（確認ダイアログ）
     const handleDeleteConfirm = (event: React.FormEvent<HTMLFormElement>) => {
