@@ -287,6 +287,93 @@ type DeleteActionState = {
   success: boolean;
 }
 
+// 閲覧用ビューで必要となるデータの型を定義 (export してページやコンポーネントで利用可能に)
+const rankingListViewPayload = Prisma.validator<Prisma.RankingListDefaultArgs>()({
+  include: {
+    items: { orderBy: { rank: 'asc' } }, // アイテムをランク順で取得
+    // 作成者の情報も取得 (リレーション名が 'author'、外部キーが 'authorId' と仮定)
+    author: {
+      select: {
+        id: true,          // 内部DB ID (所有者チェック用)
+        clerkId: true,     // Clerk ID (必要であれば)
+        username: true,    // 表示用ユーザー名
+        image: true,    // 表示用アバター画像
+      }
+    }
+  },
+});
+export type RankingListViewData = Prisma.RankingListGetPayload<typeof rankingListViewPayload>;
+
+// 公開されているランキング、または自分がオーナーの下書きランキングの詳細を取得します。
+export async function getRankingDetailsForView(listId: string): Promise<RankingListViewData | null> {
+  console.log(`[View] Fetching ranking details for listId: ${listId}`);
+  const { userId: loggedInClerkId } = await auth(); // 閲覧者の Clerk ID を取得
+  let loggedInUserDbId: string | null = null;
+
+  // 閲覧者がログインしている場合、そのDB IDを取得 (下書きチェック用)
+  if (loggedInClerkId) {
+    try {
+      const viewer = await prisma.user.findUnique({
+        where: { clerkId: loggedInClerkId },
+        select: { id: true },
+      });
+      if (viewer) {
+        loggedInUserDbId = viewer.id;
+        console.log(`[View] Viewer is logged in (DB ID: ${loggedInUserDbId})`);
+      } else {
+        // DBにClerk ID対応のユーザーがいない場合（同期ズレなど）
+        console.warn(`[View] Viewer with clerkId ${loggedInClerkId} not found in DB.`);
+      }
+    } catch (error) {
+      console.error(`[View] Error fetching viewer's DB ID for clerkId ${loggedInClerkId}:`, error);
+      // DBエラー時は匿名ユーザーとして扱う（下書きは見れない）
+    }
+  } else {
+    console.log(`[View] Viewer is not logged in.`);
+  }
+
+  try {
+    // ランキングリストを検索
+    const rankingList = await prisma.rankingList.findUnique({
+      where: {
+        id: listId,
+        // --- 表示条件ロジック ---
+        OR: [
+          // 1. 公開されている (PUBLISHED)
+          { status: ListStatus.PUBLISHED },
+          // 2. または、下書き (DRAFT) で、かつ閲覧者がオーナーである
+          {
+            AND: [
+              { status: ListStatus.DRAFT },
+              // authorId (リスト作成者のDB ID) と閲覧者のDB IDが一致するか
+              // loggedInUserDbId が null (未ログインorDBエラー) の場合は一致しない
+              { authorId: loggedInUserDbId ?? undefined }
+            ]
+          }
+        ],
+      },
+      // 上で定義した payload を使って必要なデータを include
+      include: rankingListViewPayload.include,
+    });
+
+    if (!rankingList) {
+      console.log(`[View] RankingList ${listId} not found or viewer lacks permission.`);
+      return null; // 見つからないか権限がなければ null
+    }
+
+    console.log(`[View] Successfully fetched RankingList ${listId}`);
+    // 取得したデータ (author情報含む) を返す
+    return rankingList;
+
+  } catch (error) {
+    console.error(`[View] Error fetching ranking list ${listId}:`, error);
+    return null; // エラー時も null を返す
+  }
+}
+
+
+
+// ランキングリストを削除するアクション
 export async function deleteRankingListAction(
   prevState: DeleteActionState, // prevState を追加
   formData: FormData
