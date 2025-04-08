@@ -27,7 +27,7 @@ export async function createRankingListAction(
   formData: FormData
 ): Promise<ActionState> {
   // ActionState を使用
-  const { userId: clerkId } = auth();
+  const { userId: clerkId } = await auth();
   if (!clerkId) {
     console.warn("createRankingListAction: User is not authenticated.");
     return { success: false, error: "ログインしてください。" };
@@ -101,7 +101,7 @@ export async function getRankingListForEdit(listId: string) {
   console.log(`getRankingListForEdit called for listId: ${listId}`);
 
   // 1. 現在のユーザーの Clerk ID を取得
-  const { userId: clerkId } = auth();
+  const { userId: clerkId } = await auth();
   if (!clerkId) {
     // ログインしていない場合は null を返す (またはエラーを投げる)
     console.warn("getRankingListForEdit: User not authenticated.");
@@ -188,7 +188,7 @@ export async function saveRankingListItemsAction(
   targetStatus: ListStatus        // 保存後のステータス ('DRAFT' or 'PUBLISHED')
 ): Promise<SaveActionState> {     // 戻り値の型
 
-  const { userId: clerkId } = auth();
+  const { userId: clerkId } = await auth();
   if (!clerkId) {
     return { success: false, error: "ログインしてください。" };
   }
@@ -288,10 +288,10 @@ type DeleteActionState = {
 }
 
 export async function deleteRankingListAction(
-  prevState: DeleteActionState,
-  formData: FormData // フォームから listId を受け取る
-): Promise<DeleteActionState> {
-  const { userId: clerkId } = auth();
+  prevState: DeleteActionState, // prevState を追加
+  formData: FormData
+): Promise<DeleteActionState> { // 戻り値の型
+  const { userId: clerkId } = await auth(); // ★ await を追加 ★
   if (!clerkId) {
     return { success: false, error: "ログインしてください。" };
   }
@@ -301,43 +301,47 @@ export async function deleteRankingListAction(
     return { success: false, error: "リストIDが指定されていません。" };
   }
 
+  // ★ user 変数を try の外で宣言 (redirect で使うため) ★
+  let user: { id: string; username: string | null; } | null = null;
+
   try {
-    // 自分の内部 DB ID を取得
-    const user = await prisma.user.findUnique({ where: { clerkId: clerkId }, select: { id: true, username: true } });
+    // ★ user 変数に結果を代入 ★ (select に username が含まれていることを確認)
+    user = await prisma.user.findUnique({
+        where: { clerkId: clerkId },
+        select: { id: true, username: true } // username が必要
+    });
     if (!user) { throw new Error("データベースにユーザーが見つかりません。"); }
     const userDbId = user.id;
 
-    // ★ リストの所有者であることを確認しつつ削除 ★
-    // deleteMany を使い、where 条件で id と authorId の両方を指定する。
-    // これにより、他人のリストを誤って削除するのを防ぐ。
-    // 削除された件数が result.count に入る。
     const result = await prisma.rankingList.deleteMany({
-      where: {
-        id: listId,
-        authorId: userDbId, // 自分が作成したリストのみを対象
-      },
+      where: { id: listId, authorId: userDbId },
     });
 
-    // 削除された件数が 0 なら、リストが存在しないか権限がない
     if (result.count === 0) {
-      console.warn(`deleteRankingListAction: List ${listId} not found or user ${userDbId} not authorized.`);
       throw new Error("リストが見つからないか、削除権限がありません。");
     }
 
     console.log(`RankingList ${listId} deleted successfully by user ${userDbId}`);
 
-    // キャッシュ再検証
-    revalidatePath(`/profile/${user.username}`); // 自分のプロフィールを再検証
-    revalidatePath('/'); // ホームも影響する可能性
+    // キャッシュ再検証 (try ブロックの中でOK)
+    if (user.username) {
+        revalidatePath(`/profile/${user.username}`);
+    }
+    revalidatePath('/');
 
   } catch (error) {
     console.error(`Error deleting ranking list ${listId}:`, error);
     const errorMessage = error instanceof Error ? error.message : "リストの削除中に予期せぬエラーが発生しました。";
-    // ★ エラー時はメッセージを返す（リダイレクトはしない）★
-    return { success: false, error: errorMessage };
+    return { success: false, error: errorMessage }; // ★ エラー時はエラー状態を返す ★
   }
 
-  // ★ 削除成功時はプロフィールページにリダイレクト ★
-  redirect(`/profile/${auth().userId}`); // Clerk ID がそのまま username になっている場合はこれでも良いが、user.username を使う方が確実
-  // redirect(`/profile/${user?.username}`); // ユーザー名を使う場合
+  // ★ 削除成功時は try ブロックの外（エラーがなければここまで到達）でリダイレクト ★
+  if (user?.username) {
+    redirect(`/profile/${user.username}`); // ★ 取得済みの user.username を使う ★
+  } else {
+    // username が不明な場合のフォールバック (通常は起こらないはず)
+    console.warn(`Username not found for redirect after deleting list ${listId}. Redirecting to home.`);
+    redirect('/');
+  }
+  // redirect はエラーを投げるので、この後の return は不要
 }

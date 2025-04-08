@@ -14,7 +14,7 @@ type LikeActionResult = {
 export const likeAction = async (
   formData: FormData
 ): Promise<LikeActionResult> => {
-  const { userId: clerkId } = auth();
+  const { userId: clerkId } =await auth();
   if (!clerkId) {
     return { success: false, error: "ログインしてください。" };
   }

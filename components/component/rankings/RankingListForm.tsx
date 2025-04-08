@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { useFormState } from "react-dom";
+import { useActionState } from "react";
 import { Sentiment } from "@prisma/client"; // Prisma Client から Enum をインポート
 import { createRankingListAction } from "@/lib/actions/rankingActions"; // Server Action をインポート (パスは適宜調整)
 import { Label } from "@/components/ui/label";
@@ -30,8 +30,7 @@ const initialState: FormState = {
 };
 
 export function RankingListForm() {
-  // useFormState フックを使用
-  const [state, formAction] = useFormState(createRankingListAction, initialState);
+  const [state, formAction] = useActionState(createRankingListAction, initialState);
   const formRef = useRef<HTMLFormElement>(null); // フォームリセット用
   const router = useRouter(); // ルーターを使用してページ遷移
 

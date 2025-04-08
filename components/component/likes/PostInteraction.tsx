@@ -11,7 +11,6 @@ import { HeartIcon, MessageCircleIcon, Share2Icon } from "../Icons";
 import { Button } from "@/components/ui/button";
 import { likeAction } from "@/lib/actions/likeActions";
 import { useAuth } from "@clerk/nextjs";
-import { useFormState } from "react-dom";
 
 interface LikeState {
   count: number;
@@ -48,8 +47,6 @@ const PostInteraction = ({
   //   likes,
   //   error: undefined,
   // };
-
-  // const [state, formAction] = useFormState(likeAction, initialState);
 
   const [optimisticLike, addOptimisticLike] = useOptimistic<LikeState, void>(
     initialState,

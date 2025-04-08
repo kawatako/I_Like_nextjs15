@@ -191,7 +191,7 @@ Zod などでバリデーションを追加。
 components/component/ranking/ (新規作成) フォルダなどが適切か。
 "use client" コンポーネント。
 sentiment 用の選択肢（ラジオボタン等）と subject 用のテキスト入力。
-useFormState (React) と createRankingListAction を連携させる。
+useActionState (React) と createRankingListAction を連携させる。
 送信ボタンには SubmitButton.tsx を利用。
 リスト作成フォームを表示するためのページ（例: app/rankings/create/page.tsx）またはモーダルを作成。
 影響ファイル: lib/actions/rankingActions.ts (新規 or 修正), components/component/ranking/RankingListForm.tsx (新規), app/rankings/create/page.tsx (新規 or 代替UI)

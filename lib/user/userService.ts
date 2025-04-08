@@ -19,8 +19,10 @@ export async function getCurrentLoginUserData(
         clerkId: true, // Clerk ID
         username: true,
         image: true,
-        name: true, // 必要に応じて name や bio も取得
+        name: true,
         bio: true,
+        coverImageUrl: true,
+        socialLinks: true,
       },
     });
     console.log(
@@ -44,62 +46,41 @@ export async function getUserProfileData(username: string) {
   console.log(`userService: Fetching profile data for username: ${username}`);
   try {
     const userWithLists = await prisma.user.findUnique({
-      where: {
-        username: username, // URL から渡された username でユーザーを検索
-      },
-      // ユーザー情報と、公開済みのランキングリストを取得
+      where: { username: username },
       include: {
-        // ランキングリストを取得
         rankingLists: {
-          where: {
-            status: ListStatus.PUBLISHED, // 公開済みのリストのみ
-          },
-          // ★ リスト一覧表示に必要な情報を select ★
+          where: { status: ListStatus.PUBLISHED },
+          // ★★★ ここの select 句を修正・確認 ★★★
           select: {
-            id: true, // 詳細ページへのリンク用
-            sentiment: true, // 「好き/嫌い」表示用
-            subject: true, // タイトル表示用
-            // listImageUrl: true, // ← 一覧には不要ならコメントアウトしてもOK
-            createdAt: true, // 並び替え用
-            // ★ アイテムは id, itemName, rank のみ取得 ★
-            items: {
-              select: {
-                id: true,
-                itemName: true,
-                rank: true,
-              },
-              orderBy: {
-                rank: "asc", // ランク順で取得
-              },
-              // take: 3, // 例: プロフィールでは上位3件だけ表示する場合など
+            id: true,
+            sentiment: true,
+            subject: true,
+            listImageUrl: true, // ★ 必要 ★
+            status: true,       // ★ 必要 ★
+            _count: {           // ★ 必要 ★
+              select: { items: true }
             },
+            createdAt: true,
+            items: {            // ★ 必要 ★
+              select: { id: true, itemName: true, rank: true },
+              orderBy: { rank: 'asc' },
+              // take: 3, // 必要なら件数制限
+            }
           },
-          orderBy: {
-            createdAt: "desc", // リスト自体の表示順
-          },
+          // ★★★ --------------------- ★★★
+          orderBy: { createdAt: 'desc' },
         },
-        // 必要であればフォロワー数などもカウントする
-        // _count: {
-        //   select: { followedBy: true, following: true }
-        // }
+        // ...
       },
     });
+    // ...
+    // ★ getUserProfileData の戻り値の型も RankingListForProfile を使うように合わせる ★
+    // 例: return userWithLists as (User & { rankingLists: RankingListForProfile[] }) | null;
+    // または Prisma の型生成をうまく使う
+    return userWithLists; // Prisma の推論に任せる場合
 
-    if (!userWithLists) {
-      console.log(`userService: User not found for username: ${username}`);
-      return null; // ユーザーが見つからなければ null
-    }
-
-    console.log(
-      `userService: Found profile data for ${username}, ${userWithLists.rankingLists.length} published lists.`
-    );
-    return userWithLists; // ユーザー情報と公開済みリスト配列を含むオブジェクトを返す
   } catch (error) {
-    console.error(
-      `userService: Error fetching profile data for ${username}:`,
-      error
-    );
-    return null; // エラー時も null を返す
+    return null;
   }
 }
 
