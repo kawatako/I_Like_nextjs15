@@ -10,6 +10,8 @@ import { Button } from "@/components/ui/button";
 import { saveRankingListItemsAction } from "@/lib/actions/rankingActions";
 import { useToast } from "@/components/hooks/use-toast";
 import { PlusIcon, TrashIcon, GripVertical } from "lucide-react";
+import { deleteRankingListAction } from "@/lib/actions/rankingActions"; 
+import { useFormState } from "react-dom"; // useFormState をインポート
 
 // dnd-kit のインポート
 import {
@@ -122,7 +124,17 @@ export function RankingListEditView({ rankingList }: RankingListEditViewProps) {
   }
 
   const sentimentLabel = rankingList.sentiment === Sentiment.LIKE ? "好きな" : "嫌いな";
-  const sentimentTextColor = "text-foreground"; // 色分けをやめて基本文字色に
+
+  // 削除ボタンの処理
+  const [deleteState, deleteFormAction] = useFormState(deleteRankingListAction, { success: false });
+  
+    // 削除ボタンが押されたときの処理（確認ダイアログ）
+    const handleDeleteConfirm = (event: React.FormEvent<HTMLFormElement>) => {
+      if (!window.confirm(`ランキング「${subject}」を本当に削除しますか？この操作は元に戻せません。`)) {
+        event.preventDefault(); // フォーム送信をキャンセル
+      }
+      // 確認が OK ならフォームが送信される (action={deleteFormAction})
+    };
 
   return (
     // DndContext でラップ
@@ -132,12 +144,12 @@ export function RankingListEditView({ rankingList }: RankingListEditViewProps) {
         <Card>
           <CardHeader>
             <div className="flex items-baseline gap-2 mb-2">
-              <span className={`text-xl font-semibold ${sentimentTextColor}`}> {/* 統一スタイル */}
+              <span className={"text-xl font-semibold text-foreground"}>
                 {sentimentLabel}
               </span>
               <Input
                 value={subject} onChange={(e) => setSubject(e.target.value)} placeholder="ランキングのテーマ"
-                className={`text-xl font-semibold flex-1 border-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:ring-transparent shadow-none p-0 h-auto ${sentimentTextColor}`}
+                className={"text-xl font-semibold flex-1 border-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:ring-transparent shadow-none p-0 h-auto text-foreground"}
                 maxLength={50}
               />
             </div>
@@ -148,7 +160,6 @@ export function RankingListEditView({ rankingList }: RankingListEditViewProps) {
         {/* --- アイテム一覧 & 編集 --- */}
         {/* ★★★ Card自体にスクロールと高さ制限を適用 ★★★ */}
         <Card className="max-h-[60vh] overflow-y-auto pr-3"> {/* 高さを 60vh に変更（調整可） */}
-          {/* <CardHeader>  ← ユーザーの意向により削除 </CardHeader> */}
           <CardContent className="pt-6 space-y-3"> {/* Headerがない分、少しpadding-topを追加 */}
             {editableItems.length === 0 && (
                <p className="text-muted-foreground px-3">下の「+」ボタンでアイテムを追加してください。</p>
@@ -180,13 +191,30 @@ export function RankingListEditView({ rankingList }: RankingListEditViewProps) {
           </CardContent>
         </Card>
 
-        {/* --- 保存ボタン --- */}
-        <div className="flex justify-end space-x-2 pt-4 border-t">
-           <Button variant="outline" onClick={() => handleSave(ListStatus.DRAFT)} disabled={isSaving}>{isSaving ? '保存中...' : '下書き保存'}</Button>
-           <Button onClick={() => handleSave(ListStatus.PUBLISHED)} disabled={isSaving}>{isSaving ? '保存中...' : '公開して保存'}</Button>
-        </div>
+      {/* --- 保存ボタン & 削除ボタン --- */}
+      {/* ↓ justify-between を削除し、右寄せにする (例: justify-end) */}
+      <div className="flex justify-end items-center space-x-2 pt-4 border-t">
+          {/* 削除ボタン (フォームでラップ) - order-last などで右端にすることも可能 */}
+          <form action={deleteFormAction} onSubmit={handleDeleteConfirm}>
+              <input type="hidden" name="listId" value={rankingList.id} />
+              <Button type="submit" variant="destructive" disabled={isSaving}>
+                  リストを削除
+              </Button>
+              {/* 削除エラー表示 */}
+              {deleteState?.error && (
+                  <p className="text-sm text-red-500 mt-1">{deleteState.error}</p>
+              )}
+          </form>
+
+          {/* 保存ボタン群 (順番はそのまま) */}
+          <Button variant="outline" onClick={() => handleSave(ListStatus.DRAFT)} disabled={isSaving}>
+             {isSaving ? '保存中...' : '下書き保存'}
+          </Button>
+          <Button onClick={() => handleSave(ListStatus.PUBLISHED)} disabled={isSaving}>
+             {isSaving ? '保存中...' : '公開して保存'}
+          </Button>
       </div>
-      {/* Toast コンポーネント表示のために layout.tsx に <Toaster /> が必要 */}
+      </div>
     </DndContext>
   );
 }
@@ -224,3 +252,4 @@ function SortableRankedItem({ item, index, handleItemChange, handleDeleteItem, i
     </li>
   );
 }
+

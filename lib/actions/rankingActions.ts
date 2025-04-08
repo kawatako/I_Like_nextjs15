@@ -6,6 +6,7 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { Sentiment, Prisma, ListStatus } from "@prisma/client";
 import type { ActionState } from "./types"; // 共通の型をインポート
+import { redirect } from 'next/navigation'; // redirect をインポート
 
 // ランキングリストのテーマ(subject)に対する Zod スキーマ
 const subjectAllowedCharsRegex =
@@ -278,4 +279,65 @@ export async function saveRankingListItemsAction(
       return { success: false, error: "リストの保存中に予期せぬエラーが発生しました。" };
     }
   }
+}
+
+// 削除アクション用の State 型 (エラーメッセージのみ返す例)
+type DeleteActionState = {
+  error?: string;
+  success: boolean;
+}
+
+export async function deleteRankingListAction(
+  prevState: DeleteActionState,
+  formData: FormData // フォームから listId を受け取る
+): Promise<DeleteActionState> {
+  const { userId: clerkId } = auth();
+  if (!clerkId) {
+    return { success: false, error: "ログインしてください。" };
+  }
+
+  const listId = formData.get("listId") as string;
+  if (!listId) {
+    return { success: false, error: "リストIDが指定されていません。" };
+  }
+
+  try {
+    // 自分の内部 DB ID を取得
+    const user = await prisma.user.findUnique({ where: { clerkId: clerkId }, select: { id: true, username: true } });
+    if (!user) { throw new Error("データベースにユーザーが見つかりません。"); }
+    const userDbId = user.id;
+
+    // ★ リストの所有者であることを確認しつつ削除 ★
+    // deleteMany を使い、where 条件で id と authorId の両方を指定する。
+    // これにより、他人のリストを誤って削除するのを防ぐ。
+    // 削除された件数が result.count に入る。
+    const result = await prisma.rankingList.deleteMany({
+      where: {
+        id: listId,
+        authorId: userDbId, // 自分が作成したリストのみを対象
+      },
+    });
+
+    // 削除された件数が 0 なら、リストが存在しないか権限がない
+    if (result.count === 0) {
+      console.warn(`deleteRankingListAction: List ${listId} not found or user ${userDbId} not authorized.`);
+      throw new Error("リストが見つからないか、削除権限がありません。");
+    }
+
+    console.log(`RankingList ${listId} deleted successfully by user ${userDbId}`);
+
+    // キャッシュ再検証
+    revalidatePath(`/profile/${user.username}`); // 自分のプロフィールを再検証
+    revalidatePath('/'); // ホームも影響する可能性
+
+  } catch (error) {
+    console.error(`Error deleting ranking list ${listId}:`, error);
+    const errorMessage = error instanceof Error ? error.message : "リストの削除中に予期せぬエラーが発生しました。";
+    // ★ エラー時はメッセージを返す（リダイレクトはしない）★
+    return { success: false, error: errorMessage };
+  }
+
+  // ★ 削除成功時はプロフィールページにリダイレクト ★
+  redirect(`/profile/${auth().userId}`); // Clerk ID がそのまま username になっている場合はこれでも良いが、user.username を使う方が確実
+  // redirect(`/profile/${user?.username}`); // ユーザー名を使う場合
 }
