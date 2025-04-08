@@ -42,29 +42,29 @@ export function EditCustomProfileForm({ userData }: EditCustomProfileFormProps) 
   }, [state.success, toast]);
 
   return (
-    <form ref={formRef} action={formAction} className="space-y-4">
+    <form ref={formRef} action={formAction} className="space-y-4 max-w-full">
       {/* 表示名 */}
       <div>
-        <Label htmlFor="name">表示名</Label>
+        <Label htmlFor="name">Name</Label>
         <Input id="name" name="name" type="text" defaultValue={userData.name ?? ""} maxLength={50} />
       </div>
 
       {/* 自己紹介 */}
       <div>
-        <Label htmlFor="bio">自己紹介</Label>
+        <Label htmlFor="bio">Bio</Label>
         <Textarea id="bio" name="bio" defaultValue={userData.bio ?? ""} rows={3} maxLength={160} />
       </div>
 
       {/* カバー画像URL (今はURL入力、将来的にはファイルアップロードに変更) */}
       <div>
-        <Label htmlFor="coverImageUrl">カバー画像 URL (任意)</Label>
+        <Label htmlFor="coverImageUrl">カバー画像 URL</Label>
         <Input id="coverImageUrl" name="coverImageUrl" type="url" defaultValue={userData.coverImageUrl ?? ""} placeholder="https://..." />
         {/* TODO: ファイルアップロードUIに置き換え */}
       </div>
 
       {/* SNSリンク */}
       <div className="space-y-2">
-         <Label>SNSリンク (任意)</Label>
+         <Label>SNS link</Label>
          <Input name="xUrl" type="url" defaultValue={socialLinks.twitter ?? ""} placeholder="x URL (https://x.com/...)" />
          <Input name="instagramUrl" type="url" defaultValue={socialLinks.github ?? ""} placeholder="instagram URL (https://instagram.com/...)" />
          <Input name="websiteUrl" type="url" defaultValue={socialLinks.website ?? ""} placeholder="Webサイト URL" />

@@ -1,55 +1,71 @@
+// app/settings/profile/[[...rest]]/page.tsx
 import { auth } from "@clerk/nextjs/server";
 import { UserProfile } from "@clerk/nextjs";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
-// ★ ユーザーデータを取得する関数とカスタムフォームをインポート ★
 import { getCurrentLoginUserData } from "@/lib/user/userService";
 import { EditCustomProfileForm } from "@/components/component/profile/EditCustomProfileForm";
-import { redirect } from "next/navigation"; // redirect をインポート
+import { redirect } from "next/navigation";
 
 export default async function UserProfileSettingsPage() {
-  // ★ 現在のログインユーザーデータを取得 ★
   const { userId } = await auth();
   if (!userId) {
-     // 通常 middleware で保護されるが念のため
      redirect('/sign-in');
   }
-  // userService を使って DB から詳細データを取得
   const currentUserData = await getCurrentLoginUserData(userId);
 
-  // DB にユーザーデータがまだない場合（同期遅延など）はエラー表示かローディング表示を検討
   if (!currentUserData) {
-      // ここでは仮にエラーメッセージを表示
-      return <p>ユーザーデータの読み込みに失敗しました。少し時間をおいて再読み込みしてください。</p>;
+      // エラーハンドリングまたはローディング表示
+      return (
+          <div className="container mx-auto max-w-2xl py-8 px-4">
+              <p>ユーザーデータの読み込みに失敗しました。少し時間をおいて再読み込みしてください。</p>
+          </div>
+      );
   }
 
   return (
-    <div className="container mx-auto max-w-2xl py-8 px-4">
-      <h1 className="text-3xl font-bold mb-6">プロフィール設定</h1>
-
-      {/* Clerk が管理する情報の編集エリア */}
-      <Card className="mb-8">
+    <div className="container mx-auto max-w-4xl py-8 px-4">
+      <Card> {/* 親カード */}
         <CardHeader>
-           <CardTitle className="text-xl">アカウント情報</CardTitle>
-           <CardDescription>ユーザー名、メール、パスワード、アバター画像などを変更できます。</CardDescription>
+          <CardTitle className="text-2xl font-bold">プロフィール設定</CardTitle>
         </CardHeader>
-        <CardContent>
-          <UserProfile path="/settings/profile" routing="path" />
+        <CardContent className="space-y-8">
+
+          {/* --- カスタムプロフィール情報セクション --- */}
+          <section>
+            <h2 className="text-xl font-semibold mb-4">カスタムプロフィール情報</h2>
+            {/* EditCustomProfileForm の幅は別途 max-w-[...] で調整が必要 */}
+            <EditCustomProfileForm userData={currentUserData} />
+          </section>
+
+          <hr />
+
+          {/* --- アカウント情報セクション (Clerk) --- */}
+          <section>
+            <h2 className="text-xl font-semibold mb-4">アカウント情報</h2>
+            {/* ↓↓↓ appearance.elements.card に Card 風のスタイルを適用 ↓↓↓ */}
+            <UserProfile
+              path="/settings/profile"
+              routing="path"
+              appearance={{
+                elements: {
+                  // UserProfile 自体を囲む要素に Card と同様のスタイルを適用
+                  // 注意: これが意図通りに機能するか、テーマの色が適用されるかは試す必要あり
+                  // また、パディング (p-6) も適用してみる
+                  card: 'border bg-card text-card-foreground rounded-lg shadow-sm p-6 w-full',
+
+                  // 元の提案にあったリセット用スタイル (上記と競合する場合は調整)
+                  // card: 'shadow-none border-none p-0 bg-transparent',
+
+                  // 必要であれば他の内部要素も調整
+                  // formButtonPrimary: 'bg-primary text-primary-foreground', // 例: ボタンの色をテーマに合わせる
+                }
+              }}
+            />
+            {/* ↑↑↑ appearance プロパティここまで ↑↑↑ */}
+          </section>
+
         </CardContent>
       </Card>
-
-      {/* --- ★ カスタムプロフィール情報編集フォームを追加 ★ --- */}
-      <Card>
-         <CardHeader>
-             <CardTitle className="text-xl">カスタムプロフィール情報</CardTitle>
-             <CardDescription>表示名、自己紹介、カバー画像URL、SNSリンクなどを編集できます。</CardDescription>
-         </CardHeader>
-         <CardContent>
-            {/* 取得したユーザーデータを渡してフォームを表示 */}
-            <EditCustomProfileForm userData={currentUserData} />
-         </CardContent>
-      </Card>
-      {/* --- カスタムフォームここまで --- */}
-
     </div>
   );
 }
