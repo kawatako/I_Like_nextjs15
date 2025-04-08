@@ -1,6 +1,6 @@
+// components/posts/PostForm.tsx
 "use client";
 
-// components/PostForm.tsx
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { addPostAction } from "@/lib/actions/postActions";
