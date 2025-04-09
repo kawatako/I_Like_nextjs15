@@ -19,7 +19,7 @@ export function BottomNavbar() {
   // ナビゲーションアイテムを定義
   const navItems = [
     { href: "/", icon: HomeIcon, label: "Home" },
-    { href: "/explore", icon: SearchIcon, label: "Explore" }, // パスは仮
+    { href: "/trends", icon: SearchIcon, label: "trends" }, // パスは仮
     { href: "/likes", icon: HeartIcon, label: "Likes" },       // パスは仮
     { href: "/notifications", icon: BellIcon, label: "Notifications" }, // パスは仮
     { href: profileHref, icon: UserIcon, label: "Profile", isProfile: true }, // プロフィール用に目印

@@ -28,7 +28,7 @@ interface LeftSidebarProps {
 // --- ↓↓↓ navItems 配列を更新 ↓↓↓ ---
 const navItems = [
   { icon: HomeIcon, label: "Home", href: "/" },
-  { icon: SearchIcon, label: "Trends", href: "/explore" }, // Use SearchIcon
+  { icon: SearchIcon, label: "Trends", href: "/trends" }, // Use SearchIcon
   { icon: HeartIcon, label: "Likes", href: "/likes" },
   { icon: BellIcon, label: "Notifications", href: "/notifications" }, // Added
   { icon: PlusIcon, label: "Create Post", href: "/posts/new" }, // Added
