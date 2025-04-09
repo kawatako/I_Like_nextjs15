@@ -3,7 +3,9 @@
 import { notFound } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
 // 関連するデータ取得関数と型をインポート
-import { getUserProfileData, getDraftRankingLists, type RankingListForProfile } from "@/lib/user/userService";
+import { getUserProfileData} from "@/lib/data/userQueries";
+import { getDraftRankingLists} from "@/lib/data/rankingQueries"; // rankingQueries から RankingListForProfile 
+import type { RankingSnippetForProfile } from "@/lib/data/userQueries"; // rankingQueries から RankingListForProfile をインポート
 import { getLikedPosts, type PostWithAuthor } from "@/lib/like/likeService"; // likeService から PostWithAuthor をインポート
 import { fetchPosts } from "@/lib/post/postService"; // fetchPosts からも PostWithAuthor を返す想定
 // UI コンポーネントをインポート
@@ -53,7 +55,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
   }
 
   // 下書きのランキングリストを取得 (自分自身の場合のみ)
-  let draftLists: RankingListForProfile[] = [];
+  let draftLists: RankingSnippetForProfile[] = [];
   if (isCurrentUser) {
     draftLists = await getDraftRankingLists(userDbId);
   }

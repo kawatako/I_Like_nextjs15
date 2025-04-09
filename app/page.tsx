@@ -1,7 +1,7 @@
 import LeftSidebar from "@/components/component/layouts/LeftSidebar";
 import MainContent from "@/components/component/layouts/MainContent";
 import RightSidebar from "@/components/component/layouts/RightSidebar";
-import { getCurrentLoginUserData } from "@/lib/user/userService";
+import { getCurrentLoginUserData } from "@/lib/data/userQueries"; // ユーザーデータ取得関数をインポート
 import { auth } from "@clerk/nextjs/server";
 import { notFound, redirect } from "next/navigation";
 

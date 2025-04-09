@@ -3,9 +3,6 @@ import { ListStatus, Prisma, Sentiment } from "@prisma/client";
 import prisma from "../client"; // Prisma Client のインポートパスを確認・修正
 import { auth } from '@clerk/nextjs/server'; 
 
-
-
-
 //公開されている最新のランキングリストを取得します (タイトルとIDのみ)。param limit 取得する最大件数 (デフォルト: 30)returns ランキングリストの配列 (id, subject)
 export async function getNewestPublishedRankings(limit: number = 30): Promise<{ id: string, subject: string, sentiment: Sentiment }[]> {
   console.log(`[TrendsAction/New] Fetching newest ${limit} published rankings...`);

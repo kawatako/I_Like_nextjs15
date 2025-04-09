@@ -5,12 +5,11 @@ import prisma from "../client";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import type { ActionState } from "./types"; // 共通の型をインポート
-import { Prisma } from "@prisma/client";
 
 // バリデーションスキーマ
 const nameSchema = z.string().max(50, "表示名は50字以内です。").optional();
 const bioSchema = z.string().max(160, "自己紹介は160字以内です。").optional();
-const urlSchema = z.string().url("有効なURLを入力してください。").optional().or(z.literal('')); // URL or 空文字
+const urlSchema = z.string().url("有効なURLを入力してください。").optional().or(z.literal(''));
 
 // プロフィール詳細更新アクション
 export async function updateUserProfileDetailsAction(
