@@ -32,7 +32,7 @@ const navItems = [
   { icon: HeartIcon, label: "Likes", href: "/likes" },
   { icon: BellIcon, label: "Notifications", href: "/notifications" }, // Added
   { icon: PlusIcon, label: "Create Post", href: "/posts/new" }, // Added
-  { icon: CrownIcon, label: "Create Ranking", href: "/rankings/new" }, // Added
+  { icon: CrownIcon, label: "Create Ranking", href: "/rankings/create" }, // Added
   {
     icon: UserIcon,
     label: "Profile",

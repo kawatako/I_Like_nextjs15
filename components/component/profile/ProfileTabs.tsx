@@ -5,14 +5,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from "next/link";
 import { ProfileRankingLists } from "@/components/component/rankings/ProfileRankingLists";
 import PostList from "@/components/component/posts/PostList";
-import type { RankingListForProfile } from "@/lib/user/userService"; // 型をインポート (パス注意)
+import type { RankingSnippetForProfile } from "@/lib/data/userQueries"; // 型をインポート (パス注意)
 import type { PostWithData } from "@/lib/post/postService"; // 型をインポート (パス注意)
 
 interface ProfileTabsProps {
   userId: string;
   username: string;
-  publishedLists: RankingListForProfile[];
-  draftLists: RankingListForProfile[]; // 下書きリストも受け取る
+  publishedLists: RankingSnippetForProfile[];
+  draftLists: RankingSnippetForProfile[]; // 下書きリストも受け取る
   userPosts: PostWithData[];
   likedPosts: PostWithData[];
   isCurrentUser: boolean;

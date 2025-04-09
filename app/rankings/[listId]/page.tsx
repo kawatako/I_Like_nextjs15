@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Button } from '@/components/ui/button'; // shadcn/ui の Button を想定
 // ★ 新しく作成する関数: 公開されたランキング詳細を取得 (creatorId も含む)
-import { getRankingDetailsForView } from '@/lib/actions/rankingActions';
+import { getRankingDetailsForView } from '@/lib/data/rankingQueries';
 // ★ 新しく作成するコンポーネント: 閲覧用の表示コンポーネント
 import { RankingListView } from '@/components/component/rankings/RankingListView';
 

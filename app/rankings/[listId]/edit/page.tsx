@@ -1,5 +1,5 @@
 import { RankingListEditView } from "@/components/component/rankings/RankingListEditView";
-import { getRankingListForEdit } from "@/lib/actions/rankingActions";
+import { getRankingListForEdit } from "@/lib/data/rankingQueries"; // データ取得関数をインポート
 import { notFound } from "next/navigation";
 // ★ ↓表示・編集用UIコンポーネント (これは次に作成します)
 // import { RankingListEditView } from "@/components/component/rankings/RankingListEditView";

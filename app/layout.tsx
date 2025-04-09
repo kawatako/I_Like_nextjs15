@@ -25,16 +25,7 @@ export default function RootLayout({
         {/* bodyにflex flex-col h-full を適用 */}
         <body className={`${inter.className} flex flex-col h-full`}>
           <Header />
-          {/* ★ main に padding-bottom を追加 (モバイルのみ) ★ */}
-          {/* BottomNavbar の高さが h-16 (4rem) なので、pb-16 を指定 */}
-          {/* md:pb-0 で中画面以上では padding-bottom を 0 に戻す */}
           <main className="flex-1 overflow-y-auto pb-16 md:pb-0">
-            {/*
-              ↑ md:overflow-hidden は削除または調整が必要かもしれません。
-                 コンテンツが少ない場合に main が縮んでしまうのを防ぐ目的でしたが、
-                 flex-1 と overflow-y-auto でスクロールは制御されるはずです。
-                 いったん overflow-y-auto のみにして様子を見るのが良いでしょう。
-            */}
             {children}
           </main>
           {/* ★ Toaster の前に BottomNavbar を配置 ★ */}
