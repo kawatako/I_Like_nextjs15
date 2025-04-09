@@ -1,6 +1,49 @@
 // components/Icons.tsx
 import { SVGProps } from "react";
 
+export function PlusIcon(props: React.SVGProps<SVGSVGElement>) {
+  // ★★★ ここに「プラス」アイコンのSVGコードを挿入 ★★★
+  // 例: (シンプルなプラス)
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props} // props を渡して className などを受け取れるようにする
+    >
+      <line x1="12" y1="5" x2="12" y2="19"></line>
+      <line x1="5" y1="12" x2="19" y2="12"></line>
+    </svg>
+  );
+}
+
+export function CrownIcon(props: React.SVGProps<SVGSVGElement>) {
+  // ★★★ ここに「王冠」アイコンのSVGコードを挿入 ★★★
+  // 例: (シンプルな王冠)
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props} // props を渡す
+    >
+      <path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/>
+    </svg>
+  );
+}
+
 export function BellIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
