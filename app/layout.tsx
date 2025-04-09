@@ -4,6 +4,8 @@ import "./globals.css";
 import Header from "@/components/component/layouts/Header";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "@/components/ui/toaster";
+import { BottomNavbar } from "@/components/component/layouts/BottomNavbar";
+import { FloatingActionButtons } from "@/components/component/layouts/FloatingActionButtons";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,10 +22,25 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="ja" className="h-full">
+        {/* bodyにflex flex-col h-full を適用 */}
         <body className={`${inter.className} flex flex-col h-full`}>
           <Header />
-          <main className="flex-1 md:overflow-hidden">{children}</main>
-          <Toaster /> 
+          {/* ★ main に padding-bottom を追加 (モバイルのみ) ★ */}
+          {/* BottomNavbar の高さが h-16 (4rem) なので、pb-16 を指定 */}
+          {/* md:pb-0 で中画面以上では padding-bottom を 0 に戻す */}
+          <main className="flex-1 overflow-y-auto pb-16 md:pb-0">
+            {/*
+              ↑ md:overflow-hidden は削除または調整が必要かもしれません。
+                 コンテンツが少ない場合に main が縮んでしまうのを防ぐ目的でしたが、
+                 flex-1 と overflow-y-auto でスクロールは制御されるはずです。
+                 いったん overflow-y-auto のみにして様子を見るのが良いでしょう。
+            */}
+            {children}
+          </main>
+          {/* ★ Toaster の前に BottomNavbar を配置 ★ */}
+          <FloatingActionButtons />
+          <BottomNavbar />
+          <Toaster />
         </body>
       </html>
     </ClerkProvider>

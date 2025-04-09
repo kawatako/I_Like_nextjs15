@@ -1,8 +1,6 @@
 import PostForm from "../posts/PostForm";
 import PostList from "../posts/PostList";
 
-//https://github.com/safak/next-social/blob/completed/src
-
 interface UserData {
   id: string;
   username: string | null;

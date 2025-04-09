@@ -1,4 +1,4 @@
-// components/RightSidebar.tsx
+// components/RightSidebar.tsx　一旦使わない予定
 import Link from "next/link";
 
 export default function RightSidebar() {

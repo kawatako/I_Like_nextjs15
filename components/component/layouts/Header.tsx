@@ -15,21 +15,21 @@ export default function Header() {
         <span className="text-lg font-bold text-primary">I Like</span>
       </Link>
       <div className="flex items-center gap-4">
-        <div className="relative w-full max-w-md">
+        {/* <div className="relative w-full max-w-md">
           <Input
             type="text"
             placeholder="Search..."
             className="pr-10 rounded-full"
           />
           <SearchIcon className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-        </div>
+        </div> */}
         <div className="flex items-center gap-4">
-          <Link href="#" className="relative" prefetch={false}>
+          {/* <Link href="#" className="relative" prefetch={false}>
             <BellIcon className="h-6 w-6 text-muted-foreground" />
           </Link>
           <Link href="#" className="relative" prefetch={false}>
             <MailIcon className="h-6 w-6 text-muted-foreground" />
-          </Link>
+          </Link> */}
 
           <div>
             <ClerkLoading>

@@ -240,3 +240,10 @@ RankingListForm.tsx (フェーズ2で作成) を修正。
 影響ファイル: lib/actions/rankingActions.ts (修正), components/component/ranking/RankingListForm.tsx (修正)
 DBモデル: Post, RankingList
 サジェスト機能、みんなのランキング、トレンド機能は、これらのコア機能ができた後の次のステップとして実装していく形になります。
+
+# ランキング機能
+・画像付き投稿
+・タイトルとアイテムへのサジェスト機能
+
+# みんなのtrend機能の実装
+タブ項目
