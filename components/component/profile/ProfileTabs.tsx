@@ -51,7 +51,7 @@ export function ProfileTabs({
       },
       {
         value: "drafts",
-        label: "下書き",
+        label: "Drafts",
         count: draftLists.length,
         content: (
           <ProfileRankingLists
