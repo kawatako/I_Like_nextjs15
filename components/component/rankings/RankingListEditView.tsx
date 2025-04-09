@@ -12,6 +12,7 @@ import { useToast } from "@/components/hooks/use-toast";
 import { PlusIcon, TrashIcon, GripVertical } from "lucide-react";
 import { deleteRankingListAction } from "@/lib/actions/rankingActions"; 
 import { useActionState } from "react";
+import { useRouter } from 'next/navigation';
 
 // dnd-kit のインポート
 import {
@@ -51,6 +52,7 @@ interface RankingListEditViewProps {
 }
 
 export function RankingListEditView({ rankingList }: RankingListEditViewProps) {
+  const router = useRouter();
   const { toast } = useToast();
   const [isSaving, setIsSaving] = useState(false);
   const [subject, setSubject] = useState(rankingList.subject);
@@ -101,7 +103,9 @@ export function RankingListEditView({ rankingList }: RankingListEditViewProps) {
     const itemsDataForSave = editableItems.map(({ clientId, id, ...rest }) => rest);
     const result = await saveRankingListItemsAction( rankingList.id, itemsDataForSave, subject, description, status );
     setIsSaving(false);
-    if (result.success) { toast({ title: status === ListStatus.DRAFT ? "下書きを保存しました。" : "ランキングを公開しました。" }); }
+    if (result.success) { toast({ title: status === ListStatus.DRAFT ? "下書きを保存しました。" : "ランキングを公開しました。" }); 
+    router.push(`/rankings/${rankingList.id}`);
+  }
     else { toast({ title: "保存に失敗しました", description: result.error, variant: "destructive" }); }
   };
 
