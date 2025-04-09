@@ -302,8 +302,9 @@ const rankingListViewPayload = Prisma.validator<Prisma.RankingListDefaultArgs>()
     }
   },
 });
-export type RankingListViewData = Prisma.RankingListGetPayload<typeof rankingListViewPayload>;
 
+// Prisma の型を使って、RankingList とそのアイテムの型を定義
+export type RankingListViewData = Prisma.RankingListGetPayload<typeof rankingListViewPayload>;
 // 公開されているランキング、または自分がオーナーの下書きランキングの詳細を取得します。
 export async function getRankingDetailsForView(listId: string): Promise<RankingListViewData | null> {
   console.log(`[View] Fetching ranking details for listId: ${listId}`);
