@@ -90,9 +90,7 @@ export default async function TrendsPage() {
                   const prefix = ranking.sentiment === Sentiment.LIKE ? "好きな " : "嫌いな ";
                   const displayTitle = prefix + ranking.subject;
                   const isPublished = ranking.status === ListStatus.PUBLISHED;
-                  // Totalタブへのリンクではなく、個別のランキング詳細ページへのリンク
-                  // const totalTabHref = `/trends?tab=total&subject=${encodeURIComponent(ranking.subject)}`;
-
+                  const totalTabHref = `/trends?tab=total&sentiment=${ranking.sentiment}&subject=${encodeURIComponent(ranking.subject)}`;
                   return (
                     <li key={ranking.id} className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-3 border rounded-md gap-2">
                       <div className="flex-grow mb-2 sm:mb-0">
@@ -105,13 +103,9 @@ export default async function TrendsPage() {
                         </Badge>
                       </div>
                       <div className="flex items-center space-x-3 flex-shrink-0">
-                        <span className="text-xs text-muted-foreground whitespace-nowrap">
-                          集計数: {ranking.aggregationCount}件
-                        </span>
-                        {/* 編集ボタン */}
-                        <Link href={`/rankings/${ranking.id}/edit`} passHref>
-                          <Button size="sm" variant="ghost">編集</Button>
-                        </Link>
+                      <Link href={totalTabHref} className="text-xs text-muted-foreground hover:underline whitespace-nowrap" title={`「${ranking.subject}」の平均ランキングを見る`}>
+                      集計数: {ranking.aggregationCount}件
+                      </Link>
                       </div>
                     </li>
                   );
