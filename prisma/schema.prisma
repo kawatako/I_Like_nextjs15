@@ -19,6 +19,13 @@ enum ListStatus {
   PUBLISHED // 公開済み
 }
 
+// フォローリクエストの状態を示す
+enum FollowRequestStatus {
+  PENDING // 申請中
+  ACCEPTED
+  REJECTED
+}
+
 model User {
   id         String   @id @default(cuid())
   clerkId    String   @unique
@@ -30,12 +37,16 @@ model User {
   socialLinks   Json?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+  isPrivate     Boolean @default(false) // デフォルトは公開 (false)
   posts      Post[]
   likes      Like[]
   replies    Reply[]
   followedBy Follow[] @relation("FollowedBy")
   following  Follow[] @relation("Following")
   rankingLists RankingList[] // User が作成したランキングリスト
+  sentFollowRequests     FollowRequest[] @relation("SentRequests")
+  receivedFollowRequests FollowRequest[] @relation("ReceivedRequests")
+
 }
 
 // ランキングリストを表すモデル
@@ -68,7 +79,7 @@ model RankedItem {
   id              String   @id @default(cuid())
   itemName        String
   rank            Int
-  imageUrl        String?  // ★アイテム画像URL (任意) - これは残す
+  imageUrl        String? 
   itemDescription String?
 
   listId        String
@@ -121,13 +132,31 @@ model Reply {
   @@index([userId])
 }
 
+model FollowRequest {
+  id          String   @id @default(cuid())
+  status      FollowRequestStatus @default(PENDING)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt // リクエスト日時の更新用に updatedAt を追加
+  // リクエストを送った人 (申請者)
+  requesterId String
+  requester   User   @relation("SentRequests", fields: [requesterId], references: [id], onDelete: Cascade)
+  // リクエストを受け取った人 (申請先)
+  requestedId String
+  requested   User   @relation("ReceivedRequests", fields: [requestedId], references: [id], onDelete: Cascade)
+  // 同じユーザー間のリクエストは1つだけ存在できるようにする
+  @@unique([requesterId, requestedId])
+  @@index([requestedId]) // 自分宛のリクエストを効率よく検索するため
+}
+
 model Follow {
+  id          String   @id @default(cuid()) 
   follower    User     @relation("Following", fields: [followerId], references: [id], onDelete: Cascade)
   followerId  String
   following   User     @relation("FollowedBy", fields: [followingId], references: [id], onDelete: Cascade)
   followingId String
   createdAt   DateTime @default(now())
 
-  @@id([followerId, followingId])
+  @@unique([followerId, followingId])
   @@index([followingId])
+  @@index([followerId])
 }

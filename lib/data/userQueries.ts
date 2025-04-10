@@ -67,7 +67,7 @@ export type RankingSnippetForProfile = Prisma.RankingListGetPayload<{ select: ty
 
 // プロフィールページで取得するユーザーデータ全体のペイロード(データの中身)定義
 const userProfilePayload = Prisma.validator<Prisma.UserDefaultArgs>()({
-  select: {
+  select: { // ← select オブジェクト開始
     id: true,
     clerkId: true,
     username: true,
@@ -76,17 +76,22 @@ const userProfilePayload = Prisma.validator<Prisma.UserDefaultArgs>()({
     bio: true,
     coverImageUrl: true,
     socialLinks: true,
-    createdAt: true,
-    rankingLists: {
+    createdAt: true, // ← 最後のスカラーフィールドの後にもカンマが必要
+    rankingLists: { // ← rankingLists オブジェクト開始
       where: { status: ListStatus.PUBLISHED },
       select: profileRankingListSelect,
       orderBy: { createdAt: 'desc' },
+    },
+    _count: {
+      select: {
+        following: true,
+        followedBy: true
+      }
     }
   }
-});
+}); 
 // 上記ペイロードに基づく型定義 (export してページコンポーネントで使用)
 export type UserProfileData = Prisma.UserGetPayload<typeof userProfilePayload>;
-
 
 //指定されたユーザー名の公開プロフィールデータを取得
 export async function getUserProfileData(username: string): Promise<UserProfileData | null> {
@@ -109,6 +114,22 @@ export async function getUserProfileData(username: string): Promise<UserProfileD
 
   } catch (error) {
     console.error(`[UserQueries] Error fetching profile data for username ${username}:`, error);
+    return null;
+  }
+}
+
+// ユーザー名からユーザーの基本情報を取得(follow/unfollow 機能)
+export async function getUserByUsername(username: string): Promise<{ id: string, username: string, name: string | null } | null> {
+  console.log(`[UserQueries] Fetching user by username: ${username}`);
+  if (!username) return null;
+  try {
+    const user = await prisma.user.findUnique({
+      where: { username },
+      select: { id: true, username: true, name: true }, // ページのヘッダー等で使う最低限の情報
+    });
+    return user;
+  } catch (error) {
+    console.error(`[UserQueries] Error fetching user by username ${username}:`, error);
     return null;
   }
 }

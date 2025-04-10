@@ -1,4 +1,4 @@
-"use client"; // ★ クライアントコンポーネントにする
+"use client";
 
 import { useSearchParams } from "next/navigation"; // ★ useSearchParams フックをインポート
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -30,7 +30,6 @@ export function ProfileTabs({
   // --- クライアントサイドで searchParams を取得 ---
   const searchParams = useSearchParams();
   const currentTab = searchParams.get("tab");
-  // -----------------------------------------
 
   // --- タブの定義 (isCurrentUser で分岐) ---
   let tabs = [];
