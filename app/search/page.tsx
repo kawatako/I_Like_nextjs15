@@ -24,7 +24,7 @@ async function SearchResults({ query }: { query: string }) {
     <div>
       {/* 検索キーワードを表示 */}
       <h1 className="text-2xl font-bold mb-6">
-        検索結果: "<span className="text-primary">{query}</span>"
+        検索結果: <span className="text-primary">{query}</span>
       </h1>
 
       {/* 結果表示エリア */}

@@ -2,17 +2,16 @@
 import Link from "next/link";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
-// --- ↓↓↓ アイコンのインポートを更新 ↓↓↓ ---
 import {
   HomeIcon,
-  SearchIcon, // CompassIcon の代わりに SearchIcon
+  SearchIcon,
   HeartIcon,
-  BellIcon,   // BellIcon を追加
-  PlusIcon,   // PlusIcon を追加
-  CrownIcon,  // CrownIcon を追加
+  BellIcon,
+  PlusIcon,
+  CrownIcon,
   UserIcon,
   SettingsIcon,
-  // BookmarkIcon, MessageCircleIcon は削除
+  UsersIcon,
 } from "../Icons"; // アイコンのパスは適宜修正してください
 
 interface UserData {
@@ -28,17 +27,22 @@ interface LeftSidebarProps {
 // --- ↓↓↓ navItems 配列を更新 ↓↓↓ ---
 const navItems = [
   { icon: HomeIcon, label: "Home", href: "/" },
-  { icon: SearchIcon, label: "Trends", href: "/trends" }, // Use SearchIcon
-  { icon: HeartIcon, label: "Likes", href: "/likes" },
-  { icon: BellIcon, label: "Notifications", href: "/notifications" }, // Added
-  { icon: PlusIcon, label: "Create Post", href: "/posts/new" }, // Added
-  { icon: CrownIcon, label: "Create Ranking", href: "/rankings/create" }, // Added
   {
     icon: UserIcon,
     label: "Profile",
     // username が null の場合は /profile になるように調整 (必要なら '/' などに変更)
     href: (username: string | null) => `/profile/${username ?? ''}`,
   },
+  {
+    icon: UsersIcon,
+    label: "Follows",
+    href: (username: string | null) => `/follows/${username ?? ''}`,
+  },
+  { icon: CrownIcon, label: "Create Ranking", href: "/rankings/create" },
+  { icon: SearchIcon, label: "Trends", href: "/trends" },
+  { icon: PlusIcon, label: "Create Post", href: "/posts/new" },
+  { icon: HeartIcon, label: "Likes", href: "/likes" },
+  { icon: BellIcon, label: "Notifications", href: "/notifications" }, 
 ];
 
 export default function LeftSidebar({
