@@ -4,11 +4,7 @@
 import prisma from "@/lib/client"; // Prisma Client のインポートパスを確認・修正
 import { ListStatus, Prisma, Sentiment } from "@prisma/client";
 
-/**
- * Clerk ID を基に、データベース内の対応するユーザーの内部ID (User.id) を取得します。
- * @param clerkId 検索する Clerk ユーザー ID。null や undefined の場合は null を返します。
- * @returns データベースの User.id (文字列)、見つからない場合やエラー時は null。
- */
+//Clerk ID を基に、データベース内の対応するユーザーの内部ID (User.id) を取得
 export async function getUserDbIdByClerkId(clerkId: string | null | undefined): Promise<string | null> {
   if (!clerkId) {
     return null;
@@ -25,12 +21,7 @@ export async function getUserDbIdByClerkId(clerkId: string | null | undefined): 
   }
 }
 
-/**
- * 現在ログインしているユーザーの詳細データを Clerk ID を基に取得します。
- * 主にヘッダーやサイドバーなど、ログインユーザー自身の情報を表示するために使います。
- * @param clerkUserId ログインユーザーの Clerk ID
- * @returns Prisma の User 型に準拠するユーザーデータ、見つからない/エラー時は null
- */
+//現在ログインしているユーザーの詳細データを Clerk ID を基に取得
 export async function getCurrentLoginUserData(clerkUserId: string) {
   console.log(`[UserQueries] Searching for user with clerkId: ${clerkUserId}`);
   if(!clerkUserId) return null; // Clerk ID がなければ null を返す
@@ -60,9 +51,9 @@ const profileRankingListSelect = {
   id: true,
   sentiment: true,
   subject: true,
-  listImageUrl: true, // このフィールドが RankingList モデルに存在するか確認
+  listImageUrl: true,
   status: true,
-  _count: { select: { items: true } }, // アイテム数をカウント
+  _count: { select: { items: true } },
   createdAt: true,
   items: { // リスト表示用に一部アイテムを取得（例: 上位3件）
     select: { id: true, itemName: true, rank: true },
@@ -74,7 +65,7 @@ const profileRankingListSelect = {
 // 上記 select に基づく型定義 (export して RankingListForProfile の代わりに使用可能)
 export type RankingSnippetForProfile = Prisma.RankingListGetPayload<{ select: typeof profileRankingListSelect }>;
 
-// プロフィールページで取得するユーザーデータ全体のペイロード定義
+// プロフィールページで取得するユーザーデータ全体のペイロード(データの中身)定義
 const userProfilePayload = Prisma.validator<Prisma.UserDefaultArgs>()({
   select: {
     id: true,
@@ -86,11 +77,10 @@ const userProfilePayload = Prisma.validator<Prisma.UserDefaultArgs>()({
     coverImageUrl: true,
     socialLinks: true,
     createdAt: true,
-    // そのユーザーが作成した「公開済み」ランキングリストも一緒に取得
     rankingLists: {
       where: { status: ListStatus.PUBLISHED },
-      select: profileRankingListSelect, // 上で定義した select を再利用
-      orderBy: { createdAt: 'desc' }, // 新しい順
+      select: profileRankingListSelect,
+      orderBy: { createdAt: 'desc' },
     }
   }
 });
@@ -98,12 +88,7 @@ const userProfilePayload = Prisma.validator<Prisma.UserDefaultArgs>()({
 export type UserProfileData = Prisma.UserGetPayload<typeof userProfilePayload>;
 
 
-/**
- * 指定されたユーザー名の公開プロフィールデータを取得します。
- * プロフィール表示に必要なユーザー情報と、そのユーザーが作成した公開済みランキングリスト（一部情報）が含まれます。
- * @param username プロフィールを表示したいユーザーの username
- * @returns UserProfileData 型のデータ、見つからない/エラー時は null
- */
+//指定されたユーザー名の公開プロフィールデータを取得
 export async function getUserProfileData(username: string): Promise<UserProfileData | null> {
   console.log(`[UserQueries] Fetching profile data for username: ${username}`);
   if (!username) return null;
