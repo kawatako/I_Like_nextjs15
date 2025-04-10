@@ -44,7 +44,6 @@ model RankingList {
   sentiment   Sentiment
   subject     String
   description String?
-  // isPublic    Boolean  @default(true) // ★ 削除 ★
   status      ListStatus @default(DRAFT) // 公開状態 (デフォルトは下書き)
   listImageUrl String?  // ★ 追加: リストのイメージ画像URL (任意)
 
@@ -70,7 +69,6 @@ model RankedItem {
   itemName        String
   rank            Int
   imageUrl        String?  // ★アイテム画像URL (任意) - これは残す
-  // linkUrl         String?  // ← これは削除済み
   itemDescription String?
 
   listId        String
