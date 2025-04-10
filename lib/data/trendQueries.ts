@@ -33,7 +33,7 @@ export type WeeklyThemeItem = PopularThemeItem;
 export type AveragedRankItem = {
   itemName: string;
   averageRank: number | null; // 平均順位 (計算できなかった場合は null の可能性)
-  count: number;             // そのアイテムが該当テーマのリストに登場した回数
+  count: number; // そのアイテムが該当テーマのリストに登場した回数
   // itemDescription: string | null; // V2: 必要なら後で追加
   // imageUrl: string | null;        // V2: 必要なら後で追加
 };
@@ -154,14 +154,20 @@ export async function getWeeklyTrendingThemes(
   console.log(
     `[TrendsQueries/TotalTrends] Fetching top ${limit} weekly trending themes...`
   );
-  const oneWeekAgo = new Date();
-  oneWeekAgo.setDate(oneWeekAgo.getDate() - 7); // ★ 要日付調整: 日曜0時起点など厳密に
+  const now = new Date(); //サーバーの現在時刻を取得
+  const currentDayOfWeek = now.getDay(); // 0 (日曜) から 6 (土曜)
+  const diffToSunday = now.getDate() - currentDayOfWeek; // 日曜日に合わせるための差分
+  const startDate = new Date(now.setDate(diffToSunday)); // 直近の日曜日の日付を取得
+  startDate.setHours(0, 0, 0, 0); // 時刻を 00:00:00.000 に設定
+  console.log(
+    `[TrendsQueries/TotalTrends] Calculating trends since: ${startDate.toISOString()}`
+  );
 
   try {
     const themes = await prisma.rankingList.groupBy({
       /* ... by, where (updatedAt), _count, orderBy, take ... */
       by: ["sentiment", "subject"],
-      where: { status: ListStatus.PUBLISHED, updatedAt: { gte: oneWeekAgo } },
+      where: { status: ListStatus.PUBLISHED, updatedAt: { gte: startDate } },
       _count: { id: true },
       orderBy: { _count: { id: "desc" } },
       take: limit,
@@ -188,7 +194,9 @@ export async function calculateAverageRankForTheme(
   sentiment: Sentiment,
   subject: string
 ): Promise<AveragedRankItem[]> {
-  console.log(`[TrendsQueries/AvgRank] Calculating average ranks for [${sentiment}] ${subject}...`);
+  console.log(
+    `[TrendsQueries/AvgRank] Calculating average ranks for [${sentiment}] ${subject}...`
+  );
   try {
     // 1. 指定されたテーマに合致する公開済みリストの ID を全て取得
     const listsForTheme = await prisma.rankingList.findMany({
@@ -197,111 +205,139 @@ export async function calculateAverageRankForTheme(
         subject: subject,
         status: ListStatus.PUBLISHED,
       },
-      select: { id: true } // ID のみ取得
+      select: { id: true }, // ID のみ取得
     });
 
     // 対象リストがなければ空配列を返す
     if (listsForTheme.length === 0) {
-      console.log(`[TrendsQueries/AvgRank] No published lists found for [${sentiment}] ${subject}.`);
+      console.log(
+        `[TrendsQueries/AvgRank] No published lists found for [${sentiment}] ${subject}.`
+      );
       return [];
     }
-    const listIds = listsForTheme.map(l => l.id);
+    const listIds = listsForTheme.map((l) => l.id);
 
     // 2. それらのリストに含まれる全アイテムについて、アイテム名でグループ化し、
     //    平均順位 (_avg.rank) と登場回数 (_count.id) を計算
     const aggregatedItems = await prisma.rankedItem.groupBy({
-      by: ['itemName'], // アイテム名でグループ化
+      by: ["itemName"], // アイテム名でグループ化
       where: {
-        listId: { in: listIds } // 対象リストのアイテムのみ
+        listId: { in: listIds }, // 対象リストのアイテムのみ
       },
       _avg: {
-        rank: true // rank の平均値を計算
+        rank: true, // rank の平均値を計算
       },
       _count: {
-        id: true // 各アイテム名の登場回数 (リスト数) をカウント
+        id: true, // 各アイテム名の登場回数 (リスト数) をカウント
       },
       orderBy: {
         _avg: {
-          rank: 'asc' // 平均ランクの昇順 (低い方が上位) でソート
-        }
+          rank: "asc", // 平均ランクの昇順 (低い方が上位) でソート
+        },
       },
       // 必要であれば件数制限 (take: ...)
     });
 
     // 3. 結果を整形して返す
     //    (現時点では itemDescription や imageUrl は含まない)
-    const results: AveragedRankItem[] = aggregatedItems.map(item => ({
+    const results: AveragedRankItem[] = aggregatedItems.map((item) => ({
       itemName: item.itemName,
       averageRank: item._avg.rank, // 平均順位 (null になる場合も考慮)
-      count: item._count.id,       // 登場回数
+      count: item._count.id, // 登場回数
       // itemDescription: null,    // V2で実装
       // imageUrl: null,           // V2で実装
     }));
 
-    console.log(`[TrendsQueries/AvgRank] Calculated ranks for ${results.length} items for [${sentiment}] ${subject}.`);
+    console.log(
+      `[TrendsQueries/AvgRank] Calculated ranks for ${results.length} items for [${sentiment}] ${subject}.`
+    );
     return results;
-
   } catch (error) {
-     console.error(`[TrendsQueries/AvgRank] Error calculating average ranks for [${sentiment}] ${subject}:`, error);
-     return []; // エラー時は空配列
+    console.error(
+      `[TrendsQueries/AvgRank] Error calculating average ranks for [${sentiment}] ${subject}:`,
+      error
+    );
+    return []; // エラー時は空配列
   }
 }
-
 
 //[TRENDS-SEARCH] ランキング検索 (タイトル or アイテム名)
 export async function searchRankings(
   query: string,
   limit: number = 20
 ): Promise<SearchedRankingItem[]> {
-  // ... (実装は Response #70 と同じ) ...
   console.log(`[TrendsQueries/Search] Searching for query: ${query}`);
-  if (!query || query.trim() === "") return [];
+  // 前後の空白を削除
   const searchTerm = query.trim();
+  // 検索キーワードが空の場合は空配列を返す
+  if (searchTerm === "") return [];
 
   try {
-    // タイトル検索とアイテム名検索を分けて実行し、結果をマージ・重複排除
+    // 1. タイトル(subject)にキーワードが部分一致するリストを検索
     const listsBySubject = await prisma.rankingList.findMany({
       where: {
-        subject: { contains: searchTerm, mode: "insensitive" },
-        status: ListStatus.PUBLISHED,
+        subject: {
+          contains: searchTerm, // ★ 部分一致
+          mode: "insensitive", // ★ 大文字小文字区別なし
+        },
+        status: ListStatus.PUBLISHED, // 公開済みのみ
       },
       select: { id: true, subject: true, sentiment: true, createdAt: true },
-      orderBy: { createdAt: "desc" },
-      take: limit,
+      orderBy: { createdAt: "desc" }, // 新しい順
+      take: limit, // 上限設定
     });
+
+    // 2. アイテム名(itemName)にキーワードが部分一致するリストを検索
     const listsByItem = await prisma.rankingList.findMany({
       where: {
-        status: ListStatus.PUBLISHED,
+        status: ListStatus.PUBLISHED, // 公開済みのみ
         items: {
-          some: { itemName: { contains: searchTerm, mode: "insensitive" } },
+          // 関連するアイテムの中に...
+          some: {
+            // いずれか一つでも条件に合えばOK
+            itemName: {
+              contains: searchTerm, // ★ 部分一致
+              mode: "insensitive", // ★ 大文字小文字区別なし
+            },
+          },
         },
       },
       select: { id: true, subject: true, sentiment: true, createdAt: true },
-      orderBy: { createdAt: "desc" },
-      take: limit,
+      orderBy: { createdAt: "desc" }, // 新しい順
+      take: limit, // 上限設定
     });
 
+    // 3. 結果を結合し、重複を削除 (IDで判断)
     const combined = [...listsBySubject, ...listsByItem];
-    const uniqueResults = Array.from(
-      new Map(combined.map((item) => [item.id, item])).values()
-    );
+    const uniqueResultsMap = new Map<string, SearchedRankingItem>();
+    combined.forEach((item) => {
+      // findMany で select しているので、型を合わせる
+      const resultItem: SearchedRankingItem = {
+        id: item.id,
+        subject: item.subject,
+        sentiment: item.sentiment,
+        createdAt: item.createdAt,
+      };
+      if (!uniqueResultsMap.has(item.id)) {
+        uniqueResultsMap.set(item.id, resultItem);
+      }
+    });
+    const uniqueResults = Array.from(uniqueResultsMap.values());
+
+    // 4. 最終結果を再度 createdAt でソート (新しい順)
     uniqueResults.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
     console.log(
       `[TrendsQueries/Search] Found ${uniqueResults.length} unique results for query: ${query}`
     );
-    return uniqueResults.slice(0, limit).map((r) => ({
-      // 最終結果に limit を適用
-      id: r.id,
-      subject: r.subject,
-      sentiment: r.sentiment,
-      createdAt: r.createdAt,
-    }));
+
+    // 5. 上限件数 (limit) を適用して返す
+    return uniqueResults.slice(0, limit);
   } catch (error) {
     console.error(
       `[TrendsQueries/Search] Error searching rankings for query "${query}":`,
       error
     );
-    return [];
+    return []; // エラー時は空配列
   }
 }
