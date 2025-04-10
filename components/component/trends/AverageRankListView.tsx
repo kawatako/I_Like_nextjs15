@@ -9,12 +9,14 @@ interface AverageRankListViewProps {
   sentiment: Sentiment;
   subject: string;
   items: AveragedRankItem[]; // 平均ランク計算結果の配列
+  backHref: string;
 }
 
 export function AverageRankListView({
   sentiment,
   subject,
   items,
+  backHref
 }: AverageRankListViewProps) {
   // 表示用のタイトルを生成
   const prefix = sentiment === Sentiment.LIKE ? "好きな " : "嫌いな ";
@@ -58,14 +60,10 @@ export function AverageRankListView({
           このテーマの集計結果はありません。
         </p>
       )}
-
-      {/* 人気テーマ一覧に戻るリンク */}
+      {/* 戻るリンク */}
       <div className='mt-6'>
-        <Link
-          href='/trends?tab=total'
-          className='text-sm text-blue-600 hover:underline'
-        >
-          &larr; 人気テーマ一覧に戻る
+        <Link href={backHref} className='text-sm text-blue-600 hover:underline'>
+          &larr; 一覧に戻る {/* ラベルを少し汎用的に */}
         </Link>
       </div>
     </div>

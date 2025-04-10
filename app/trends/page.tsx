@@ -10,11 +10,14 @@ import {
   type PopularThemeItem,
   calculateAverageRankForTheme,
   type AveragedRankItem,
-} from "@/lib/data/trendQueries"; // データ取得関数と型をインポート
-import { auth } from "@clerk/nextjs/server"; // Clerk 認証情報を取得
-import { Badge } from "@/components/ui/badge"; // Badge コンポーネントをインポート
-import { Button } from "@/components/ui/button"; // Button コンポーネントをインポート (編集ボタン用)
-import { AverageRankListView } from "@/components/component/trends/AverageRankListView"; // 平均ランク表示用コンポーネント
+  getWeeklyTrendingThemes,
+  type WeeklyThemeItem,
+} from "@/lib/data/trendQueries"; // trendQueries から取得
+import { auth } from "@clerk/nextjs/server"; // Clerk 認証情報取得
+import { Badge } from "@/components/ui/badge"; // Badge コンポーネント
+import { Button } from "@/components/ui/button"; // Button コンポーネント
+// AverageRankListView コンポーネントをインポート (パスを確認)
+import { AverageRankListView } from "@/components/component/trends/AverageRankListView";
 
 // ページコンポーネント: searchParams を受け取る
 export default async function TrendsPage({
@@ -26,50 +29,66 @@ export default async function TrendsPage({
     subject?: string;
   };
 }) {
-  // ★★★ searchParams を await で解決し、プロパティをローカル変数に読み込む ★★★
+  // ★ searchParams を await で解決し、プロパティをローカル変数に読み込む ★
   const resolvedSearchParams = searchParams ? await searchParams : {};
   const tabParam = resolvedSearchParams.tab;
   const sentimentParam = resolvedSearchParams.sentiment;
   const subjectParam = resolvedSearchParams.subject;
-  // ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+  // ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
 
   // --- 各タブで必要となるデータを並行 or 個別に取得 ---
-  // (パフォーマンスを考慮する場合、選択タブに応じて取得を分けるのが理想)
-
-  // New タブ用データ
+  // (将来的には選択タブに応じて取得を最適化するのが望ましい)
   const newestRankings = await getNewestPublishedRankings(30);
-
-  // For You タブ用データ
   const myRankings = await getRankingsByCurrentUser();
-  const { userId: loggedInClerkId } = await auth(); // For You タブの表示制御や他で使用
+  const { userId: loggedInClerkId } = await auth();
+  const popularThemes = await getPopularThemes(20); // Totalタブ初期表示用
+  const weeklyThemes = await getWeeklyTrendingThemes(20); // Total Trends 初期表示用
 
-  // Total タブ（初期表示）用データ
-  const popularThemes = await getPopularThemes(20);
-
-  // Total タブ（詳細表示）用のデータと状態変数
+  // --- 平均ランクデータの条件付き取得 ---
   let averageRankItems: AveragedRankItem[] = [];
   let selectedSentiment: Sentiment | null = null;
   let selectedSubject: string | null = null;
+  let showAverageRankForTotalTab = false;
+  let showAverageRankForTrendsTab = false;
 
-  // ローカル変数を使って条件を確認し、平均ランクデータを取得
+  // URLパラメータを検証し、有効なら平均ランク取得の準備
   if (
     (sentimentParam === Sentiment.LIKE ||
       sentimentParam === Sentiment.DISLIKE) &&
-    subjectParam &&
-    typeof subjectParam === "string"
+    subjectParam
   ) {
-    selectedSentiment = sentimentParam;
-    selectedSubject = decodeURIComponent(subjectParam); // デコード
-    // 条件が揃っていれば平均ランク計算関数を呼び出す
-    averageRankItems = await calculateAverageRankForTheme(
-      selectedSentiment,
-      selectedSubject
-    );
+    const validSentiment = sentimentParam;
+    const validSubject = decodeURIComponent(subjectParam);
+
+    // どのタブが詳細表示を要求しているか判断
+    if (tabParam === "total") {
+      selectedSentiment = validSentiment;
+      selectedSubject = validSubject;
+      averageRankItems = await calculateAverageRankForTheme(
+        selectedSentiment,
+        selectedSubject
+      );
+      showAverageRankForTotalTab = true;
+    } else if (tabParam === "total-trends") {
+      selectedSentiment = validSentiment;
+      selectedSubject = validSubject;
+      averageRankItems = await calculateAverageRankForTheme(
+        selectedSentiment,
+        selectedSubject
+      );
+      showAverageRankForTrendsTab = true;
+    }
+    // For You タブからのリンクも tab=total を使うので上記 total の条件で処理される
   }
 
   // デフォルトで表示するタブを決定
-  const defaultTabValue =
-    tabParam === "total" && selectedSubject ? "total" : "new";
+  const defaultTabValue = showAverageRankForTotalTab
+    ? "total"
+    : showAverageRankForTrendsTab
+    ? "total-trends"
+    : tabParam === "for-you"
+    ? "for-you"
+    : "new";
 
   return (
     <div className='container mx-auto p-4 md:p-6'>
@@ -86,8 +105,6 @@ export default async function TrendsPage({
         {/* New タブのコンテンツ */}
         <TabsContent value='new'>
           <div className='border rounded-lg p-4 min-h-[200px]'>
-            {" "}
-            {/* min-h は見た目用 */}
             {newestRankings.length === 0 ? (
               <p className='text-muted-foreground text-center py-4'>
                 新しいランキングはまだありません。
@@ -119,13 +136,15 @@ export default async function TrendsPage({
         {/* Total タブのコンテンツ (条件分岐表示) */}
         <TabsContent value='total'>
           <div className='border rounded-lg p-4 min-h-[200px]'>
-            {/* selectedSubject があれば平均ランク表示、なければ人気テーマ表示 */}
-            {selectedSentiment && selectedSubject ? (
+            {showAverageRankForTotalTab &&
+            selectedSentiment &&
+            selectedSubject ? (
               // 平均ランク表示コンポーネントを呼び出す
               <AverageRankListView
                 sentiment={selectedSentiment}
                 subject={selectedSubject}
                 items={averageRankItems}
+                backHref='/trends?tab=total' // 戻り先を指定
               />
             ) : (
               // 人気テーマ一覧表示
@@ -171,11 +190,65 @@ export default async function TrendsPage({
           </div>
         </TabsContent>
 
-        {/* Total Trends タブのコンテンツ (プレースホルダー) */}
+        {/* Total Trends タブのコンテンツ (条件分岐表示) */}
         <TabsContent value='total-trends'>
           <div className='border rounded-lg p-4 min-h-[200px]'>
-            <p>Total Trends タブ: 週間で活発だったテーマ一覧を表示予定...</p>
-            {/* TODO: getWeeklyTrendingThemes を呼び出して表示 */}
+            {showAverageRankForTrendsTab &&
+            selectedSentiment &&
+            selectedSubject ? (
+              // 平均ランク表示
+              <AverageRankListView
+                sentiment={selectedSentiment}
+                subject={selectedSubject}
+                items={averageRankItems}
+                backHref='/trends?tab=total-trends' // 戻り先を指定
+              />
+            ) : (
+              // 週間トレンドテーマ一覧表示
+              <div>
+                <h3 className='text-lg font-semibold mb-4'>
+                  週間トレンドテーマ
+                </h3>
+                {weeklyThemes.length === 0 ? (
+                  <p className='text-muted-foreground text-center py-4'>
+                    今週のトレンドテーマはまだありません。
+                  </p>
+                ) : (
+                  <ul className='space-y-2'>
+                    {weeklyThemes.map((theme, index) => {
+                      const prefix =
+                        theme.sentiment === Sentiment.LIKE
+                          ? "好きな "
+                          : "嫌いな ";
+                      const displaySubject = prefix + theme.subject;
+                      // テーマ詳細表示（平均ランク表示）へのリンク (tab=total-trends を指定)
+                      const themeDetailHref = `/trends?tab=total-trends&sentiment=${
+                        theme.sentiment
+                      }&subject=${encodeURIComponent(theme.subject)}`;
+                      return (
+                        <li
+                          key={`${theme.sentiment}-${theme.subject}`}
+                          className='flex justify-between items-center p-2 rounded hover:bg-muted'
+                        >
+                          <div className='flex items-center gap-2'>
+                            {/* <span className="font-medium text-muted-foreground w-6 text-right">{index + 1}.</span> */}
+                            <Link
+                              href={themeDetailHref}
+                              className='text-sm font-medium hover:underline'
+                            >
+                              {displaySubject}
+                            </Link>
+                          </div>
+                          <span className='text-xs text-muted-foreground'>
+                            {theme.count}件更新
+                          </span>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+              </div>
+            )}
           </div>
         </TabsContent>
 
@@ -245,7 +318,6 @@ export default async function TrendsPage({
                 })}
               </ul>
             )}
-            {/* パート2（関連テーマのTotal集計）は表示しない */}
           </div>
         </TabsContent>
       </Tabs>
