@@ -121,4 +121,3 @@ export async function getDraftRankingLists(userDbId: string): Promise<DraftRanki
   }
 }
 
-// --- 今後、ランキングに関する他の汎用的なクエリ関数をここに追加 ---

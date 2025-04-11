@@ -550,3 +550,123 @@ TimelineFeed コンポーネントを作成し、FeedItem の type に応じて�
 タイムライン上に短文投稿 (StatusUpdateCard) が表示されるようになったら、そこに「いいね」ボタンを追加し、likePost, unlikePost アクションや didUserLikePost クエリを使って機能を実装します。
 フォロー/フォロワー機能 (発展):
 
+
+1. 投稿機能 (Post)
+機能概要:
+ユーザーが短いテキストメッセージを投稿できる基本的な機能。
+将来的には、投稿に画像を1枚添付できるようにする。
+作成された投稿は、個別の投稿ページやユーザープロフィール、そしてタイムラインに表示される。
+関連モデル:
+User: 投稿を作成したユーザー（投稿者）。
+Post: 投稿の本体。主なフィールドは id, content (本文), authorId (投稿者ID), imageUrl (任意: 添付画像のURL), createdAt, updatedAt。
+FeedItem: 投稿が行われた際に、タイムライン表示用に作成されるレコード (type は POST)。postId フィールドで関連する Post を指す。
+Like: 投稿に対する「いいね」を記録（直接的ではないが関連）。
+Reply: 投稿に対する返信を記録（直接的ではないが関連）。
+実装する主な関数/コンポーネント概要:
+PostForm.tsx (Client Component):
+テキスト入力エリア。
+（将来）画像アップロードボタン/プレビューエリア。
+投稿を実行するボタン。
+入力内容を Server Action に渡す。
+createPostAction (Server Action):
+PostForm からデータ（テキスト、画像ファイル）を受け取る。
+認証チェック（ログインしているか）。
+入力値のバリデーション。
+（画像がある場合）画像をクラウドストレージ等にアップロードし、URLを取得する。
+Post レコードをデータベースに作成（content, authorId, imageUrl を保存）。
+同時に FeedItem レコードをデータベースに作成 (type: POST, userId: authorId, postId: 作成したPostのID)。
+関連ページのキャッシュ再検証 (revalidatePath) を行う。
+（表示用コンポーネント）:
+投稿単体を表示するコンポーネント（例: PostCard.tsx）: 投稿内容、投稿者情報、画像、アクションボタン（いいね、返信、リツイート等）を表示。
+投稿リストを表示するページ/コンポーネント（例: プロフィールページの一部）。
+2. タイムライン機能 (TL)
+機能概要:
+アプリのホーム画面となるメインフィード。
+ログインユーザーがフォローしているユーザー（＋自分自身）の活動（投稿、ランキング公開/更新、リツイート、引用リツイート等）を**時系列（新しい順）**に表示する。
+活動の種類 (FeedItem の type) に応じて、異なる見た目のカードで表示する。
+無限スクロールに対応し、下にスクロールすることで過去の活動を読み込む。
+関連モデル:
+User: タイムラインの持ち主（ログインユーザー）、各活動を行ったユーザー。
+Follow: ログインユーザーが誰をフォローしているかを特定するために使用。
+FeedItem: ✨ TL機能の中核。タイムラインに表示される各項目を表す。userId (活動者), type (活動種別), createdAt (活動日時) と、活動に応じた関連ID (postId, rankingListId, retweetOfFeedItemId, quotedFeedItemId) を持つ。
+Post: FeedItem (type: POST or QUOTE_RETWEET) が参照する投稿内容。
+RankingList: FeedItem (type: RANKING_UPDATE) が参照するランキング情報。
+FeedType (Enum): FeedItem の type が取りうる値の定義。
+実装する主な関数/コンポーネント概要:
+getHomeFeed (lib/data/feedQueries.ts):
+ログインユーザーID (userId) を受け取る。
+Follow テーブルを使い、userId がフォローしているユーザーのIDリストを取得。
+フォロー中のユーザーIDリスト＋自分のIDを条件に、該当する FeedItem を createdAt 降順で取得する。
+include を使って、FeedItem の type に応じた関連データ（Post, RankingList, リツイート/引用元の FeedItem とその先のデータ）をまとめて取得する。
+カーソルベースのページネーション（take, cursor）を実装する。
+app/(home)/page.tsx (Server Component):
+ログインユーザーのIDを取得する。
+getHomeFeed を呼び出して、タイムラインの初期表示データを取得する。
+取得したデータを TimelineFeed コンポーネントに渡す。
+TimelineFeed.tsx (Client Component):
+初期データ (FeedItem 配列) を props で受け取り表示する。
+FeedItem 配列を map し、item.type に応じて <StatusUpdateCard />, <RankingUpdateCard />, <RetweetCard />, <QuoteRetweetCard /> 等のカードコンポーネントを条件付きでレンダリングする。
+無限スクロールを実装: スクロール位置を監視し、末尾に近づいたら getHomeFeed を呼び出す Server Action を実行して次のページのデータを取得し、表示中の FeedItem 配列に追加（state更新）する。
+各種カードコンポーネント (<StatusUpdateCard />, <RankingUpdateCard />, etc.):
+それぞれの FeedItem タイプに応じたデータを props で受け取り、整形して表示する。
+例: <QuoteRetweetCard /> は、引用コメント(Post)と引用元の FeedItem の両方のデータを表示する。
+各カード内にアクションボタン（いいね、リツイート等）を配置する。
+リツイート/引用リツイート関連の Server Action (retweetAction, quoteRetweetAction):
+リツイート/引用リツイートの操作を受け付け、対応する FeedItem (type: RETWEET or QUOTE_RETWEET) を作成する。引用リツイートの場合は、コメントを Post として作成する処理も含む。
+3. タイムラインの完成イメージ (|- を使用)
+|- Header (ロゴ, 検索, ユーザーアイコン) [固定]
+|
+|- (スクロールエリア開始)
+|  |- PostForm (いまどうしてる？ テキスト入力, 画像添付ボタン)
+|  |
+|  |- TimelineFeed (以下、FeedItem の例)
+|  |  |- QuoteRetweetCard (User B が User A のランキング更新を引用RT)
+|  |  |  |- User B の情報 (アイコン, 名前, ID, 時刻)
+|  |  |  |- User B のコメント本文 (Post.content)
+|  |  |  |- (もしあれば) User B が添付した画像 (Post.imageUrl)
+|  |  |  |- (引用元エリア)
+|  |  |  |  |- User A の情報
+|  |  |  |  |- [👑] ランキングタイトル (RankingList.subject)
+|  |  |  |  |- ランキングの一部内容 (例: 1位, 2位)
+|  |  |  |- アクションボタン (💬, 🔁, ❤️, 🔗)
+|  |  |
+|  |  |- RetweetCard (User C が User A のランキング更新をRT)
+|  |  |  |- リツイートした User C の情報
+|  |  |  |- (リツイート元エリア)
+|  |  |  |  |- User A の情報 (アイコン, 名前, ID, 時刻)
+|  |  |  |  |- [👑] ランキングタイトル (RankingList.subject)
+|  |  |  |  |- ランキングの一部内容
+|  |  |  |- アクションボタン (💬, 🔁, ❤️, 🔗) - ※元の投稿へのアクション
+|  |  |
+|  |  |- StatusUpdateCard (User B の投稿)
+|  |  |  |- User B の情報 (アイコン, 名前, ID, 時刻)
+|  |  |  |- 投稿本文 (Post.content)
+|  |  |  |- (もしあれば) 添付画像 (Post.imageUrl)
+|  |  |  |- アクションボタン (💬, 🔁, ❤️, 🔗)
+|  |  |
+|  |  |- RankingUpdateCard (User A のランキング更新)
+|  |  |  |- User A の情報 (アイコン, 名前, ID, 時刻)
+|  |  |  |- [👑] ランキングタイトル (RankingList.subject)
+|  |  |  |- ランキングの説明 (RankingList.description)
+|  |  |  |- ランキングの一部内容
+|  |  |  |- アクションボタン (💬, 🔁, ❤️, 🔗)
+|  |
+|  |- (下にスクロールでさらに古い FeedItem が読み込まれる)
+|
+|- Floating Action Button (投稿[+] / ランキング作成[👑]) [固定]
+|
+|- Bottom Navigation Bar (🏠, 🔍, ❤️, 🔔, 👤) [固定]
+
+
+
+他の種類のタイムライン項目（カード）の実装:
+
+ランキング更新 (RANKING_UPDATE) を表示する <RankingUpdateCard /> を作成する。
+リツイート (RETWEET) を表示する <RetweetCard /> を作成する。
+引用リツイート (QUOTE_RETWEET) を表示する <QuoteRetweetCard /> を作成する。
+作成したカードを TimelineFeed.tsx の switch 文に組み込んでいく。
+
+無限スクロール機能の完成:
+TimelineFeed.tsx の loadMoreItems 関数を完成させる。
+次のページのデータを取得するための Server Action (loadMoreFeedItemsAction のような名前で) を作成する。このアクションはカーソルを受け取り、内部で getHomeFeed を呼び出して結果を返す。
+TimelineFeed.tsx で Server Action を呼び出し、取得したデータを既存のリストに追加し、カーソルを更新するロジックを実装する。
