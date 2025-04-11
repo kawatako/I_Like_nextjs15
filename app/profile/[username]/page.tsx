@@ -5,10 +5,10 @@ import { getUserProfileData, getUserDbIdByClerkId} from "@/lib/data/userQueries"
 import { getFollowStatus} from "@/lib/actions/followActions"; // followQueries に入れた場合
 import { getDraftRankingLists, type DraftRankingSnippet } from "@/lib/data/rankingQueries";
 import { getLikedPosts, type PostWithAuthor } from "@/lib/like/likeService";
-import { fetchPosts } from "@/lib/post/postService";
 import { ProfileHeader } from "@/components/component/profile/ProfileHeader";
 import { ProfileTabs } from "@/components/component/profile/ProfileTabs";
 import { type RankingSnippetForProfile } from "@/lib/data/userQueries"; // RankingSnippetForProfile をインポート
+import { fetchPosts} from '@/lib/data/postQueries'; 
 
 interface ProfilePageProps { params: { username: string }; }
 

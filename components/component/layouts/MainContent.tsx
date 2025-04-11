@@ -1,42 +1,50 @@
 // components/component/layout/MainContent.tsx
-import PostForm from "../posts/PostForm"; // パスが正しいか確認
-import TimelineFeed from "../feeds/TimelineFeed"; // 新しい TimelineFeed をインポート
-import type { FeedItemWithRelations } from '@/lib/data/feedQueries'; // 型をインポート
+import PostForm from "../posts/PostForm";
+import { ProfileTabs } from "../profile/ProfileTabs"; // ProfileTabs をインポート
+import type { RankingSnippetForProfile } from "@/lib/data/userQueries"; // 型をインポート
+import type { PostWithData } from "@/lib/data/postQueries"; // 型をインポート
 
 // UserData インターフェース (username は string と仮定)
 interface UserData {
   id: string;
-  username: string; // スキーマに合わせて null ではないと仮定
+  username: string;
   name: string | null;
   image: string | null;
 }
 
-// Props の型定義
+// Props の型定義を大幅に変更
 interface MainContentProps {
-  currentLoginUserData: UserData; // PostForm で使う想定
-  initialFeedItems: FeedItemWithRelations[];
-  initialNextCursor: string | null;
+  targetUserData: UserData; // プロフィール対象のユーザーデータ
+  currentLoginUserDbId: string | null; // ログインユーザーのDB ID (isCurrentUser 判定用)
+  publishedLists: RankingSnippetForProfile[];
+  draftLists: RankingSnippetForProfile[];
+  userPosts: PostWithData[];
+  likedPosts: PostWithData[]; // いいねした投稿データ
 }
 
 export default function MainContent({
-  currentLoginUserData,
-  initialFeedItems,
-  initialNextCursor,
+  targetUserData,
+  currentLoginUserDbId,
+  publishedLists,
+  draftLists,
+  userPosts,
+  likedPosts,
 }: MainContentProps) {
+  const isCurrentUser = targetUserData.id === currentLoginUserDbId;
+
   return (
-    // h-full で高さを親に合わせ、内部でスクロール可能にする
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 flex flex-col h-full">
-      {/* 投稿フォームエリア (高さは固定) */}
-      <div className="mb-3 flex-shrink-0">
-        <PostForm /* currentLoginUserData={currentLoginUserData} */ />
-      </div>
-      {/* タイムラインエリア (残りの高さを使い、内部でスクロール) */}
-      <div className="flex-1 overflow-y-auto">
-        <TimelineFeed
-          initialItems={initialFeedItems}
-          initialNextCursor={initialNextCursor}
-        />
-      </div>
+    // h-full と overflow は ProfileTabs 内で管理される想定に変更
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md flex flex-col h-full">
+      {/* プロフィールタブを表示 */}
+      <ProfileTabs
+        userId={targetUserData.id}
+        username={targetUserData.username}
+        publishedLists={publishedLists}
+        draftLists={draftLists}
+        userPosts={userPosts}
+        likedPosts={likedPosts} // いいねした投稿を渡す
+        isCurrentUser={isCurrentUser}
+      />
     </div>
   );
 }
