@@ -1,3 +1,4 @@
+// components/component/rankings/RankingListEditView.tsx
 "use client";
 
 import { useState, useEffect } from "react";

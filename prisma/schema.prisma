@@ -15,7 +15,7 @@ enum Sentiment {
 
 // ランキングリストの公開状態 Enum
 enum ListStatus {
-  DRAFT     // 下書き
+  DRAFT // 下書き
   PUBLISHED // 公開済み
 }
 
@@ -26,47 +26,57 @@ enum FollowRequestStatus {
   REJECTED
 }
 
+// FeedItem の種類を表す Enum
+enum FeedType {
+  POST // 通常の投稿
+  RANKING_UPDATE // ランキングの公開/更新
+  RETWEET // リツイート
+  QUOTE_RETWEET // 引用リツイート
+}
+
 model User {
-  id         String   @id @default(cuid())
-  clerkId    String   @unique
-  username   String   @unique
-  name       String?
-  bio        String?
-  image      String?
-  coverImageUrl String?
-  socialLinks   Json?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  isPrivate     Boolean @default(false) // デフォルトは公開 (false)
-  posts      Post[]
-  likes      Like[]
-  replies    Reply[]
-  followedBy Follow[] @relation("FollowedBy")
-  following  Follow[] @relation("Following")
-  rankingLists RankingList[] // User が作成したランキングリスト
+  id                     String          @id @default(cuid())
+  clerkId                String          @unique
+  username               String          @unique
+  name                   String?
+  bio                    String?
+  image                  String?
+  coverImageUrl          String?
+  socialLinks            Json?
+  createdAt              DateTime        @default(now())
+  updatedAt              DateTime        @updatedAt
+  isPrivate              Boolean         @default(false) // デフォルトは公開 (false)
+  posts                  Post[]
+  likes                  Like[]
+  replies                Reply[]
+  followedBy             Follow[]        @relation("FollowedBy")
+  following              Follow[]        @relation("Following")
+  rankingLists           RankingList[] // User が作成したランキングリスト
   sentFollowRequests     FollowRequest[] @relation("SentRequests")
   receivedFollowRequests FollowRequest[] @relation("ReceivedRequests")
 
+  FeedItem FeedItem[]
 }
 
 // ランキングリストを表すモデル
 model RankingList {
-  id          String   @id @default(cuid())
-  sentiment   Sentiment
-  subject     String
-  description String?
-  status      ListStatus @default(DRAFT) // 公開状態 (デフォルトは下書き)
-  listImageUrl String?  // ★ 追加: リストのイメージ画像URL (任意)
+  id           String     @id @default(cuid())
+  sentiment    Sentiment
+  subject      String
+  description  String?
+  status       ListStatus @default(DRAFT) // 公開状態 (デフォルトは下書き)
+  listImageUrl String? // ★ 追加: リストのイメージ画像URL (任意)
 
   // 作成者 (User) へのリレーション (Userの主キー 'id' を参照)
-  authorId    String
-  author      User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
   // このリストに含まれるアイテム (RankedItem) へのリレーション
-  items       RankedItem[]
+  items RankedItem[]
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  FeedItem  FeedItem[]
 
   @@index([subject])
   @@index([authorId])
@@ -76,34 +86,71 @@ model RankingList {
 
 // ランキングリスト内の各アイテムを表すモデル
 model RankedItem {
-  id              String   @id @default(cuid())
+  id              String  @id @default(cuid())
   itemName        String
   rank            Int
-  imageUrl        String? 
+  imageUrl        String?
   itemDescription String?
 
-  listId        String
-  rankingList   RankingList @relation(fields: [listId], references: [id], onDelete: Cascade)
+  listId      String
+  rankingList RankingList @relation(fields: [listId], references: [id], onDelete: Cascade)
 
-  createdAt     DateTime    @default(now())
+  createdAt DateTime @default(now())
 
   @@index([itemName])
   @@index([listId, rank])
 }
 
-// --- 既存のモデル (Post, Like, Reply, Follow) ---
-// ... (変更なし、ただし onDelete の見直しは推奨) ...
 model Post {
-  id        String   @id @default(cuid())
+  id        String     @id @default(cuid())
   content   String
-  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  author    User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
   likes     Like[]
   replies   Reply[]
+  FeedItem  FeedItem[]
 
   @@index([authorId])
+}
+
+// タイムラインの各項目を表すモデル
+model FeedItem {
+  id        String   @id @default(cuid()) // 主キー
+  type      FeedType // この FeedItem の種類 (投稿、ランキング更新など)
+  createdAt DateTime @default(now()) // 作成日時 (タイムラインの並び順の基準)
+  updatedAt DateTime @updatedAt // 更新日時 (いいね数やRT数などの更新用に)
+
+  // --- 関係性 ---
+  // この活動を行ったユーザー
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade) // ユーザーが削除されたら、その活動記録も削除する
+
+  // 関連するデータへの参照 (タイプに応じていずれか、または複数が設定される)
+  postId String? // type が POST または QUOTE_RETWEET の場合に Post.id を参照
+  post   Post?   @relation(fields: [postId], references: [id], onDelete: SetNull) // 投稿が削除されても FeedItem は残す (内容はnullになる)
+
+  rankingListId String? // type が RANKING_UPDATE の場合に RankingList.id を参照
+  rankingList   RankingList? @relation(fields: [rankingListId], references: [id], onDelete: SetNull) // ランキングが削除されても FeedItem は残す
+
+  // リツイートの場合: どの FeedItem をリツイートしたか
+  retweetOfFeedItemId String?
+  retweetOfFeedItem   FeedItem?  @relation("Retweets", fields: [retweetOfFeedItemId], references: [id], onDelete: SetNull, map: "retweet_of_feed_item_id") // 元の FeedItem が削除されてもリツイート FeedItem は残す
+  retweets            FeedItem[] @relation("Retweets") // この FeedItem をリツイートしている FeedItem のリスト (自己参照の逆側)
+
+  // 引用リツイートの場合: どの FeedItem を引用したか (引用コメント自体は postId -> Post に保存)
+  quotedFeedItemId String?
+  quotedFeedItem   FeedItem?  @relation("QuoteRetweets", fields: [quotedFeedItemId], references: [id], onDelete: SetNull, map: "quoted_feed_item_id") // 元の FeedItem が削除されても引用 FeedItem は残す
+  quoteRetweets    FeedItem[] @relation("QuoteRetweets") // この FeedItem を引用リツイートしている FeedItem のリスト (自己参照の逆側)
+
+  // --- インデックス ---
+  @@index([userId, createdAt(sort: Desc)]) // 特定ユーザーのタイムライン取得用 (新しい順)
+  @@index([createdAt(sort: Desc)]) // 全体の最新フィード取得用（もし必要なら）
+  @@index([postId]) // 投稿に関連するFeedItem検索用
+  @@index([rankingListId]) // ランキングに関連するFeedItem検索用
+  @@index([retweetOfFeedItemId]) // リツイート元検索用
+  @@index([quotedFeedItemId]) // 引用リツイート元検索用
 }
 
 model Like {
@@ -133,23 +180,24 @@ model Reply {
 }
 
 model FollowRequest {
-  id          String   @id @default(cuid())
+  id          String              @id @default(cuid())
   status      FollowRequestStatus @default(PENDING)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt // リクエスト日時の更新用に updatedAt を追加
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt // リクエスト日時の更新用に updatedAt を追加
   // リクエストを送った人 (申請者)
   requesterId String
-  requester   User   @relation("SentRequests", fields: [requesterId], references: [id], onDelete: Cascade)
+  requester   User                @relation("SentRequests", fields: [requesterId], references: [id], onDelete: Cascade)
   // リクエストを受け取った人 (申請先)
   requestedId String
-  requested   User   @relation("ReceivedRequests", fields: [requestedId], references: [id], onDelete: Cascade)
+  requested   User                @relation("ReceivedRequests", fields: [requestedId], references: [id], onDelete: Cascade)
+
   // 同じユーザー間のリクエストは1つだけ存在できるようにする
   @@unique([requesterId, requestedId])
   @@index([requestedId]) // 自分宛のリクエストを効率よく検索するため
 }
 
 model Follow {
-  id          String   @id @default(cuid()) 
+  id          String   @id @default(cuid())
   follower    User     @relation("Following", fields: [followerId], references: [id], onDelete: Cascade)
   followerId  String
   following   User     @relation("FollowedBy", fields: [followingId], references: [id], onDelete: Cascade)

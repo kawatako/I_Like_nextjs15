@@ -5,7 +5,7 @@ import { auth } from "@clerk/nextjs/server";
 import prisma from "../client"; // パスを確認
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
-import { Sentiment, Prisma, ListStatus } from "@prisma/client";
+import { Sentiment, Prisma, ListStatus, FeedType } from "@prisma/client";
 import type { ActionState } from "./types"; // 共通の型をインポート
 import { redirect } from 'next/navigation';
 
@@ -162,6 +162,24 @@ export async function saveRankingListItemsAction(
     });
 
     console.log(`RankingList ${listId} and its items saved with status ${targetStatus}`);
+
+    if (targetStatus === ListStatus.PUBLISHED) {
+      try {
+        await prisma.feedItem.create({
+          data: {
+            userId: userDbId,             // ランキングの作成者/更新者
+            type: FeedType.RANKING_UPDATE, // タイプを指定
+            rankingListId: listId,        // 関連する RankingList の ID
+            // createdAt はデフォルトで now() が入る
+          }
+        });
+        console.log(`FeedItem (RANKING_UPDATE) created for list ${listId}`);
+      } catch (feedError) {
+        // FeedItem の作成でエラーが起きても、ランキング自体の保存は成功しているので、
+        // ここではエラーをログに出力するに留めるなどの対応が良いかもしれません。
+        console.error(`Failed to create FeedItem for ranking list ${listId}:`, feedError);
+      }
+    }
 
     // キャッシュ再検証
     revalidatePath(`/rankings/${listId}/edit`);

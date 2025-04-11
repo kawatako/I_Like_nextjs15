@@ -15,7 +15,7 @@ interface RankingDetailPageProps {
 }
 
 export default async function RankingDetailPage({ params }: RankingDetailPageProps) {
-  const { listId } = params;
+  const { listId } = await params;
   const { userId: loggedInUserId } = await auth(); // 現在のログインユーザーIDを取得
 
   // 閲覧用のランキングデータを取得 (公開済みリストのみ等、ここで制御)
