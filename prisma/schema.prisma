@@ -77,11 +77,13 @@ model RankingList {
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   FeedItem  FeedItem[]
+  displayOrder Int?
 
   @@index([subject])
   @@index([authorId])
   @@index([status])
   @@index([createdAt])
+  @@index([authorId, displayOrder]) 
 }
 
 // ランキングリスト内の各アイテムを表すモデル

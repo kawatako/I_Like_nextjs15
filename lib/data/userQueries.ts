@@ -1,5 +1,4 @@
 // lib/data/userQueries.ts
-"use server";
 
 import prisma from "@/lib/client"; // Prisma Client のインポートパスを確認・修正
 import { ListStatus, Prisma, Sentiment } from "@prisma/client";
@@ -33,9 +32,8 @@ export async function getCurrentLoginUserData(clerkUserId: string) {
         id: true,
         clerkId: true,
         username: true,
-        image: true, // あなたのスキーマに合わせて 'image' に
+        image: true,
         name: true,
-        // bio や他のフィールドはここでは取得せず、必要なページで別途取得する方が効率的な場合も
       },
     });
     console.log(`[UserQueries] Found user data for header/sidebar:`, user ? "User found" : "User not found");
@@ -47,14 +45,16 @@ export async function getCurrentLoginUserData(clerkUserId: string) {
 }
 
 // プロフィールページで表示するランキングリストに必要なフィールド定義
-const profileRankingListSelect = {
+export const profileRankingListSelect = {
   id: true,
   sentiment: true,
   subject: true,
   listImageUrl: true,
   status: true,
+  displayOrder: true, // ★ 変更 ★ displayOrder を select に追加
   _count: { select: { items: true } },
   createdAt: true,
+  updatedAt: true,     // ★ 変更 ★ updatedAt も select に追加 (orderBy で使用)
   items: { // リスト表示用に一部アイテムを取得（例: 上位3件）
     select: { id: true, itemName: true, rank: true },
     orderBy: { rank: 'asc' },
@@ -67,7 +67,7 @@ export type RankingSnippetForProfile = Prisma.RankingListGetPayload<{ select: ty
 
 // プロフィールページで取得するユーザーデータ全体のペイロード(データの中身)定義
 const userProfilePayload = Prisma.validator<Prisma.UserDefaultArgs>()({
-  select: { // ← select オブジェクト開始
+  select: {
     id: true,
     clerkId: true,
     username: true,
@@ -76,11 +76,15 @@ const userProfilePayload = Prisma.validator<Prisma.UserDefaultArgs>()({
     bio: true,
     coverImageUrl: true,
     socialLinks: true,
-    createdAt: true, // ← 最後のスカラーフィールドの後にもカンマが必要
-    rankingLists: { // ← rankingLists オブジェクト開始
+    createdAt: true,
+    rankingLists: {
       where: { status: ListStatus.PUBLISHED },
       select: profileRankingListSelect,
-      orderBy: { createdAt: 'desc' },
+      // ★ 変更 ★ orderBy を displayOrder 基準に変更
+      orderBy: [
+        { displayOrder: 'asc' /* Prisma 5.x+ なら , nulls: 'last' */ }, // displayOrder 昇順 (null は最後)
+        { updatedAt: 'desc' }     // 次に updatedAt 降順
+      ],
     },
     _count: {
       select: {
@@ -89,7 +93,7 @@ const userProfilePayload = Prisma.validator<Prisma.UserDefaultArgs>()({
       }
     }
   }
-}); 
+});
 // 上記ペイロードに基づく型定義 (export してページコンポーネントで使用)
 export type UserProfileData = Prisma.UserGetPayload<typeof userProfilePayload>;
 
@@ -101,7 +105,7 @@ export async function getUserProfileData(username: string): Promise<UserProfileD
   try {
     const userWithLists = await prisma.user.findUnique({
       where: { username: username },
-      ...userProfilePayload, // select と include を適用
+      ...userProfilePayload, // select を適用 (include は使っていないのでこのままでOK)
     });
 
     if (!userWithLists) {
@@ -125,7 +129,7 @@ export async function getUserByUsername(username: string): Promise<{ id: string,
   try {
     const user = await prisma.user.findUnique({
       where: { username },
-      select: { id: true, username: true, name: true }, // ページのヘッダー等で使う最低限の情報
+      select: { id: true, username: true, name: true },
     });
     return user;
   } catch (error) {
