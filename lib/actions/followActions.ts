@@ -6,6 +6,7 @@ import { Prisma, FollowRequestStatus, Sentiment } from "@prisma/client";
 import { getUserDbIdByClerkId } from '@/lib/data/userQueries';
 import { revalidatePath } from "next/cache"; 
 import { auth } from '@clerk/nextjs/server';
+import { PaginatedResponse } from "./types";
 
 // ユーザー情報の型定義 (変更なし)
 const userSnippetSelect = {
@@ -30,9 +31,6 @@ const followRequestWithRequesterPayload =
 export type FollowRequestWithRequester = Prisma.FollowRequestGetPayload<
   typeof followRequestWithRequesterPayload
 >;
-
-// ページネーション結果の型 (変更なし)
-type PaginatedResponse<T> = { items: T[]; nextCursor: string | null };
 
 type FollowActionResult = {
   success: boolean;

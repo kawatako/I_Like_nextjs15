@@ -7,6 +7,7 @@ import {
   type RankingSnippetForProfile,
   profileRankingListSelect 
 } from "@/lib/data/userQueries";
+import type { PaginatedResponse } from "@/lib/actions/types"
 
 // 編集用データペイロード定義
 export const rankingListEditPayload = Prisma.validator<Prisma.RankingListDefaultArgs>()({
@@ -16,11 +17,6 @@ export const rankingListEditPayload = Prisma.validator<Prisma.RankingListDefault
 });
 
 export type RankingListEditableData = Prisma.RankingListGetPayload<typeof rankingListEditPayload>;
-
-export type PaginatedResponse<T> = {
-  items: T[];
-  nextCursor: string | null;
-};
 
 //ランキングの編集ページ (/rankings/[listId]/edit) で使用するための元データを、安全にデータベースから取得する関数
 export async function getRankingListForEdit(listId: string): Promise<RankingListEditableData | null> {
