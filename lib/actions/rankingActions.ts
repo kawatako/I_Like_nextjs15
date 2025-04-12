@@ -13,8 +13,7 @@ import {
   getProfileRankingsPaginated,
   // ★ RankingSnippetForProfile は userQueries からインポートする想定 ★
   type PaginatedResponse, // ★ PaginatedResponse は rankingQueries で export した想定 ★
-} from "@/lib/data/rankingQueries"; // ← パスを rankingQueries.ts に変更
-// ★ RankingSnippetForProfile は userQueries からインポート ★
+} from "@/lib/data/rankingQueries"; 
 import { type RankingSnippetForProfile } from "@/lib/data/userQueries";
 import { getUserDbIdByClerkId } from "@/lib/data/userQueries"; // これは userQueries のまま
 
@@ -30,6 +29,96 @@ const SubjectSchema = z
     message:
       "テーマには日本語、英数字、半角スペースのみ使用できます。記号や絵文字は使用できません。",
   });
+
+  // アクションの結果を示す型 (シンプルに成功/失敗のみ)
+type UpdateOrderActionResult = {
+  success: boolean;
+  error?: string;
+};
+
+/**
+ * ランキングリストの表示順序 (displayOrder) を更新する Server Action
+ * @param orderedListIds - 並び替えられた後の RankingList の ID の配列
+ * @returns UpdateOrderActionResult
+ */
+export async function updateRankingListOrderAction(
+  orderedListIds: string[] // ID の配列を受け取る
+): Promise<UpdateOrderActionResult> {
+
+  // 1. 認証チェック
+  const { userId: clerkId } = await auth();
+  if (!clerkId) {
+    return { success: false, error: "ログインしてください。" };
+  }
+
+  // 2. DBユーザーIDを取得
+  let userDbId: string | null = null;
+  let username: string | null = null; // revalidatePath で使う可能性
+  try {
+    const user = await prisma.user.findUnique({
+      where: { clerkId: clerkId },
+      select: { id: true, username: true } // username も取得
+    });
+    if (!user?.id || !user?.username) {
+      throw new Error("ユーザー情報が見つかりません。");
+    }
+    userDbId = user.id;
+    username = user.username;
+  } catch (error) {
+    console.error("[updateRankingOrderAction] Error fetching user info:", error);
+    const message = error instanceof Error ? error.message : "ユーザー情報の取得に失敗しました。";
+    return { success: false, error: message };
+  }
+
+  // 3. 入力検証 (基本的なチェック)
+  if (!Array.isArray(orderedListIds)) {
+    return { success: false, error: "無効なデータ形式です。" };
+  }
+  // 空の配列を許可するかどうか (許可しない例)
+  // if (orderedListIds.length === 0) {
+  //   return { success: true }; // 何もしないで成功扱い or エラー
+  // }
+
+  console.log(`[Action/updateRankingOrder] Updating order for user ${userDbId}, lists:`, orderedListIds);
+
+  try {
+    // 4. データベース更新 (トランザクション内で実行)
+    await prisma.$transaction(async (tx) => {
+      // 受け取った ID 配列の順序 (index) を displayOrder として設定
+      const updates = orderedListIds.map((listId, index) =>
+        tx.rankingList.updateMany({
+          where: {
+            id: listId,
+            authorId: userDbId, // ★★★ 必ず自分のリストだけを対象にする ★★★
+          },
+          data: {
+            displayOrder: index, // 0 から始まる順序を設定
+          },
+        })
+      );
+      // すべての update クエリを並列で実行
+      await Promise.all(updates);
+    });
+
+    console.log(`[Action/updateRankingOrder] Successfully updated order for user ${userDbId}`);
+
+    // 5. キャッシュ再検証 (プロフィールページ)
+    if (username) {
+      revalidatePath(`/profile/${username}`);
+      // 必要であれば、ランキングタブごとの再検証も検討
+      // revalidatePath(`/profile/${username}?tab=rankings`);
+      // revalidatePath(`/profile/${username}?tab=drafts`); // 下書きも並び替える場合
+    }
+
+    // 6. 成功結果を返す
+    return { success: true };
+
+  } catch (error) {
+    // 7. エラーハンドリング
+    console.error("[updateRankingOrderAction] Error updating ranking list order:", error);
+    return { success: false, error: "ランキングの順序更新中にエラーが発生しました。" };
+  }
+}
 
 // --- Action: 新しいランキングを作成 ---
 export async function createRankingListAction(
