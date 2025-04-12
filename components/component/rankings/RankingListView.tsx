@@ -26,8 +26,6 @@ export function RankingListView({ ranking }: RankingListViewProps) {
           {ranking.description && (
             <CardDescription className="pt-1">{ranking.description}</CardDescription>
           )}
-          {/* 必要であれば作成者名や作成日などを表示 */}
-          {/* <p className="text-sm text-muted-foreground pt-2">作成者: {ranking.authorName}</p> */}
         </CardHeader>
       </Card>
 
