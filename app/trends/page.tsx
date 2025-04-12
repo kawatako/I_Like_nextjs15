@@ -1,7 +1,7 @@
 // app/trends/page.tsx
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from "next/link";
-import { Sentiment, ListStatus } from "@prisma/client"; // Prisma Enums をインポート
+import { Sentiment, ListStatus } from "@prisma/client";
 import {
   getNewestPublishedRankings,
   getRankingsByCurrentUser,
@@ -11,15 +11,13 @@ import {
   calculateAverageRankForTheme,
   type AveragedRankItem,
   getWeeklyTrendingThemes,
-  type WeeklyThemeItem,
-} from "@/lib/data/trendQueries"; // trendQueries から取得
-import { auth } from "@clerk/nextjs/server"; // Clerk 認証情報取得
-import { Badge } from "@/components/ui/badge"; // Badge コンポーネント
-import { Button } from "@/components/ui/button"; // Button コンポーネント
-// AverageRankListView コンポーネントをインポート (パスを確認)
+  type WeeklyThemeItem
+} from "@/lib/data/trendQueries";
+import { auth } from "@clerk/nextjs/server";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { AverageRankListView } from "@/components/component/trends/AverageRankListView";
 
-// ページコンポーネント: searchParams を受け取る
 export default async function TrendsPage({
   searchParams,
 }: {
@@ -29,20 +27,16 @@ export default async function TrendsPage({
     subject?: string;
   };
 }) {
-  // ★ searchParams を await で解決し、プロパティをローカル変数に読み込む ★
   const resolvedSearchParams = searchParams ? await searchParams : {};
   const tabParam = resolvedSearchParams.tab;
   const sentimentParam = resolvedSearchParams.sentiment;
   const subjectParam = resolvedSearchParams.subject;
-  // ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
 
-  // --- 各タブで必要となるデータを並行 or 個別に取得 ---
-  // (将来的には選択タブに応じて取得を最適化するのが望ましい)
   const newestRankings = await getNewestPublishedRankings(30);
   const myRankings = await getRankingsByCurrentUser();
   const { userId: loggedInClerkId } = await auth();
-  const popularThemes = await getPopularThemes(20); // Totalタブ初期表示用
-  const weeklyThemes = await getWeeklyTrendingThemes(20); // Total Trends 初期表示用
+  const popularThemes = await getPopularThemes(20);
+  const weeklyThemes = await getWeeklyTrendingThemes(20);
 
   // --- 平均ランクデータの条件付き取得 ---
   let averageRankItems: AveragedRankItem[] = [];
@@ -91,7 +85,7 @@ export default async function TrendsPage({
     : "new";
 
   return (
-    <div className='container mx-auto p-4 md:p-6'>
+    <>
       {/* デフォルトタブを設定 */}
       <Tabs defaultValue={defaultTabValue} className='w-full'>
         {/* タブ選択ボタン */}
@@ -321,6 +315,6 @@ export default async function TrendsPage({
           </div>
         </TabsContent>
       </Tabs>
-    </div>
+    </>
   );
 }
