@@ -670,3 +670,37 @@ FeedItem 配列を map し、item.type に応じて <StatusUpdateCard />, <Ranki
 TimelineFeed.tsx の loadMoreItems 関数を完成させる。
 次のページのデータを取得するための Server Action (loadMoreFeedItemsAction のような名前で) を作成する。このアクションはカーソルを受け取り、内部で getHomeFeed を呼び出して結果を返す。
 TimelineFeed.tsx で Server Action を呼び出し、取得したデータを既存のリストに追加し、カーソルを更新するロジックを実装する。
+
+##　ランキングリファクタリングメモ
+ランキング作成フローの1ページ化
+プロフィールでのランキング無限スクロール表示
+これらのタスクと、今回の「ランキング並び替え機能」の実装を、どのような順番で進めていきますか？ DBスキーマの変更は完了したので、どのタスクからでも進められます。
+
+
+ランキング並び替え機能 (DnD) の「データ層」の実装:
+理由: プロフィールでのランキング表示順が変わるため、これを先に確定させておくと、無限スクロール実装時に正しい順序でデータを扱えます。また、DBスキーマ変更は完了済みです。
+具体的な作業:
+プロフィールページで表示するランキングリストを取得する関数（新しく getProfileRankingsPaginated を作るか、既存の getUserProfileData を修正）で、orderBy: { displayOrder: 'asc' } (または desc) を追加し、displayOrder が null の場合の扱い (nulls: 'last' など) も指定します。
+(DnDのUIや保存アクションはまだ実装しません)
+
+プロフィールでのランキング無限スクロール化:
+理由: ステップ1でデータ取得時の並び順が決まったので、その順序でページネーション取得と無限スクロール表示を実装します。タイムラインで実装したパターンを応用できます。
+具体的な作業:
+ページネーション対応のデータ取得関数 (getProfileRankingsPaginated) を完成させます。
+追加読み込み用の Server Action (loadMoreProfileRankingsAction) を作成します。
+ProfileRankingLists コンポーネントをクライアント化し、無限スクロールのロジックを実装します。
+app/profile/[username]/page.tsx で初期データ取得部分を修正します。
+
+ランキング並び替え機能 (DnD) の「UI層と保存処理」の実装:
+理由: 無限スクロールでリストが表示されるようになった状態で、並び替えのUIと、変更した順序をDBに保存する機能を実装します。
+具体的な作業:
+dnd-kit を使った並び替えUIコンポーネントを作成します。
+新しい順序をDBに保存する Server Action (updateRankingListOrderAction) を作成します。
+UIと Server Action を連携させます。
+
+ランキング作成フローの1ページ化:
+理由: 他のタスクとの依存関係が比較的少ないため、最後にまとめて実装できます。
+具体的な作業:
+統合フォームコンポーネントを作成します。
+リストとアイテムを一括で作成・保存する Server Action を作成します。
+作成ページのルーティングやUIを置き換えます。
