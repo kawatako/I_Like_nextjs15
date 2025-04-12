@@ -4,13 +4,10 @@ import { auth } from "@clerk/nextjs/server";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-// ↓↓↓ userQueries から関数をインポート (パス確認) ↓↓↓
 import {
   getUserByUsername,
   getUserDbIdByClerkId,
 } from "@/lib/data/userQueries";
-
-// ★★★ 作成したリスト表示コンポーネントをインポート ★★★
 import { FollowingList } from "@/components/component/follows/FollowingList";
 import { FollowersList } from "@/components/component/follows/FollowersList";
 import { FollowRequestsList } from "@/components/component/follows/FollowRequestsList";
@@ -25,14 +22,14 @@ export default async function FollowsPage({
   searchParams,
 }: FollowsPageProps) {
   const { username: targetUsername } = params;
-  const { userId: loggedInClerkId } = await auth(); // 閲覧者の Clerk ID
-  const targetUser = await getUserByUsername(targetUsername); // 表示対象ユーザー
+  const { userId: loggedInClerkId } = await auth();
+  const targetUser = await getUserByUsername(targetUsername);
   if (!targetUser) {
     notFound();
   }
-  const targetUserDbId = targetUser.id; // ★ 表示対象ユーザーの DB ID
-  const loggedInUserDbId = await getUserDbIdByClerkId(loggedInClerkId); // 閲覧者の DB ID
-  const isOwner = loggedInUserDbId === targetUserDbId; // 所有者フラグ
+  const targetUserDbId = targetUser.id;
+  const loggedInUserDbId = await getUserDbIdByClerkId(loggedInClerkId);
+  const isOwner = loggedInUserDbId === targetUserDbId;
 
   const validTabs = ["following", "followers"];
   if (isOwner) {
@@ -44,7 +41,7 @@ export default async function FollowsPage({
       : "following";
 
   return (
-    <div className='container mx-auto p-4 md:p-6 max-w-2xl'>
+    <>
       <div className='mb-6 flex items-center justify-between'>
         <h1 className='text-2xl font-bold'>
           {targetUser.name ?? targetUser.username}
@@ -68,28 +65,20 @@ export default async function FollowsPage({
             <TabsTrigger value='requests'>フォローリクエスト</TabsTrigger>
           )}
         </TabsList>
-
-        {/* ↓↓↓ 各タブのコンテンツを対応するリストコンポーネントに置き換え ↓↓↓ */}
         <TabsContent value='following'>
-          {/* ★ FollowingList に targetUserId を渡す ★ */}
           <FollowingList targetUserId={targetUserDbId} />
         </TabsContent>
 
         <TabsContent value='followers'>
-          {/* ★ FollowersList に targetUserId を渡す ★ */}
           <FollowersList targetUserId={targetUserDbId} />
         </TabsContent>
 
-        {/* 所有者のみフォローリクエストタブを表示 */}
         {isOwner && (
           <TabsContent value='requests'>
-            {/* ★ FollowRequestsList に targetUserId を渡す ★ */}
-            {/* targetUserId はこの場合 loggedInUserDbId と同じはず */}
             <FollowRequestsList targetUserId={targetUserDbId} />
           </TabsContent>
         )}
-        {/* ↑↑↑ ここまで ↑↑↑ */}
       </Tabs>
-    </div>
+    </>
   );
 }
