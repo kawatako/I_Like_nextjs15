@@ -2,9 +2,9 @@
 import { auth } from "@clerk/nextjs/server";
 import { UserProfile } from "@clerk/nextjs";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
-import { getCurrentLoginUserData } from "@/lib/user/userService";
 import { EditCustomProfileForm } from "@/components/component/profile/EditCustomProfileForm";
 import { redirect } from "next/navigation";
+import { getCurrentLoginUserData } from "@/lib/data/userQueries";
 
 export default async function UserProfileSettingsPage() {
   const { userId } = await auth();
