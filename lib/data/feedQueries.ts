@@ -12,7 +12,7 @@ import {
 // --- 型定義 ---
 
 // ユーザー情報のスニペット (必要な情報だけを選択)
-const userSnippetSelect = {
+export const userSnippetSelect = {
   id: true,
   username: true,
   name: true,
