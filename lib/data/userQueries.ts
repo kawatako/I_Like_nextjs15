@@ -34,6 +34,9 @@ export async function getCurrentLoginUserData(clerkUserId: string) {
         username: true,
         image: true,
         name: true,
+        bio: true,
+        coverImageUrl: true, 
+        socialLinks: true
       },
     });
     console.log(`[UserQueries] Found user data for header/sidebar:`, user ? "User found" : "User not found");
