@@ -1,100 +1,72 @@
 // lib/data/postQueries.ts
-"use server"; // データ取得関数もサーバーサイドで動作することが多い
-
 import prisma from "../client";
 import { Prisma } from "@prisma/client";
-// 他のインポート (getCurrentLoginUserData など) もこのファイルにある想定
+import { userSnippetSelect } from "./feedQueries"; // または "./feedQueries"
 
 // --- Post 関連のデータ取得 ---
 
-// findMany の include に合わせて、取得する投稿データの型を定義
-const postPayload = Prisma.validator<Prisma.PostDefaultArgs>()({
-  include: {
-    author: true, // ← true に変更して全フィールドを取得
-    likes: {
-      select: { userId: true },
+// findMany の select/include に合わせて、取得する投稿データの型を定義
+// ★★★ postPayload から likes の include を削除 ★★★
+export const postPayload = Prisma.validator<Prisma.PostDefaultArgs>()({
+  // ★ include から select に変更し、必要なフィールドを明示するのを推奨 ★
+  select: {
+    id: true,
+    content: true,
+    createdAt: true,
+    author: {
+      // author は Post.tsx で必要
+      select: userSnippetSelect,
     },
     _count: {
+      // replies の count は Post に紐づく
       select: { replies: true },
     },
+    // ★ updatedAt, authorId は Post.tsx で使わないので、ここでは含めない ★
+    // ★ likes は Post にもう存在しないので含めない ★
   },
+  // --- include を使う場合の例 (author: true のまま、likes を削除) ---
+  // include: {
+  //   author: true, // author は全フィールド取得
+  //   // likes: { select: { userId: true } }, // ← 削除！
+  //   _count: {
+  //     select: { replies: true },
+  //   },
+  // },
 });
 
 // 上記 payload に基づく投稿の型エイリアス (export する)
 export type PostWithData = Prisma.PostGetPayload<typeof postPayload>;
 
 /**
- * タイムラインまたは特定ユーザーのプロフィール用の投稿を取得する。
- * @param userId - タイムライン表示の場合: ログインユーザーの DB ID。プロフィール表示で username を使う場合は null。
- * @param username - プロフィール表示の場合: 対象ユーザーの username。タイムライン表示の場合は undefined。
+ * 特定ユーザーのプロフィール用の投稿を取得する。
+ * @param _userId - 現在未使用
+ * @param username - プロフィール表示の場合: 対象ユーザーの username
  * @returns 投稿データの配列 (Promise)
  */
 export async function fetchPosts(
-  userId: string | null,
+  _userId: string | null, // この引数は username があれば使われない
   username?: string
 ): Promise<PostWithData[]> {
-  console.log(`WorkspacePosts called with userId: ${userId}, username: ${username}`);
-  try {
-    if (username) {
-      // プロフィールページの投稿取得
-      console.log(`WorkspacePosts: Fetching posts for profile username: ${username}`);
-      const posts = await prisma.post.findMany({
-        where: { author: { username: username } },
-        include: postPayload.include,
-        orderBy: { createdAt: "desc" },
-      });
-      console.log(`WorkspacePosts: Found ${posts.length} posts for username ${username}`);
-      return posts;
-    }
-
-    if (userId) {
-      // ホームタイムラインの投稿取得 (※注意: これは FeedItem ベースではない)
-      // タイムラインは getHomeFeed を使うべきだが、ここでは関数をそのまま移動
-      console.log(`WorkspacePosts: Fetching timeline posts for userDbId: ${userId}`);
-      const following = await prisma.follow.findMany({
-        where: { followerId: userId },
-        select: { followingId: true },
-      });
-      const followingIds = following.map((f) => f.followingId);
-      const authorIds = [userId, ...followingIds];
-
-      const posts = await prisma.post.findMany({
-        where: { authorId: { in: authorIds } },
-        include: postPayload.include,
-        orderBy: { createdAt: "desc" },
-      });
-      console.log(`WorkspacePosts: Found ${posts.length} timeline posts for userDbId ${userId}`);
-      return posts;
-    }
-
-    console.warn("fetchPosts: Neither userId nor username provided.");
+  console.log(`WorkspacePosts called with username: ${username}`);
+  if (!username) {
+    console.warn("fetchPosts: username is required.");
     return [];
+  }
+
+  try {
+    // プロフィールページの投稿取得
+    const posts = await prisma.post.findMany({
+      where: { author: { username: username } },
+      select: postPayload.select, // ★ postPayload の select を使用 ★
+      // include: postPayload.include, // include を使う場合はこちら
+      orderBy: { createdAt: "desc" },
+    });
+    console.log(
+      `WorkspacePosts: Found ${posts.length} posts for username ${username}`
+    );
+    return posts;
   } catch (error) {
     console.error("fetchPosts: Error fetching posts:", error);
     return [];
   }
 }
-
-// --- ★ いいねした投稿を取得する関数 (新規追加 - 仮実装) ★ ---
-export async function fetchLikedPosts(userId: string): Promise<PostWithData[]> {
-    console.log(`WorkspaceLikedPosts called for userId: ${userId}`);
-    if (!userId) return [];
-    try {
-        const likedPosts = await prisma.post.findMany({
-            where: {
-                likes: {
-                    some: { userId: userId } // userId がいいねした投稿
-                }
-            },
-            include: postPayload.include, // 同じペイロードを使用
-            orderBy: { createdAt: 'desc' } // いいねした日時順の方が良い場合もある (Like モデルに createdAt が必要)
-        });
-        console.log(`WorkspaceLikedPosts: Found ${likedPosts.length} liked posts for user ${userId}`);
-        return likedPosts;
-    } catch (error) {
-        console.error(`WorkspaceLikedPosts: Error fetching liked posts for user ${userId}:`, error);
-        return [];
-    }
-}
-
-// ... (他の userQueries や rankingQueries など) ...
