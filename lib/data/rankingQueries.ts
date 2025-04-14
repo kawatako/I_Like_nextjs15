@@ -7,7 +7,7 @@ import {
   type RankingSnippetForProfile,
   profileRankingListSelect 
 } from "@/lib/data/userQueries";
-import type { PaginatedResponse } from "@/lib/actions/types"
+import type { PaginatedResponse } from "@/lib/types"
 
 // 編集用データペイロード定義
 export const rankingListEditPayload = Prisma.validator<Prisma.RankingListDefaultArgs>()({

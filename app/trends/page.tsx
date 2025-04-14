@@ -99,6 +99,7 @@ export default async function TrendsPage({
         {/* New タブのコンテンツ */}
         <TabsContent value='new'>
           <div className='border rounded-lg p-4 min-h-[200px]'>
+          <h3 className='text-lg font-semibold mb-4'>最新のランキング</h3>
             {newestRankings.length === 0 ? (
               <p className='text-muted-foreground text-center py-4'>
                 新しいランキングはまだありません。

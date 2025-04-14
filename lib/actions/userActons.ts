@@ -4,18 +4,22 @@ import { auth } from "@clerk/nextjs/server";
 import prisma from "../client";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
-import type { ActionState } from "./types"; // 共通の型をインポート
+import type { ActionResult } from "@/lib/types";
 
 // バリデーションスキーマ
 const nameSchema = z.string().max(50, "表示名は50字以内です。").optional();
 const bioSchema = z.string().max(160, "自己紹介は160字以内です。").optional();
-const urlSchema = z.string().url("有効なURLを入力してください。").optional().or(z.literal(''));
+const urlSchema = z
+  .string()
+  .url("有効なURLを入力してください。")
+  .optional()
+  .or(z.literal(""));
 
 // プロフィール詳細更新アクション
 export async function updateUserProfileDetailsAction(
-  prevState: ActionState,
+  prevState: ActionResult | null,
   formData: FormData
-): Promise<ActionState> {
+): Promise<ActionResult> {
   const { userId: clerkId } = await auth();
   if (!clerkId) {
     return { success: false, error: "ログインしてください。" };
@@ -34,7 +38,9 @@ export async function updateUserProfileDetailsAction(
     // バリデーション
     const validatedName = name ? nameSchema.parse(name) : null;
     const validatedBio = bio ? bioSchema.parse(bio) : null;
-    const validatedCoverImageUrl = coverImageUrl ? urlSchema.parse(coverImageUrl) : null;
+    const validatedCoverImageUrl = coverImageUrl
+      ? urlSchema.parse(coverImageUrl)
+      : null;
     const validatedTwitterUrl = twitterUrl ? urlSchema.parse(twitterUrl) : null;
     const validatedGithubUrl = githubUrl ? urlSchema.parse(githubUrl) : null;
     const validatedWebsiteUrl = websiteUrl ? urlSchema.parse(websiteUrl) : null;
@@ -59,12 +65,12 @@ export async function updateUserProfileDetailsAction(
         socialLinks: socialLinksData, // JSON オブジェクトをそのまま渡す (Json? 型なので可能)
         // socialLinks: filteredSocialLinks // 値があるものだけにする場合
       },
-       select: { username: true } // revalidatePath で使う username を取得
+      select: { username: true }, // revalidatePath で使う username を取得
     });
 
-     if (!updatedUser.username) {
-       throw new Error("ユーザー名が見つかりません。");
-     }
+    if (!updatedUser.username) {
+      throw new Error("ユーザー名が見つかりません。");
+    }
 
     console.log(`User profile details updated for clerkId: ${clerkId}`);
 
@@ -73,15 +79,20 @@ export async function updateUserProfileDetailsAction(
     revalidatePath(`/settings/profile`); // 設定ページも再検証
 
     return { success: true };
-
   } catch (error) {
     console.error("Error updating user profile details:", error);
     if (error instanceof z.ZodError) {
-      return { error: error.errors.map((e) => e.message).join("\n"), success: false };
+      return {
+        error: error.errors.map((e) => e.message).join("\n"),
+        success: false,
+      };
     } else if (error instanceof Error) {
       return { success: false, error: error.message };
     } else {
-      return { success: false, error: "プロフィールの更新中に予期せぬエラーが発生しました。" };
+      return {
+        success: false,
+        error: "プロフィールの更新中に予期せぬエラーが発生しました。",
+      };
     }
   }
 }
