@@ -12,7 +12,7 @@ import {
   type RankingSnippetForProfile,
   getUserDbIdByClerkId,
 } from "@/lib/data/userQueries";
-import { PaginatedResponse } from "./types";
+import type { ActionResult, PaginatedResponse } from "@/lib/types";
 
 
 // --- Zod スキーマ ---
@@ -51,13 +51,6 @@ interface ItemDataForSave {
   itemDescription?: string | null;
   imageUrl?: string | null;
 }
-type SaveActionState = { error?: string; success: boolean };
-
-// ランキング削除アクション用 (既存)
-type DeleteActionState = { error?: string; success: boolean };
-
-// 並び替え順序保存アクション用 (既存)
-type UpdateOrderActionResult = { success: boolean; error?: string };
 
 // ★ 追加: 新規ランキング一括作成アクション用 ★
 interface ItemDataForCreate {
@@ -65,11 +58,7 @@ interface ItemDataForCreate {
   itemDescription?: string | null;
   imageUrl?: string | null; // 将来用
 }
-type CreateCompleteRankingResult = {
-  success: boolean;
-  error?: string;
-  newListId?: string;
-};
+type CreateCompleteRankingResult = { success: boolean; error?: string; newListId?: string; };
 
 // ランキング全体保存・更新アクション (Edit フロー用)
 export async function saveRankingListItemsAction(
@@ -78,7 +67,7 @@ export async function saveRankingListItemsAction(
   listSubject: string,
   listDescription: string | null,
   targetStatus: ListStatus
-): Promise<SaveActionState> {
+): Promise<ActionResult> {
   const { userId: clerkId } = await auth();
   if (!clerkId) {
     return { success: false, error: "ログインしてください。" };
@@ -183,7 +172,7 @@ export async function saveRankingListItemsAction(
     return { success: true };
   } catch (error) {
     console.error(`Error saving ranking list ${listId}:`, error);
-    let returnState: SaveActionState;
+    let returnState: ActionResult;
     if (error instanceof Error) {
       returnState = { success: false, error: error.message };
     } else {
@@ -198,9 +187,9 @@ export async function saveRankingListItemsAction(
 
 // ランキング削除アクション
 export async function deleteRankingListAction(
-  prevState: DeleteActionState,
+  prevState: ActionResult,
   formData: FormData
-): Promise<DeleteActionState> {
+): Promise<ActionResult> {
   const { userId: clerkId } = await auth();
   if (!clerkId) {
     return { success: false, error: "ログインしてください。" };
@@ -256,7 +245,7 @@ export async function deleteRankingListAction(
 // 並び替え順序保存アクション
 export async function updateRankingListOrderAction(
   orderedListIds: string[]
-): Promise<UpdateOrderActionResult> {
+): Promise<ActionResult> {
   const { userId: clerkId } = await auth();
   if (!clerkId) {
     return { success: false, error: "ログインしてください。" };

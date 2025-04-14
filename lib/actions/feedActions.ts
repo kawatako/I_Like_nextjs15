@@ -4,7 +4,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { getUserDbIdByClerkId } from '@/lib/data/userQueries';
 import { getHomeFeed, FeedItemWithRelations} from '@/lib/data/feedQueries'; // getHomeFeed と型をインポート
-import { PaginatedResponse } from "./types"
+import { PaginatedResponse } from "@/lib/types"; // PaginatedResponse 型をインポート
 
 // 無限スクロールで一度に読み込む件数
 const INFINITE_SCROLL_LIMIT = 20;
