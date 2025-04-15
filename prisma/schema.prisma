@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client" // 将来のために output を指定推奨
 }
 
 datasource db {
@@ -54,8 +55,8 @@ model User {
   rankingLists           RankingList[] // User が作成したランキングリスト
   sentFollowRequests     FollowRequest[] @relation("SentRequests")
   receivedFollowRequests FollowRequest[] @relation("ReceivedRequests")
-
-  FeedItem FeedItem[]
+  feedItems               FeedItem[]
+  retweets               Retweet[]   
 }
 
 // ランキングリストを表すモデル
@@ -65,25 +66,24 @@ model RankingList {
   subject      String
   description  String?
   status       ListStatus @default(DRAFT) // 公開状態 (デフォルトは下書き)
-  listImageUrl String? // ★ 追加: リストのイメージ画像URL (任意)
-
-  // 作成者 (User) へのリレーション (Userの主キー 'id' を参照)
+  listImageUrl String?
   authorId String
   author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
-
-  // このリストに含まれるアイテム (RankedItem) へのリレーション
   items RankedItem[]
-
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
-  FeedItem  FeedItem[]
   displayOrder Int?
+
+  feedItems      FeedItem[]
+
+  likes          Like[]     // このランキングに付けられた「いいね」
+  likeCount      Int        @default(0) // いいねカウンター
 
   @@index([subject])
   @@index([authorId])
   @@index([status])
   @@index([createdAt])
-  @@index([authorId, displayOrder]) 
+  @@index([authorId, displayOrder])
 }
 
 // ランキングリスト内の各アイテムを表すモデル
@@ -110,11 +110,26 @@ model Post {
   authorId  String
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
-  likes     Like[]
   replies   Reply[]
-  FeedItem  FeedItem[]
+  feedItems  FeedItem[]
+  likes      Like[]     // この投稿に付けられた「いいね」
+  likeCount  Int        @default(0) // いいねカウンター
 
   @@index([authorId])
+}
+
+model Retweet {
+  id         String   @id @default(cuid())
+  userId     String   // リツイートしたユーザーのID (User.id)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  feedItemId String   // リツイートされた FeedItem の ID
+  feedItem   FeedItem @relation(fields: [feedItemId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  // 同じユーザーは同じ FeedItem を1回しかリツイートできない
+  @@unique([userId, feedItemId])
+  @@index([feedItemId])
+  @@index([userId])
 }
 
 // タイムラインの各項目を表すモデル
@@ -123,48 +138,53 @@ model FeedItem {
   type      FeedType // この FeedItem の種類 (投稿、ランキング更新など)
   createdAt DateTime @default(now()) // 作成日時 (タイムラインの並び順の基準)
   updatedAt DateTime @updatedAt // 更新日時 (いいね数やRT数などの更新用に)
-
-  // --- 関係性 ---
-  // この活動を行ったユーザー
   userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade) // ユーザーが削除されたら、その活動記録も削除する
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   // 関連するデータへの参照 (タイプに応じていずれか、または複数が設定される)
-  postId String? // type が POST または QUOTE_RETWEET の場合に Post.id を参照
-  post   Post?   @relation(fields: [postId], references: [id], onDelete: SetNull) // 投稿が削除されても FeedItem は残す (内容はnullになる)
+  postId              String?
+  post                Post?       @relation(fields: [postId], references: [id], onDelete: SetNull)
+  rankingListId       String?
+  rankingList         RankingList? @relation(fields: [rankingListId], references: [id], onDelete: SetNull)
 
-  rankingListId String? // type が RANKING_UPDATE の場合に RankingList.id を参照
-  rankingList   RankingList? @relation(fields: [rankingListId], references: [id], onDelete: SetNull) // ランキングが削除されても FeedItem は残す
+  retweetOfFeedItemId String?     // リツイート元の FeedItem ID (Optional)
+  retweetOfFeedItem   FeedItem?     @relation("RetweetOrigin", fields: [retweetOfFeedItemId], references: [id], onDelete: SetNull, map: "retweet_of_feed_item_id") // リツイート元への参照
+  retweetedByItems    FeedItem[]    @relation("RetweetOrigin") // この FeedItem をリツイートしている FeedItem (type: RETWEET) のリスト
 
-  // リツイートの場合: どの FeedItem をリツイートしたか
-  retweetOfFeedItemId String?
-  retweetOfFeedItem   FeedItem?  @relation("Retweets", fields: [retweetOfFeedItemId], references: [id], onDelete: SetNull, map: "retweet_of_feed_item_id") // 元の FeedItem が削除されてもリツイート FeedItem は残す
-  retweets            FeedItem[] @relation("Retweets") // この FeedItem をリツイートしている FeedItem のリスト (自己参照の逆側)
+  retweets            Retweet[]
 
-  // 引用リツイートの場合: どの FeedItem を引用したか (引用コメント自体は postId -> Post に保存)
-  quotedFeedItemId String?
-  quotedFeedItem   FeedItem?  @relation("QuoteRetweets", fields: [quotedFeedItemId], references: [id], onDelete: SetNull, map: "quoted_feed_item_id") // 元の FeedItem が削除されても引用 FeedItem は残す
-  quoteRetweets    FeedItem[] @relation("QuoteRetweets") // この FeedItem を引用リツイートしている FeedItem のリスト (自己参照の逆側)
+  // --- 引用リツイート関連 (修正) ---
+  quotedFeedItemId    String?     // 引用元の FeedItem ID (Optional)
+  quotedFeedItem      FeedItem?     @relation("QuoteOrigin", fields: [quotedFeedItemId], references: [id], onDelete: SetNull, map: "quoted_feed_item_id") // 引用元への参照
+  quotedByItems       FeedItem[]    @relation("QuoteOrigin") // この FeedItem を引用している FeedItem (type: QUOTE_RETWEET) のリスト
 
-  // --- インデックス ---
-  @@index([userId, createdAt(sort: Desc)]) // 特定ユーザーのタイムライン取得用 (新しい順)
-  @@index([createdAt(sort: Desc)]) // 全体の最新フィード取得用（もし必要なら）
-  @@index([postId]) // 投稿に関連するFeedItem検索用
-  @@index([rankingListId]) // ランキングに関連するFeedItem検索用
-  @@index([retweetOfFeedItemId]) // リツイート元検索用
-  @@index([quotedFeedItemId]) // 引用リツイート元検索用
+  quoteRetweetCount   Int           @default(0) // 引用された数
+
+  // --- インデックス (変更なし) ---
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([createdAt(sort: Desc)])
+  @@index([postId])
+  @@index([rankingListId])
+  @@index([retweetOfFeedItemId])
+  @@index([quotedFeedItemId])
 }
 
 model Like {
-  id        String   @id @default(cuid())
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId    String
-  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
-  postId    String
-  createdAt DateTime @default(now())
+  id            String        @id @default(cuid())
+  userId        String        // いいねしたユーザーの ID (User.id)
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt     DateTime      @default(now())
 
-  @@unique([userId, postId])
+  // いいね対象への Optional なリレーション (どちらか一つだけセットされる想定)
+  postId        String?
+  post          Post?         @relation(fields: [postId], references: [id], onDelete: Cascade)
+  rankingListId String?
+  rankingList   RankingList?  @relation(fields: [rankingListId], references: [id], onDelete: Cascade)
+
+  // インデックスは個別に設定
   @@index([postId])
+  @@index([rankingListId])
+  @@index([userId])
 }
 
 model Reply {
