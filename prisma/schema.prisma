@@ -1,6 +1,6 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../node_modules/.prisma/client" // 将来のために output を指定推奨
+  //output   = "../node_modules/.prisma/client" // 将来のために output を指定推奨
 }
 
 datasource db {
