@@ -700,3 +700,204 @@ UIと Server Action を連携させます。
 一括保存 Server Action の作成: フォームから送られてきた基本情報とアイテムリストのデータを一度に受け取り、データベースに RankingList と RankedItem を作成（または更新）、必要なら FeedItem も作成するアクションを実装
 ページの置き換え: 既存のランキング作成ページ (/rankings/create) を、新しい統合フォームコンポーネントを使うように変更
 
+# 【開発メモ】投稿・リツイート・引用リツイート機能
+1. 投稿 (Post) 機能
+目的/概要:
+ユーザーがテキスト（将来的には画像も）を発信する基本的な機能。
+ユーザー自身の考えや出来事を共有する。
+いいね対象: この機能で作成された Post は、「いいね」の対象となる。
+データモデル:
+Post: 投稿内容 (content), 作成者 (authorId), 作成日時 (createdAt) などを記録。likeCount フィールドを持つ（いいね数用）。likes: Like[] リレーションを持つ。
+FeedItem: この投稿アクティビティをタイムラインに表示するためのレコード (type: POST)。作成された Post の ID (postId) を持つ。
+User: 投稿者。
+Like: この投稿に紐づくいいねを記録（postId を持つ）。
+主なロジック (作成時 - createPostAction):
+クライアント (PostForm) から投稿内容を受け取る。
+認証し、ユーザーDB ID を取得。
+prisma.$transaction を開始。
+Post レコードを作成 (初期 likeCount は 0)。
+FeedItem レコードを作成 (type: POST, postId を設定)。
+トランザクションをコミット。
+revalidatePath で関連ページを更新。
+表示箇所:
+投稿者のフォロワーと自身のタイムライン (TimelineFeed -> PostCard)。
+投稿者のプロフィールページの「投稿」タブ (ProfileTabs -> PostList -> PostCard)。
+(将来) 投稿詳細ページ。
+インタラクション:
+いいね (この Post に対して)
+リプライ (この Post に対して)
+リツイート (この投稿を表す FeedItem に対して)
+引用リツイート (この投稿を表す FeedItem に対して)
+
+2. リツイート (Repost) 機能
+目的/概要:
+他のユーザーのアクティビティ (FeedItem) を、コメントなしで自身のフォロワーに共有・拡散する機能。
+いいね対象: リツイート行為自体には「いいね」できない。いいねボタンはリツイート元のコンテンツ (Post または RankingList) に対して作用する。
+リツイート対象: FeedItem (type が POST, RANKING_UPDATE, QUOTE_RETWEET のもの)。自分の FeedItem も可。非公開アカウントのものは不可。
+データモデル:
+FeedItem (新規作成): リツイート行為を表すレコード (type: RETWEET)。userId (リツイートした人) と retweetOfFeedItemId (リツイート元の FeedItem ID) を持つ。
+FeedItem (リツイート元): リツイートされた総数を示す retweetCount: Int @default(0) フィールドを追加する。
+Retweet モデル (新規作成): 誰 (userId) がどの FeedItem (feedItemId) をリツイートしたかを記録する。(id, userId, feedItemId, createdAt, @@unique([userId, feedItemId]))
+User: リツイートしたユーザー。
+主なロジック (リツイート時 - retweetAction(feedItemId)):
+クライアント (例: カードのメニュー) からリツイートしたい元の feedItemId を受け取る。
+認証し、ユーザーDB ID (retweeterUserId) を取得。
+元の FeedItem を取得し、存在確認とリツイート可能か（非公開でないか等）チェック。
+prisma.$transaction を開始。
+Retweet レコードを作成 (userId: retweeterUserId, feedItemId: feedItemId)。既に存在する場合はエラー（または何もしない）。
+元の FeedItem の retweetCount をインクリメント (increment: 1)。
+新しい FeedItem レコードを作成 (type: RETWEET, userId: retweeterUserId, retweetOfFeedItemId: feedItemId)。
+トランザクションをコミット。
+revalidatePath 実行。
+主なロジック (リツイート取り消し時 - undoRetweetAction(feedItemId)):
+クライアントから取り消したい元の feedItemId を受け取る。
+認証し、ユーザーDB ID (retweeterUserId) を取得。
+prisma.$transaction を開始。
+Retweet レコードを削除 (where: { userId: retweeterUserId, feedItemId: feedItemId })。
+元の FeedItem の retweetCount をデクリメント (decrement: 1)。
+userId が retweeterUserId で retweetOfFeedItemId が feedItemId である FeedItem (type: RETWEET) を削除。
+トランザクションをコミット。
+revalidatePath 実行。
+表示箇所:
+リツイートしたユーザーのフォロワーのタイムライン (TimelineFeed -> RetweetCard)。本人のタイムラインには表示しない（ように getHomeFeed または TimelineFeed で制御）。
+リツイート数は元のコンテンツを表示するカード (PostCard, RankingUpdateCard, QuoteRetweetCard) に表示。
+
+3. 引用リツイート (Quote) 機能
+目的/概要:
+他のユーザーのアクティビティ (FeedItem) を引用し、自身のコメントを付けて共有する機能。
+いいね対象: 引用リツイート自体（実体は引用コメントの Post）は、「いいね」の対象となる。
+引用対象: FeedItem (type が POST, RANKING_UPDATE, QUOTE_RETWEET, RETWEET のもの)。自分の FeedItem も可。非公開アカウントのものは不可。
+データモデル:
+Post: 引用コメントの内容 (content)、作成者 (authorId: 引用した人) を記録。
+FeedItem (新規作成): 引用リツイート行為を表すレコード (type: QUOTE_RETWEET)。userId (引用した人)、postId (引用コメント Post の ID)、quotedFeedItemId (引用元の FeedItem ID) を持つ。
+FeedItem (引用元): 引用された総数を示す quoteRetweetCount: Int @default(0) フィールドを追加する。
+User: 引用リツイートしたユーザー。
+Like: この引用リツイートの Post に紐づくいいねを記録。
+主なロジック (引用リツイート時 - quoteRetweetAction(quotedFeedItemId, commentContent)):
+クライアント (例: コメント入力モーダル) から引用元の quotedFeedItemId とコメント内容 (commentContent) を受け取る。
+認証し、ユーザーDB ID (quoterUserId) を取得。
+引用元の FeedItem を取得し、存在確認と引用可能かチェック。
+prisma.$transaction を開始。
+新しい Post レコードを作成 (authorId: quoterUserId, content: commentContent)。
+新しい FeedItem レコードを作成 (type: QUOTE_RETWEET, userId: quoterUserId, postId: 作成したPostのID, quotedFeedItemId: quotedFeedItemId)。
+引用元の FeedItem の quoteRetweetCount をインクリメント (increment: 1)。
+トランザクションをコミット。
+revalidatePath 実行。
+取り消し: 作成された FeedItem (type: QUOTE_RETWEET) と、それに関連する Post (引用コメント) を削除する（通常の投稿削除と同様の処理）。元の FeedItem の quoteRetweetCount をデクリメントするアクションも必要。
+表示箇所:
+引用したユーザーのフォロワーと自身のタイムライン (TimelineFeed -> QuoteRetweetCard)。
+引用したユーザーのプロフィールページの「投稿」タブ (ProfileTabs -> PostList -> QuoteRetweetCard)。
+引用数は元のコンテンツを表示するカード (PostCard, RankingUpdateCard, RetweetCard, QuoteRetweetCard) に表示。
+
+
+
+# 【開発メモ】いいね機能 (対象: Post & RankingList)
+1. 機能概要・目的
+ユーザーが「投稿 (Post)」および「ランキングリスト (RankingList)」そのものに対して、「いいね」というポジティブな反応を示せるようにする。
+各コンテンツに「いいねボタン」と「総いいね数」を表示する。
+ユーザーは自分が「いいね」しているかどうかをボタンの状態で判別でき、クリックで状態をトグル（いいね/解除）できる。
+UI は楽観的更新（Optimistic Update）を行い、スムーズな操作感を提供する。
+
+2. いいね対象
+直接の対象: Post モデル、 RankingList モデル。
+タイムライン上の扱い:
+投稿系 (POST, QUOTE_RETWEET): 関連する Post に対していいねを行う。
+ランキング更新 (RANKING_UPDATE): 関連する RankingList に対していいねを行う。
+リツイート (RETWEET): リツイート自体にはいいねできず、いいねボタンはリツイート元のコンテンツ（Post または RankingList）に対して作用する。
+
+3. データモデル (prisma/schema.prisma)
+Like モデル:
+id: String (CUID)
+userId: String (関連する User.id - DB ID/CUID)
+postId: String? (関連する Post.id - Optional)
+rankingListId: String? (関連する RankingList.id - Optional)
+createdAt: DateTime
+user: @relation to User
+post: @relation to Post (Optional)
+rankingList: @relation to RankingList (Optional)
+制約: アプリケーションロジックで postId と rankingListId のどちらか一方のみが値を持つように保証する。DBレベルでの複合ユニーク制約は難しいため、Action 側で重複チェックをしっかり行う。
+Post モデル:
+likes: Like[] (逆リレーション) を追加。
+likeCount: Int @default(0) フィールドを追加。
+RankingList モデル:
+likes: Like[] (逆リレーション) を追加。
+likeCount: Int @default(0) フィールドを追加。
+FeedItem モデル:
+いいね関連のフィールド (likes, _count) は持たない。
+(要実行: スキーマ変更後の prisma migrate dev と prisma generate)
+
+4. データ取得
+Post 取得時 (例: postPayload in postQueries.ts):
+likeCount: true を select/include に追加。
+likes: { where: { userId: loggedInUserDbId }, select: { userId: true } } を select/include に追加（自分がいいねしたか判定用）。
+RankingList 取得時 (例: profileRankingListSelect, rankingListViewPayload):
+同様に likeCount: true と likes: { where: { userId: loggedInUserDbId }, select: { userId: true } } を追加。
+FeedItem 取得時 (例: feedItemPayload in feedQueries.ts):
+ネストして取得する post や rankingList (および retweetOfFeedItem 内の post/rankingList) の select/include に、上記のいいね情報 (likeCount, likes) が含まれるように調整する。
+(要実行: データ取得定義変更後の prisma generate)
+
+5. Server Actions (lib/actions/likeActions.ts)
+対象ごとにアクションを分ける方針。
+likePostAction(postId: string): Promise<ActionResult>:
+認証、userDbId 取得。
+Like レコード作成 (userId, postId を設定)。
+Post の likeCount をインクリメント (increment: 1)。
+上記2つを $transaction で実行。
+重複いいねエラー (P2002 など) をハンドリング。
+revalidatePath 実行。
+unlikePostAction(postId: string): Promise<ActionResult>:
+認証、userDbId 取得。
+Like レコード削除 (where: { userId, postId })。
+Post の likeCount をデクリメント (decrement: 1)。
+上記2つを $transaction で実行。
+revalidatePath 実行。
+likeRankingListAction(rankingListId: string): Promise<ActionResult>:
+likePostAction と同様のロジックで、対象を RankingList (rankingListId, likeCount) に変更。
+unlikeRankingListAction(rankingListId: string): Promise<ActionResult>:
+unlikePostAction と同様のロジックで、対象を RankingList (rankingListId, likeCount) に変更。
+
+6. UI コンポーネント (FeedInteraction.tsx)
+"use client"。
+Props:
+targetType: 'Post' | 'RankingList' (いいね対象のタイプ)
+targetId: string (postId または rankingListId)
+likeCount: number (初期いいね数)
+initialLiked: boolean (初期いいね状態)
+loggedInUserDbId: string | null (ログインユーザーDB ID)
+内部ロジック:
+useOptimistic で optimisticLiked, optimisticLikeCount を管理。
+useTransition で isPending を管理。
+handleLikeToggle:
+optimisticLiked, optimisticLikeCount を更新。
+targetType に応じて適切な Server Action (likePostAction など) を targetId を引数に呼び出す。
+エラー時の Toast 表示（ロールバックは useOptimistic が担う）。
+表示: optimisticLiked に応じてボタンの見た目を変更し、optimisticLikeCount を表示。
+
+7. 組み込み箇所
+PostCard.tsx, QuoteRetweetCard.tsx:
+"use client" にする。
+loggedInUserDbId を Props で受け取る。
+関連する Post データから initialLiked と likeCount を計算。
+<FeedInteraction targetType='Post' targetId={post.id} ... /> を配置。
+RankingUpdateCard.tsx, RankingListView.tsx:
+"use client" にする。
+loggedInUserDbId を Props で受け取る。
+関連する RankingList データから initialLiked と likeCount を計算。
+<FeedInteraction targetType='RankingList' targetId={rankingList.id} ... /> を配置。
+RetweetCard.tsx:
+"use client" にする。
+loggedInUserDbId を Props で受け取る。
+リツイート元 (originalItem = item.retweetOfFeedItem) のタイプ (originalItem.type) を判定する。
+もし元が POST なら: originalItem.post の情報を使って <FeedInteraction targetType='Post' targetId={originalItem.postId} ... /> を表示。
+もし元が RANKING_UPDATE なら: originalItem.rankingList の情報を使って <FeedInteraction targetType='RankingList' targetId={originalItem.rankingListId} ... /> を表示。
+他のタイプ (例: QUOTE_RETWEET) をリツイートした場合も同様に、元のコンテンツに対するいいね操作になるように実装する。
+
+
+【重要】このメモに基づく次の作業
+
+この仕様で進める場合、次のステップはデータベーススキーマの変更になります。
+
+Retweet モデルの新規作成。
+FeedItem モデルに retweets: Retweet[] と quoteRetweetCount: Int @default(0) を追加。
+Post モデルに likeCount: Int @default(0) を追加。 (いいね対象変更のため)
+RankingList モデルに likeCount: Int @default(0) を追加。 (いいね対象変更のため)
