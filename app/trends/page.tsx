@@ -18,15 +18,16 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { AverageRankListView } from "@/components/component/trends/AverageRankListView";
 
-export default async function TrendsPage({
-  searchParams,
-}: {
-  searchParams?: {
-    tab?: string;
-    sentiment?: string;
-    subject?: string;
-  };
-}) {
+export default async function TrendsPage(
+  props: {
+    searchParams?: Promise<{
+      tab?: string;
+      sentiment?: string;
+      subject?: string;
+    }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const resolvedSearchParams = searchParams ? await searchParams : {};
   const tabParam = resolvedSearchParams.tab;
   const sentimentParam = resolvedSearchParams.sentiment;
@@ -135,15 +136,15 @@ export default async function TrendsPage({
             selectedSentiment &&
             selectedSubject ? (
               // 平均ランク表示コンポーネントを呼び出す
-              <AverageRankListView
+              (<AverageRankListView
                 sentiment={selectedSentiment}
                 subject={selectedSubject}
                 items={averageRankItems}
                 backHref='/trends?tab=total' // 戻り先を指定
-              />
+              />)
             ) : (
               // 人気テーマ一覧表示
-              <div>
+              (<div>
                 <h3 className='text-lg font-semibold mb-4'>人気のテーマ</h3>
                 {popularThemes.length === 0 ? (
                   <p className='text-muted-foreground text-center py-4'>
@@ -180,7 +181,7 @@ export default async function TrendsPage({
                     })}
                   </ul>
                 )}
-              </div>
+              </div>)
             )}
           </div>
         </TabsContent>
@@ -192,15 +193,15 @@ export default async function TrendsPage({
             selectedSentiment &&
             selectedSubject ? (
               // 平均ランク表示
-              <AverageRankListView
+              (<AverageRankListView
                 sentiment={selectedSentiment}
                 subject={selectedSubject}
                 items={averageRankItems}
                 backHref='/trends?tab=total-trends' // 戻り先を指定
-              />
+              />)
             ) : (
               // 週間トレンドテーマ一覧表示
-              <div>
+              (<div>
                 <h3 className='text-lg font-semibold mb-4'>
                   週間トレンドテーマ
                 </h3>
@@ -242,7 +243,7 @@ export default async function TrendsPage({
                     })}
                   </ul>
                 )}
-              </div>
+              </div>)
             )}
           </div>
         </TabsContent>

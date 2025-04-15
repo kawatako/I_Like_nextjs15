@@ -6,7 +6,8 @@ import { notFound } from "next/navigation";
 // import { RankingListEditView } from "@/components/component/rankings/RankingListEditView";
 
 // ページコンポーネントは通常 async 関数になります
-export default async function RankingEditPage({ params }: { params: { listId: string } }) {
+export default async function RankingEditPage(props: { params: Promise<{ listId: string }> }) {
+  const params = await props.params;
   // 1. URLパラメータから listId を取得
   const listId = params.listId;
   console.log(`Rendering edit page for listId: ${listId}`); // ログ
