@@ -13,14 +13,13 @@ import { FollowersList } from "@/components/component/follows/FollowersList";
 import { FollowRequestsList } from "@/components/component/follows/FollowRequestsList";
 
 interface FollowsPageProps {
-  params: { username: string };
-  searchParams: { tab?: string };
+  params: Promise<{ username: string }>;
+  searchParams: Promise<{ tab?: string }>;
 }
 
-export default async function FollowsPage({
-  params,
-  searchParams,
-}: FollowsPageProps) {
+export default async function FollowsPage(props: FollowsPageProps) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   const { username: targetUsername } = params;
   const { userId: loggedInClerkId } = await auth();
   const targetUser = await getUserByUsername(targetUsername);

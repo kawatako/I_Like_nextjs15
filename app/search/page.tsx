@@ -26,17 +26,15 @@ async function SearchResults({ query }: { query: string }) {
       <h1 className="text-2xl font-bold mb-6">
         検索結果: <span className="text-primary">{query}</span>
       </h1>
-
       {/* 結果表示エリア */}
       <div className="border rounded-lg p-4">
         {results.length === 0 ? (
           // 結果がない場合のメッセージ
-          <p className="text-muted-foreground text-center py-4">
-            「{query}」に一致するランキングは見つかりませんでした。
-          </p>
+          (<p className="text-muted-foreground text-center py-4">「{query}」に一致するランキングは見つかりませんでした。
+                      </p>)
         ) : (
           // 結果がある場合のリスト表示
-          <ul className="space-y-1">
+          (<ul className="space-y-1">
             {results.map((ranking) => {
               const prefix = ranking.sentiment === Sentiment.LIKE ? "好きな " : "嫌いな ";
               const displayTitle = prefix + ranking.subject;
@@ -52,7 +50,7 @@ async function SearchResults({ query }: { query: string }) {
                 </li>
               );
             })}
-          </ul>
+          </ul>)
         )}
       </div>
     </div>
@@ -60,13 +58,14 @@ async function SearchResults({ query }: { query: string }) {
 }
 
 // 検索ページのメインコンポーネント (Server Component)
-export default async function SearchPage({
-  searchParams
-}: {
-  searchParams?: {
-    q?: string; // URLクエリパラメータ 'q' を受け取る
+export default async function SearchPage(
+  props: {
+    searchParams?: Promise<{
+      q?: string; // URLクエリパラメータ 'q' を受け取る
+    }>
   }
-}) {
+) {
+  const searchParams = await props.searchParams;
   // searchParams を await で解決 (Next.js 15+)
   const resolvedSearchParams = searchParams ? await searchParams : {};
   // クエリ 'q' を取得し、前後の空白を削除
@@ -77,18 +76,17 @@ export default async function SearchPage({
       {/* query が存在する場合のみ結果表示コンポーネントを呼び出す */}
       {query ? (
         // Suspense で囲み、データ取得中にローディング表示を出す
-        <Suspense fallback={<LoadingSpinner />}>
+        (<Suspense fallback={<LoadingSpinner />}>
           {/*
              @ts-expect-error Async Server Component を Suspense の子として使う場合の
              よくある型エラー回避コメント。通常は問題なく動作します。
           */}
           <SearchResults query={query} />
-        </Suspense>
+        </Suspense>)
       ) : (
         // query がない場合は案内メッセージを表示
-        <div className="text-center p-8 text-muted-foreground">
-          ヘッダーの検索窓からキーワードを入力して検索してください。
-        </div>
+        (<div className="text-center p-8 text-muted-foreground">ヘッダーの検索窓からキーワードを入力して検索してください。
+                  </div>)
       )}
     </div>
   );

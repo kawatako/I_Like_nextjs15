@@ -17,14 +17,14 @@ import { ProfileTabs } from "@/components/component/profile/ProfileTabs";
 import { fetchPosts, type PostWithData } from "@/lib/data/postQueries";
 
 interface ProfilePageProps {
-  params: { username: string };
+  params: Promise<{ username: string }>;
 }
 
 // ★ プロフィールタブ用のデータ取得件数 ★
 const PROFILE_INITIAL_LIMIT = 10;
 
-export default async function ProfilePage({ params }: ProfilePageProps) {
-  const { username } = await params;
+export default async function ProfilePage(props: ProfilePageProps) {
+  const { username } = await props.params;
   const { userId: currentClerkId } = await auth();
 
   // --- ユーザー基本情報とフォロー状態の取得
@@ -88,6 +88,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
         userPosts={userPosts}
         likedPosts={[]}
         isCurrentUser={isCurrentUser}
+        loggedInUserDbId={loggedInUserDbId} // ログインユーザーのDB IDを渡す
       />
     </>
   );

@@ -37,13 +37,16 @@ export default function MainContent({
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md flex flex-col h-full">
       {/* プロフィールタブを表示 */}
       <ProfileTabs
-        userId={targetUserData.id}
+        targetUserId={targetUserData.id} // ★ userId={...} を targetUserId={...} に変更 ★
         username={targetUserData.username}
-        publishedLists={publishedLists}
-        draftLists={draftLists}
+        initialPublishedLists={publishedLists}
+        publishedNextCursor={null} // 仮: page.tsx から渡す必要あり
+        initialDraftLists={draftLists}
+        draftNextCursor={null} // 仮: page.tsx から渡す必要あり
         userPosts={userPosts}
-        likedPosts={likedPosts} // いいねした投稿を渡す
+        likedPosts={likedPosts}
         isCurrentUser={isCurrentUser}
+        loggedInUserDbId={currentLoginUserDbId} // ログインユーザーのDB IDを渡す
       />
     </div>
   );

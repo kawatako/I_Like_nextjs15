@@ -12,29 +12,29 @@ import { ListStatus } from "@prisma/client"; // ★ ListStatus をインポー�
 
 // ★ Props の型定義を変更 ★
 interface ProfileTabsProps {
-  targetUserId: string; // ★ 対象ユーザーIDを追加 ★
-  username: string;
-  // ランキングリストは初期データとカーソルを受け取る
-  initialPublishedLists: RankingSnippetForProfile[];
-  publishedNextCursor: string | null;
-  initialDraftLists: RankingSnippetForProfile[];
-  draftNextCursor: string | null;
-  // 投稿といいねはそのまま
-  userPosts: PostWithData[];
-  likedPosts: PostWithData[];
-  isCurrentUser: boolean;
+  targetUserId: string; // ① プロフィール対象ユーザーのDB ID
+  username: string; // ② プロフィール対象ユーザーのユーザー名
+  initialPublishedLists: RankingSnippetForProfile[];  //③ 公開リストの初期データ
+  publishedNextCursor: string | null; // ④ 公開リストの次のカーソル
+  initialDraftLists: RankingSnippetForProfile[];  // ⑤ 下書きリストの初期データ
+  draftNextCursor: string | null; // ⑥ 下書きリストの次のカーソル
+  userPosts: PostWithData[];  // ⑦ ユーザーの投稿データ
+  likedPosts: PostWithData[]; // ⑧ いいねした投稿データ
+  isCurrentUser: boolean; // ⑨ 自分のプロフィールかどうかのフラグ
+  loggedInUserDbId: string | null;  // ⑩ ログイン中ユーザーのDB ID
 }
 
 export function ProfileTabs({
-  targetUserId, // ★ 受け取る
+  targetUserId,
   username,
-  initialPublishedLists, // ★ 受け取る
-  publishedNextCursor, // ★ 受け取る
-  initialDraftLists, // ★ 受け取る
-  draftNextCursor, // ★ 受け取る
+  initialPublishedLists,
+  publishedNextCursor,
+  initialDraftLists,
+  draftNextCursor,
   userPosts,
   likedPosts,
   isCurrentUser,
+  loggedInUserDbId
 }: ProfileTabsProps) {
   const searchParams = useSearchParams();
   const currentTab = searchParams.get("tab");

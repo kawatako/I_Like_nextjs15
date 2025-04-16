@@ -2,8 +2,8 @@
 
 import { useActionState } from "react"
 import { useEffect, useRef } from "react";
-import type { User } from "@prisma/client"; // Prisma の User 型をインポート
-import type { ActionState } from "@/lib/actions/types";
+import type { User } from "@prisma/client";
+import type { ActionResult } from "@/lib/types";
 import { updateUserProfileDetailsAction } from "@/lib/actions/userActons"; // 作成したアクションをインポート
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -17,7 +17,7 @@ interface EditCustomProfileFormProps {
   userData: Pick<User, 'name' | 'bio' | 'coverImageUrl' | 'socialLinks'>;
 }
 
-const initialState: ActionState = {
+const initialState: ActionResult = {
   success: false,
 };
 

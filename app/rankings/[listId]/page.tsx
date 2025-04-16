@@ -1,19 +1,21 @@
 // app/rankings/[listId]/page.tsx
-import { auth } from '@clerk/nextjs/server';
-import Link from 'next/link';
-import { notFound } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { getRankingDetailsForView } from '@/lib/data/rankingQueries';
-import { RankingListView } from '@/components/component/rankings/RankingListView';
+import { auth } from "@clerk/nextjs/server";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { getRankingDetailsForView } from "@/lib/data/rankingQueries";
+import { RankingListView } from "@/components/component/rankings/RankingListView";
 
 interface RankingDetailPageProps {
-  params: {
+  params: Promise<{
     listId: string;
-  };
+  }>;
 }
 
-export default async function RankingDetailPage({ params }: RankingDetailPageProps) {
-  const { listId } = await params;
+export default async function RankingDetailPage(
+  props: RankingDetailPageProps
+) {
+  const { listId } = await props.params;
   const { userId: loggedInUserId } = await auth();
 
   // 閲覧用のランキングデータを取得
@@ -31,9 +33,9 @@ export default async function RankingDetailPage({ params }: RankingDetailPagePro
     <>
       {/* 所有者であれば編集ボタンを表示 */}
       {isOwner && (
-        <div className="mb-6 flex justify-end">
+        <div className='mb-6 flex justify-end'>
           <Link href={`/rankings/${listId}/edit`} passHref>
-            <Button variant="outline">編集する</Button>
+            <Button variant='outline'>編集する</Button>
           </Link>
         </div>
       )}
