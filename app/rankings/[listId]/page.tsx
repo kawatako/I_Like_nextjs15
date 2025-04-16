@@ -7,15 +7,15 @@ import { getRankingDetailsForView } from "@/lib/data/rankingQueries";
 import { RankingListView } from "@/components/component/rankings/RankingListView";
 
 interface RankingDetailPageProps {
-  params: {
+  params: Promise<{
     listId: string;
-  };
+  }>;
 }
 
-export default async function RankingDetailPage({
-  params,
-}: RankingDetailPageProps) {
-  const { listId } = await params;
+export default async function RankingDetailPage(
+  props: RankingDetailPageProps
+) {
+  const { listId } = await props.params;
   const { userId: loggedInUserId } = await auth();
 
   // 閲覧用のランキングデータを取得

@@ -88,6 +88,7 @@ export default async function ProfilePage(props: ProfilePageProps) {
         userPosts={userPosts}
         likedPosts={[]}
         isCurrentUser={isCurrentUser}
+        loggedInUserDbId={loggedInUserDbId} // ログインユーザーのDB IDを渡す
       />
     </>
   );
