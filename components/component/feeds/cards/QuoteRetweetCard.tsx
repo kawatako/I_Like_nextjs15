@@ -1,129 +1,273 @@
 // components/component/feeds/cards/QuoteRetweetCard.tsx
+"use client";
 
-import Link from 'next/link';
+import { useState, useTransition, useCallback, SVGProps } from "react";
+import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { HeartIcon, MessageCircleIcon, RepeatIcon, ShareIcon } from "@/components/component/Icons"; // 自作アイコン
-import type { FeedItemWithRelations } from '@/lib/data/feedQueries';
-import { formatDistanceToNowStrict } from 'date-fns';
-import { ja } from 'date-fns/locale';
+import {
+  MessageCircleIcon,
+  RepeatIcon,
+  ShareIcon,
+  TrashIcon,
+} from "@/components/component/Icons";
+import FeedInteraction from "@/components/component/likes/FeedInteraction"; // いいね・コメント用
+import type { FeedItemWithRelations } from "@/lib/types"
+import type { PostWithData } from "@/lib/data/postQueries"; // Post の型も使う
+import type { RankingList } from "@prisma/client"; // RankingList 型
+import { formatDistanceToNowStrict } from "date-fns";
+import { ja } from "date-fns/locale";
+// ★ 引用リツイート削除アクションをインポート ★
+import { deleteQuoteRetweetAction } from "@/lib/actions/feedActions"; // または適切なパス
+import { useToast } from "@/components/hooks/use-toast";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"; // ★ 削除確認ダイアログ用 ★
 
-interface QuoteRetweetCardProps {
-  item: FeedItemWithRelations; // 引用リツイートを表す FeedItem データ
-}
 
-// 引用元のプレビューを表示する小さなコンポーネント (内部 or 別ファイル)
-function QuotedItemPreview({ originalItem }: { originalItem: FeedItemWithRelations['quotedFeedItem'] }) {
+
+// --- 引用元プレビュー用コンポーネント (内部または別ファイル) ---
+// ★ FeedItemWithRelations['quotedFeedItem'] は Optional なので型ガードが必要 ★
+// ★ originalItem の型も payload に合わせて調整が必要になる可能性 ★
+type QuotedItemType = NonNullable<FeedItemWithRelations["quotedFeedItem"]>; // NonNullable で null/undefined を除去
+
+function QuotedItemPreview({ originalItem }: { originalItem: QuotedItemType }) {
+  // タイプガード (より安全に)
   if (!originalItem) return null;
 
   const originalUser = originalItem.user;
   const originalPost = originalItem.post;
   const originalRankingList = originalItem.rankingList;
 
-  // 引用元の詳細ページへのリンクパス (仮)
-  // 元のタイプによってパスが変わる可能性も考慮 (ここでは FeedItem ID を使う例)
-  const originalLink = `/status/${originalItem.id}`; // TODO: 正しいリンク先に修正
+  // 引用元の詳細ページへのリンク (仮) - 本来は type によって変えるべき
+  const originalLink = `/status/${originalItem.id}`; // FeedItem ID を使う例
 
   return (
-    <Link href={originalLink} className="mt-2 block border rounded-lg p-3 hover:bg-gray-100/50 dark:hover:bg-gray-700/50 dark:border-gray-700">
-      <div className="flex items-center space-x-2 text-sm mb-1">
-        <Avatar className="h-5 w-5"> {/* 小さめのアバター */}
+    <Link
+      href={originalLink}
+      className='mt-2 block border rounded-lg p-3 hover:bg-gray-100/50 dark:hover:bg-gray-700/50 dark:border-gray-700'
+    >
+      <div className='flex items-center space-x-2 text-sm mb-1'>
+        <Avatar className='h-5 w-5'>
           <AvatarImage src={originalUser.image ?? undefined} />
-          <AvatarFallback>{originalUser.name ? originalUser.name.charAt(0).toUpperCase() : originalUser.username.charAt(0).toUpperCase()}</AvatarFallback>
+          <AvatarFallback>
+            {originalUser.name
+              ? originalUser.name.charAt(0).toUpperCase()
+              : originalUser.username.charAt(0).toUpperCase()}
+          </AvatarFallback>
         </Avatar>
-        <span className="font-semibold text-gray-800 dark:text-gray-200">{originalUser.name ?? originalUser.username}</span>
-        <span className="text-gray-500 dark:text-gray-400">@{originalUser.username}</span>
-        <span className="text-gray-500 dark:text-gray-400">·</span>
-        <time dateTime={new Date(originalItem.createdAt).toISOString()} className="text-gray-500 dark:text-gray-400 text-xs">
-          {/* 元の投稿日時を簡易表示 */}
-          {new Date(originalItem.createdAt).toLocaleDateString('ja-JP', { year: 'numeric', month: 'short', day: 'numeric' })}
+        <span className='font-semibold text-gray-800 dark:text-gray-200'>
+          {originalUser.name ?? originalUser.username}
+        </span>
+        <span className='text-gray-500 dark:text-gray-400'>
+          @{originalUser.username}
+        </span>
+        <time
+          dateTime={new Date(originalItem.createdAt).toISOString()}
+          className='text-gray-500 dark:text-gray-400 text-xs ml-auto'
+        >
+          {" "}
+          {/* ml-auto で右寄せ */}
+          {new Date(originalItem.createdAt).toLocaleDateString("ja-JP", {
+            month: "short",
+            day: "numeric",
+          })}
         </time>
       </div>
-      {/* 引用元のコンテンツ概要 */}
-      {originalItem.type === 'POST' && originalPost && (
-        <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-3">{originalPost.content}</p> // 3行まで表示例
+      {/* 引用元のコンテンツ */}
+      {originalItem.type === "POST" && originalPost && (
+        <p className='text-sm text-gray-600 dark:text-gray-400 line-clamp-3'>
+          {originalPost.content}
+        </p>
       )}
-      {originalItem.type === 'RANKING_UPDATE' && originalRankingList && (
-         <p className="text-sm text-gray-600 dark:text-gray-400">[👑] {originalRankingList.subject}</p>
+      {originalItem.type === "RANKING_UPDATE" && originalRankingList && (
+        <p className='text-sm text-gray-600 dark:text-gray-400'>
+          [👑] {originalRankingList.subject}
+        </p>
       )}
-      {/* 他のタイプの引用元も必要なら追加 */}
+      {/* 他のタイプもプレビューするならここに追加 */}
     </Link>
   );
 }
 
+// --- Props ---
+interface QuoteRetweetCardProps {
+  item: FeedItemWithRelations; // 引用リツイート FeedItem
+  loggedInUserDbId: string | null; // ログインユーザー DB ID
+}
 
-export default function QuoteRetweetCard({ item }: QuoteRetweetCardProps) {
-  // タイプ違い、引用コメント(post)、引用元(quotedFeedItem)がない場合は表示しない
-  if (item.type !== 'QUOTE_RETWEET' || !item.post || !item.quotedFeedItem) {
-    console.warn('Invalid data for QuoteRetweetCard:', item);
+// --- QuoteRetweetCard 本体 ---
+export default function QuoteRetweetCard({
+  item,
+  loggedInUserDbId,
+}: QuoteRetweetCardProps) {
+  const { toast } = useToast();
+  const [isDeleting, startDeleteTransition] = useTransition(); // 削除処理中の状態
+
+  // タイプガードとデータ存在チェック
+  if (item.type !== "QUOTE_RETWEET" || !item.post || !item.quotedFeedItem) {
+    console.warn("Invalid data for QuoteRetweetCard:", item);
     return null;
   }
 
   const user = item.user; // 引用RTしたユーザー
-  const quoteCommentPost = item.post; // 引用コメント
+  const quoteCommentPost = item.post; // 引用コメント (PostWithData 型のはず)
   const originalItem = item.quotedFeedItem; // 引用元 FeedItem
 
   const timeAgo = formatDistanceToNowStrict(new Date(item.createdAt), {
-    addSuffix: true, locale: ja,
+    addSuffix: true,
+    locale: ja,
   });
 
+  // ★ いいね機能のための Props を準備 (引用コメント Post に対して) ★
+  const initialLiked = loggedInUserDbId
+    ? quoteCommentPost.likes?.some(
+        (like) => like.userId === loggedInUserDbId
+      ) ?? false
+    : false;
+  const likeCount = quoteCommentPost._count?.likes ?? 0;
+  const commentCount = quoteCommentPost._count?.replies ?? 0;
+
+  // ★ 削除処理ハンドラ ★
+  const handleDelete = () => {
+    startDeleteTransition(async () => {
+      try {
+        const result = await deleteQuoteRetweetAction(item.id); // この FeedItem の ID を渡す
+        if (result.success) {
+          toast({ title: "引用リツイートを削除しました。" });
+          // TODO: タイムラインからこのカードを削除する処理 (State 更新 or 再検証)
+          // 例: 親コンポーネントに削除イベントを通知するコールバックを渡す
+        } else {
+          throw new Error(result.error);
+        }
+      } catch (error) {
+        toast({
+          title: "削除エラー",
+          description:
+            error instanceof Error ? error.message : "削除に失敗しました。",
+          variant: "destructive",
+        });
+      }
+    });
+  };
+
+  // ログインユーザーがこの引用RTの投稿者か
+  const isOwner = loggedInUserDbId === item.userId;
+
   return (
-    <div className="flex space-x-3 border-b p-4 transition-colors hover:bg-gray-50/50 dark:hover:bg-gray-800/50">
-      {/* Left: Avatar */}
+    <div className='flex space-x-3 border-b p-4 transition-colors hover:bg-gray-50/50 dark:hover:bg-gray-800/50'>
+      {/* Avatar */}
       <div>
         <Link href={`/profile/${user.username}`}>
-          <Avatar>
+          <Avatar className='w-10 h-10'>
+            {" "}
+            {/* サイズ統一 */}
             <AvatarImage src={user.image ?? undefined} />
             <AvatarFallback>
-              {user.name ? user.name.charAt(0).toUpperCase() : user.username.charAt(0).toUpperCase()}
+              {user.name
+                ? user.name.charAt(0).toUpperCase()
+                : user.username.charAt(0).toUpperCase()}
             </AvatarFallback>
           </Avatar>
         </Link>
       </div>
 
-      {/* Right: Content */}
-      <div className="flex-1 space-y-1">
-        {/* Header: User Info & Timestamp */}
-        <div className="flex items-center space-x-1 text-sm">
-          <Link href={`/profile/${user.username}`} className="font-semibold hover:underline">
+      {/* Content */}
+      <div className='flex-1 space-y-1'>
+        {/* Header */}
+        <div className='flex items-center space-x-1 text-sm'>
+          <Link
+            href={`/profile/${user.username}`}
+            className='font-semibold hover:underline'
+          >
             {user.name ?? user.username}
           </Link>
-          <span className="text-gray-500 dark:text-gray-400">@{user.username}</span>
-          <span className="text-gray-500 dark:text-gray-400">·</span>
-          <time dateTime={new Date(item.createdAt).toISOString()} className="text-gray-500 dark:text-gray-400 hover:underline">
+          <span className='text-gray-500 dark:text-gray-400'>
+            @{user.username}
+          </span>
+          <span className='text-gray-500 dark:text-gray-400'>·</span>
+          <time
+            dateTime={new Date(item.createdAt).toISOString()}
+            className='text-gray-500 dark:text-gray-400 hover:underline'
+          >
             {timeAgo}
           </time>
+          {/* ★ 自分の投稿なら削除ボタン表示 ★ */}
+          {isOwner && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant='ghost'
+                  size='icon'
+                  className='ml-auto h-7 w-7'
+                  disabled={isDeleting}
+                >
+                  <TrashIcon className='h-4 w-4 text-muted-foreground hover:text-destructive' />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>
+                    引用リツイートを削除しますか？
+                  </AlertDialogTitle>
+                  <AlertDialogDescription>
+                    この操作は元に戻せません。引用コメントとタイムライン項目が完全に削除されます。
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>キャンセル</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={handleDelete}
+                    disabled={isDeleting}
+                  >
+                    {isDeleting ? "削除中..." : "削除する"}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
         </div>
 
         {/* Body: Quote Comment */}
-        <p className="text-gray-800 dark:text-gray-200 whitespace-pre-wrap break-words">
+        <p className='text-gray-800 dark:text-gray-200 whitespace-pre-wrap break-words'>
           {quoteCommentPost.content}
         </p>
-        {/* TODO: 引用コメントに画像がある場合の表示 */}
-        {/* {quoteCommentPost.imageUrl && ... } */}
-
 
         {/* Quoted Item Preview */}
         <QuotedItemPreview originalItem={originalItem} />
 
-
         {/* Footer: Action Buttons */}
-        {/* この引用リツイート自体に対するアクションボタン */}
-        <div className="flex justify-between pt-2 text-gray-500 dark:text-gray-400">
-           <Button variant="ghost" size="sm" className="flex items-center space-x-1 hover:text-blue-500">
-            <MessageCircleIcon className="h-[18px] w-[18px]" />
-            <span>0</span> {/* TODO: この引用RTへの返信数を表示 */}
+        <div className='flex justify-start pt-2 -ml-2'>
+          {" "}
+          {/* 左寄せ */}
+          <FeedInteraction
+            targetType='Post'
+            targetId={quoteCommentPost.id} // ★ 引用コメント Post の ID ★
+            likeCount={likeCount}
+            initialLiked={initialLiked}
+            commentCount={commentCount}
+          />
+          {/* リツイートボタン (この引用RT自体を対象とする) */}
+          <Button
+            variant='ghost'
+            size='sm'
+            className='flex items-center space-x-1 hover:text-green-500'
+          >
+            <RepeatIcon className='h-[18px] w-[18px]' />
+            {/* ★ 引用RTのリツイート数は FeedItem の _count を使う必要あり ★ */}
+            <span>{item._count?.retweets ?? 0}</span>
           </Button>
-          <Button variant="ghost" size="sm" className="flex items-center space-x-1 hover:text-green-500">
-            <RepeatIcon className="h-[18px] w-[18px]" />
-             <span>0</span> {/* TODO: この引用RTのリツイート数を表示 */}
-          </Button>
-          <Button variant="ghost" size="sm" className="flex items-center space-x-1 hover:text-red-500">
-            <HeartIcon className="h-[18px] w-[18px]" />
-             <span>0</span> {/* TODO: この引用RTのいいね数を表示 */}
-          </Button>
-          <Button variant="ghost" size="icon" className="hover:text-blue-500">
-            <ShareIcon className="h-[18px] w-[18px]" />
+          {/* 共有ボタン */}
+          <Button variant='ghost' size='icon' className='hover:text-blue-500'>
+            <ShareIcon className='h-[18px] w-[18px]' />
           </Button>
         </div>
       </div>

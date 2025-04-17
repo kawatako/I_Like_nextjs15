@@ -3,6 +3,13 @@
 import prisma from "@/lib/client"; // Prisma Client のインポートパスを確認・修正
 import { ListStatus, Prisma, Sentiment } from "@prisma/client";
 
+export const userSnippetSelect = {
+  id: true,
+  username: true,
+  name: true,
+  image: true,
+} satisfies Prisma.UserSelect;
+
 //Clerk ID を基に、データベース内の対応するユーザーの内部ID (User.id) を取得
 export async function getUserDbIdByClerkId(clerkId: string | null | undefined): Promise<string | null> {
   if (!clerkId) {

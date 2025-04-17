@@ -9,8 +9,7 @@ import { Loader2 } from "lucide-react"; // ローディングアイコン
 
 // ★ サーバーアクションと関連する型をインポート (パス確認) ★
 import { getPaginatedFollowing } from "@/lib/actions/followActions";
-// ★ UserSnippet 型が followActions.ts で export されているか確認 ★
-import type { UserSnippet } from "@/lib/actions/followActions";
+import type { UserSnippet } from "@/lib/types";
 
 interface FollowingListProps {
   targetUserId: string; // フォローリストを表示する対象ユーザーのDB ID

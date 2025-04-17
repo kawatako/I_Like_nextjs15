@@ -901,3 +901,18 @@ Retweet モデルの新規作成。
 FeedItem モデルに retweets: Retweet[] と quoteRetweetCount: Int @default(0) を追加。
 Post モデルに likeCount: Int @default(0) を追加。 (いいね対象変更のため)
 RankingList モデルに likeCount: Int @default(0) を追加。 (いいね対象変更のため)
+
+
+
+# 現状で残っている主な実装・確認事項 (Post/Retweet/Quote関連):
+
+インタラクションボタンの実装:
+リツイート/引用ボタン: 各カード (PostCard, RankingUpdateCard, RetweetCard, QuoteRetweetCard) に、リツイートや引用リツイートを行うためのボタン（またはメニュー）を設置し、クリック時に対応する Server Action (retweetAction, quoteRetweetAction) を呼び出す処理が必要です。引用の場合はコメント入力 UI も必要になります。
+リツイート取り消しボタン: RetweetCard で、それが自分のリツイートの場合に「取り消す」ボタンを表示し、undoRetweetAction を呼び出す処理が必要です。（これは前回の RetweetCard コード例に含まれています）
+削除ボタン: 自分の投稿 (PostCard) や引用リツイート (QuoteRetweetCard) に対して、削除ボタンを表示し、対応する削除アクション (deletePostAction - 未作成?, deleteQuoteRetweetAction) を呼び出す処理が必要です。
+各種カウント数の表示:
+各カードに、いいね数、コメント（リプライ）数、リツイート数、引用リツイート数を表示する処理が必要です。データ取得 (feedItemPayload, postPayload) でカウントは取得できるようにしたので、それを UI に反映させます。（いいね数・コメント数は FeedInteraction が担当）
+自分のリツイート非表示:
+ホームタイムライン (TimelineFeed.tsx) で、自分自身が行ったリツイートは表示しないようにするフィルタリング処理が必要です。（以前提案した loadMoreItems 関数内での .filter() など）
+詳細ページへのリンク:
+各カードから、投稿やランキングリストの詳細ページへ正しくリンクできるように、<Link> の href を設定し、必要であれば詳細ページ自体を実装します。

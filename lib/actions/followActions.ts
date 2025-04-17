@@ -7,6 +7,7 @@ import { getUserDbIdByClerkId } from "@/lib/data/userQueries";
 import { revalidatePath } from "next/cache";
 import { auth } from "@clerk/nextjs/server";
 import { PaginatedResponse, ActionResult } from "../types";
+import type { UserSnippet } from "@/lib/types";
 
 // ユーザー情報の型定義 (変更なし)
 const userSnippetSelect = {
@@ -15,10 +16,6 @@ const userSnippetSelect = {
   name: true,
   image: true,
 } satisfies Prisma.UserSelect;
-
-export type UserSnippet = Prisma.UserGetPayload<{
-  select: typeof userSnippetSelect;
-}>;
 
 // フォローリクエストの型定義 (変更なし)
 const followRequestWithRequesterPayload =

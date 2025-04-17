@@ -1,106 +1,185 @@
 // components/component/feeds/TimelineFeed.tsx
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
-import type { FeedItemWithRelations } from "@/lib/data/feedQueries";
+import { useState, useEffect, useRef, useCallback, useTransition } from "react"; // ★ useTransition をインポート ★
+import type { FeedItemWithRelations } from "@/lib/types"
 import PostCard from "./cards/PostCard";
 import RankingUpdateCard from "./cards/RankingUpdateCard";
 import RetweetCard from "./cards/RetweetCard";
 import QuoteRetweetCard from "./cards/QuoteRetweetCard";
-import { loadMoreFeedItemsAction } from '@/lib/actions/feedActions';
+import { loadMoreFeedItemsAction } from "@/lib/actions/feedActions"; // ★ Server Action をインポート ★
+import { FeedType } from "@prisma/client"; // ★ FeedType Enum をインポート ★
+import { Loader2 } from "lucide-react"; // ローディングアイコン用
+import { useToast } from "@/components/hooks/use-toast"; // ★ Toast をインポート ★
 
 interface TimelineFeedProps {
   initialItems: FeedItemWithRelations[];
   initialNextCursor: string | null;
-  // 必要であれば userId なども受け取る
+  loggedInUserDbId: string | null;
 }
 
 export default function TimelineFeed({
   initialItems,
   initialNextCursor,
+  loggedInUserDbId,
 }: TimelineFeedProps) {
   const [feedItems, setFeedItems] =
     useState<FeedItemWithRelations[]>(initialItems);
   const [cursor, setCursor] = useState<string | null>(initialNextCursor);
-  const [isLoading, setIsLoading] = useState(false);
-  const [hasMore, setHasMore] = useState(!!initialNextCursor); // カーソルがあれば true
-  const observerRef = useRef<HTMLDivElement | null>(null); // Intersection Observer 用
+  const [isLoading, setIsLoading] = useState(false); // データの追加読み込み中
+  const [hasMore, setHasMore] = useState(!!initialNextCursor);
+  const [isPending, startTransition] = useTransition(); // ★ Server Action 実行中の状態管理 ★
+  const observerRef = useRef<HTMLDivElement | null>(null);
+  const { toast } = useToast(); // ★ Toast フック ★
 
-  // ★ 無限スクロールのためのデータ読み込み関数
+  // ★ 無限スクロールのためのデータ読み込み関数 (実装) ★
   const loadMoreItems = useCallback(async () => {
-    if (isLoading || !hasMore || !cursor) return;
-    setIsLoading(true);
-    console.log("Attempting to load more items with cursor:", cursor);
+    // ローディング中、これ以上ない、カーソルがない場合は中断
+    if (isLoading || isPending || !hasMore || !cursor) return;
 
-    try {
-      // --- ここで Server Action を呼び出す (今後実装) ---
-      // const result = await loadMoreFeedItemsAction(cursor);
-      alert("Load more function not implemented yet."); // 仮のアラート
-      setHasMore(false); // 仮で停止
-    } catch (error) {
-      console.error("Error loading more items:", error);
-      setHasMore(false); // エラー時は停止
-    } finally {
-      setIsLoading(false);
-    }
-  }, [cursor, hasMore, isLoading]);
+    setIsLoading(true); // UI 上のローディング表示用
+    console.log("TimelineFeed: Loading more items with cursor:", cursor);
 
-  // ★ Intersection Observer の設定 ★
+    startTransition(async () => {
+      // Server Action 呼び出しを Transition でラップ
+      try {
+        // Server Action を呼び出して次のデータを取得
+        const result = await loadMoreFeedItemsAction(cursor);
+
+        if (result && result.items) {
+          // ★ 自分のリツイートを除外するフィルタリング ★
+          const newItems = result.items.filter(
+            (newItem) =>
+              !(
+                newItem.type === FeedType.RETWEET &&
+                newItem.userId === loggedInUserDbId
+              )
+          );
+
+          setFeedItems((prevItems) => [...prevItems, ...newItems]);
+          setCursor(result.nextCursor);
+          setHasMore(result.nextCursor !== null);
+          console.log(
+            `TimelineFeed: Loaded ${newItems.length} new items. Next cursor: ${result.nextCursor}`
+          );
+        } else {
+          // result が予期しない形式の場合
+          console.warn(
+            "TimelineFeed: loadMoreFeedItemsAction returned unexpected data:",
+            result
+          );
+          setHasMore(false); // 安全のため停止
+        }
+      } catch (error) {
+        console.error("TimelineFeed: Error loading more items:", error);
+        toast({
+          // ★ エラー時にトースト表示 ★
+          title: "エラー",
+          description: "タイムラインの読み込みに失敗しました。",
+          variant: "destructive",
+        });
+        setHasMore(false); // エラー時は停止
+      } finally {
+        setIsLoading(false); // UI ローディング解除
+      }
+    });
+  }, [
+    cursor,
+    hasMore,
+    isLoading,
+    isPending,
+    loggedInUserDbId,
+    toast,
+    startTransition,
+  ]); // ★ 依存配列に isPending, loggedInUserDbId, toast, startTransition を追加 ★
+
+  // Intersection Observer の設定 (変更なし)
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && hasMore && !isLoading) {
+        if (entries[0].isIntersecting && hasMore && !isLoading && !isPending) {
+          // ★ !isPending も条件に追加 ★
           loadMoreItems();
         }
       },
-      { threshold: 1.0 }
+      { threshold: 0.1 } // 10%見えたらトリガー
     );
-
     const currentObserverRef = observerRef.current;
     if (currentObserverRef) {
       observer.observe(currentObserverRef);
     }
-
     return () => {
       if (currentObserverRef) {
         observer.unobserve(currentObserverRef);
       }
     };
-  }, [hasMore, isLoading, loadMoreItems]);
+  }, [hasMore, isLoading, isPending, loadMoreItems]); // ★ isPending を依存配列に追加 ★
 
   return (
     <div className='space-y-0'>
-      {" "}
-      {/* カード間のデフォルトマージンは PostCard 側で制御するので 0 に */}
       {feedItems.map((item) => {
-        // --- item.type に応じて表示するコンポーネントを切り替える ---
+        // ★ 自分のリツイートはここでフィルタリングせず、loadMoreItems 内で行う ★
+        // if (item.type === FeedType.RETWEET && item.userId === loggedInUserDbId) {
+        //   return null;
+        // }
+
         switch (item.type) {
-          case "POST":
-            return <PostCard key={item.id} item={item} />;
-          case "RANKING_UPDATE":
-            return <RankingUpdateCard key={item.id} item={item} />;
-          case "RETWEET":
-            return <RetweetCard key={item.id} item={item} />;
-          case "QUOTE_RETWEET":
-            return <QuoteRetweetCard key={item.id} item={item} />;
+          // ★ Enum を使用 ★
+          case FeedType.POST:
+            return (
+              <PostCard
+                key={item.id}
+                item={item}
+                loggedInUserDbId={loggedInUserDbId}
+              />
+            );
+          case FeedType.RANKING_UPDATE:
+            return (
+              <RankingUpdateCard
+                key={item.id}
+                item={item}
+                loggedInUserDbId={loggedInUserDbId}
+              />
+            );
+          case FeedType.RETWEET:
+            return (
+              <RetweetCard
+                key={item.id}
+                item={item}
+                loggedInUserDbId={loggedInUserDbId}
+              />
+            );
+          case FeedType.QUOTE_RETWEET:
+            return (
+              <QuoteRetweetCard
+                key={item.id}
+                item={item}
+                loggedInUserDbId={loggedInUserDbId}
+              />
+            );
           default:
-            // 未知のタイプや表示未対応の場合は null またはプレースホルダーを表示
             console.warn("Unknown FeedItem type:", item.type, item.id);
             return (
               <div key={item.id} className='border-b p-3'>
-                <p>Unknown or unsupported feed item type: {item.type}</p>
+                {" "}
+                <p>Unknown feed item type: {item.type}</p>{" "}
               </div>
             );
         }
       })}
-      {/* 読み込みトリガー / ローディング表示 / 終端表示 (変更なし) */}
+
+      {/* 読み込みトリガー / ローディング表示 / 終端表示 */}
+      {/* ★ ローディングアイコンに Loader2 (lucide-react) を使用する例 ★ */}
       <div ref={observerRef} className='h-10 flex justify-center items-center'>
-        {isLoading && <p className='text-gray-500'>読み込み中...</p>}
-        {!isLoading && !hasMore && feedItems.length > 0 && (
-          <p className='text-gray-500'>これ以上ありません</p>
+        {(isLoading || isPending) && (
+          <Loader2 className='h-6 w-6 animate-spin text-muted-foreground' />
+        )}
+        {!isLoading && !isPending && !hasMore && feedItems.length > 0 && (
+          <p className='text-gray-500 text-sm'>これ以上ありません</p>
         )}
       </div>
-      {feedItems.length === 0 && !isLoading && (
+      {/* 初期データも空で、読み込み中でもない場合 */}
+      {feedItems.length === 0 && !isLoading && !isPending && !hasMore && (
         <p className='text-center text-gray-500 py-4'>
           表示する投稿がありません。
         </p>
