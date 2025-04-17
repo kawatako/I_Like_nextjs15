@@ -9,7 +9,7 @@ import { Loader2 } from "lucide-react";
 
 // ★ サーバーアクションと型をインポート (getPaginatedFollowers に変更) ★
 import { getPaginatedFollowers } from "@/lib/actions/followActions";
-import type { UserSnippet } from "@/lib/actions/followActions"; // UserSnippet 型は共通
+import type { UserSnippet } from "@/lib/types"
 
 interface FollowersListProps {
   targetUserId: string; // フォロワーリストを表示する対象ユーザーのDB ID

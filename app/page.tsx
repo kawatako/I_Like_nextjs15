@@ -4,7 +4,7 @@ import { getCurrentLoginUserData } from "@/lib/data/userQueries";
 import { getHomeFeed } from "@/lib/data/feedQueries";
 import { auth } from "@clerk/nextjs/server";
 import { notFound, redirect } from "next/navigation";
-import type { FeedItemWithRelations } from "@/lib/data/feedQueries";
+import type { FeedItemWithRelations } from "@/lib/types";
 
 export default async function Home() {
   const { userId: clerkId } = await auth();
