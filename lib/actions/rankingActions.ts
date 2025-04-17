@@ -9,9 +9,7 @@ import { Sentiment, Prisma, ListStatus, FeedType } from "@prisma/client";
 import { redirect } from "next/navigation";
 import { getProfileRankingsPaginated } from "@/lib/data/rankingQueries";
 import {
-  type RankingSnippetForProfile,
-  getUserDbIdByClerkId,
-} from "@/lib/data/userQueries";
+  type RankingSnippetForProfile} from "@/lib/types"
 import type { ActionResult, PaginatedResponse } from "@/lib/types";
 
 

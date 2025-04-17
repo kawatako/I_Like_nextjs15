@@ -6,7 +6,10 @@ import { useActionState } from "react"; // ★ インポート元を 'react' に
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { createPostAction, CreatePostActionResult } from "@/lib/actions/postActions";
+import {
+  createPostAction,
+  CreatePostActionResult,
+} from "@/lib/actions/postActions";
 
 // 仮のユーザー情報
 const currentUser = {
@@ -20,9 +23,12 @@ const currentUser = {
 export default function PostForm() {
   // ★ useActionState を使用 ★
   // 戻り値に isPending が含まれる
-  const [state, formAction, isPending] = useActionState<CreatePostActionResult | null, FormData>(
-     createPostAction,
-     null // 初期状態
+  const [state, formAction, isPending] = useActionState<
+    CreatePostActionResult | null,
+    FormData
+  >(
+    createPostAction,
+    null // 初期状態
   );
 
   const formRef = useRef<HTMLFormElement>(null); // フォームリセット用
@@ -33,8 +39,8 @@ export default function PostForm() {
       formRef.current?.reset(); // フォームの内容をリセット
       console.log(state.message); // 例: 成功メッセージ
     } else if (state && !state.success && state.message) {
-       console.error(state.message); // 例: エラーメッセージ
-       // ここで Toast を表示するなど
+      console.error(state.message); // 例: エラーメッセージ
+      // ここで Toast を表示するなど
     }
   }, [state]);
 
@@ -53,11 +59,11 @@ export default function PostForm() {
           maxLength={280}
           className='w-full resize-none border-none focus-visible:ring-0 focus-visible:ring-offset-0'
           disabled={isPending} // ★ isPending を直接利用
-          key={state?.success ? Date.now() : 'content-area'} // リセット用の key (任意)
+          key={state?.success ? Date.now() : "content-area"} // リセット用の key (任意)
         />
         {/* エラーメッセージ表示 */}
         {state && !state.success && state.message && (
-          <p className="text-sm text-red-500">{state.message}</p>
+          <p className='text-sm text-red-500'>{state.message}</p>
         )}
         <div className='flex justify-end'>
           {/* ボタンの disabled と表示内容に isPending を直接利用 */}

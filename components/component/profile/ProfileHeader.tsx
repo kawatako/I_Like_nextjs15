@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import type { UserProfileData } from "@/lib/data/userQueries";
+import type { UserProfileData } from "@/lib/types"; // UserProfileData 型をインポート
 import type { FollowStatusInfo } from "@/lib/actions/followActions";
 import { FollowButton } from "@/components/component/follows/FollowButton";
 

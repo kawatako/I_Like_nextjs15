@@ -11,8 +11,7 @@ import RetweetCard from "@/components/component/feeds/cards/RetweetCard";
 import QuoteRetweetCard from "@/components/component/feeds/cards/QuoteRetweetCard";
 
 interface FeedDetailPageProps {
-  params: { feedItemId: string };
-  // searchParams は今回は使わない想定
+  params: Promise<{ feedItemId: string }>;
 }
 
 export default async function FeedDetailPage({ params }: FeedDetailPageProps) {

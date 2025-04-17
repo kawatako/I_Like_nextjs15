@@ -35,6 +35,7 @@ export default async function Home() {
     <MainContentForHome
       initialFeedItems={initialFeedItems}
       initialNextCursor={initialNextCursor}
+      loggedInUserDbId={userDbId}
     />
   );
 }

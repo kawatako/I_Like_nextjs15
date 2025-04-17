@@ -4,7 +4,6 @@ import prisma from "@/lib/client"; // Prisma Client のインポートパスを�
 import { ListStatus, Prisma } from "@prisma/client";
 import type { UserSnippet, RankingSnippetForProfile, UserProfileData } from "@/lib/types"; // 共通型をインポート
 
-
 export const userSnippetSelect = {
   id: true,
   username: true,
