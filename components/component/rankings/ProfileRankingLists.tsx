@@ -4,7 +4,7 @@
 import { useState, useEffect, useRef, useCallback} from 'react'; // ★ SVGProps を追加 (GripVertical で使う場合) ★
 import Link from "next/link";
 import { ListStatus, Sentiment } from "@prisma/client";
-import type { RankingSnippetForProfile } from "@/lib/data/userQueries"; // 型をインポート
+import type { RankingSnippetForProfile } from "@/lib/types"; // RankingSnippetForProfile 型をインポート
 import { loadMoreProfileRankingsAction,updateRankingListOrderAction } from "@/lib/actions/rankingActions"; // Server Action をインポート
 import { Badge } from "@/components/ui/badge"; // Badge をインポート
 import { useToast } from "@/components/hooks/use-toast"; // Toast をインポート
