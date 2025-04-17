@@ -6,8 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from "next/link";
 import { ProfileRankingLists } from "@/components/component/rankings/ProfileRankingLists";
 import PostList from "@/components/component/posts/PostList";
-import type { RankingSnippetForProfile } from "@/lib/data/userQueries";
-import type { PostWithData } from "@/lib/data/postQueries";
+import type { RankingSnippetForProfile,PostWithData } from "@/lib/types";
 import { ListStatus } from "@prisma/client"; // ★ ListStatus をインポート ★
 
 // ★ Props の型定義を変更 ★

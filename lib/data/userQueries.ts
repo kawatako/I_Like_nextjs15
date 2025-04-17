@@ -1,7 +1,9 @@
 // lib/data/userQueries.ts
 
 import prisma from "@/lib/client"; // Prisma Client のインポートパスを確認・修正
-import { ListStatus, Prisma, Sentiment } from "@prisma/client";
+import { ListStatus, Prisma } from "@prisma/client";
+import type { UserSnippet, RankingSnippetForProfile, UserProfileData } from "@/lib/types"; // 共通型をインポート
+
 
 export const userSnippetSelect = {
   id: true,
@@ -61,51 +63,36 @@ export const profileRankingListSelect = {
   subject: true,
   listImageUrl: true,
   status: true,
-  displayOrder: true, // ★ 変更 ★ displayOrder を select に追加
-  _count: { select: { items: true } },
+  displayOrder: true,
   createdAt: true,
-  updatedAt: true,     // ★ 変更 ★ updatedAt も select に追加 (orderBy で使用)
-  items: { // リスト表示用に一部アイテムを取得（例: 上位3件）
-    select: { id: true, itemName: true, rank: true },
+  updatedAt: true,
+  items: {
+    select: { id: true, itemName: true, rank: true, imageUrl: true }, // imageUrl を含める
     orderBy: { rank: 'asc' },
     take: 3,
+  },
+  // ★ likes と likeCount を追加 ★
+  likes: { // ログインユーザーがいいねしたか判定用
+    select: { userId: true }
+  },
+  likeCount: true, // いいね数
+  _count: { // _count では items のみカウント (likes は likeCount で取得)
+    select: { items: true }
   }
 } satisfies Prisma.RankingListSelect;
 
-// 上記 select に基づく型定義 (export して RankingListForProfile の代わりに使用可能)
-export type RankingSnippetForProfile = Prisma.RankingListGetPayload<{ select: typeof profileRankingListSelect }>;
-
 // プロフィールページで取得するユーザーデータ全体のペイロード(データの中身)定義
-const userProfilePayload = Prisma.validator<Prisma.UserDefaultArgs>()({
+export const userProfilePayload = Prisma.validator<Prisma.UserDefaultArgs>()({
   select: {
-    id: true,
-    clerkId: true,
-    username: true,
-    image: true,
-    name: true,
-    bio: true,
-    coverImageUrl: true,
-    socialLinks: true,
-    createdAt: true,
+    id: true, clerkId: true, username: true, image: true, name: true, bio: true, coverImageUrl: true, socialLinks: true, createdAt: true,
     rankingLists: {
       where: { status: ListStatus.PUBLISHED },
       select: profileRankingListSelect,
-      // ★ 変更 ★ orderBy を displayOrder 基準に変更
-      orderBy: [
-        { displayOrder: 'asc' /* Prisma 5.x+ なら , nulls: 'last' */ }, // displayOrder 昇順 (null は最後)
-        { updatedAt: 'desc' }     // 次に updatedAt 降順
-      ],
+      orderBy: [ { displayOrder: 'asc' }, { updatedAt: 'desc' } ],
     },
-    _count: {
-      select: {
-        following: true,
-        followedBy: true
-      }
-    }
+    _count: { select: { following: true, followedBy: true } }
   }
 });
-// 上記ペイロードに基づく型定義 (export してページコンポーネントで使用)
-export type UserProfileData = Prisma.UserGetPayload<typeof userProfilePayload>;
 
 //指定されたユーザー名の公開プロフィールデータを取得
 export async function getUserProfileData(username: string): Promise<UserProfileData | null> {
@@ -133,13 +120,13 @@ export async function getUserProfileData(username: string): Promise<UserProfileD
 }
 
 // ユーザー名からユーザーの基本情報を取得(follow/unfollow 機能)
-export async function getUserByUsername(username: string): Promise<{ id: string, username: string, name: string | null } | null> {
+export async function getUserByUsername(username: string): Promise<UserSnippet | null>  {
   console.log(`[UserQueries] Fetching user by username: ${username}`);
   if (!username) return null;
   try {
     const user = await prisma.user.findUnique({
       where: { username },
-      select: { id: true, username: true, name: true },
+      select: { id: true, username: true, name: true, image: true},
     });
     return user;
   } catch (error) {

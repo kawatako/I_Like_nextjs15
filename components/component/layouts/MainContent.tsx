@@ -1,8 +1,7 @@
 // components/component/layout/MainContent.tsx
 import PostForm from "../posts/PostForm";
 import { ProfileTabs } from "../profile/ProfileTabs"; // ProfileTabs をインポート
-import type { RankingSnippetForProfile } from "@/lib/data/userQueries"; // 型をインポート
-import type { PostWithData } from "@/lib/data/postQueries"; // 型をインポート
+import type { PostWithData, RankingSnippetForProfile } from "@/lib/types"; // 型をインポート
 
 // UserData インターフェース (username は string と仮定)
 interface UserData {

@@ -4,12 +4,17 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { StarIcon, RepeatIcon, ShareIcon } from "@/components/component/Icons";
+import {
+  StarIcon,
+  RepeatIcon,
+  ShareIcon,
+  MessageCircleIcon,
+} from "@/components/component/Icons";
 import { Button } from "@/components/ui/button";
-import type { FeedItemWithRelations } from "@/lib/types"
+import type { FeedItemWithRelations } from "@/lib/types";
 import { formatDistanceToNowStrict } from "date-fns";
 import { ja } from "date-fns/locale";
-import type { Prisma} from "@prisma/client"; // ★ Prisma, Sentiment, ListStatus もインポート ★
+import type { Prisma } from "@prisma/client"; // ★ Prisma, Sentiment, ListStatus もインポート ★
 import { Sentiment, ListStatus } from "@prisma/client";
 import FeedInteraction from "@/components/component/likes/FeedInteraction"; // ★ FeedInteraction をインポート ★
 
@@ -24,7 +29,7 @@ type RankedItemSnippet = Prisma.RankedItemGetPayload<{
   select: typeof rankedItemSelectForCard;
 }>;
 
-// Props で受け取る item の型を定義 (Omit を使用)
+//Props で受け取る item の型を定義 (Omit を使用)
 type RankingUpdateCardItem = Omit<
   FeedItemWithRelations,
   "retweetOfFeedItem" | "quotedFeedItem"
@@ -47,7 +52,7 @@ export default function RankingUpdateCard({
 
   // データの分割代入
   const user = item.user;
-  const rankingList = item.rankingList; // 型は profileRankingListSelect または nestedRankingListSelect に基づくはず
+  const rankingList = item.rankingList; // 型は profileRankingListSelect に基づく (likes, likeCount 含む)
   const { createdAt, id: feedItemId } = item;
   const { _count: feedCounts } = item;
 
@@ -59,16 +64,13 @@ export default function RankingUpdateCard({
 
   // ★ FeedInteraction に渡す props を計算 (対象は RankingList) ★
   const initialLiked = loggedInUserDbId
-    ? // ★ rankingList の likes を参照 ★
-      rankingList.likes?.some((like) => like.userId === loggedInUserDbId) ??
+    ? rankingList.likes?.some((like) => like.userId === loggedInUserDbId) ??
       false
     : false;
-  const likeCount = rankingList._count?.likes ?? 0; // ★ rankingList のいいね数を参照 ★
-  const commentCount = 0; // ランキング更新自体へのコメントは現状なし
-  const retweetCount = feedCounts?.retweets ?? 0; // ★ この FeedItem のリツイート数 ★
-  // const quoteCount = item.quoteRetweetCount ?? 0; // 引用数
+  const likeCount = rankingList.likeCount ?? 0; // ★ rankingList._count.likes を参照 ★
+  const commentCount = 0; // ランキング更新へのコメントは現状なし
+  const retweetCount = feedCounts?.retweets ?? 0; // この FeedItem のリツイート数
 
-  // ランキングリストの感情ラベル
   const sentimentLabel =
     rankingList.sentiment === Sentiment.LIKE ? "好きな" : "嫌いな";
 
@@ -185,9 +187,17 @@ export default function RankingUpdateCard({
             targetId={rankingList.id} // ★ RankingList の ID を渡す ★
             likeCount={likeCount}
             initialLiked={initialLiked}
-            commentCount={commentCount} // 0 を渡す
-            // loggedInUserDbId は渡さない
           />
+          {/* ★ コメントボタンとカウントを FeedInteraction とは別に配置 ★ */}
+          <Button
+            variant='ghost'
+            size='sm'
+            className='flex items-center space-x-1 hover:text-blue-500'
+          >
+            <MessageCircleIcon className='h-[18px] w-[18px]' />
+            <span className='text-xs'>{commentCount}</span>{" "}
+            {/* コメント数はここで表示 */}
+          </Button>
           {/* リツイートボタン */}
           <Button
             variant='ghost'

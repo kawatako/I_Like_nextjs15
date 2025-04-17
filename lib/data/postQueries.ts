@@ -2,7 +2,7 @@
 import prisma from "../client";
 import { Prisma } from "@prisma/client";
 import { userSnippetSelect } from "./userQueries"; // User スニペット
-
+import type { PostWithData } from "@/lib/types";
 
 // Post とその関連データを一緒に取得するためのペイロード定義
 export const postPayload = Prisma.validator<Prisma.PostDefaultArgs>()({
@@ -11,13 +11,17 @@ export const postPayload = Prisma.validator<Prisma.PostDefaultArgs>()({
     content: true,
     createdAt: true,
     author: { select: userSnippetSelect },
-    _count: { select: { replies: true, likes: true } },
-    likes: { select: { userId: true } }
+    _count: {
+      select: {
+        replies: true,
+      },
+    },
+    likes: {
+      select: { userId: true },
+    },
+    likeCount: true,
   },
 });
-
-// 上記 payload に基づく投稿の型エイリアス (export する)
-export type PostWithData = Prisma.PostGetPayload<typeof postPayload>;
 
 /**
  * 特定ユーザーのプロフィール用の投稿を取得する。
@@ -40,7 +44,6 @@ export async function fetchPosts(
     const posts = await prisma.post.findMany({
       where: { author: { username: username } },
       select: postPayload.select, // ★ postPayload の select を使用 ★
-      // include: postPayload.include, // include を使う場合はこちら
       orderBy: { createdAt: "desc" },
     });
     console.log(

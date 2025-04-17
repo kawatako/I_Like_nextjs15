@@ -2,10 +2,9 @@
 import prisma from "@/lib/client";
 import { Prisma, FeedItem, User, Post, RankingList, RankedItem, ListStatus, FeedType, Sentiment } from "@prisma/client"; // ★ Prisma と Enum をインポート ★
 import { postPayload } from "./postQueries"; // Post 用ペイロード (likes, _count 含む想定)
-import { userSnippetSelect } from "./userQueries"; // User スニペット
+import { userSnippetSelect,profileRankingListSelect } from "./userQueries"; // User スニペット
 import type { UserSnippet, FeedItemWithRelations, PaginatedResponse } from "@/lib/types";
 
-// --- Select オブジェクト定義 ---
 
 // ★ カード表示等に必要な RankingList のフィールドを定義 ★
 const rankingListSelectForCard = Prisma.validator<Prisma.RankingListSelect>()({
@@ -24,8 +23,8 @@ const rankingListSelectForCard = Prisma.validator<Prisma.RankingListSelect>()({
   },
   // ★ いいね情報を追加 ★
   likes: { select: { userId: true } },
-  _count: { select: { items: true, likes: true } } // ★ likes カウント追加 ★
-  // author は FeedItem.user と重複するため不要
+  likeCount: true, // いいね数
+  _count: { select: { items: true} } // ★ likes カウント追加 ★
 });
 
 // ★ ネストされた FeedItem 用 Select (RankingList の select を修正) ★
@@ -33,7 +32,7 @@ const nestedFeedItemSelect = Prisma.validator<Prisma.FeedItemSelect>()({
   id: true, type: true, createdAt: true, updatedAt: true, userId: true, postId: true, rankingListId: true, quoteRetweetCount: true,
   user: { select: userSnippetSelect },
   post: { select: postPayload.select },
-  rankingList: { select: rankingListSelectForCard }, // ★ 上で定義した Select を使用 ★
+  rankingList: { select: profileRankingListSelect },
   _count: { select: { retweets: true } },
 });
 
@@ -116,3 +115,38 @@ export async function getHomeFeed({
   }
 }
 
+/**
+ * 指定された FeedItem ID に基づいて、関連データを含む詳細情報を取得する
+ * @param feedItemId 詳細を取得したい FeedItem の ID
+ * @returns FeedItemWithRelations 型のオブジェクト、または null (見つからない場合)
+ */
+export async function getFeedItemDetails(feedItemId: string): Promise<FeedItemWithRelations | null> {
+  console.log(`[FeedQueries] Fetching details for FeedItem: ${feedItemId}`);
+  if (!feedItemId) {
+    console.warn("[getFeedItemDetails] feedItemId is required.");
+    return null;
+  }
+
+  try {
+    const feedItem = await prisma.feedItem.findUnique({
+      where: { id: feedItemId },
+      // ★ feedItemPayload で定義した select/include をそのまま使う ★
+      //    これにより、表示に必要な関連データ (user, post, rankingList, counts, likes etc.) が含まれる
+      select: feedItemPayload.select, // select を使う場合
+      // include: feedItemPayload.include, // include を使う場合
+    });
+
+    if (!feedItem) {
+      console.log(`[FeedQueries] FeedItem not found: ${feedItemId}`);
+      return null;
+    }
+
+    console.log(`[FeedQueries] Successfully fetched details for FeedItem: ${feedItemId}`);
+    // ★ FeedItemWithRelations 型と互換性があるはず ★
+    return feedItem as FeedItemWithRelations; // 必要であれば型アサーション
+
+  } catch (error) {
+    console.error(`[FeedQueries] Error fetching details for FeedItem ${feedItemId}:`, error);
+    return null;
+  }
+}

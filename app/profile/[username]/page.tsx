@@ -3,8 +3,7 @@ import { notFound } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
 import {
   getUserProfileData,
-  getUserDbIdByClerkId,
-  type RankingSnippetForProfile,
+  getUserDbIdByClerkId
 } from "@/lib/data/userQueries";
 import { getFollowStatus } from "@/lib/actions/followActions";
 import {
@@ -14,7 +13,8 @@ import {
 import { ListStatus } from "@prisma/client";
 import { ProfileHeader } from "@/components/component/profile/ProfileHeader";
 import { ProfileTabs } from "@/components/component/profile/ProfileTabs";
-import { fetchPosts, type PostWithData } from "@/lib/data/postQueries";
+import { fetchPosts } from "@/lib/data/postQueries";
+import { PostWithData,  RankingSnippetForProfile } from "@/lib/types"; 
 
 interface ProfilePageProps {
   params: Promise<{ username: string }>;

@@ -3,7 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 // import CommentList from "../comments/CommentList"; // CommentList の実装に合わせて調整
 import { ClockIcon } from "@/components/component/Icons"; // ★ 自作アイコンをインポート ★
 import Link from "next/link";
-import type { PostWithData } from "@/lib/data/postQueries"; // ★ 型のインポート元を変更 ★
+import type { PostWithData } from "@/lib/types"; // ★ 型のインポート元を変更 ★
 import { formatDistanceToNowStrict } from 'date-fns'; // ★ 日時フォーマット用 ★
 import { ja } from 'date-fns/locale'; // ★ 日本語ロケール ★
 

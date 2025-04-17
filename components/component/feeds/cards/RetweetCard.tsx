@@ -21,7 +21,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"; // 削除確認用
+} from "@/components/ui/alert-dialog";
+import { FeedType } from "@prisma/client"; // Enum を使用
 
 interface RetweetCardProps {
   item: FeedItemWithRelations; // リツイートを表す FeedItem データ (type: RETWEET)
@@ -74,45 +75,19 @@ export default function RetweetCard({
   // 元のコンテンツを表示するコンポーネントを決定
   const OriginalCardComponent = () => {
     switch (originalItem.type) {
-      case "POST":
-        // ★ originalItem と loggedInUserDbId を PostCard に渡す ★
-        // PostCard 側で initialLiked などが計算される
-        return (
-          <PostCard
-            item={originalItem as FeedItemWithRelations}
-            loggedInUserDbId={loggedInUserDbId}
-          />
-        );
-      case "RANKING_UPDATE":
-        // ★ originalItem と loggedInUserDbId を RankingUpdateCard に渡す ★
-        return (
-          <RankingUpdateCard
-            item={originalItem as FeedItemWithRelations}
-            loggedInUserDbId={loggedInUserDbId}
-          />
-        );
-      case "QUOTE_RETWEET":
-        // ★ originalItem と loggedInUserDbId を QuoteRetweetCard に渡す ★
-        return (
-          <QuoteRetweetCard
-            item={originalItem as FeedItemWithRelations}
-            loggedInUserDbId={loggedInUserDbId}
-          />
-        );
-      // case 'RETWEET': // リツイートのリツイートは一旦表示しない
+      case FeedType.POST: // Enum を使用
+        // ★ originalItem と loggedInUserDbId を渡す ★
+        return <PostCard item={originalItem as FeedItemWithRelations} loggedInUserDbId={loggedInUserDbId} />;
+      case FeedType.RANKING_UPDATE:
+        // ★ originalItem と loggedInUserDbId を渡す ★
+        return <RankingUpdateCard item={originalItem as FeedItemWithRelations} loggedInUserDbId={loggedInUserDbId} />;
+      case FeedType.QUOTE_RETWEET:
+         // ★ originalItem と loggedInUserDbId を渡す ★
+         return <QuoteRetweetCard item={originalItem as FeedItemWithRelations} loggedInUserDbId={loggedInUserDbId} />;
       default:
-        console.warn(
-          "RetweetCard: Unsupported original item type:",
-          originalItem.type
-        );
-        return (
-          <div className='p-4 text-sm text-muted-foreground italic'>
-            元のコンテンツを表示できません (Type: {originalItem.type})
-          </div>
-        );
+        return <div className="...">リツイート元のコンテンツを表示できません...</div>;
     }
   };
-
   return (
     // ★ div で囲み、背景色などを少し変えても良いかも ★
     <div className='border-b pt-2 transition-colors hover:bg-gray-50/50 dark:hover:bg-gray-800/50'>
