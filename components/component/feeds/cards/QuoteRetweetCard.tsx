@@ -1,6 +1,6 @@
 // components/component/feeds/cards/QuoteRetweetCard.tsx
 "use client";
-
+import { FeedType } from "@prisma/client"; // FeedType をインポート
 import { useState, useTransition, useCallback, SVGProps } from "react";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -12,8 +12,7 @@ import {
   TrashIcon,
 } from "@/components/component/Icons";
 import FeedInteraction from "@/components/component/likes/FeedInteraction"; // いいね・コメント用
-import type { FeedItemWithRelations } from "@/lib/types"
-import type { PostWithData } from "@/lib/data/postQueries"; // Post の型も使う
+import type { FeedItemWithRelations } from "@/lib/types";
 import type { RankingList } from "@prisma/client"; // RankingList 型
 import { formatDistanceToNowStrict } from "date-fns";
 import { ja } from "date-fns/locale";
@@ -32,8 +31,6 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"; // ★ 削除確認ダイアログ用 ★
 
-
-
 // --- 引用元プレビュー用コンポーネント (内部または別ファイル) ---
 // ★ FeedItemWithRelations['quotedFeedItem'] は Optional なので型ガードが必要 ★
 // ★ originalItem の型も payload に合わせて調整が必要になる可能性 ★
@@ -47,8 +44,29 @@ function QuotedItemPreview({ originalItem }: { originalItem: QuotedItemType }) {
   const originalPost = originalItem.post;
   const originalRankingList = originalItem.rankingList;
 
-  // 引用元の詳細ページへのリンク (仮) - 本来は type によって変えるべき
-  const originalLink = `/status/${originalItem.id}`; // FeedItem ID を使う例
+  // 引用元の詳細ページへのリンク
+  let originalLink = "";
+  if (originalItem.type === FeedType.POST && originalItem.id) {
+    // 元が POST なら、その FeedItem の詳細ページへ
+    originalLink = `/feeds/${originalItem.id}`;
+  } else if (
+    originalItem.type === FeedType.RANKING_UPDATE &&
+    originalItem.rankingListId
+  ) {
+    // 元が RANKING_UPDATE なら、その RankingList の詳細ページへ
+    originalLink = `/rankings/${originalItem.rankingListId}`;
+  } else if (originalItem.type === FeedType.QUOTE_RETWEET && originalItem.id) {
+    // 元が QUOTE_RETWEET なら、その FeedItem の詳細ページへ
+    originalLink = `/feeds/${originalItem.id}`;
+  } else if (originalItem.type === FeedType.RETWEET && originalItem.id) {
+    // 元が RETWEET なら、そのリツイート自体の FeedItem 詳細ページへ (挙動は要検討)
+    // もしくは、リツイート元を辿って表示する？ ここでは一旦 FeedItem 詳細へ
+    originalLink = `/feeds/${originalItem.id}`;
+  } else {
+    // フォールバック (またはリンクなしにする)
+    originalLink = "#"; // リンクしない場合は '#' や onClick で制御
+    console.warn("Could not determine link for quoted item:", originalItem);
+  }
 
   return (
     <Link
@@ -133,8 +151,10 @@ export default function QuoteRetweetCard({
         (like) => like.userId === loggedInUserDbId
       ) ?? false
     : false;
-  const likeCount = quoteCommentPost._count?.likes ?? 0;
+  const likeCount = quoteCommentPost.likeCount ?? 0;
   const commentCount = quoteCommentPost._count?.replies ?? 0;
+  const retweetCount = item._count?.retweets ?? 0;
+
 
   // ★ 削除処理ハンドラ ★
   const handleDelete = () => {
@@ -253,8 +273,12 @@ export default function QuoteRetweetCard({
             targetId={quoteCommentPost.id} // ★ 引用コメント Post の ID ★
             likeCount={likeCount}
             initialLiked={initialLiked}
-            commentCount={commentCount}
           />
+          {/* ★ コメントボタンとカウントを FeedInteraction とは別に配置 ★ */}
+          <Button variant="ghost" size="sm" className="flex items-center space-x-1 hover:text-blue-500">
+             <MessageCircleIcon className="h-[18px] w-[18px]" />
+             <span className="text-xs">{commentCount}</span> {/* コメント数はここで表示 */}
+           </Button>
           {/* リツイートボタン (この引用RT自体を対象とする) */}
           <Button
             variant='ghost'

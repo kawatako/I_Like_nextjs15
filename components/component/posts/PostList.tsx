@@ -1,6 +1,6 @@
 // components/component/PostList.tsx
 import Post from "./Post";
-import type { PostWithData } from "@/lib/data/postQueries"; // ★ インポート元を変更 ★
+import type { PostWithData } from "@/lib/types"; // PostWithData 型をインポート
 
 interface PostListProps {
   posts: PostWithData[];

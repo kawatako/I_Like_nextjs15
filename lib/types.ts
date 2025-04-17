@@ -2,7 +2,8 @@
 // import type { Post, RankingList } from "@prisma/client";
 import { Prisma } from "@prisma/client";
 import { feedItemPayload } from "./data/feedQueries";
-import { userSnippetSelect } from "./data/userQueries";
+import { userSnippetSelect,userProfilePayload, profileRankingListSelect } from "./data/userQueries";
+import { postPayload } from "./data/postQueries";
 
 //Server Action の汎用的な戻り値の型
 export type ActionResult = {
@@ -25,3 +26,13 @@ export type UserSnippet = Prisma.UserGetPayload<{
 export type FeedItemWithRelations = Prisma.FeedItemGetPayload<
   typeof feedItemPayload
 >;
+
+export type PostWithData = Prisma.PostGetPayload<typeof postPayload>;
+
+
+//userQueries.ts から移動した
+
+export type RankingSnippetForProfile = Prisma.RankingListGetPayload<{ select: typeof profileRankingListSelect }>;
+
+
+export type UserProfileData = Prisma.UserGetPayload<typeof userProfilePayload>;
