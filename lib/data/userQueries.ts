@@ -2,8 +2,10 @@
 
 import prisma from "@/lib/client"; // Prisma Client のインポートパスを確認・修正
 import { ListStatus, Prisma } from "@prisma/client";
-import type { UserSnippet, RankingSnippetForProfile, UserProfileData } from "@/lib/types"; // 共通型をインポート
+import type { UserSnippet, RankingListSnippet, UserProfileData } from "@/lib/types"; // 共通型をインポート
+import { rankingListSnippetSelect } from "@/lib/data/rankingQueries"; // RankingList スニペット
 
+// User スニペットのフィールド定義
 export const userSnippetSelect = {
   id: true,
   username: true,
@@ -55,30 +57,7 @@ export async function getCurrentLoginUserData(clerkUserId: string) {
   }
 }
 
-// プロフィールページで表示するランキングリストに必要なフィールド定義
-export const profileRankingListSelect = {
-  id: true,
-  sentiment: true,
-  subject: true,
-  listImageUrl: true,
-  status: true,
-  displayOrder: true,
-  createdAt: true,
-  updatedAt: true,
-  items: {
-    select: { id: true, itemName: true, rank: true, imageUrl: true }, // imageUrl を含める
-    orderBy: { rank: 'asc' },
-    take: 3,
-  },
-  // ★ likes と likeCount を追加 ★
-  likes: { // ログインユーザーがいいねしたか判定用
-    select: { userId: true }
-  },
-  likeCount: true, // いいね数
-  _count: { // _count では items のみカウント (likes は likeCount で取得)
-    select: { items: true }
-  }
-} satisfies Prisma.RankingListSelect;
+
 
 // プロフィールページで取得するユーザーデータ全体のペイロード(データの中身)定義
 export const userProfilePayload = Prisma.validator<Prisma.UserDefaultArgs>()({
@@ -86,7 +65,7 @@ export const userProfilePayload = Prisma.validator<Prisma.UserDefaultArgs>()({
     id: true, clerkId: true, username: true, image: true, name: true, bio: true, coverImageUrl: true, socialLinks: true, createdAt: true,
     rankingLists: {
       where: { status: ListStatus.PUBLISHED },
-      select: profileRankingListSelect,
+      select: rankingListSnippetSelect,
       orderBy: [ { displayOrder: 'asc' }, { updatedAt: 'desc' } ],
     },
     _count: { select: { following: true, followedBy: true } }

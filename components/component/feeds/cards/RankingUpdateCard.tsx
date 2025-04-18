@@ -52,7 +52,7 @@ export default function RankingUpdateCard({
 
   // データの分割代入
   const user = item.user;
-  const rankingList = item.rankingList; // 型は profileRankingListSelect に基づく (likes, likeCount 含む)
+  const rankingList = item.rankingList; //
   const { createdAt, id: feedItemId } = item;
   const { _count: feedCounts } = item;
 

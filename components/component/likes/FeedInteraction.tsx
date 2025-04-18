@@ -4,9 +4,7 @@
 
 import { useTransition, useOptimistic } from "react"; // useOptimistic をインポート
 import { Button } from "@/components/ui/button";
-import {
-  HeartIcon
-} from "@/components/component/Icons"; // パスを確認
+import { HeartIcon } from "@/components/component/Icons"; // パスを確認
 import {
   likePostAction,
   unlikePostAction,
@@ -14,6 +12,7 @@ import {
   unlikeRankingListAction,
 } from "@/lib/actions/likeActions"; // アクションのパスを確認
 import { useToast } from "@/components/hooks/use-toast";
+import { useRouter } from "next/navigation";
 
 interface FeedInteractionProps {
   targetType: "Post" | "RankingList"; // ★ いいね対象のタイプ ★
@@ -31,15 +30,22 @@ export default function FeedInteraction({
   targetId,
   likeCount,
   initialLiked,
-  //commentCount,
-}: // retweetCount = 0, // 将来用
+}: //commentCount,
+// retweetCount = 0, // 将来用
 // quoteCount = 0,  // 将来用
 FeedInteractionProps) {
+  const router = useRouter();
   const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
 
-  const [optimisticLiked, setOptimisticLiked] = useOptimistic(initialLiked, (_, newState: boolean) => newState);
-  const [optimisticLikeCount, setOptimisticLikeCount] = useOptimistic(likeCount, (state, change: number) => state + change);
+  const [optimisticLiked, setOptimisticLiked] = useOptimistic(
+    initialLiked,
+    (_, newState: boolean) => newState
+  );
+  const [optimisticLikeCount, setOptimisticLikeCount] = useOptimistic(
+    likeCount,
+    (state, change: number) => state + change
+  );
 
   const handleLikeToggle = async () => {
     startTransition(async () => {
@@ -47,37 +53,61 @@ FeedInteractionProps) {
       const likeChange = newOptimisticLiked ? 1 : -1;
       setOptimisticLiked(newOptimisticLiked);
       setOptimisticLikeCount(likeChange);
+
       try {
         let result;
-        if (targetType === 'Post') {
+        if (targetType === "Post") {
           const action = newOptimisticLiked ? likePostAction : unlikePostAction;
           result = await action(targetId);
-        } else if (targetType === 'RankingList') {
-          const action = newOptimisticLiked ? likeRankingListAction : unlikeRankingListAction;
+        } else if (targetType === "RankingList") {
+          const action = newOptimisticLiked
+            ? likeRankingListAction
+            : unlikeRankingListAction;
           result = await action(targetId);
-        } else { throw new Error("Unsupported target type"); }
-        if (!result?.success) { toast({ title: "エラー", description: result?.error || "いいね失敗", variant: "destructive" }); }
-      } catch (error) { /* ... エラー Toast ... */ }
+        } else {
+          throw new Error("Unsupported target type");
+        }
+
+        if (!result?.success) {
+          toast({
+            title: "エラー",
+            description: result?.error || "いいね操作に失敗しました。",
+            variant: "destructive",
+          });
+        } else {
+          router.refresh();
+        }
+      } catch (error) {
+        toast({
+          title: "エラー",
+          description:
+            error instanceof Error
+              ? error.message
+              : "いいね操作中に予期せぬエラーが発生しました。",
+          variant: "destructive",
+        });
+        // useOptimistic がロールバックするはず
+      }
     });
   };
 
   // ★ いいねボタンとカウントのみを返す ★
   return (
     <Button
-      variant="ghost"
-      size="sm"
+      variant='ghost'
+      size='sm'
       className={`flex items-center space-x-1 ${
-        optimisticLiked ? 'text-red-500 hover:text-red-600' : 'hover:text-red-500'
+        optimisticLiked
+          ? "text-red-500 hover:text-red-600"
+          : "hover:text-red-500"
       }`}
       onClick={handleLikeToggle}
       disabled={isPending}
     >
       <HeartIcon
-        className={`h-[18px] w-[18px] ${
-          optimisticLiked ? 'fill-current' : ''
-        }`}
+        className={`h-[18px] w-[18px] ${optimisticLiked ? "fill-current" : ""}`}
       />
-      <span className="text-xs">{optimisticLikeCount}</span>
+      <span className='text-xs'>{optimisticLikeCount}</span>
     </Button>
   );
 }

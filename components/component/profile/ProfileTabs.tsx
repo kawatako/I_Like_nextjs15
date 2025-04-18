@@ -6,16 +6,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from "next/link";
 import { ProfileRankingLists } from "@/components/component/rankings/ProfileRankingLists";
 import PostList from "@/components/component/posts/PostList";
-import type { RankingSnippetForProfile,PostWithData } from "@/lib/types";
+import type { RankingListSnippet,PostWithData } from "@/lib/types";
 import { ListStatus } from "@prisma/client"; // ★ ListStatus をインポート ★
 
 // ★ Props の型定義を変更 ★
 interface ProfileTabsProps {
   targetUserId: string; // ① プロフィール対象ユーザーのDB ID
   username: string; // ② プロフィール対象ユーザーのユーザー名
-  initialPublishedLists: RankingSnippetForProfile[];  //③ 公開リストの初期データ
+  initialPublishedLists: RankingListSnippet[];  //③ 公開リストの初期データ
   publishedNextCursor: string | null; // ④ 公開リストの次のカーソル
-  initialDraftLists: RankingSnippetForProfile[];  // ⑤ 下書きリストの初期データ
+  initialDraftLists: RankingListSnippet[];  // ⑤ 下書きリストの初期データ
   draftNextCursor: string | null; // ⑥ 下書きリストの次のカーソル
   userPosts: PostWithData[];  // ⑦ ユーザーの投稿データ
   likedPosts: PostWithData[]; // ⑧ いいねした投稿データ

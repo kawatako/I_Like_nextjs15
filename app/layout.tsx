@@ -23,7 +23,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
   const { userId: clerkId } = await auth();
   const currentLoginUserData = clerkId
     ? await getCurrentLoginUserData(clerkId)

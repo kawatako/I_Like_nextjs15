@@ -4,7 +4,7 @@
 import { useState, useEffect, useRef, useCallback} from 'react'; // ★ SVGProps を追加 (GripVertical で使う場合) ★
 import Link from "next/link";
 import { ListStatus, Sentiment } from "@prisma/client";
-import type { RankingSnippetForProfile } from "@/lib/types"; // RankingSnippetForProfile 型をインポート
+import type { RankingListSnippet } from "@/lib/types"; // RankingSnippetForProfile 型をインポート
 import { loadMoreProfileRankingsAction,updateRankingListOrderAction } from "@/lib/actions/rankingActions"; // Server Action をインポート
 import { Badge } from "@/components/ui/badge"; // Badge をインポート
 import { useToast } from "@/components/hooks/use-toast"; // Toast をインポート
@@ -33,14 +33,14 @@ interface ProfileRankingListsProps {
   targetUserId: string;
   username: string;
   status: ListStatus;
-  initialLists: RankingSnippetForProfile[];
+  initialLists: RankingListSnippet[];
   initialNextCursor: string | null;
   isCurrentUser: boolean;
 }
 
 // ★ Sortable なリストアイテムコンポーネント ★
 interface SortableItemProps {
-  list: RankingSnippetForProfile;
+  list: RankingListSnippet;
   isCurrentUser: boolean;
 }
 
@@ -94,7 +94,7 @@ export function ProfileRankingLists({
   // ★★★ フックと関数定義は必ずコンポーネントの内側 ★★★
 
   // --- State 定義 ---
-  const [lists, setLists] = useState<RankingSnippetForProfile[]>(initialLists);
+  const [lists, setLists] = useState<RankingListSnippet[]>(initialLists);
   const [cursor, setCursor] = useState<string | null>(initialNextCursor);
   const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(!!initialNextCursor);
@@ -110,7 +110,7 @@ export function ProfileRankingLists({
     try {
       const result = await loadMoreProfileRankingsAction( targetUserId, status, cursor );
       if (result && result.items) {
-        setLists((prevLists: RankingSnippetForProfile[]) => [...prevLists, ...result.items]);
+        setLists((prevLists: RankingListSnippet[]) => [...prevLists, ...result.items]);
         setCursor(result.nextCursor);
         setHasMore(!!result.nextCursor);
         console.log(`[ProfileRankingLists] Loaded ${result.items.length} items. Next cursor: ${result.nextCursor}`);
@@ -154,7 +154,7 @@ export function ProfileRankingLists({
       if (!over || active.id === over.id) { return; }
 
       // 1. State 上でリストの順序を更新
-      let newLists: RankingSnippetForProfile[] = []; // 型を明示
+      let newLists: RankingListSnippet[] = []; // 型を明示
       setLists((currentLists) => {
         const oldIndex = currentLists.findIndex((item) => item.id === active.id);
         const newIndex = currentLists.findIndex((item) => item.id === over.id);
@@ -200,9 +200,9 @@ export function ProfileRankingLists({
 
   return (
     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={isCurrentUser ? handleDragEnd : undefined} >
-      <SortableContext items={lists.map((l: RankingSnippetForProfile) => l.id)} strategy={verticalListSortingStrategy} >
+      <SortableContext items={lists.map((l: RankingListSnippet) => l.id)} strategy={verticalListSortingStrategy} >
         <ul className='space-y-3'>
-          {lists.map((list: RankingSnippetForProfile) => (
+          {lists.map((list: RankingListSnippet) => (
             <SortableListItem key={list.id} list={list} isCurrentUser={isCurrentUser} />
           ))}
         </ul>

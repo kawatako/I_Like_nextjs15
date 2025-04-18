@@ -14,7 +14,7 @@ import { ListStatus } from "@prisma/client";
 import { ProfileHeader } from "@/components/component/profile/ProfileHeader";
 import { ProfileTabs } from "@/components/component/profile/ProfileTabs";
 import { fetchPosts } from "@/lib/data/postQueries";
-import { PostWithData,  RankingSnippetForProfile } from "@/lib/types"; 
+import { PostWithData,  RankingListSnippet } from "@/lib/types"; 
 
 interface ProfilePageProps {
   params: Promise<{ username: string }>;
@@ -58,7 +58,7 @@ export default async function ProfilePage(props: ProfilePageProps) {
       cursor: undefined, 
     });
 
-  let initialDraftLists: RankingSnippetForProfile[] = [];
+  let initialDraftLists: RankingListSnippet[] = [];
   let draftNextCursor: string | null = null;
   if (isCurrentUser) {
     const draftData = await getProfileRankingsPaginated({
