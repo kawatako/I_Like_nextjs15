@@ -12,56 +12,38 @@ import { FeedType, Prisma, Post, FeedItem } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
 // 無限スクロールで一度に読み込む件数
-const INFINITE_SCROLL_LIMIT = 20;
-
-//ホームタイムラインの追加データを取得する Server Action
-export async function loadMoreFeedItemsAction(
-  cursor: string | null // カーソルを受け取る
+const TIMELINE_PAGE_LIMIT = 20;
+/**
+ * [SERVER ACTION] ログインユーザーのホームタイムラインを取得 (ページネーション対応)
+ * useSWRInfinite の fetcher から呼び出されることを想定
+ * @param cursor - 前のページの最後の FeedItem の ID (最初のページは undefined)
+ * @returns PaginatedResponse<FeedItemWithRelations> - アイテムリストと次のカーソル
+ */
+export async function getPaginatedFeedItemsAction(
+  cursor?: string // ★ 引数をカーソルのみに変更 ★
 ): Promise<PaginatedResponse<FeedItemWithRelations>> {
-  // getHomeFeed と同じ型を返す
+
+  console.log(`[Action/getPaginatedFeedItems] Fetching page with cursor: ${cursor}`);
+
+  // 1. 認証チェック
   const { userId: clerkId } = await auth();
-  if (!clerkId) {
-    console.warn("[loadMoreFeedItemsAction] User not authenticated.");
-    return { items: [], nextCursor: null };
-  }
+  if (!clerkId) { /* ... */ return { items: [], nextCursor: null }; }
 
-  // 2. DBユーザーIDを取得
-  let userDbId: string | null = null;
-  try {
-    userDbId = await getUserDbIdByClerkId(clerkId);
-    if (!userDbId) {
-      console.warn(
-        `[loadMoreFeedItemsAction] User with clerkId ${clerkId} not found in DB.`
-      );
-      return { items: [], nextCursor: null };
-    }
-  } catch (error) {
-    console.error(
-      "[loadMoreFeedItemsAction] Error fetching user DB ID:",
-      error
-    );
-    return { items: [], nextCursor: null };
-  }
+  // 2. DBユーザーID取得
+  const userDbId = await getUserDbIdByClerkId(clerkId);
+  if (!userDbId) { /* ... */ return { items: [], nextCursor: null }; }
 
-  // 3. getHomeFeed を呼び出して次のデータを取得
   try {
-    // cursor が null または undefined の場合に getHomeFeed がどう動作するか確認が必要
-    // getHomeFeed の実装が cursor: undefined で最初のページを返すならこのままでOK
+    // 4. 既存のデータ取得関数を呼び出す
     const result = await getHomeFeed({
       userId: userDbId,
-      limit: INFINITE_SCROLL_LIMIT,
-      cursor: cursor ?? undefined, // null の場合は undefined を渡す
+      limit: TIMELINE_PAGE_LIMIT,
+      cursor: cursor
     });
-    console.log(
-      `[loadMoreFeedItemsAction] Fetched ${result.items.length} items, next cursor: ${result.nextCursor}`
-    );
-    return result; // 取得したデータと次のカーソルをそのまま返す
+    return result; // { items, nextCursor } を返す
   } catch (error) {
-    console.error(
-      "[loadMoreFeedItemsAction] Error calling getHomeFeed:",
-      error
-    );
-    // エラー発生時も空の結果を返す
+    console.error("[Action/getPaginatedFeedItems] Error calling getHomeFeed:", error);
+    // エラー時は空の結果を返す (またはエラーを示すオブジェクトを返す)
     return { items: [], nextCursor: null };
   }
 }

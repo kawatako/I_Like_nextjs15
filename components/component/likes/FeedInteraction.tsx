@@ -3,6 +3,7 @@
 "use client";
 
 import { useTransition, useOptimistic } from "react"; // useOptimistic をインポート
+import { useSWRConfig } from "swr";
 import { Button } from "@/components/ui/button";
 import { HeartIcon } from "@/components/component/Icons"; // パスを確認
 import {
@@ -34,10 +35,10 @@ export default function FeedInteraction({
 // retweetCount = 0, // 将来用
 // quoteCount = 0,  // 将来用
 FeedInteractionProps) {
+  const { mutate } = useSWRConfig(); // SWR のキャッシュを更新するための関数
   const router = useRouter();
   const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
-
   const [optimisticLiked, setOptimisticLiked] = useOptimistic(
     initialLiked,
     (_, newState: boolean) => newState
@@ -71,11 +72,21 @@ FeedInteractionProps) {
         if (!result?.success) {
           toast({
             title: "エラー",
-            description: result?.error || "いいね操作に失敗しました。",
+            description: result?.error || "いいね失敗",
             variant: "destructive",
           });
+          // useOptimistic がロールバックするはず
         } else {
-          router.refresh();
+          // ★★★ アクション成功後に mutate を実行！ ★★★
+          // キーが配列で、最初の要素が 'timelineFeed' であるキャッシュを再検証
+          mutate(
+            (key) => Array.isArray(key) && key[0] === "timelineFeed",
+            undefined, // 新しいデータを直接渡さず、再検証をトリガー
+            { revalidate: true } // 再検証を強制 (デフォルトで true の場合もある)
+          );
+          // router.refresh(); // ← これはもう不要なはず
+          // 成功時の Toast (任意)
+          // toast({ title: newOptimisticLiked ? "いいねしました" : "いいねを取り消しました" });
         }
       } catch (error) {
         toast({
