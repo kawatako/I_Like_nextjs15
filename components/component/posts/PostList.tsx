@@ -1,4 +1,5 @@
 // components/component/PostList.tsx
+//　プロフィール機能の時に決してfeedを反映させるようにする
 import Post from "./Post";
 import type { PostWithData } from "@/lib/types"; // PostWithData 型をインポート
 

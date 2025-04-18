@@ -2,9 +2,8 @@
 import prisma from "@/lib/client";
 import { Prisma, FeedItem, User, Post, RankingList, RankedItem, ListStatus, FeedType, Sentiment } from "@prisma/client"; // ★ Prisma と Enum をインポート ★
 import { postPayload } from "./postQueries"; // Post 用ペイロード (likes, _count 含む想定)
-import { userSnippetSelect,profileRankingListSelect } from "./userQueries"; // User スニペット
-import type { UserSnippet, FeedItemWithRelations, PaginatedResponse } from "@/lib/types";
-
+import { userSnippetSelect} from "./userQueries"; // User スニペット
+import type { UserSnippet, FeedItemWithRelations, PaginatedResponse,RankingListSnippet } from "@/lib/types";
 
 // ★ カード表示等に必要な RankingList のフィールドを定義 ★
 const rankingListSelectForCard = Prisma.validator<Prisma.RankingListSelect>()({
@@ -27,16 +26,18 @@ const rankingListSelectForCard = Prisma.validator<Prisma.RankingListSelect>()({
   _count: { select: { items: true} } // ★ likes カウント追加 ★
 });
 
+type RankingListForCard = Prisma.RankingListGetPayload<{ select: typeof rankingListSelectForCard }>;
+
 // ★ ネストされた FeedItem 用 Select (RankingList の select を修正) ★
 const nestedFeedItemSelect = Prisma.validator<Prisma.FeedItemSelect>()({
   id: true, type: true, createdAt: true, updatedAt: true, userId: true, postId: true, rankingListId: true, quoteRetweetCount: true,
   user: { select: userSnippetSelect },
   post: { select: postPayload.select },
-  rankingList: { select: profileRankingListSelect },
+  rankingList: { select: rankingListSelectForCard },
   _count: { select: { retweets: true } },
 });
 
-// ★★★ メインの feedItemPayload ★★★
+// 「FeedItem を取得する際に、上記のような関連データも一緒に（どのフィールドを含めて）取得するか」を指定する設計図
 export const feedItemPayload = Prisma.validator<Prisma.FeedItemDefaultArgs>()({
   select: {
     // --- FeedItem 自身のフィールド ---
@@ -65,7 +66,7 @@ export const feedItemPayload = Prisma.validator<Prisma.FeedItemDefaultArgs>()({
 
 // --- 関数本体 ---
 /**
- * 指定されたユーザーのホームタイムラインフィードを取得する (カーソルベースページネーション)
+ * 指定されたユーザーのホームタイムラインフィード(「いつ」「誰が」「何をしたか（投稿、ランキング更新、RTなど)を取得する 
  */
 export async function getHomeFeed({
   userId,
@@ -142,7 +143,6 @@ export async function getFeedItemDetails(feedItemId: string): Promise<FeedItemWi
     }
 
     console.log(`[FeedQueries] Successfully fetched details for FeedItem: ${feedItemId}`);
-    // ★ FeedItemWithRelations 型と互換性があるはず ★
     return feedItem as FeedItemWithRelations; // 必要であれば型アサーション
 
   } catch (error) {

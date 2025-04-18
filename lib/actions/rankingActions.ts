@@ -9,7 +9,7 @@ import { Sentiment, Prisma, ListStatus, FeedType } from "@prisma/client";
 import { redirect } from "next/navigation";
 import { getProfileRankingsPaginated } from "@/lib/data/rankingQueries";
 import {
-  type RankingSnippetForProfile} from "@/lib/types"
+  type RankingListSnippet} from "@/lib/types"
 import type { ActionResult, PaginatedResponse } from "@/lib/types";
 
 
@@ -309,7 +309,7 @@ export async function loadMoreProfileRankingsAction(
   targetUserId: string,
   status: ListStatus,
   cursor: string | null
-): Promise<PaginatedResponse<RankingSnippetForProfile>> {
+): Promise<PaginatedResponse<RankingListSnippet>> {
   // Optional Auth Check
   console.log(
     `[Action/loadMoreProfileRankings] Loading ${status} for ${targetUserId}, cursor: ${cursor}`

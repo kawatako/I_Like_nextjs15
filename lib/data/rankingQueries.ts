@@ -3,8 +3,33 @@
 import prisma from "@/lib/client"; // Prisma Client のインポートパスを確認・修正
 import { ListStatus, Prisma, Sentiment } from "@prisma/client";
 import { auth } from "@clerk/nextjs/server"; // 権限チェックや表示制御のため auth を使う場合がある
-import { profileRankingListSelect } from "@/lib/data/userQueries";
-import type { PaginatedResponse, RankingSnippetForProfile } from "@/lib/types";
+import type { PaginatedResponse, RankingListSnippet } from "@/lib/types";
+
+// ランキングリストの一部の表示に必要なフィールド定義
+export const rankingListSnippetSelect = {
+  id: true,
+  sentiment: true,
+  subject: true,
+  listImageUrl: true,
+  status: true,
+  displayOrder: true,
+  createdAt: true,
+  updatedAt: true,
+  items: {
+    select: { id: true, itemName: true, rank: true, imageUrl: true }, // imageUrl を含める
+    orderBy: { rank: 'asc' },
+    take: 3,
+  },
+  // ★ likes と likeCount を追加 ★
+  likes: { // ログインユーザーがいいねしたか判定用
+    select: { userId: true }
+  },
+  likeCount: true, // いいね数
+  _count: { // _count では items のみカウント (likes は likeCount で取得)
+    select: { items: true }
+  }
+} satisfies Prisma.RankingListSelect;
+
 
 // 編集用データペイロード定義
 export const rankingListEditPayload =
@@ -176,7 +201,7 @@ export async function getDraftRankingLists(
   try {
     const draftLists = await prisma.rankingList.findMany({
       where: { authorId: userDbId, status: ListStatus.DRAFT },
-      select: profileRankingListSelect,
+      select: rankingListSnippetSelect,
       orderBy: { updatedAt: "desc" },
     });
     console.log(
@@ -202,7 +227,7 @@ export async function getProfileRankingsPaginated({
   status: ListStatus; // 'PUBLISHED' または 'DRAFT' を受け取る
   limit: number;
   cursor?: string; // ? をつけて任意にする
-}): Promise<PaginatedResponse<RankingSnippetForProfile>> {
+}): Promise<PaginatedResponse<RankingListSnippet>> {
   console.log(
     `[RankingQueries/Paginated] Fetching ${status} lists for user ${userId}, limit ${limit}, cursor ${cursor}`
   );
@@ -235,7 +260,7 @@ export async function getProfileRankingsPaginated({
         authorId: userId, // 指定されたユーザーのリスト
         status: status, // 指定されたステータスのリスト
       },
-      select: profileRankingListSelect, // userQueries からインポートした select を適用
+      select: rankingListSnippetSelect, // userQueries からインポートした select を適用
       orderBy: orderByOptions, // 定義した並び順を適用
       take: take, // 取得件数 (+1)
       skip: skip, // スキップ数 (cursorがあれば1)

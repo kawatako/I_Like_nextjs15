@@ -2,72 +2,82 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { useActionState } from "react"; // ★ インポート元を 'react' に変更し、useActionState を使う
+import { useActionState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  createPostAction,
-  CreatePostActionResult,
-} from "@/lib/actions/postActions";
-
-// 仮のユーザー情報
-const currentUser = {
-  imageUrl: "/placeholder-user.png",
-  fallback: "U",
-};
-
-// SubmitButton は不要になるか、isPending を props で受け取る形になる
-// ここでは PostForm 内で isPending を直接使うため不要
+// ★ postActions と ActionResult 型をインポート ★
+import { createPostAction } from "@/lib/actions/postActions";
+import type { ActionResult } from "@/lib/types"; // 共通の ActionResult 型
+// ★ Clerk の useUser フックをインポート ★
+import { useUser } from "@clerk/nextjs";
+// ★ Toast フックをインポート ★
+import { useToast } from "@/components/hooks/use-toast";
+import { Loader2 } from "lucide-react"; // ローディング表示用
 
 export default function PostForm() {
-  // ★ useActionState を使用 ★
-  // 戻り値に isPending が含まれる
-  const [state, formAction, isPending] = useActionState<
-    CreatePostActionResult | null,
-    FormData
-  >(
+  // ★ useUser フックでログインユーザー情報を取得 ★
+  const { user, isLoaded } = useUser();
+  const { toast } = useToast(); // Toast フックを使用
+  const formRef = useRef<HTMLFormElement>(null);
+
+  // ★ useActionState の型引数を ActionResult に変更 ★
+  //    createPostAction の戻り値も Promise<ActionResult> になっている想定
+  const [state, formAction, isPending] = useActionState<ActionResult | null, FormData>(
     createPostAction,
     null // 初期状態
   );
 
-  const formRef = useRef<HTMLFormElement>(null); // フォームリセット用
-
-  // フォーム送信成功/失敗時の処理 (useEffect はそのまま)
+  // フォーム送信成功/失敗時の処理 (Toast を使用)
   useEffect(() => {
-    if (state?.success) {
+    if (state?.success === true) {
       formRef.current?.reset(); // フォームの内容をリセット
-      console.log(state.message); // 例: 成功メッセージ
-    } else if (state && !state.success && state.message) {
-      console.error(state.message); // 例: エラーメッセージ
-      // ここで Toast を表示するなど
+      toast({ title: "投稿しました！" }); // 成功メッセージ
+    } else if (state?.success === false && state.error) {
+      toast({ // エラーメッセージ
+        title: "投稿エラー",
+        description: state.error,
+        variant: "destructive",
+      });
     }
-  }, [state]);
+  }, [state, toast]); // toast も依存配列に追加
+
+  // Clerk がユーザー情報を読み込んでいる間は何も表示しないか、ローディング表示
+  if (!isLoaded) {
+    return <div className="p-4"><Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /></div>;
+  }
+
+  // 未ログイン時はフォームを表示しない（またはログインを促す）
+  if (!user) {
+    return <div className="p-4 text-center text-muted-foreground">投稿するにはログインしてください。</div>;
+  }
 
   return (
-    <div className='flex space-x-4 border-b p-4'>
+    <div className='flex space-x-4 p-4 border-b'> {/* スタイル調整 */}
+      {/* ★ ログインユーザーのアバターを表示 ★ */}
       <Avatar>
-        <AvatarImage src={currentUser.imageUrl} />
-        <AvatarFallback>{currentUser.fallback}</AvatarFallback>
+        <AvatarImage src={user.imageUrl} />
+        <AvatarFallback>
+          {user.firstName?.charAt(0) ?? user.username?.charAt(0) ?? "?"}
+        </AvatarFallback>
       </Avatar>
-      {/* action には useActionState が返した formAction を渡す */}
       <form ref={formRef} action={formAction} className='flex-1 space-y-2'>
         <Textarea
-          name='content' // name 属性は必須
+          name='content'
           placeholder='いまどうしてる？'
           rows={3}
           maxLength={280}
-          className='w-full resize-none border-none focus-visible:ring-0 focus-visible:ring-offset-0'
-          disabled={isPending} // ★ isPending を直接利用
-          key={state?.success ? Date.now() : "content-area"} // リセット用の key (任意)
+          className='w-full resize-none border-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent' // 背景透明化
+          disabled={isPending}
+          // key={state?.success ? Date.now() : "content-area"} // formRef.reset()を使うなら不要かも
         />
-        {/* エラーメッセージ表示 */}
-        {state && !state.success && state.message && (
-          <p className='text-sm text-red-500'>{state.message}</p>
-        )}
+        {/* エラーメッセージ表示 (必要なら) */}
+        {/* {state && !state.success && state.error && (
+          <p className='text-sm text-red-500'>{state.error}</p>
+        )} */}
         <div className='flex justify-end'>
-          {/* ボタンの disabled と表示内容に isPending を直接利用 */}
-          <Button type='submit' disabled={isPending}>
+          <Button type='submit' disabled={isPending || !formRef.current?.content.value.trim()} size="sm"> {/* 送信ボタンサイズ、空文字無効化 */}
+            {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
             {isPending ? "投稿中..." : "投稿する"}
           </Button>
         </div>
