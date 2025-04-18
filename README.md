@@ -916,3 +916,47 @@ RankingList モデルに likeCount: Int @default(0) を追加。 (いいね対�
 ホームタイムライン (TimelineFeed.tsx) で、自分自身が行ったリツイートは表示しないようにするフィルタリング処理が必要です。（以前提案した loadMoreItems 関数内での .filter() など）
 詳細ページへのリンク:
 各カードから、投稿やランキングリストの詳細ページへ正しくリンクできるように、<Link> の href を設定し、必要であれば詳細ページ自体を実装します。
+
+
+
+# 【開発メモ】SWR を使った「いいね」機能の課題解決アプローチ
+
+1. SWR ができること (機能・役割)
+SWR は、クライアントサイド（ブラウザ側）でサーバーからデータを取得し、管理するためのライブラリです。主な機能は以下の通りです。
+データ取得の簡略化: データ取得ロジック（Workspace や Server Action 呼び出し）をラップし、シンプルなフック (useSWR, useSWRInfinite) で利用できるようにします。
+キャッシュ: 一度取得したデータをクライアント側（メモリなど）にキャッシュし、同じデータが必要になった際に素早く表示したり、不要な再取得を減らしたりします。
+自動再検証: 画面がアクティブになった時やネットワーク再接続時などに、裏側で自動的にデータを再取得し、キャッシュを最新の状態に保とうとします (Stale-While-Revalidate 戦略)。
+状態管理: データ取得中の「ローディング状態」、取得失敗時の「エラー状態」、そして取得した「データ」自体を簡単に扱えるようにします。
+UI との連携: 取得したデータや状態が変わると、コンポーネントを自動的に再レンダリングして画面に反映させます。
+データ更新後のキャッシュ管理 (mutate): データの変更操作（いいね、投稿、削除など）があった後に、関連するキャッシュを手動で更新したり、再検証をトリガーしたりする機能を提供します。← 今回の課題解決のキー！
+ページネーション/無限スクロール: useSWRInfinite フックで、複数ページのデータを効率的に取得・管理し、無限スクロールを簡単に実装できます。
+
+2. 今回直面している課題
+ホームタイムライン (/) 上のカードで「いいね」ボタンを押す。
+UI は useOptimistic によって即座に更新される（見た目と数が変わる）。
+裏側で Server Action が実行され、データベース上の Like レコードと likeCount は正常に更新される。
+しかし、Server Action 完了後、数秒経つと楽観的更新が取り消され、UI が元の状態（いいね前の状態）に戻ってしまう。
+ページ全体をリロードすると、正しい（いいね後の）状態が表示される。
+原因 (推測): Server Action 内の revalidatePath やクライアントでの router.refresh() では、TimelineFeed コンポーネントが内部で useState によって管理しているフィード項目リスト (feedItems state) が最新のいいね情報で更新されない。そのため、FeedInteraction に古い Props が渡され続け、useOptimistic が最終的にロールバックしてしまう。
+
+3. SWR がその課題を解決できる理由
+データ管理の一元化: TimelineFeed が useState でフィードデータを管理する代わりに、SWR (useSWRInfinite) がデータの取得、キャッシュ、状態管理を一手に引き受けます。コンポーネントは SWR から常に最新の（キャッシュされた、または再検証された）データを取得するようになります。
+明示的なキャッシュ更新 (mutate): いいね/いいね解除の Server Action が成功した後に、SWR が提供する mutate 関数をクライアント側 (FeedInteraction 内) から呼び出すことができます。
+mutate の効果:
+指定されたキー（例: タイムラインデータのキー）に関連する SWR のキャッシュを無効化し、データの再検証（再取得）を強制的にトリガーします。
+SWR はデータ取得用 Server Action (getPaginatedFeedItemsAction) を再度呼び出し、最新のいいね情報（likeCount, likes 配列）を含むデータを取得します。
+SWR は取得した最新データで内部キャッシュを更新し、そのデータを TimelineFeed コンポーネントに返します。
+useOptimistic との連携: TimelineFeed が SWR から最新データを受け取ることで、その中のカードコンポーネント、そして FeedInteraction にも最新の Props (likeCount, initialLiked) が渡されます。useOptimistic はこの最新の Props を検知し、楽観的に更新していた状態を正しい最終状態にスムーズに同期させます（不要なロールバックが発生しなくなります）。
+結果: router.refresh() の挙動に依存せず、いいね操作後にクライアント側の表示がサーバー側の状態と確実に同期されるようになります。
+
+4. SWR を使って具体的にどう解決するか (アプローチ)
+SWR パッケージをインストールします (npm install swr or yarn add swr)。
+データ取得用 Server Action を作成します (getPaginatedFeedItemsAction)。これは SWR の Workspaceer 関数から呼び出され、ページネーションに対応した FeedItem データを返します（これは前回作成しました）。
+TimelineFeed.tsx を修正します。
+useState で feedItems を管理するのをやめます。
+useSWRInfinite フックを使い、上記 Server Action を呼び出してタイムラインデータを取得・管理します。
+無限スクロールのロジックを useSWRInfinite が提供する setSize 関数などを使って書き換えます。
+useSWRInfinite が返す data を使ってフィード項目を map して表示します。
+FeedInteraction.tsx を修正します。
+handleLikeToggle 関数内で、いいね/いいね解除の Server Action (likePostAction など) が成功したことを確認した後、SWR の mutate 関数を呼び出します。
+mutate には、TimelineFeed で使っている useSWRInfinite のキーを渡して、タイムラインデータの再検証をトリガーします。

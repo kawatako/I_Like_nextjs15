@@ -4,7 +4,11 @@
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button"; // Retweet, Share ボタンで使うので残す
-import { RepeatIcon, ShareIcon, MessageCircleIcon } from "@/components/component/Icons"; // FeedInteraction 以外のアイコン
+import {
+  RepeatIcon,
+  ShareIcon,
+  MessageCircleIcon,
+} from "@/components/component/Icons"; // FeedInteraction 以外のアイコン
 import type { FeedItemWithRelations } from "@/lib/types"; // ★ 型は lib/types からインポート想定 ★
 import { formatDistanceToNowStrict } from "date-fns";
 import { ja } from "date-fns/locale";
@@ -81,14 +85,17 @@ export default function PostCard({ item, loggedInUserDbId }: PostCardProps) {
             @{user.username}
           </span>
           <span className='text-gray-500 dark:text-gray-400'>·</span>
-          < Link href={`/feeds/${feedItemId}`} className="text-gray-500 dark:text-gray-400 hover:underline">
-          <time
-            dateTime={new Date(createdAt).toISOString()}
+          <Link
+            href={`/feeds/${feedItemId}`}
             className='text-gray-500 dark:text-gray-400 hover:underline'
           >
-            {timeAgo}
-          </time>
-          </ Link>
+            <time
+              dateTime={new Date(createdAt).toISOString()}
+              className='text-gray-500 dark:text-gray-400 hover:underline'
+            >
+              {timeAgo}
+            </time>
+          </Link>
           {/* TODO: 自分の投稿なら削除ボタン */}
         </div>
 
@@ -104,10 +111,15 @@ export default function PostCard({ item, loggedInUserDbId }: PostCardProps) {
             initialLiked={initialLiked}
           />
           {/* ★ コメントボタンとカウントを FeedInteraction とは別に配置 ★ */}
-          <Button variant="ghost" size="sm" className="flex items-center space-x-1 hover:text-blue-500">
-             <MessageCircleIcon className="h-[18px] w-[18px]" />
-             <span className="text-xs">{commentCount}</span> {/* コメント数はここで表示 */}
-           </Button>
+          <Button
+            variant='ghost'
+            size='sm'
+            className='flex items-center space-x-1 hover:text-blue-500'
+          >
+            <MessageCircleIcon className='h-[18px] w-[18px]' />
+            <span className='text-xs'>{commentCount}</span>{" "}
+            {/* コメント数はここで表示 */}
+          </Button>
           {/* リツイートボタン */}
           <Button
             variant='ghost'
