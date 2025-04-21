@@ -1,7 +1,7 @@
 // components/component/feeds/cards/RetweetCard.tsx
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useCallback } from "react";
 import Link from "next/link";
 import type { FeedItemWithRelations } from "@/lib/types";
 import { RepeatIcon, TrashIcon } from "@/components/component/Icons"; // 必要なら TrashIcon も
@@ -22,7 +22,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { FeedType } from "@prisma/client"; // Enum を使用
+import { FeedType } from "@prisma/client";
+import { useSWRConfig } from "swr";
+import { Loader2 } from "@/components/component/Icons"; // ローディングアイコン
 
 interface RetweetCardProps {
   item: FeedItemWithRelations; // リツイートを表す FeedItem データ (type: RETWEET)
@@ -33,30 +35,36 @@ export default function RetweetCard({
   item,
   loggedInUserDbId,
 }: RetweetCardProps) {
+  const { mutate } = useSWRConfig();
   const { toast } = useToast();
   const [isDeleting, startDeleteTransition] = useTransition();
-
-  // タイプガードとリツイート元データの存在チェック
-  if (item.type !== "RETWEET" || !item.retweetOfFeedItem) {
-    console.warn("Invalid data for RetweetCard:", item);
-    return null;
-  }
 
   const retweeter = item.user; // リツイートしたユーザー
   const originalItem = item.retweetOfFeedItem; // リツイート元の FeedItem データ
   const isOwner = loggedInUserDbId === item.userId; // このリツイートをしたのが自分か
 
   // リツイート取り消しハンドラ
-  const handleUndoRetweet = () => {
+  const handleUndoRetweet = useCallback(() => {
+    // originalItem.id が必要なので、null チェックを追加
+    if (!originalItem?.id || isDeleting) return;
+    const originalItemId = originalItem.id; // 変数に入れておく
+
     startDeleteTransition(async () => {
       try {
-        // 元の FeedItem の ID を渡して取り消しアクションを実行
-        const result = await undoRetweetAction(originalItem.id);
+        const result = await undoRetweetAction(originalItemId); // 元の FeedItem ID を渡す
         if (result.success) {
           toast({ title: "リツイートを取り消しました。" });
-          // TODO: タイムラインからこのカードを削除する処理 (State 更新 or 再検証)
+          // ★★★ SWR キャッシュを再検証 ★★★
+          mutate(
+            (key) => Array.isArray(key) && key[0] === "timelineFeed",
+            undefined,
+            { revalidate: true }
+          );
+          // 必要なら他の関連キャッシュも mutate
         } else {
-          throw new Error(result.error);
+          throw new Error(
+            result.error || "リツイートの取り消しに失敗しました。"
+          );
         }
       } catch (error) {
         toast({
@@ -70,10 +78,14 @@ export default function RetweetCard({
         console.error("Error undoing retweet:", error);
       }
     });
-  };
+    // ★ 依存配列に originalItem.id (または originalItem), mutate を追加 ★
+  }, [originalItem, isDeleting, startDeleteTransition, toast, mutate]);
 
   // 元のコンテンツを表示するコンポーネントを決定
   const OriginalCardComponent = () => {
+    if (!originalItem) {
+      return <div className='...'>リツイート元のコンテンツを表示できません...</div>;
+    }
     switch (originalItem.type) {
       case FeedType.POST: // Enum を使用
         // ★ originalItem と loggedInUserDbId を渡す ★
@@ -106,12 +118,9 @@ export default function RetweetCard({
     }
   };
   return (
-    // ★ div で囲み、背景色などを少し変えても良いかも ★
     <div className='border-b pt-2 transition-colors hover:bg-gray-50/50 dark:hover:bg-gray-800/50'>
       {/* Retweet Header */}
       <div className='flex items-center justify-between px-4 pb-1'>
-        {" "}
-        {/* 右側に削除ボタン用スペース */}
         <div className='flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400'>
           <RepeatIcon className='h-4 w-4' />
           <Link
@@ -120,9 +129,8 @@ export default function RetweetCard({
           >
             {retweeter.name ?? retweeter.username}
           </Link>
-          <span>さんがリポスト</span> {/* X 風に「リポスト」 */}
+          <span>さんがリポスト</span>
         </div>
-        {/* ★ 自分のリツイートなら取り消しボタン表示 ★ */}
         {isOwner && (
           <AlertDialog>
             <AlertDialogTrigger asChild>
@@ -133,7 +141,12 @@ export default function RetweetCard({
                 disabled={isDeleting}
                 title='リツイートを取り消す'
               >
-                <TrashIcon className='h-4 w-4 text-muted-foreground hover:text-destructive' />
+                {/* ★ isDeleting でローディング表示 ★ */}
+                {isDeleting ? (
+                  <Loader2 className='h-4 w-4 animate-spin text-muted-foreground' />
+                ) : (
+                  <TrashIcon className='h-4 w-4 text-muted-foreground hover:text-destructive' />
+                )}
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
@@ -141,9 +154,7 @@ export default function RetweetCard({
                 <AlertDialogTitle>
                   リツイートを取り消しますか？
                 </AlertDialogTitle>
-                <AlertDialogDescription>
-                  この操作は元に戻せません。タイムラインからこのリツイートが削除されます。
-                </AlertDialogDescription>
+                <AlertDialogDescription>...</AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>キャンセル</AlertDialogCancel>
@@ -158,8 +169,7 @@ export default function RetweetCard({
           </AlertDialog>
         )}
       </div>
-
-      {/* Original Content (内部の余白などは元のカードに依存) */}
+      {/* Original Content */}
       <OriginalCardComponent />
     </div>
   );

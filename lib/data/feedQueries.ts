@@ -3,37 +3,15 @@ import prisma from "@/lib/client";
 import { Prisma, FeedItem, User, Post, RankingList, RankedItem, ListStatus, FeedType, Sentiment } from "@prisma/client"; // ★ Prisma と Enum をインポート ★
 import { postPayload } from "./postQueries"; // Post 用ペイロード (likes, _count 含む想定)
 import { userSnippetSelect} from "./userQueries"; // User スニペット
+import { rankingListSnippetSelect } from "./rankingQueries";
 import type { UserSnippet, FeedItemWithRelations, PaginatedResponse,RankingListSnippet } from "@/lib/types";
-
-// ★ カード表示等に必要な RankingList のフィールドを定義 ★
-const rankingListSelectForCard = Prisma.validator<Prisma.RankingListSelect>()({
-  id: true,
-  sentiment: true,
-  subject: true,
-  description: true, // ★ description を追加 ★
-  status: true,
-  listImageUrl: true, // 必要なら
-  createdAt: true, // 公開/更新判定用
-  updatedAt: true, // 更新日時表示用
-  items: {         // ★ items の imageUrl を含める ★
-    orderBy: { rank: 'asc' },
-    take: 3, // プレビュー用に件数を絞る（必要なら全件取得やページネーションを検討）
-    select: { id: true, rank: true, itemName: true, imageUrl: true }, // ★ imageUrl: true ★
-  },
-  // ★ いいね情報を追加 ★
-  likes: { select: { userId: true } },
-  likeCount: true, // いいね数
-  _count: { select: { items: true} } // ★ likes カウント追加 ★
-});
-
-type RankingListForCard = Prisma.RankingListGetPayload<{ select: typeof rankingListSelectForCard }>;
 
 // ★ ネストされた FeedItem 用 Select (RankingList の select を修正) ★
 const nestedFeedItemSelect = Prisma.validator<Prisma.FeedItemSelect>()({
   id: true, type: true, createdAt: true, updatedAt: true, userId: true, postId: true, rankingListId: true, quoteRetweetCount: true,
   user: { select: userSnippetSelect },
   post: { select: postPayload.select },
-  rankingList: { select: rankingListSelectForCard },
+  rankingList: { select: rankingListSnippetSelect },
   _count: { select: { retweets: true } },
 });
 
@@ -48,7 +26,7 @@ export const feedItemPayload = Prisma.validator<Prisma.FeedItemDefaultArgs>()({
     // --- 関連データ ---
     user: { select: userSnippetSelect },
     post: { select: postPayload.select },
-    rankingList: { select: rankingListSelectForCard }, // ★ 上で定義した Select を使用 ★
+    rankingList: { select: rankingListSnippetSelect }, // ★ 上で定義した Select を使用 ★
 
     _count: { select: { retweets: true } },
 

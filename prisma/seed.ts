@@ -6,36 +6,33 @@ import {
   FollowRequestStatus,
   FeedType,
   Prisma,
-  // ★ モデル型をインポート ★
   User,
   RankingList,
   Post,
   FeedItem,
   Retweet,
   Like,
-  RankedItem,
+  RankedItem, // モデル型
 } from "@prisma/client";
 import { fakerJA as faker } from "@faker-js/faker";
 
 const prisma = new PrismaClient();
 
-// Helper function to create item data easily
+// Helper function (変更なし)
 function createItemsData(itemNames: string[], descriptions?: string[]) {
-  // imageUrl は一旦削除
   return itemNames.map((name, index) => ({
     itemName: name,
     rank: index + 1,
     itemDescription:
-      descriptions?.[index] ??
-      faker.lorem.sentence(faker.number.int({ min: 3, max: 7 })),
-    imageUrl: null, // 画像は null
+      descriptions?.[index] ?? faker.lorem.sentence({ min: 3, max: 7 }),
+    imageUrl: null,
   }));
 }
 
 async function main() {
   console.log(`Start seeding ...`);
 
-  // --- 1. 既存データの削除 ---
+  // --- 1. 既存データの削除 (変更なし) ---
   console.log("Deleting existing data...");
   await prisma.like.deleteMany();
   await prisma.retweet.deleteMany();
@@ -58,7 +55,7 @@ async function main() {
       username: "kawatako",
       name: "ショウタ カワタ",
       image: null,
-      bio: "...",
+      bio: "Next.js 開発中",
       isPrivate: false,
     },
   });
@@ -96,132 +93,66 @@ async function main() {
 
   // --- 3. ランキングリストとアイテム作成 ---
   console.log("Creating ranking lists and items...");
-  // ★ 配列に型注釈を追加 ★
   const createdRankingLists: RankingList[] = [];
-  const publishedLists: RankingList[] = []; // 公開リストのみ保持
+  const publishedLists: RankingList[] = [];
 
-  const popularSubject = "おすすめ作業用BGM";
-  const listA1_data = {
-    sentiment: Sentiment.LIKE,
-    subject: popularSubject,
-    authorId: userA.id,
-    status: ListStatus.PUBLISHED,
-    description: "集中できるBGM",
-    updatedAt: faker.date.recent({ days: 2 }),
-    items: {
-      create: createItemsData([
-        "Lo-fi Hip Hop Radio",
-        "ヒーリングミュージック",
-        "ゲームサウンドトラック",
-      ]),
-    },
-  };
-  const listA1 = await prisma.rankingList.create({ data: listA1_data });
-  createdRankingLists.push(listA1);
-  publishedLists.push(listA1);
+  // userA, userB が作成するリストを増やす (例)
+  const listSubjects = [
+    "おすすめ作業用BGM",
+    "好きな映画トップ5",
+    "最近読んで面白かった技術書",
+    "苦手な野菜ランキング",
+    "好きなコードエディタ",
+  ];
+  const users = [userA, userB]; // userC は除く
 
-  const listB1_data = {
-    sentiment: Sentiment.LIKE,
-    subject: popularSubject,
-    authorId: userB.id,
-    status: ListStatus.PUBLISHED,
-    description: "私のベスト３",
-    updatedAt: faker.date.recent({ days: 4 }),
-    items: {
-      create: createItemsData([
-        "ヒーリングミュージック",
-        "Lo-fi Hip Hop Radio",
-        "カフェミュージック",
-      ]),
-    },
-  };
-  const listB1 = await prisma.rankingList.create({ data: listB1_data });
-  createdRankingLists.push(listB1);
-  publishedLists.push(listB1);
-
-  await prisma.rankingList.create({
-    data: {
-      sentiment: Sentiment.LIKE,
-      subject: popularSubject,
-      authorId: userC.id,
-      status: ListStatus.PUBLISHED,
-      updatedAt: faker.date.recent({ days: 10 }),
-      items: {
-        create: createItemsData([
-          "ゲームサウンドトラック",
-          "Lo-fi Hip Hop Radio",
-          "自然の音",
-        ]),
-      },
-    },
-  });
-  await prisma.rankingList.create({
-    data: {
-      sentiment: Sentiment.LIKE,
-      subject: popularSubject,
-      authorId: userA.id,
-      status: ListStatus.DRAFT,
-      items: { create: createItemsData(["考え中1", "考え中2"]) },
-    },
-  });
-
-  const listA2_data = {
-    sentiment: Sentiment.DISLIKE,
-    subject: popularSubject,
-    authorId: userA.id,
-    status: ListStatus.PUBLISHED,
-    description: "これは苦手...",
-    updatedAt: faker.date.recent({ days: 3 }),
-    items: { create: createItemsData(["うるさいBGM", "単調なBGM"]) },
-  };
-  const listA2 = await prisma.rankingList.create({ data: listA2_data });
-  createdRankingLists.push(listA2);
-  publishedLists.push(listA2);
-
-  const listB2_data = {
-    sentiment: Sentiment.LIKE,
-    subject: "今週読んだ本",
-    authorId: userB.id,
-    status: ListStatus.PUBLISHED,
-    updatedAt: faker.date.recent({ days: 1 }),
-    items: { create: createItemsData(["小説A", "技術書B"]) },
-  };
-  const listB2 = await prisma.rankingList.create({ data: listB2_data });
-  createdRankingLists.push(listB2);
-  publishedLists.push(listB2);
-
-  for (let i = 0; i < 5; i++) {
-    const user = faker.helpers.arrayElement([userA, userB]);
-    const sentiment = faker.helpers.arrayElement([
-      Sentiment.LIKE,
-      Sentiment.DISLIKE,
-    ]);
-    const subject = faker.lorem.words({ min: 3, max: 6 });
-    const createdAt = faker.date.past({ years: 1 });
-    const updatedAt = faker.date.between({ from: createdAt, to: new Date() });
-    const randomList_data = {
-      sentiment,
-      subject,
-      authorId: user.id,
-      status: ListStatus.PUBLISHED,
-      createdAt,
-      updatedAt,
-      items: {
-        create: createItemsData(
+  for (const author of users) {
+    for (const subject of listSubjects) {
+      // 半分くらいの確率でリストを作成
+      if (faker.datatype.boolean()) {
+        const sentiment = faker.helpers.arrayElement([
+          Sentiment.LIKE,
+          Sentiment.DISLIKE,
+        ]);
+        const status = faker.helpers.arrayElement([
+          ListStatus.PUBLISHED,
+          ListStatus.PUBLISHED,
+          ListStatus.DRAFT,
+        ]); // 公開されやすく
+        const createdAt = faker.date.past({ years: 1 });
+        const updatedAt = faker.date.between({
+          from: createdAt,
+          to: new Date(),
+        });
+        const description = faker.datatype.boolean()
+          ? faker.lorem.sentence()
+          : null;
+        const items = createItemsData(
           Array.from(
-            { length: faker.number.int({ min: 2, max: 7 }) },
-            (_, k) => faker.commerce.productName() + `_${k}`
+            { length: faker.number.int({ min: 3, max: 8 }) },
+            (_, k) => `${subject} Item ${k + 1}`
           )
-        ),
-      },
-    };
-    const randomList = await prisma.rankingList.create({
-      data: randomList_data,
-    });
-    createdRankingLists.push(randomList);
-    publishedLists.push(randomList);
+        );
+        const list = await prisma.rankingList.create({
+          data: {
+            sentiment,
+            subject,
+            description,
+            authorId: author.id,
+            status,
+            createdAt,
+            updatedAt,
+            items: { create: items },
+          },
+        });
+        createdRankingLists.push(list);
+        if (status === ListStatus.PUBLISHED) {
+          publishedLists.push(list);
+        }
+      }
+    }
   }
-
+  // userkawa の下書き
   await prisma.rankingList.create({
     data: {
       sentiment: Sentiment.DISLIKE,
@@ -233,81 +164,45 @@ async function main() {
       },
     },
   });
-  console.log("Ranking lists and items created.");
+  console.log(
+    `Created <span class="math-inline">\{createdRankingLists\.length\} ranking lists \(</span>{publishedLists.length} published).`
+  );
 
   // --- 4. 投稿作成 ---
   console.log("Creating posts...");
-  // ★ 配列に型注釈を追加 ★
   const createdPosts: Post[] = [];
   const createdPostFeedItems: FeedItem[] = [];
 
-  const postA1_data = {
-    authorId: userA.id,
-    content: "今日のランチ美味しかった！ #飯テロ",
-  };
-  const postA1 = await prisma.post.create({ data: postA1_data });
-  createdPosts.push(postA1);
-  const feedItemPA1 = await prisma.feedItem.create({
-    data: {
-      userId: postA1.authorId,
-      type: FeedType.POST,
-      postId: postA1.id,
-      createdAt: postA1.createdAt,
-    },
-  });
-  createdPostFeedItems.push(feedItemPA1);
-
-  const postA2_data = { authorId: userA.id, content: faker.lorem.paragraph(1) };
-  const postA2 = await prisma.post.create({ data: postA2_data });
-  createdPosts.push(postA2);
-  const feedItemPA2 = await prisma.feedItem.create({
-    data: {
-      userId: postA2.authorId,
-      type: FeedType.POST,
-      postId: postA2.id,
-      createdAt: postA2.createdAt,
-    },
-  });
-  createdPostFeedItems.push(feedItemPA2);
-
-  const postB1_data = {
-    authorId: userB.id,
-    content: "Supabase と Prisma の組み合わせ、なかなか良い感じ。",
-  };
-  const postB1 = await prisma.post.create({ data: postB1_data });
-  createdPosts.push(postB1);
-  const feedItemPB1 = await prisma.feedItem.create({
-    data: {
-      userId: postB1.authorId,
-      type: FeedType.POST,
-      postId: postB1.id,
-      createdAt: postB1.createdAt,
-    },
-  });
-  createdPostFeedItems.push(feedItemPB1);
-
-  const postB2_data = { authorId: userB.id, content: faker.lorem.sentence() };
-  const postB2 = await prisma.post.create({ data: postB2_data });
-  createdPosts.push(postB2);
-  const feedItemPB2 = await prisma.feedItem.create({
-    data: {
-      userId: postB2.authorId,
-      type: FeedType.POST,
-      postId: postB2.id,
-      createdAt: postB2.createdAt,
-    },
-  });
-  createdPostFeedItems.push(feedItemPB2);
-
-  console.log("Posts created.");
+  for (const author of users) {
+    // userA と userB が投稿
+    for (let i = 0; i < faker.number.int({ min: 3, max: 6 }); i++) {
+      // 各3〜6件投稿
+      const content = faker.lorem.paragraph(
+        faker.number.int({ min: 1, max: 3 })
+      );
+      const createdAt = faker.date.recent({ days: 30 }); // 過去30日以内
+      const post = await prisma.post.create({
+        data: { authorId: author.id, content, createdAt },
+      });
+      createdPosts.push(post);
+      const feedItem = await prisma.feedItem.create({
+        data: {
+          userId: post.authorId,
+          type: FeedType.POST,
+          postId: post.id,
+          createdAt: post.createdAt,
+        },
+      });
+      createdPostFeedItems.push(feedItem);
+    }
+  }
+  console.log(`Created ${createdPosts.length} posts.`);
 
   // --- 5. ランキング更新 FeedItem 作成 ---
   console.log("Creating ranking update feed items...");
-  // ★ 配列に型注釈を追加 ★
   const createdRankingFeedItems: FeedItem[] = [];
-  // ★ for...of と 型注釈 (または filter を先に行う) ★
   for (const list of publishedLists) {
-    // list は RankingList 型
+    // userA, userB が作成したもののみ
     if (list.authorId === userA.id || list.authorId === userB.id) {
       const feedItem = await prisma.feedItem.create({
         data: {
@@ -324,152 +219,305 @@ async function main() {
 
   // --- 6. フォロー関係を作成 ---
   console.log("Creating follow relationships...");
-  // ... (変更なし) ...
+  await prisma.follow.createMany({
+    data: [
+      { followerId: userA.id, followingId: userB.id },
+      { followerId: userA.id, followingId: userkawa.id },
+      { followerId: userB.id, followingId: userA.id },
+      { followerId: userB.id, followingId: userkawa.id },
+      { followerId: userC.id, followingId: userB.id },
+      { followerId: userkawa.id, followingId: userA.id },
+      { followerId: userkawa.id, followingId: userB.id },
+    ],
+    skipDuplicates: true,
+  });
   console.log("Follow relationships created.");
 
   // --- 7. フォローリクエストを作成 ---
   console.log("Creating follow requests...");
-  // ... (変更なし) ...
-  console.log("Follow requests created.");
+  try {
+    if (userC) {
+      await prisma.followRequest.createMany({
+        data: [
+          {
+            requesterId: userA.id,
+            requestedId: userC.id,
+            status: FollowRequestStatus.PENDING,
+          },
+          {
+            requesterId: userkawa.id,
+            requestedId: userC.id,
+            status: FollowRequestStatus.PENDING,
+          },
+        ],
+        skipDuplicates: true,
+      });
+      console.log("Follow requests created.");
+    }
+  } catch (e) {
+    console.error("Error creating follow requests:", e);
+  }
 
   // --- 8. リツイートと関連 FeedItem 作成 ---
   console.log("Creating retweets and related feed items...");
-  // ★ 配列に型注釈を追加 ★
   const retweetFeedItems: FeedItem[] = [];
-  if (createdPostFeedItems.length > 0) {
-    const targetFeedItemA = createdPostFeedItems[0];
-    // ★ prisma.retweet.create を使用 ★
-    await prisma.retweet.create({
-      data: { userId: userkawa.id, feedItemId: targetFeedItemA.id },
-    });
-    const retweetFeedItem = await prisma.feedItem.create({
-      data: {
-        userId: userkawa.id,
-        type: FeedType.RETWEET,
-        retweetOfFeedItemId: targetFeedItemA.id,
-        createdAt: faker.date.recent({ days: 1 }),
-      },
-    });
-    retweetFeedItems.push(retweetFeedItem);
-    // 元 FeedItem の retweetCount は _count で取得するため更新不要
+  // userkawa が alice と bob の FeedItem をいくつかリツイートする
+  const kawaTargets = [
+    ...createdPostFeedItems,
+    ...createdRankingFeedItems,
+  ].filter((f) => f.userId === userA.id || f.userId === userB.id);
+  for (let i = 0; i < Math.min(kawaTargets.length, 4); i++) {
+    // 最大4件RT
+    if (faker.datatype.boolean(0.7)) {
+      // 70% の確率でRT
+      const target = faker.helpers.arrayElement(kawaTargets);
+      // 重複チェック (本来は DB 制約に任せるか findFirst)
+      const existing = await prisma.retweet.findUnique({
+        where: {
+          userId_feedItemId: { userId: userkawa.id, feedItemId: target.id },
+        },
+      });
+      if (!existing) {
+        await prisma.retweet.create({
+          data: { userId: userkawa.id, feedItemId: target.id },
+        });
+        const rtItem = await prisma.feedItem.create({
+          data: {
+            userId: userkawa.id,
+            type: FeedType.RETWEET,
+            retweetOfFeedItemId: target.id,
+            createdAt: faker.date.recent({ days: 5 }),
+          },
+        });
+        retweetFeedItems.push(rtItem);
+      }
+    }
   }
-  if (createdRankingFeedItems.length > 0) {
-    const targetFeedItemB = createdRankingFeedItems[0];
-    // ★ prisma.retweet.create を使用 ★
-    await prisma.retweet.create({
-      data: { userId: userA.id, feedItemId: targetFeedItemB.id },
-    });
-    const retweetFeedItem2 = await prisma.feedItem.create({
-      data: {
-        userId: userA.id,
-        type: FeedType.RETWEET,
-        retweetOfFeedItemId: targetFeedItemB.id,
-        createdAt: faker.date.recent({ days: 0.5 }),
-      },
-    });
-    retweetFeedItems.push(retweetFeedItem2);
+  // alice が bob の FeedItem をいくつかリツイート
+  const aliceTargets = [
+    ...createdPostFeedItems,
+    ...createdRankingFeedItems,
+  ].filter((f) => f.userId === userB.id);
+  for (let i = 0; i < Math.min(aliceTargets.length, 3); i++) {
+    if (faker.datatype.boolean(0.6)) {
+      const target = faker.helpers.arrayElement(aliceTargets);
+      const existing = await prisma.retweet.findUnique({
+        where: {
+          userId_feedItemId: { userId: userA.id, feedItemId: target.id },
+        },
+      });
+      if (!existing) {
+        await prisma.retweet.create({
+          data: { userId: userA.id, feedItemId: target.id },
+        });
+        const rtItem = await prisma.feedItem.create({
+          data: {
+            userId: userA.id,
+            type: FeedType.RETWEET,
+            retweetOfFeedItemId: target.id,
+            createdAt: faker.date.recent({ days: 4 }),
+          },
+        });
+        retweetFeedItems.push(rtItem);
+      }
+    }
   }
-  console.log("Retweets and related feed items created.");
+  // bob が alice の FeedItem をいくつかリツイート
+  const bobTargets = [
+    ...createdPostFeedItems,
+    ...createdRankingFeedItems,
+  ].filter((f) => f.userId === userA.id);
+  for (let i = 0; i < Math.min(bobTargets.length, 3); i++) {
+    if (faker.datatype.boolean(0.6)) {
+      const target = faker.helpers.arrayElement(bobTargets);
+      const existing = await prisma.retweet.findUnique({
+        where: {
+          userId_feedItemId: { userId: userB.id, feedItemId: target.id },
+        },
+      });
+      if (!existing) {
+        await prisma.retweet.create({
+          data: { userId: userB.id, feedItemId: target.id },
+        });
+        const rtItem = await prisma.feedItem.create({
+          data: {
+            userId: userB.id,
+            type: FeedType.RETWEET,
+            retweetOfFeedItemId: target.id,
+            createdAt: faker.date.recent({ days: 3 }),
+          },
+        });
+        retweetFeedItems.push(rtItem);
+      }
+    }
+  }
+  console.log(`Created ${retweetFeedItems.length} retweets.`);
 
   // --- 9. 引用リツイートと関連 FeedItem 作成 ---
   console.log("Creating quote retweets and related feed items...");
-  if (createdPostFeedItems.length > 1) {
-    const targetFeedItemA2 = createdPostFeedItems[1];
-    const quotePost_data = {
-      authorId: userB.id,
-      content: `この意見、興味深いですね！ ${faker.lorem.sentence()}`,
-    };
-    const quotePost = await prisma.post.create({ data: quotePost_data });
-    const quoteFeedItem_data = {
-      userId: userB.id,
-      type: FeedType.QUOTE_RETWEET,
-      postId: quotePost.id,
-      quotedFeedItemId: targetFeedItemA2.id,
-      createdAt: quotePost.createdAt,
-    };
-    await prisma.feedItem.create({ data: quoteFeedItem_data });
-    // ★ 元 FeedItem の quoteRetweetCount をインクリメント ★
-    await prisma.feedItem.update({
-      where: { id: targetFeedItemA2.id },
-      data: { quoteRetweetCount: { increment: 1 } },
-    });
+  // userkawa が alice/bob の FeedItem をいくつか引用RT
+  const kawaQuoteTargets = [
+    ...createdPostFeedItems,
+    ...createdRankingFeedItems,
+    ...retweetFeedItems,
+  ].filter((f) => f.userId === userA.id || f.userId === userB.id);
+  for (let i = 0; i < Math.min(kawaQuoteTargets.length, 3); i++) {
+    if (faker.datatype.boolean(0.5)) {
+      const target = faker.helpers.arrayElement(kawaQuoteTargets);
+      const quotePost = await prisma.post.create({
+        data: {
+          authorId: userkawa.id,
+          content: `これについて一言！ ${faker.lorem.sentence()}`,
+        },
+      });
+      await prisma.feedItem.create({
+        data: {
+          userId: userkawa.id,
+          type: FeedType.QUOTE_RETWEET,
+          postId: quotePost.id,
+          quotedFeedItemId: target.id,
+          createdAt: quotePost.createdAt,
+        },
+      });
+      await prisma.feedItem.update({
+        where: { id: target.id },
+        data: { quoteRetweetCount: { increment: 1 } },
+      });
+    }
   }
-  // ★ let で再代入可能にする ★
-  let targetRetweetFeedItem: FeedItem | undefined =
-    retweetFeedItems.length > 1 ? retweetFeedItems[1] : undefined; // userA がした RT
-  if (targetRetweetFeedItem) {
-    // undefined チェック
-    const quotePost2_data = {
-      authorId: userkawa.id,
-      content: `これ、私もリツイートしました！👍`,
-    };
-    const quotePost2 = await prisma.post.create({ data: quotePost2_data });
-    const quoteFeedItem2_data = {
-      userId: userkawa.id,
-      type: FeedType.QUOTE_RETWEET,
-      postId: quotePost2.id,
-      quotedFeedItemId: targetRetweetFeedItem.id,
-      createdAt: quotePost2.createdAt,
-    };
-    await prisma.feedItem.create({ data: quoteFeedItem2_data });
-    // ★ 元 FeedItem の quoteRetweetCount をインクリメント ★
-    await prisma.feedItem.update({
-      where: { id: targetRetweetFeedItem.id },
-      data: { quoteRetweetCount: { increment: 1 } },
-    });
+  // alice が bob の FeedItem を引用RT
+  const aliceQuoteTargets = [
+    ...createdPostFeedItems,
+    ...createdRankingFeedItems,
+    ...retweetFeedItems,
+  ].filter((f) => f.userId === userB.id);
+  for (let i = 0; i < Math.min(aliceQuoteTargets.length, 2); i++) {
+    if (faker.datatype.boolean(0.4)) {
+      const target = faker.helpers.arrayElement(aliceQuoteTargets);
+      const quotePost = await prisma.post.create({
+        data: {
+          authorId: userA.id,
+          content: `Bob のこれ、わかる〜 ${faker.lorem.sentence()}`,
+        },
+      });
+      await prisma.feedItem.create({
+        data: {
+          userId: userA.id,
+          type: FeedType.QUOTE_RETWEET,
+          postId: quotePost.id,
+          quotedFeedItemId: target.id,
+          createdAt: quotePost.createdAt,
+        },
+      });
+      await prisma.feedItem.update({
+        where: { id: target.id },
+        data: { quoteRetweetCount: { increment: 1 } },
+      });
+    }
   }
-  console.log("Quote retweets and related feed items created.");
+  console.log("Quote retweets created.");
 
   // --- 10. いいね作成 (対象: Post / RankingList) ---
   console.log("Creating likes...");
   try {
-    // ★ like.create の data を修正: postId または rankingListId を指定 ★
-    if (createdPosts.length > 0) {
-      await prisma.like.create({
-        data: { userId: userkawa.id, postId: createdPosts[0].id },
-      }); // userA の最初の投稿
-      await prisma.post.update({
-        where: { id: createdPosts[0].id },
-        data: { likeCount: { increment: 1 } },
-      });
+    // userkawa が alice/bob の投稿やリストにいいね
+    const kawaLikePosts = createdPosts.filter(
+      (p) => p.authorId === userA.id || p.authorId === userB.id
+    );
+    const kawaLikeLists = createdRankingLists.filter(
+      (l) => l.authorId === userA.id || l.authorId === userB.id
+    );
+    for (let i = 0; i < Math.min(kawaLikePosts.length, 5); i++) {
+      // 最大5件いいね
+      if (faker.datatype.boolean(0.6)) {
+        const target = faker.helpers.arrayElement(kawaLikePosts);
+        await prisma.like.create({
+          data: { userId: userkawa.id, postId: target.id },
+        });
+        await prisma.post.update({
+          where: { id: target.id },
+          data: { likeCount: { increment: 1 } },
+        });
+      }
     }
-    if (createdRankingLists.length > 1) {
-      // createdRankingLists[1] は listB1 (userB 作成)
-      await prisma.like.create({
-        data: { userId: userkawa.id, rankingListId: createdRankingLists[1].id },
-      });
-      await prisma.rankingList.update({
-        where: { id: createdRankingLists[1].id },
-        data: { likeCount: { increment: 1 } },
-      });
+    for (let i = 0; i < Math.min(kawaLikeLists.length, 5); i++) {
+      if (faker.datatype.boolean(0.6)) {
+        const target = faker.helpers.arrayElement(kawaLikeLists);
+        await prisma.like.create({
+          data: { userId: userkawa.id, rankingListId: target.id },
+        });
+        await prisma.rankingList.update({
+          where: { id: target.id },
+          data: { likeCount: { increment: 1 } },
+        });
+      }
     }
-    if (createdPosts.length > 2) {
-      // createdPosts[2] は postB1 (userB 作成)
-      await prisma.like.create({
-        data: { userId: userA.id, postId: createdPosts[2].id },
-      });
-      await prisma.post.update({
-        where: { id: createdPosts[2].id },
-        data: { likeCount: { increment: 1 } },
-      });
+    // alice が bob の投稿/リストにいいね
+    const aliceLikePosts = createdPosts.filter((p) => p.authorId === userB.id);
+    const aliceLikeLists = createdRankingLists.filter(
+      (l) => l.authorId === userB.id
+    );
+    for (let i = 0; i < Math.min(aliceLikePosts.length, 3); i++) {
+      if (faker.datatype.boolean(0.5)) {
+        const target = faker.helpers.arrayElement(aliceLikePosts);
+        await prisma.like.create({
+          data: { userId: userA.id, postId: target.id },
+        });
+        await prisma.post.update({
+          where: { id: target.id },
+          data: { likeCount: { increment: 1 } },
+        });
+      }
     }
-    if (createdRankingLists.length > 0) {
-      // createdRankingLists[0] は listA1 (userA 作成)
-      await prisma.like.create({
-        data: { userId: userB.id, rankingListId: createdRankingLists[0].id },
-      });
-      await prisma.rankingList.update({
-        where: { id: createdRankingLists[0].id },
-        data: { likeCount: { increment: 1 } },
-      });
+    for (let i = 0; i < Math.min(aliceLikeLists.length, 3); i++) {
+      if (faker.datatype.boolean(0.5)) {
+        const target = faker.helpers.arrayElement(aliceLikeLists);
+        await prisma.like.create({
+          data: { userId: userA.id, rankingListId: target.id },
+        });
+        await prisma.rankingList.update({
+          where: { id: target.id },
+          data: { likeCount: { increment: 1 } },
+        });
+      }
     }
+    // bob が alice の投稿/リストにいいね
+    const bobLikePosts = createdPosts.filter((p) => p.authorId === userA.id);
+    const bobLikeLists = createdRankingLists.filter(
+      (l) => l.authorId === userA.id
+    );
+    for (let i = 0; i < Math.min(bobLikePosts.length, 3); i++) {
+      if (faker.datatype.boolean(0.5)) {
+        const target = faker.helpers.arrayElement(bobLikePosts);
+        await prisma.like.create({
+          data: { userId: userB.id, postId: target.id },
+        });
+        await prisma.post.update({
+          where: { id: target.id },
+          data: { likeCount: { increment: 1 } },
+        });
+      }
+    }
+    for (let i = 0; i < Math.min(bobLikeLists.length, 3); i++) {
+      if (faker.datatype.boolean(0.5)) {
+        const target = faker.helpers.arrayElement(bobLikeLists);
+        await prisma.like.create({
+          data: { userId: userB.id, rankingListId: target.id },
+        });
+        await prisma.rankingList.update({
+          where: { id: target.id },
+          data: { likeCount: { increment: 1 } },
+        });
+      }
+    }
+
     console.log("Like data created.");
   } catch (error) {
     console.error("Error creating like data:", error);
   }
 
   console.log(`Seeding finished.`);
-}
+} // --- main 関数の終わり ---
 
 main()
   .catch(async (e) => {

@@ -1,5 +1,5 @@
 // lib/actions/likeActions.ts
-//<FeedInteraction> コンポーネントから呼び出され、データベースの Like テーブルを操作し、関連する Post または RankingList の likeCount を更新する
+//<FeedLike> コンポーネントから呼び出され、データベースの Like テーブルを操作し、関連する Post または RankingList の likeCount を更新する
 "use server";
 
 import { auth } from "@clerk/nextjs/server";

@@ -10,6 +10,7 @@ export const rankingListSnippetSelect = {
   id: true,
   sentiment: true,
   subject: true,
+  description: true,
   listImageUrl: true,
   status: true,
   displayOrder: true,
