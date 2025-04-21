@@ -1,7 +1,7 @@
 // components/component/posts/PostForm.tsx
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect,useState } from "react";
 import { useActionState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -13,16 +13,15 @@ import type { ActionResult } from "@/lib/types"; // 共通の ActionResult 型
 import { useUser } from "@clerk/nextjs";
 // ★ Toast フックをインポート ★
 import { useToast } from "@/components/hooks/use-toast";
-import { Loader2 } from "lucide-react"; // ローディング表示用
+import { Loader2 } from "@/components/component/Icons"; // Loader2 アイコンをインポート
 
 export default function PostForm() {
   // ★ useUser フックでログインユーザー情報を取得 ★
   const { user, isLoaded } = useUser();
   const { toast } = useToast(); // Toast フックを使用
-  const formRef = useRef<HTMLFormElement>(null);
+  const [content, setContent] = useState(""); // フォームの内容を管理する State
 
-  // ★ useActionState の型引数を ActionResult に変更 ★
-  //    createPostAction の戻り値も Promise<ActionResult> になっている想定
+  // フォームの内容を管理する State
   const [state, formAction, isPending] = useActionState<ActionResult | null, FormData>(
     createPostAction,
     null // 初期状態
@@ -31,7 +30,7 @@ export default function PostForm() {
   // フォーム送信成功/失敗時の処理 (Toast を使用)
   useEffect(() => {
     if (state?.success === true) {
-      formRef.current?.reset(); // フォームの内容をリセット
+      setContent(""); // フォームをリセット
       toast({ title: "投稿しました！" }); // 成功メッセージ
     } else if (state?.success === false && state.error) {
       toast({ // エラーメッセージ
@@ -52,8 +51,10 @@ export default function PostForm() {
     return <div className="p-4 text-center text-muted-foreground">投稿するにはログインしてください。</div>;
   }
 
+  const isSubmitDisabled = isPending || content.trim().length === 0 // フォームが送信中か、内容が空かをチェック
+
   return (
-    <div className='flex space-x-4 p-4 border-b'> {/* スタイル調整 */}
+    <div className='flex space-x-4 p-4 border-b'> 
       {/* ★ ログインユーザーのアバターを表示 ★ */}
       <Avatar>
         <AvatarImage src={user.imageUrl} />
@@ -61,7 +62,7 @@ export default function PostForm() {
           {user.firstName?.charAt(0) ?? user.username?.charAt(0) ?? "?"}
         </AvatarFallback>
       </Avatar>
-      <form ref={formRef} action={formAction} className='flex-1 space-y-2'>
+      <form action={formAction} className='flex-1 space-y-2'>
         <Textarea
           name='content'
           placeholder='いまどうしてる？'
@@ -69,14 +70,11 @@ export default function PostForm() {
           maxLength={280}
           className='w-full resize-none border-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent' // 背景透明化
           disabled={isPending}
-          // key={state?.success ? Date.now() : "content-area"} // formRef.reset()を使うなら不要かも
+          value={content} // State から値を取得
+          onChange={(e) => setContent(e.target.value)} // 入力時に State を更新
         />
-        {/* エラーメッセージ表示 (必要なら) */}
-        {/* {state && !state.success && state.error && (
-          <p className='text-sm text-red-500'>{state.error}</p>
-        )} */}
         <div className='flex justify-end'>
-          <Button type='submit' disabled={isPending || !formRef.current?.content.value.trim()} size="sm"> {/* 送信ボタンサイズ、空文字無効化 */}
+          <Button type='submit' disabled={isSubmitDisabled} size={"sm"}>
             {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
             {isPending ? "投稿中..." : "投稿する"}
           </Button>

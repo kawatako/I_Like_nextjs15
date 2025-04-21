@@ -1,6 +1,6 @@
 // components/component/PostList.tsx
-//　プロフィール機能の時に決してfeedを反映させるようにする
-import Post from "./Post";
+//　プロフィール機能修正の時に消す予定feedを反映させるようにする
+import { PostDetail } from "./PostDetail";
 import type { PostWithData } from "@/lib/types"; // PostWithData 型をインポート
 
 interface PostListProps {
@@ -14,9 +14,9 @@ export default function PostList({ posts }: PostListProps) {
 
   return (
     // 各 Post コンポーネントの下ボーダーで区切るので space-y は削除しても良いかも
-    <div className="space-y-0">
+    <div className='space-y-0'>
       {posts.map((post) => (
-        <Post key={post.id} post={post} />
+        <PostDetail key={post.id} post={post} />
       ))}
     </div>
   );

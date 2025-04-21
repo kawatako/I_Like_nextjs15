@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useInView } from "react-intersection-observer";
 import Link from "next/link";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Loader2 } from "lucide-react";
+import { Loader2 } from "@/components/component/Icons"; // Loader2 アイコンをインポート
 
 // ★ サーバーアクションと型をインポート (getPaginatedFollowers に変更) ★
 import { getPaginatedFollowers } from "@/lib/actions/followActions";

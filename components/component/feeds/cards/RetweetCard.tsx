@@ -77,15 +77,32 @@ export default function RetweetCard({
     switch (originalItem.type) {
       case FeedType.POST: // Enum を使用
         // ★ originalItem と loggedInUserDbId を渡す ★
-        return <PostCard item={originalItem as FeedItemWithRelations} loggedInUserDbId={loggedInUserDbId} />;
+        return (
+          <PostCard
+            item={originalItem as FeedItemWithRelations}
+            loggedInUserDbId={loggedInUserDbId}
+          />
+        );
       case FeedType.RANKING_UPDATE:
         // ★ originalItem と loggedInUserDbId を渡す ★
-        return <RankingUpdateCard item={originalItem as FeedItemWithRelations} loggedInUserDbId={loggedInUserDbId} />;
+        return (
+          <RankingUpdateCard
+            item={originalItem as FeedItemWithRelations}
+            loggedInUserDbId={loggedInUserDbId}
+          />
+        );
       case FeedType.QUOTE_RETWEET:
-         // ★ originalItem と loggedInUserDbId を渡す ★
-         return <QuoteRetweetCard item={originalItem as FeedItemWithRelations} loggedInUserDbId={loggedInUserDbId} />;
+        // ★ originalItem と loggedInUserDbId を渡す ★
+        return (
+          <QuoteRetweetCard
+            item={originalItem as FeedItemWithRelations}
+            loggedInUserDbId={loggedInUserDbId}
+          />
+        );
       default:
-        return <div className="...">リツイート元のコンテンツを表示できません...</div>;
+        return (
+          <div className='...'>リツイート元のコンテンツを表示できません...</div>
+        );
     }
   };
   return (
