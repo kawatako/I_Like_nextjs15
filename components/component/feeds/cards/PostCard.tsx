@@ -1,9 +1,8 @@
 // components/component/feeds/cards/PostCard.tsx
 "use client";
 
-import { useState, useTransition, useCallback } from "react";
+// ★ 必要なインポートが減る ★
 import Link from "next/link";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   RepeatIcon,
@@ -11,139 +10,115 @@ import {
   MessageCircleIcon,
   Loader2,
 } from "@/components/component/Icons";
-import type { FeedItemWithRelations, ActionResult } from "@/lib/types"; // ★ ActionResult もインポート (必要なら) ★
-import { formatDistanceToNowStrict } from "date-fns";
-import { ja } from "date-fns/locale";
+import type { FeedItemWithRelations } from "@/lib/types"; // FeedItemWithRelations は必要
 import { PostDetail } from "@/components/component/posts/PostDetail";
-import FeedInteraction from "@/components/component/likes/FeedInteraction";
-import { retweetAction } from "@/lib/actions/feedActions";
+import { FeedLike } from "@/components/component/likes/FeedLike";
 import { RetweetQuoteDialog } from "@/components/component/modals/RetweetQuoteDialog";
-import { useToast } from "@/components/hooks/use-toast"; // ★ useToast をインポート ★
-import { QuoteCommentModal} from "@/components/component/modals/QuoteCommentModal";
+import { QuoteCommentModal } from "@/components/component/modals/QuoteCommentModal";
+import { useCardInteraction } from "@/components/hooks/useCardInteraction";
+import CardHeader from "./CardHeader";
 
-// Props の型定義 (変更なし)
-type PostCardItem = Omit<
-  FeedItemWithRelations,
-  "retweetOfFeedItem" | "quotedFeedItem"
->;
 interface PostCardProps {
-  item: PostCardItem;
+  item: FeedItemWithRelations; // ← 変更後
   loggedInUserDbId: string | null;
 }
 
 export default function PostCard({ item, loggedInUserDbId }: PostCardProps) {
-  const { toast } = useToast();
-  const [isRetweetDialogOpen, setIsRetweetDialogOpen] = useState(false);
-  const [isRetweetPending, startRetweetTransition] = useTransition();
-  const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false); // コメントモーダル用の State
-  const [selectedItemForQuote, setSelectedItemForQuote] = useState<
-    typeof item | null
-  >(null); //引用対象の FeedItem を保持する State
+  const interactionProps = useCardInteraction(item, loggedInUserDbId);
 
-  // ★★★ useCallback もフックなので if 文の前に移動 ★★★
-  const handleRetweet = useCallback(() => {
-    startRetweetTransition(async () => {
-      // この関数内で item.id を使う必要があるが、item はこの時点ではまだ分割代入されていない
-      // props として受け取った item を直接参照すればOK
-      if (!item || item.type !== "POST" || !item.post) return; //念のためガード
-      const feedItemId = item.id; // item.id を使う
-
-      try {
-        console.log(`Retweeting FeedItem: ${feedItemId}`);
-        const result = await retweetAction(feedItemId);
-        if (result.success) {
-          toast({ title: "リポストしました" });
-          setIsRetweetDialogOpen(false);
-          // TODO: mutate
-        } else {
-          throw new Error(result.error || "リポストに失敗しました");
-        }
-      } catch (error) {
-        toast({ title: "エラー", /*...*/ variant: "destructive" });
-        console.error("Failed to retweet:", error);
-        setIsRetweetDialogOpen(false);
-      }
-    });
-  }, [item, startRetweetTransition, toast, setIsRetweetDialogOpen]); // ★ item を依存配列に追加 (他のフックも) ★
-
-  const handleOpenQuoteModal = useCallback(() => {
-    setSelectedItemForQuote(item);
-    setIsQuoteModalOpen(true);
-    console.log("Opening quote modal for FeedItem:", item.id);
-  }, [item, setIsQuoteModalOpen, setSelectedItemForQuote]); // ★ item と setIsRetweetDialogOpen を依存配列に追加 ★
-
-  // タイプガード (フック呼び出しの後なら OK)
-  if (item.type !== "POST" || !item.post) {
+  // ★ フックが null を返した場合 (item が不正など) は何も表示しない ★
+  if (!interactionProps) {
     return null;
   }
 
-  // ↓↓↓ フックの後で props や state から値を取り出す ↓↓↓
-  const { user, post, createdAt, id: feedItemId } = item; // ← feedItemId はここで定義
-  const { likes, _count: postCounts, likeCount: postLikeCount } = post;
-  const { _count: feedCounts } = item;
-  const timeAgo = formatDistanceToNowStrict(new Date(createdAt), {
-    addSuffix: true,
-    locale: ja,
-  });
-  const initialLiked = loggedInUserDbId
-    ? likes?.some((like) => like.userId === loggedInUserDbId) ?? false
-    : false;
-  const likeCount = postLikeCount ?? 0;
-  const commentCount = postCounts?.replies ?? 0;
-  const retweetCount = feedCounts?.retweets ?? 0;
+  // ★★★ フックから必要な値と関数を分割代入で受け取る ★★★
+  const {
+    user, // 投稿者情報
+    post, // 投稿データ (いいね情報含む)
+    createdAt, // 投稿日時
+    feedItemId, // FeedItem ID
+    isOwner, // 自分の投稿か
+    likeTargetType, // いいね対象タイプ ('Post')
+    likeTargetId, // いいね対象 ID (post.id)
+    initialLiked, // 初期いいね状態
+    likeCount, // いいね数
+    commentCount, // コメント数
+    retweetCount, // リツイート数
+    isRetweetDialogOpen, // RTダイアログ開閉状態
+    setIsRetweetDialogOpen, // RTダイアログ開閉関数
+    isRetweetPending, // RTアクション実行中状態
+    handleRetweet, // RT実行関数
+    isQuoteModalOpen, // 引用モーダル開閉状態
+    setIsQuoteModalOpen, // 引用モーダル開閉関数
+    selectedItemForQuote, // 引用対象データ
+    handleOpenQuoteModal, // 引用モーダルを開く関数
+    isDeleting, // 削除アクション実行中状態
+    handleDelete, // 削除実行関数
+  } = interactionProps;
+  // ★★★ ここまで ★★★
+
+  // ★ useState, useTransition, useCallback, データ計算ロジックは削除 ★
+
+  // タイプガード (フック内で item のチェックをしているので、ここでは不要かも)
+  if (item.type !== "POST" || !post) {
+    return null; // post が null の可能性もあるのでチェックは残す
+  }
 
   return (
-    <div className='flex space-x-3 border-b p-4 transition-colors hover:bg-gray-50/50 dark:hover:bg-gray-800/50'>
-      {/* Avatar */}
-      <div>
-        <Link href={`/profile/${user.username}`}>
-          <Avatar className='w-10 h-10'>
-            <AvatarImage src={user.image ?? undefined} />
-            <AvatarFallback>
-              {user.name
-                ? user.name.charAt(0).toUpperCase()
-                : user.username.charAt(0).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
-        </Link>
-      </div>
-      {/* Content */}
+    // カード全体の div (padding は中の要素で調整)
+    <div className='flex space-x-3 border-b transition-colors hover:bg-gray-50/50 dark:hover:bg-gray-800/50 px-4 pt-4'>
+      {" "}
+      {/* 上と横の padding を追加 */}
+      {/* Content (Avatar は CardHeader が表示) */}
       <div className='flex-1 space-y-1'>
-        {/* Header */}
-        <div className='flex items-center space-x-1 text-sm'>
-          {/* ... (ユーザー名、タイムスタンプリンクなど) ... */}
-        </div>
+        {/* ★★★ Header 部分を CardHeader コンポーネントに置き換え ★★★ */}
+        <CardHeader
+          user={user}
+          createdAt={createdAt}
+          feedItemId={feedItemId}
+          isOwner={isOwner} // 自分の投稿かのフラグを渡す
+          onDelete={handleDelete} // 削除実行関数を渡す
+          isDeleting={isDeleting} // 削除中かの状態を渡す
+        />
 
         {/* Post 本体 (Link でラップ) */}
-        <Link
-          href={`/feeds/${feedItemId}`}
-          className='block cursor-pointer ...'
-        >
-          <PostDetail post={post} />
-        </Link>
+        {/* ★ 上に padding があるので微調整 (任意) ★ */}
+        <div className='pt-2'>
+          {feedItemId && post && (
+            <Link
+              href={`/feeds/${feedItemId}`}
+              className='block cursor-pointer hover:bg-gray-50/30 dark:hover:bg-gray-800/30 rounded -mx-1 px-1 transition-colors duration-100 ease-in-out'
+            >
+              <PostDetail post={post} />
+            </Link>
+          )}
+        </div>
 
-        {/* Footer: Action Buttons */}
-        <div className='flex justify-start pt-2 -ml-2 text-gray-500 dark:text-gray-400'>
-          <FeedInteraction
-            targetType='Post'
-            targetId={post.id}
-            likeCount={likeCount}
-            initialLiked={initialLiked}
-          />
-          <Button variant='ghost' size='sm' className='...'>
+        {/* ★ 上の padding を調整し、左右のネガティブマージン削除 ★ */}
+        <div className='flex justify-start pt-2 text-gray-500 dark:text-gray-400'>
+          {likeTargetId && likeTargetType && (
+            <FeedLike
+              targetType={likeTargetType}
+              targetId={likeTargetId}
+              likeCount={likeCount}
+              initialLiked={initialLiked}
+            />
+          )}
+          <Button
+            variant='ghost'
+            size='sm'
+            className='flex items-center space-x-1 hover:text-blue-500'
+          >
             <MessageCircleIcon className='h-[18px] w-[18px]' />
             <span className='text-xs'>{commentCount}</span>
           </Button>
-
-          {/* ★ リツイートボタンに onClick と disabled を追加 ★ */}
           <Button
             variant='ghost'
             size='sm'
             className='flex items-center space-x-1 hover:text-green-500'
-            onClick={() => setIsRetweetDialogOpen(true)} // ← ダイアログを開く
-            disabled={isRetweetPending} // ← 実行中は無効化
+            onClick={() => setIsRetweetDialogOpen(true)}
+            disabled={isRetweetPending}
           >
-            {/* ★ isRetweetPending ならスピナー表示 (任意) ★ */}
             {isRetweetPending ? (
               <Loader2 className='mr-1 h-4 w-4 animate-spin' />
             ) : (
@@ -151,31 +126,40 @@ export default function PostCard({ item, loggedInUserDbId }: PostCardProps) {
             )}
             <span className='text-xs'>{retweetCount}</span>
           </Button>
-
-          {/* 共有ボタン */}
           <Button variant='ghost' size='icon' className='hover:text-blue-500'>
             <ShareIcon className='h-[18px] w-[18px]' />
           </Button>
         </div>
       </div>
-
-      {/* ★ リツイート/引用選択ダイアログを追加 ★ */}
+      {/* ダイアログ */}
       <RetweetQuoteDialog
         open={isRetweetDialogOpen}
         onOpenChange={setIsRetweetDialogOpen}
         onRetweet={handleRetweet}
         onQuote={handleOpenQuoteModal}
       />
-      {selectedItemForQuote &&
-        selectedItemForQuote.post && ( // post がないと QuotedItemPreview でエラーになる可能性
-          <QuoteCommentModal
-            open={isQuoteModalOpen}
-            onOpenChange={setIsQuoteModalOpen}
-            quotedFeedItem={
-              selectedItemForQuote as NonNullable<FeedItemWithRelations["quotedFeedItem"]>
-            }
-          />
-        )}
+      {/* ★ quotedFeedItem の型を調整 ★ */}
+      {selectedItemForQuote && selectedItemForQuote.quotedFeedItem && (
+        <QuoteCommentModal
+          open={isQuoteModalOpen}
+          onOpenChange={setIsQuoteModalOpen}
+          // ★ selectedItemForQuote をそのまま渡せるか、型を合わせる ★
+          //    QuoteCommentModal の Props 定義による
+          quotedFeedItem={selectedItemForQuote as FeedItemWithRelations} // 仮アサーション
+        />
+      )}
+      {/* ★ ↑ QuoteCommentModal に渡すのは selectedItemForQuote (FeedItem) で、
+             Modal 内部の QuotedItemPreview が originalItem = selectedItemForQuote.quotedFeedItem を使うべき ★
+             Modal の Props 名を見直すのが良い
+         */}
+      {selectedItemForQuote && ( // selectedItemForQuote があれば Modal を描画準備
+        <QuoteCommentModal
+          open={isQuoteModalOpen}
+          onOpenChange={setIsQuoteModalOpen}
+          // ★ QuoteCommentModal には引用したい FeedItem を渡す ★
+          quotedFeedItem={selectedItemForQuote} // 名前は紛らわしいが、引用「したい」アイテム
+        />
+      )}
     </div>
   );
 }

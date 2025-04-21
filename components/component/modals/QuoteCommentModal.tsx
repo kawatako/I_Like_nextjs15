@@ -18,7 +18,7 @@ import { Loader2 } from "lucide-react"; // ローディングスピナー
 import { useToast } from "@/components/hooks/use-toast";
 import { quoteRetweetAction } from "@/lib/actions/feedActions"; // Server Action をインポート
 import type { ActionResult, FeedItemWithRelations } from "@/lib/types";
-import { QuotedItemPreview } from "@/components/component/feeds/cards/QuoteRetweetCard"; // 引用元プレビューコンポーネントをインポート
+import { QuotedItemPreview } from "@/components/component/feeds/cards/QuotedItemPreview";
 
 // ★ Props の型定義 ★
 interface QuoteCommentModalProps {

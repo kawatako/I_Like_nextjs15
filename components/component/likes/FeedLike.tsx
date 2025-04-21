@@ -1,4 +1,4 @@
-// components/component/likes/FeedInteraction.tsx
+// components/component/likes/FeedLike.tsx
 //主な責任: 特定のコンテンツ（投稿 または ランキングリスト）に対するユーザーインタラクション（いいね、コメント数表示、将来的にはリツイートや共有も）の UI とその動作ロジック
 "use client";
 
@@ -15,7 +15,7 @@ import {
 import { useToast } from "@/components/hooks/use-toast";
 import { useRouter } from "next/navigation";
 
-interface FeedInteractionProps {
+interface FeedLikeProps {
   targetType: "Post" | "RankingList"; // ★ いいね対象のタイプ ★
   targetId: string; // ★ 対象の ID (postId または rankingListId) ★
   likeCount: number; // 初期いいね数
@@ -26,7 +26,7 @@ interface FeedInteractionProps {
   // quoteCount?: number;
 }
 
-export default function FeedInteraction({
+export function FeedLike({
   targetType,
   targetId,
   likeCount,
@@ -34,7 +34,7 @@ export default function FeedInteraction({
 }: //commentCount,
 // retweetCount = 0, // 将来用
 // quoteCount = 0,  // 将来用
-FeedInteractionProps) {
+FeedLikeProps) {
   const { mutate } = useSWRConfig(); // SWR のキャッシュを更新するための関数
   const router = useRouter();
   const { toast } = useToast();
