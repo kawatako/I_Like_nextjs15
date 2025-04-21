@@ -3,7 +3,7 @@
 
 import { useState, useTransition, useEffect } from 'react'; // useEffect を追加
 import { Button } from '@/components/ui/button';
-import { Loader2 } from 'lucide-react';
+import { Loader2 } from "@/components/component/Icons"; // Loader2 アイコンをインポート
 import { useToast } from "@/components/hooks/use-toast";
 // ★ 関連するサーバーアクションをインポート
 import {

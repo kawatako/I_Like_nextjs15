@@ -89,7 +89,7 @@ export async function getHomeFeed({
       select: { followingId: true },
     });
     const followingIds = following.map((f) => f.followingId);
-    const targetUserIds = [...followingIds, userId];
+    const targetUserIds = followingIds;
 
     const feedItems = await prisma.feedItem.findMany({
       where: {

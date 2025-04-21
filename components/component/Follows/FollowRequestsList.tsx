@@ -6,7 +6,7 @@ import { useInView } from "react-intersection-observer";
 import Link from "next/link";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { Loader2 } from "@/components/component/Icons"; // Loader2 アイコンをインポート
 import { getPaginatedReceivedFollowRequests } from "@/lib/actions/followActions"; // データ取得アクション
 // ★ 承認・拒否アクションと関連型をインポート (パスを確認) ★
 import {

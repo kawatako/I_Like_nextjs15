@@ -6,18 +6,13 @@ import prisma from "@/lib/client";
 import { getUserDbIdByClerkId } from "@/lib/data/userQueries";
 import { revalidatePath } from "next/cache";
 import { FeedType, Post } from "@prisma/client";
+import type { ActionResult } from "@/lib/types";
 
-export type CreatePostActionResult = {
-  success: boolean;
-  message?: string; // エラーメッセージ or 成功メッセージ
-  post?: Post;
-};
-
-// ★ シグネチャ変更: 第一引数に prevState を追加 ★
+// 投稿の作成アクション
 export async function createPostAction(
-  prevState: CreatePostActionResult | null, // 前の状態 (今回は使わない)
+  prevState: ActionResult | null,
   formData: FormData
-): Promise<CreatePostActionResult> {
+): Promise<ActionResult> {
   // ★ 戻り値は必ず CreatePostActionResult ★
   const { userId: clerkId } = await auth();
   if (!clerkId) {

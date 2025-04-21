@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useInView } from "react-intersection-observer"; // 無限スクロール検知
 import Link from "next/link";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"; // UIコンポーネント
-import { Loader2 } from "lucide-react"; // ローディングアイコン
+import { Loader2 } from "@/components/component/Icons"; // Loader2 アイコンをインポート
 
 // ★ サーバーアクションと関連する型をインポート (パス確認) ★
 import { getPaginatedFollowing } from "@/lib/actions/followActions";

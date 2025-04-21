@@ -1,58 +1,96 @@
 // components/component/feeds/cards/PostCard.tsx
 "use client";
 
+import { useState, useTransition, useCallback } from "react";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button"; // Retweet, Share ボタンで使うので残す
+import { Button } from "@/components/ui/button";
 import {
   RepeatIcon,
   ShareIcon,
   MessageCircleIcon,
-} from "@/components/component/Icons"; // FeedInteraction 以外のアイコン
-import type { FeedItemWithRelations } from "@/lib/types"; // ★ 型は lib/types からインポート想定 ★
+  Loader2,
+} from "@/components/component/Icons";
+import type { FeedItemWithRelations, ActionResult } from "@/lib/types"; // ★ ActionResult もインポート (必要なら) ★
 import { formatDistanceToNowStrict } from "date-fns";
 import { ja } from "date-fns/locale";
-import Post from "@/components/component/posts/Post"; // 本文表示用
-import FeedInteraction from "@/components/component/likes/FeedInteraction"; // いいね・コメント用インタラクション
+import { PostDetail } from "@/components/component/posts/PostDetail";
+import FeedInteraction from "@/components/component/likes/FeedInteraction";
+import { retweetAction } from "@/lib/actions/feedActions";
+import { RetweetQuoteDialog } from "@/components/component/modals/RetweetQuoteDialog";
+import { useToast } from "@/components/hooks/use-toast"; // ★ useToast をインポート ★
+import { QuoteCommentModal} from "@/components/component/modals/QuoteCommentModal";
 
-// Props の型定義 (Omit を使用)
+// Props の型定義 (変更なし)
 type PostCardItem = Omit<
   FeedItemWithRelations,
   "retweetOfFeedItem" | "quotedFeedItem"
 >;
-
 interface PostCardProps {
   item: PostCardItem;
-  loggedInUserDbId: string | null; // DB ID (CUID) を受け取る
+  loggedInUserDbId: string | null;
 }
 
 export default function PostCard({ item, loggedInUserDbId }: PostCardProps) {
-  // タイプガード
+  const { toast } = useToast();
+  const [isRetweetDialogOpen, setIsRetweetDialogOpen] = useState(false);
+  const [isRetweetPending, startRetweetTransition] = useTransition();
+  const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false); // コメントモーダル用の State
+  const [selectedItemForQuote, setSelectedItemForQuote] = useState<
+    typeof item | null
+  >(null); //引用対象の FeedItem を保持する State
+
+  // ★★★ useCallback もフックなので if 文の前に移動 ★★★
+  const handleRetweet = useCallback(() => {
+    startRetweetTransition(async () => {
+      // この関数内で item.id を使う必要があるが、item はこの時点ではまだ分割代入されていない
+      // props として受け取った item を直接参照すればOK
+      if (!item || item.type !== "POST" || !item.post) return; //念のためガード
+      const feedItemId = item.id; // item.id を使う
+
+      try {
+        console.log(`Retweeting FeedItem: ${feedItemId}`);
+        const result = await retweetAction(feedItemId);
+        if (result.success) {
+          toast({ title: "リポストしました" });
+          setIsRetweetDialogOpen(false);
+          // TODO: mutate
+        } else {
+          throw new Error(result.error || "リポストに失敗しました");
+        }
+      } catch (error) {
+        toast({ title: "エラー", /*...*/ variant: "destructive" });
+        console.error("Failed to retweet:", error);
+        setIsRetweetDialogOpen(false);
+      }
+    });
+  }, [item, startRetweetTransition, toast, setIsRetweetDialogOpen]); // ★ item を依存配列に追加 (他のフックも) ★
+
+  const handleOpenQuoteModal = useCallback(() => {
+    setSelectedItemForQuote(item);
+    setIsQuoteModalOpen(true);
+    console.log("Opening quote modal for FeedItem:", item.id);
+  }, [item, setIsQuoteModalOpen, setSelectedItemForQuote]); // ★ item と setIsRetweetDialogOpen を依存配列に追加 ★
+
+  // タイプガード (フック呼び出しの後なら OK)
   if (item.type !== "POST" || !item.post) {
     return null;
   }
 
-  // データの分割代入
-  const { user, post, createdAt, id: feedItemId } = item;
-  // post から likes, _count, likeCount を取得 (postPayload で select されている前提)
+  // ↓↓↓ フックの後で props や state から値を取り出す ↓↓↓
+  const { user, post, createdAt, id: feedItemId } = item; // ← feedItemId はここで定義
   const { likes, _count: postCounts, likeCount: postLikeCount } = post;
-  // item から _count を取得 (feedItemPayload で select されている前提)
   const { _count: feedCounts } = item;
-
-  // 日時フォーマット
   const timeAgo = formatDistanceToNowStrict(new Date(createdAt), {
     addSuffix: true,
     locale: ja,
   });
-
-  // FeedInteraction に渡す props を計算
   const initialLiked = loggedInUserDbId
     ? likes?.some((like) => like.userId === loggedInUserDbId) ?? false
     : false;
-  // ★ likeCount は post.likeCount を参照 ★
   const likeCount = postLikeCount ?? 0;
-  const commentCount = postCounts?.replies ?? 0; // post._count.replies を参照
-  const retweetCount = feedCounts?.retweets ?? 0; // item._count.retweets を参照
+  const commentCount = postCounts?.replies ?? 0;
+  const retweetCount = feedCounts?.retweets ?? 0;
 
   return (
     <div className='flex space-x-3 border-b p-4 transition-colors hover:bg-gray-50/50 dark:hover:bg-gray-800/50'>
@@ -69,73 +107,75 @@ export default function PostCard({ item, loggedInUserDbId }: PostCardProps) {
           </Avatar>
         </Link>
       </div>
-
       {/* Content */}
       <div className='flex-1 space-y-1'>
         {/* Header */}
         <div className='flex items-center space-x-1 text-sm'>
-          {/* ... (ユーザー名、タイムスタンプなど) ... */}
-          <Link
-            href={`/profile/${user.username}`}
-            className='font-semibold hover:underline'
-          >
-            {user.name ?? user.username}
-          </Link>
-          <span className='text-gray-500 dark:text-gray-400'>
-            @{user.username}
-          </span>
-          <span className='text-gray-500 dark:text-gray-400'>·</span>
-          <Link
-            href={`/feeds/${feedItemId}`}
-            className='text-gray-500 dark:text-gray-400 hover:underline'
-          >
-            <time
-              dateTime={new Date(createdAt).toISOString()}
-              className='text-gray-500 dark:text-gray-400 hover:underline'
-            >
-              {timeAgo}
-            </time>
-          </Link>
-          {/* TODO: 自分の投稿なら削除ボタン */}
+          {/* ... (ユーザー名、タイムスタンプリンクなど) ... */}
         </div>
 
-        {/* Post 本体 */}
-        <Post post={post} />
+        {/* Post 本体 (Link でラップ) */}
+        <Link
+          href={`/feeds/${feedItemId}`}
+          className='block cursor-pointer ...'
+        >
+          <PostDetail post={post} />
+        </Link>
 
         {/* Footer: Action Buttons */}
         <div className='flex justify-start pt-2 -ml-2 text-gray-500 dark:text-gray-400'>
           <FeedInteraction
             targetType='Post'
             targetId={post.id}
-            likeCount={likeCount} // ★ 正しいカウントを渡す ★
+            likeCount={likeCount}
             initialLiked={initialLiked}
           />
-          {/* ★ コメントボタンとカウントを FeedInteraction とは別に配置 ★ */}
-          <Button
-            variant='ghost'
-            size='sm'
-            className='flex items-center space-x-1 hover:text-blue-500'
-          >
+          <Button variant='ghost' size='sm' className='...'>
             <MessageCircleIcon className='h-[18px] w-[18px]' />
-            <span className='text-xs'>{commentCount}</span>{" "}
-            {/* コメント数はここで表示 */}
+            <span className='text-xs'>{commentCount}</span>
           </Button>
-          {/* リツイートボタン */}
+
+          {/* ★ リツイートボタンに onClick と disabled を追加 ★ */}
           <Button
             variant='ghost'
             size='sm'
             className='flex items-center space-x-1 hover:text-green-500'
+            onClick={() => setIsRetweetDialogOpen(true)} // ← ダイアログを開く
+            disabled={isRetweetPending} // ← 実行中は無効化
           >
-            <RepeatIcon className='h-[18px] w-[18px]' />
-            <span className='text-xs'>{retweetCount}</span>{" "}
-            {/* リツイート数を表示 */}
+            {/* ★ isRetweetPending ならスピナー表示 (任意) ★ */}
+            {isRetweetPending ? (
+              <Loader2 className='mr-1 h-4 w-4 animate-spin' />
+            ) : (
+              <RepeatIcon className='h-[18px] w-[18px]' />
+            )}
+            <span className='text-xs'>{retweetCount}</span>
           </Button>
+
           {/* 共有ボタン */}
           <Button variant='ghost' size='icon' className='hover:text-blue-500'>
             <ShareIcon className='h-[18px] w-[18px]' />
           </Button>
         </div>
       </div>
+
+      {/* ★ リツイート/引用選択ダイアログを追加 ★ */}
+      <RetweetQuoteDialog
+        open={isRetweetDialogOpen}
+        onOpenChange={setIsRetweetDialogOpen}
+        onRetweet={handleRetweet}
+        onQuote={handleOpenQuoteModal}
+      />
+      {selectedItemForQuote &&
+        selectedItemForQuote.post && ( // post がないと QuotedItemPreview でエラーになる可能性
+          <QuoteCommentModal
+            open={isQuoteModalOpen}
+            onOpenChange={setIsQuoteModalOpen}
+            quotedFeedItem={
+              selectedItemForQuote as NonNullable<FeedItemWithRelations["quotedFeedItem"]>
+            }
+          />
+        )}
     </div>
   );
 }
