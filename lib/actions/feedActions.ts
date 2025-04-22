@@ -241,75 +241,66 @@ export async function undoRetweetAction(
   }
 }
 
-// 引用リツイート作成アクションの戻り値型 (作成された Post を含める例)
+// 引用リツイートのデータ型
+interface QuoteRetweetData {
+  commentContent: string;
+  imageUrl?: string | null; // 画像 URL は Optional
+}
+
+// 引用リツイート作成アクションの戻り値型
 type QuoteRetweetActionResult = ActionResult & {
   newPost?: Post; // 作成された引用コメント Post (任意)
   newFeedItem?: FeedItem; // 作成された引用 FeedItem (任意)
 };
 
 /**
- * 指定された FeedItem を引用してコメント付きでリツイートする Server Action
+ * [ACTION] 指定された FeedItem を引用してコメント付きでリツイートする (画像対応)
  * @param quotedFeedItemId - 引用したい元の FeedItem の ID
- * @param commentContent - ユーザーが入力した引用コメント
+ * @param data - 引用コメントと画像 URL を含むオブジェクト
  * @returns QuoteRetweetActionResult - 成功/失敗情報と、任意で作成されたデータ
  */
 export async function quoteRetweetAction(
   quotedFeedItemId: string,
-  commentContent: string
+  data: QuoteRetweetData
 ): Promise<QuoteRetweetActionResult> {
-  // ★ 戻り値の型を変更 ★
   // 1. 認証チェック
   const { userId: clerkId } = await auth();
-  if (!clerkId) {
-    return { success: false, error: "ログインしてください。" };
-  }
+  if (!clerkId) { return { success: false, error: "ログインしてください。" }; }
 
   // 2. ユーザーDB ID 取得
   const userDbId = await getUserDbIdByClerkId(clerkId);
-  if (!userDbId) {
-    return { success: false, error: "ユーザー情報が見つかりません。" };
-  }
+  if (!userDbId) { return { success: false, error: "ユーザー情報が見つかりません。" }; }
 
   // 3. 引数バリデーション
-  if (!quotedFeedItemId) {
-    return { success: false, error: "引用元の投稿が指定されていません。" };
-  }
+  if (!quotedFeedItemId) { return { success: false, error: "引用元の投稿が指定されていません。" }; }
+  const commentContent = data.commentContent;
+  const imageUrl = data.imageUrl;
   const trimmedComment = commentContent.trim();
-  if (trimmedComment.length === 0) {
-    return { success: false, error: "コメントを入力してください。" };
-  }
-  if (trimmedComment.length > 280) {
-    return {
-      success: false,
-      error: "コメントは280文字以内で入力してください。",
-    };
-  } // 文字数制限
+  if (trimmedComment.length === 0 && !imageUrl) { return { success: false, error: "コメントを入力するか画像を選択してください。" }; }
+  if (trimmedComment.length > 280) { return { success: false, error: "コメントは280文字以内で入力してください。" }; }
+  if (imageUrl && typeof imageUrl !== 'string') { return { success: false, error: "画像URLが不正です。" }; }
 
-  console.log(
-    `[QuoteRetweetAction] User ${userDbId} attempting to quote FeedItem ${quotedFeedItemId}`
-  );
+  console.log(`[QuoteRetweetAction] User ${userDbId} quoting FeedItem ${quotedFeedItemId}`);
 
   try {
-    // 4. 引用元の FeedItem をチェック (存在するか、非公開でないかなど)
+    // 4. 引用元の FeedItem をチェック
     const originalFeedItem = await prisma.feedItem.findUnique({
       where: { id: quotedFeedItemId },
-      select: { userId: true, user: { select: { isPrivate: true } } },
+      select: { userId: true, user: { select: { isPrivate: true } }, type: true }, // type も取得してチェックする例
     });
-    if (!originalFeedItem) {
-      throw new Error("引用元の投稿が見つかりません。");
-    }
-    if (originalFeedItem.user?.isPrivate) {
-      throw new Error("非公開アカウントの投稿は引用できません。");
-    }
-    // TODO: 引用元のタイプによって引用可否を制限する？ (例: リツイートは引用できないなど)
+    if (!originalFeedItem) { throw new Error("引用元の投稿が見つかりません。"); }
+    if (originalFeedItem.user?.isPrivate) { throw new Error("非公開アカウントの投稿は引用できません。"); }
+    // TODO: 必要なら引用元のタイプに基づいて引用を制限する (例: リツイートは引用できない等)
 
     // 5. データベース操作 (トランザクション)
-    const { newPost, newFeedItem } = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+    // ★ トランザクションの結果を分割代入で受け取る ★
+    const { newPost, newFeedItem } = await prisma.$transaction(async (tx) => {
       // a. 引用コメント用の新しい Post を作成
       const createdPost = await tx.post.create({
         data: {
           authorId: userDbId,
           content: trimmedComment,
+          imageUrl: imageUrl, // imageUrl を保存
           // likeCount はデフォルトで 0
         },
       });
@@ -317,10 +308,10 @@ export async function quoteRetweetAction(
       // b. 新しい FeedItem (type: QUOTE_RETWEET) を作成
       const createdFeedItem = await tx.feedItem.create({
         data: {
-          userId: userDbId, // 引用したユーザー
+          userId: userDbId,
           type: FeedType.QUOTE_RETWEET,
-          postId: createdPost.id, // 作成した引用コメント Post の ID
-          quotedFeedItemId: quotedFeedItemId, // 引用元の FeedItem ID
+          postId: createdPost.id,
+          quotedFeedItemId: quotedFeedItemId,
           // createdAt はデフォルト
         },
       });
@@ -331,28 +322,26 @@ export async function quoteRetweetAction(
         data: { quoteRetweetCount: { increment: 1 } },
       });
 
+      // ★ トランザクションの結果として作成したデータを返す ★
       return { newPost: createdPost, newFeedItem: createdFeedItem };
     });
 
-    console.log(
-      `[QuoteRetweetAction] User ${userDbId} successfully quoted FeedItem ${quotedFeedItemId}. New Post ID: ${newPost.id}, New FeedItem ID: ${newFeedItem.id}`
-    );
+    // ★ トランザクション成功後の処理 ★
+    console.log(`[QuoteRetweetAction] Success. Post: ${newPost.id}, FeedItem: ${newFeedItem.id}`);
 
     // 6. キャッシュ再検証
     revalidatePath("/"); // ホームタイムライン
-    // revalidatePath(`/profile/${quoterUsername}`); // 自分のプロフィール
-    // revalidatePath(`/status/${quotedFeedItemId}`); // 元の投稿詳細ページなど
+    // 必要なら他のパスも再検証 (自分のプロフィール、元の投稿の詳細など)
+    // const user = await prisma.user.findUnique({ where: { id: userDbId }, select: { username: true }});
+    // if(user?.username) revalidatePath(`/profile/${user.username}`);
+    // revalidatePath(`/feeds/${quotedFeedItemId}`);
 
-    return { success: true, newPost, newFeedItem }; // 成功情報と作成データを返す
+    // ★ 最終的な成功時の戻り値 ★
+    return { success: true, newPost, newFeedItem };
+
   } catch (error) {
-    console.error(
-      `[QuoteRetweetAction] Error quoting FeedItem ${quotedFeedItemId} by user ${userDbId}:`,
-      error
-    );
-    const message =
-      error instanceof Error
-        ? error.message
-        : "引用リツイート中にエラーが発生しました。";
+    console.error(`[QuoteRetweetAction] Error quoting FeedItem ${quotedFeedItemId} by user ${userDbId}:`, error);
+    const message = error instanceof Error ? error.message : "引用リツイート中にエラーが発生しました。";
     return { success: false, error: message };
   }
 }

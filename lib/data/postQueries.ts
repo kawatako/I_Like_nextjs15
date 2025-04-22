@@ -9,6 +9,7 @@ export const postPayload = Prisma.validator<Prisma.PostDefaultArgs>()({
   select: {
     id: true,
     content: true,
+    imageUrl: true,
     createdAt: true,
     author: { select: userSnippetSelect },
     _count: {

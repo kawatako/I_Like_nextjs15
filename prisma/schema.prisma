@@ -106,6 +106,7 @@ model RankedItem {
 model Post {
   id        String     @id @default(cuid())
   content   String
+  imageUrl String?
   author    User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId  String
   createdAt DateTime   @default(now())

@@ -1,7 +1,7 @@
 // components/Icons.tsx
 import { SVGProps } from "react";
 
-export const PenSquareIcon = (props: SVGProps<SVGSVGElement>) => (
+export const ImagePlus = (props: SVGProps<SVGSVGElement>) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width="24"
@@ -14,8 +14,47 @@ export const PenSquareIcon = (props: SVGProps<SVGSVGElement>) => (
     strokeLinejoin="round"
     {...props}
   >
-    <path d="M12 20h9" />
-    <path d="M16.5 3.5a2.1 2.1 0 1 1 3 3L7 19l-4 1 1-4Z" />
+    <path d="M21 15V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8" />
+    <circle cx="9" cy="9" r="2" />
+    <path d="m21 21-4-4a2.1 2.1 0 0 0-3 0l-2 2" />
+    <path d="M16 19h6" />
+    <path d="M19 16v6" />
+  </svg>
+);
+
+export const XIcon = (props: SVGProps<SVGSVGElement>) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    {...props}
+  >
+    <path d="M18 6 6 18" />
+    <path d="m6 6 12 12" />
+  </svg>
+);
+
+export const PenSquareIcon = (props: SVGProps<SVGSVGElement>) => (
+  <svg
+    xmlns='http://www.w3.org/2000/svg'
+    width='24'
+    height='24'
+    viewBox='0 0 24 24'
+    fill='none'
+    stroke='currentColor'
+    strokeWidth='2'
+    strokeLinecap='round'
+    strokeLinejoin='round'
+    {...props}
+  >
+    <path d='M12 20h9' />
+    <path d='M16.5 3.5a2.1 2.1 0 1 1 3 3L7 19l-4 1 1-4Z' />
   </svg>
 );
 

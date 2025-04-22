@@ -8,38 +8,49 @@ import { revalidatePath } from "next/cache";
 import { FeedType, Post } from "@prisma/client";
 import type { ActionResult } from "@/lib/types";
 
+interface CreatePostData {
+  content: string;
+  imageUrl?: string | null; // 画像 URL は Optional
+}
+
 // 投稿の作成アクション
 export async function createPostAction(
-  prevState: ActionResult | null,
-  formData: FormData
-): Promise<ActionResult> {
-  // ★ 戻り値は必ず CreatePostActionResult ★
+  // ★ 引数を prevState, formData から data オブジェクトに変更 ★
+  data: CreatePostData
+): Promise<ActionResult & { post?: Post }> { // 成功時に Post を返すかも
+  // 1. 認証チェック
   const { userId: clerkId } = await auth();
-  if (!clerkId) {
-    return { success: false, message: "ログインしていません。" }; // ★ message を使うように変更
-  }
+  if (!clerkId) return { success: false, error: "ログインしていません。" };
 
+  // 2. ユーザーDB ID 取得
   const userDbId = await getUserDbIdByClerkId(clerkId);
-  if (!userDbId) {
-    return { success: false, message: "ユーザー情報が見つかりません。" };
-  }
+  if (!userDbId) return { success: false, error: "ユーザー情報が見つかりません。" };
 
-  const content = formData.get("content") as string;
-  if (!content || typeof content !== "string" || content.trim().length === 0) {
-    return { success: false, message: "投稿内容を入力してください。" };
+  // 3. 入力内容のバリデーション (引数から取得)
+  const content = data.content;
+  const imageUrl = data.imageUrl; // 画像 URL を受け取る
+
+  if (!content || typeof content !== 'string' || content.trim().length === 0) {
+    return { success: false, error: "投稿内容を入力してください。" };
   }
   const trimmedContent = content.trim();
   if (trimmedContent.length > 280) {
-    return {
-      success: false,
-      message: "投稿内容は280文字以内で入力してください。",
-    };
+    return { success: false, error: "投稿内容は280文字以内で入力してください。" };
+  }
+  // 画像 URL のバリデーション (任意)
+  if (imageUrl && typeof imageUrl !== 'string') {
+    return { success: false, error: "画像URLが不正です。" };
   }
 
   try {
+    // 4. データベース操作 (トランザクション)
     const result = await prisma.$transaction(async (tx) => {
       const newPost = await tx.post.create({
-        data: { authorId: userDbId, content: trimmedContent },
+        data: {
+          authorId: userDbId,
+          content: trimmedContent,
+          imageUrl: imageUrl, // ★ imageUrl を保存 ★
+        },
       });
       await tx.feedItem.create({
         data: { userId: userDbId, type: FeedType.POST, postId: newPost.id },
