@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { FeedType } from "@prisma/client";
-// ★ 必要な型を lib/types からインポート ★
 import type {
   FeedItemWithRelations,
   PostWithData,

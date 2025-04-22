@@ -2,7 +2,6 @@
 import { notFound } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
 import { getUserDbIdByClerkId } from "@/lib/data/userQueries";
-// ★ 作成したデータ取得関数と関連型、カードコンポーネントをインポート ★
 import { getFeedItemDetails } from "@/lib/data/feedQueries";
 import { FeedType } from "@prisma/client";
 import PostCard from "@/components/component/feeds/cards/PostCard";
@@ -11,11 +10,11 @@ import RetweetCard from "@/components/component/feeds/cards/RetweetCard";
 import QuoteRetweetCard from "@/components/component/feeds/cards/QuoteRetweetCard";
 
 interface FeedDetailPageProps {
-  params: Promise<{ feedItemId: string }>;
+  params: {feedItemId: string};
 }
 
 export default async function FeedDetailPage({ params }: FeedDetailPageProps) {
-  const { feedItemId } = await params;
+  const { feedItemId } =  params;
   const { userId: clerkId } = await auth(); // ログインユーザーの Clerk ID を取得
 
   // ログインユーザーの DB ID を取得 (いいね判定などに使う)

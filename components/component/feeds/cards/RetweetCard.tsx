@@ -54,13 +54,11 @@ export default function RetweetCard({
         const result = await undoRetweetAction(originalItemId); // 元の FeedItem ID を渡す
         if (result.success) {
           toast({ title: "リツイートを取り消しました。" });
-          // ★★★ SWR キャッシュを再検証 ★★★
           mutate(
             (key) => Array.isArray(key) && key[0] === "timelineFeed",
             undefined,
             { revalidate: true }
           );
-          // 必要なら他の関連キャッシュも mutate
         } else {
           throw new Error(
             result.error || "リツイートの取り消しに失敗しました。"

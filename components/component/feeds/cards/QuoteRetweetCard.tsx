@@ -133,7 +133,7 @@ export default function QuoteRetweetCard({
         <QuoteCommentModal
           open={isQuoteModalOpen}
           onOpenChange={setIsQuoteModalOpen}
-          quotedFeedItem={selectedItemForQuote.quotedFeedItem!} // ★ 引用元データを渡す（型に注意）★
+          quotedFeedItem={selectedItemForQuote}
           // もしくは Modal 側で selectedItemForQuote を受け取る
         />
       )}
