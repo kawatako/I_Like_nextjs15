@@ -8,12 +8,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ランキングの感情（好き/嫌い）を表す Enum
-enum Sentiment {
-  LIKE
-  DISLIKE
-}
-
 // ランキングリストの公開状態 Enum
 enum ListStatus {
   DRAFT // 下書き
@@ -33,6 +27,16 @@ enum FeedType {
   RANKING_UPDATE // ランキングの公開/更新
   RETWEET // リツイート
   QUOTE_RETWEET // 引用リツイート
+}
+
+// ★★★ Tag モデルを新規追加 ★★★
+model Tag {
+  id             String        @id @default(cuid())
+  name           String        @unique // タグ名はユニーク
+  rankingLists   RankingList[] @relation("RankingListTags") // RankingList との多対多
+  createdAt      DateTime      @default(now())
+
+  @@index([name]) // 名前での検索を考慮
 }
 
 model User {
@@ -62,7 +66,6 @@ model User {
 // ランキングリストを表すモデル
 model RankingList {
   id           String     @id @default(cuid())
-  sentiment    Sentiment
   subject      String
   description  String?
   status       ListStatus @default(DRAFT) // 公開状態 (デフォルトは下書き)
@@ -73,11 +76,10 @@ model RankingList {
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   displayOrder Int?
-
   feedItems      FeedItem[]
-
   likes          Like[]     // このランキングに付けられた「いいね」
   likeCount      Int        @default(0) // いいねカウンター
+  tags          Tag[]      @relation("RankingListTags")
 
   @@index([subject])
   @@index([authorId])
@@ -168,6 +170,7 @@ model FeedItem {
   @@index([rankingListId])
   @@index([retweetOfFeedItemId])
   @@index([quotedFeedItemId])
+  @@unique([rankingListId, type])
 }
 
 model Like {

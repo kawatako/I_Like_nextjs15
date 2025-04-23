@@ -1,7 +1,6 @@
 // prisma/seed.ts
 import {
   PrismaClient,
-  Sentiment,
   ListStatus,
   FollowRequestStatus,
   FeedType,
@@ -110,10 +109,6 @@ async function main() {
     for (const subject of listSubjects) {
       // 半分くらいの確率でリストを作成
       if (faker.datatype.boolean()) {
-        const sentiment = faker.helpers.arrayElement([
-          Sentiment.LIKE,
-          Sentiment.DISLIKE,
-        ]);
         const status = faker.helpers.arrayElement([
           ListStatus.PUBLISHED,
           ListStatus.PUBLISHED,
@@ -135,7 +130,6 @@ async function main() {
         );
         const list = await prisma.rankingList.create({
           data: {
-            sentiment,
             subject,
             description,
             authorId: author.id,
@@ -155,7 +149,6 @@ async function main() {
   // userkawa の下書き
   await prisma.rankingList.create({
     data: {
-      sentiment: Sentiment.DISLIKE,
       subject: "いつか行きたい場所",
       authorId: userkawa.id,
       status: ListStatus.DRAFT,

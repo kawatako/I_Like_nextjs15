@@ -2,7 +2,7 @@
 "use server";
 
 import prisma from "@/lib/client";
-import { Prisma, FollowRequestStatus, Sentiment } from "@prisma/client";
+import { Prisma, FollowRequestStatus } from "@prisma/client";
 import { getUserDbIdByClerkId } from "@/lib/data/userQueries";
 import { revalidatePath } from "next/cache";
 import { auth } from "@clerk/nextjs/server";

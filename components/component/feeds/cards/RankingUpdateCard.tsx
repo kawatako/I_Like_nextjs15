@@ -19,7 +19,7 @@ import type {
 import { formatDistanceToNowStrict } from "date-fns";
 import { ja } from "date-fns/locale";
 import type { Prisma } from "@prisma/client";
-import { Sentiment, ListStatus, FeedType } from "@prisma/client"; // ★ FeedType もインポート ★
+import { ListStatus, FeedType } from "@prisma/client"; // ★ FeedType もインポート ★
 import { FeedLike } from "@/components/component/likes/FeedLike"; // ★ FeedLike をインポート ★
 import { RetweetQuoteDialog } from "@/components/component/modals/RetweetQuoteDialog"; // ★ 追加 ★
 import { QuoteCommentModal } from "@/components/component/modals/QuoteCommentModal"; // ★ 追加 ★
@@ -100,8 +100,6 @@ export default function RankingUpdateCard({
 
   // ★ timeAgo の計算は CardHeader 内にあるが、ここでも必要なら残す ★
   // const timeAgo = formatDistanceToNowStrict(new Date(createdAt), { addSuffix: true, locale: ja });
-  const sentimentLabel =
-    rankingList.sentiment === Sentiment.LIKE ? "好きな" : "嫌いな";
 
   return (
     <div className='flex space-x-3 border-b transition-colors hover:bg-gray-50/50 dark:hover:bg-gray-800/50 px-4 pt-4'>
@@ -142,7 +140,6 @@ export default function RankingUpdateCard({
             className='block border rounded-lg p-3 hover:bg-gray-100/50 dark:hover:bg-gray-700/50 dark:border-gray-700'
           >
             <h3 className='font-semibold text-base mb-1 text-gray-800 dark:text-gray-200'>
-              <span className='mr-1'>{sentimentLabel}</span>
               {rankingList.subject}
             </h3>
             {rankingList.description && (

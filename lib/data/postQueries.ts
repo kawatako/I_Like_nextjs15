@@ -1,28 +1,8 @@
 // lib/data/postQueries.ts
 import prisma from "../client";
 import { Prisma } from "@prisma/client";
-import { userSnippetSelect } from "./userQueries"; // User スニペット
+import { userSnippetSelect,postPayload } from "../prisma/payloads"; // User スニペット
 import type { PostWithData } from "@/lib/types";
-
-// Post とその関連データを一緒に取得するためのペイロード定義
-export const postPayload = Prisma.validator<Prisma.PostDefaultArgs>()({
-  select: {
-    id: true,
-    content: true,
-    imageUrl: true,
-    createdAt: true,
-    author: { select: userSnippetSelect },
-    _count: {
-      select: {
-        replies: true,
-      },
-    },
-    likes: {
-      select: { userId: true },
-    },
-    likeCount: true,
-  },
-});
 
 /**
  * 特定ユーザーのプロフィール用の投稿を取得する。

@@ -1,26 +1,21 @@
 // components/component/trends/AverageRankListView.tsx
 import Link from "next/link";
-import { Sentiment } from "@prisma/client";
-// データ型をインポート (パスは要確認)
 import type { AveragedRankItem } from "@/lib/data/trendQueries";
 
 // コンポーネントが受け取る Props の型定義
 interface AverageRankListViewProps {
-  sentiment: Sentiment;
   subject: string;
   items: AveragedRankItem[]; // 平均ランク計算結果の配列
   backHref: string;
 }
 
 export function AverageRankListView({
-  sentiment,
   subject,
   items,
   backHref
 }: AverageRankListViewProps) {
   // 表示用のタイトルを生成
-  const prefix = sentiment === Sentiment.LIKE ? "好きな " : "嫌いな ";
-  const themeTitle = prefix + subject;
+  const themeTitle = subject;
 
   return (
     <div>

@@ -4,7 +4,7 @@
 import { useSearchParams } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from "next/link";
-import { ProfileRankingLists } from "@/components/component/rankings/ProfileRankingLists";
+import { ProfileRankingLists } from "@/components/component/profiles/ProfileRankingLists";
 import PostList from "@/components/component/posts/PostList";
 import type { RankingListSnippet,PostWithData } from "@/lib/types";
 import { ListStatus } from "@prisma/client"; // ★ ListStatus をインポート ★

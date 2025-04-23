@@ -11,8 +11,8 @@ import {
   getDraftRankingLists,
 } from "@/lib/data/rankingQueries";
 import { ListStatus } from "@prisma/client";
-import { ProfileHeader } from "@/components/component/profile/ProfileHeader";
-import { ProfileTabs } from "@/components/component/profile/ProfileTabs";
+import { ProfileHeader } from "@/components/component/profiles/ProfileHeader";
+import { ProfileTabs } from "@/components/component/profiles/ProfileTabs";
 import { fetchPosts } from "@/lib/data/postQueries";
 import { PostWithData,  RankingListSnippet } from "@/lib/types"; 
 

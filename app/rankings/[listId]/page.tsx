@@ -4,7 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { getRankingDetailsForView } from "@/lib/data/rankingQueries";
-import { RankingListView } from "@/components/component/rankings/RankingListView";
+import { RankingView } from "@/components/component/rankings/RankingView";
 
 interface RankingDetailPageProps {
   params: Promise<{
@@ -27,7 +27,7 @@ export default async function RankingDetailPage(
   }
 
   // 所有者かどうかを判定 (rankingData に creatorId が含まれている必要あり)
-  const isOwner = loggedInUserId === rankingData.author.clerkId;
+  const isOwner = loggedInUserId === rankingData.author.id;
 
   return (
     <>
@@ -39,7 +39,7 @@ export default async function RankingDetailPage(
           </Link>
         </div>
       )}
-      <RankingListView ranking={rankingData} />
+      <RankingView ranking={rankingData} />
     </>
   );
 }
