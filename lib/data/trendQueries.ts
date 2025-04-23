@@ -2,7 +2,7 @@
 "use server";
 
 import prisma from "@/lib/client"; // Prisma Client のインポートパスを確認・修正
-import { ListStatus, Prisma, Sentiment } from "@prisma/client";
+import { ListStatus, Prisma} from "@prisma/client";
 import { auth } from "@clerk/nextjs/server";
 import { getUserDbIdByClerkId } from "./userQueries";
 
@@ -11,19 +11,16 @@ import { getUserDbIdByClerkId } from "./userQueries";
 export type NewestRankingItem = {
   id: string;
   subject: string;
-  sentiment: Sentiment;
 };
 
 export type MyRankingListItem = {
   id: string;
   subject: string;
-  sentiment: Sentiment;
   status: ListStatus;
   aggregationCount: number;
 };
 
 export type PopularThemeItem = {
-  sentiment: Sentiment;
   subject: string;
   count: number;
 };
@@ -41,7 +38,6 @@ export type AveragedRankItem = {
 export type SearchedRankingItem = {
   id: string;
   subject: string;
-  sentiment: Sentiment;
   createdAt: Date; // ソート用に含める
 };
 
@@ -56,7 +52,7 @@ export async function getNewestPublishedRankings(
     const rankings = await prisma.rankingList.findMany({
       where: { status: ListStatus.PUBLISHED },
       orderBy: { createdAt: "desc" },
-      select: { id: true, subject: true, sentiment: true },
+      select: { id: true, subject: true},
       take: limit,
     });
     console.log(`[TrendsQueries/New] Found ${rankings.length} rankings.`);
@@ -85,14 +81,14 @@ export async function getRankingsByCurrentUser(): Promise<MyRankingListItem[]> {
     const myRankings = await prisma.rankingList.findMany({
       /* ... where, orderBy, select ... */ where: { authorId: userDbId },
       orderBy: { updatedAt: "desc" },
-      select: { id: true, subject: true, sentiment: true, status: true },
+      select: { id: true, subject: true, status: true },
     });
     if (myRankings.length === 0) {
       return [];
     }
     const subjects = [...new Set(myRankings.map((r) => r.subject))];
     const themeCounts = await prisma.rankingList.groupBy({
-      /* ... by, where, _count ... */ by: ["sentiment", "subject"],
+      /* ... by, where, _count ... */ by: [ "subject"],
       where: { subject: { in: subjects }, status: ListStatus.PUBLISHED },
       _count: { id: true },
     });

@@ -1,6 +1,5 @@
 // app/search/page.tsx
 import Link from "next/link";
-import { Sentiment } from "@prisma/client"; // Sentiment Enum をインポート
 import { searchRankings, type SearchedRankingItem } from "@/lib/data/trendQueries"; // 検索関数と型をインポート
 import { Suspense } from 'react'; // Suspense をインポート
 

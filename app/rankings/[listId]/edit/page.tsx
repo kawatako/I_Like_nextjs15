@@ -1,5 +1,5 @@
 //app/rankings/[listId]/edit/page.tsx
-import { RankingListEditView } from "@/components/component/rankings/RankingListEditView";
+import { RankingEdit } from "@/components/component/rankings/RankingEdit";
 import { getRankingListForEdit } from "@/lib/data/rankingQueries"; // データ取得関数をインポート
 import { notFound } from "next/navigation";
 // ★ ↓表示・編集用UIコンポーネント (これは次に作成します)
@@ -28,7 +28,7 @@ export default async function RankingEditPage(props: { params: Promise<{ listId:
   return (
     <div className="container mx-auto p-4">
       {/* --- JSON 表示の代わりに RankingListEditView を呼び出す --- */}
-      <RankingListEditView rankingList={rankingList} />
+      <RankingEdit rankingList={rankingList} />
       {/* ---------------------------------------------------------- */}
     </div>
   );

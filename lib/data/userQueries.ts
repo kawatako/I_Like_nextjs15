@@ -3,15 +3,7 @@
 import prisma from "@/lib/client"; // Prisma Client のインポートパスを確認・修正
 import { ListStatus, Prisma } from "@prisma/client";
 import type { UserSnippet, RankingListSnippet, UserProfileData } from "@/lib/types"; // 共通型をインポート
-import { rankingListSnippetSelect } from "@/lib/data/rankingQueries"; // RankingList スニペット
-
-// User スニペットのフィールド定義
-export const userSnippetSelect = {
-  id: true,
-  username: true,
-  name: true,
-  image: true,
-} satisfies Prisma.UserSelect;
+import {  userProfilePayload,userSnippetSelect } from "../prisma/payloads"
 
 //Clerk ID を基に、データベース内の対応するユーザーの内部ID (User.id) を取得
 export async function getUserDbIdByClerkId(clerkId: string | null | undefined): Promise<string | null> {
@@ -57,21 +49,6 @@ export async function getCurrentLoginUserData(clerkUserId: string) {
   }
 }
 
-
-
-// プロフィールページで取得するユーザーデータ全体のペイロード(データの中身)定義
-export const userProfilePayload = Prisma.validator<Prisma.UserDefaultArgs>()({
-  select: {
-    id: true, clerkId: true, username: true, image: true, name: true, bio: true, coverImageUrl: true, socialLinks: true, createdAt: true,
-    rankingLists: {
-      where: { status: ListStatus.PUBLISHED },
-      select: rankingListSnippetSelect,
-      orderBy: [ { displayOrder: 'asc' }, { updatedAt: 'desc' } ],
-    },
-    _count: { select: { following: true, followedBy: true } }
-  }
-});
-
 //指定されたユーザー名の公開プロフィールデータを取得
 export async function getUserProfileData(username: string): Promise<UserProfileData | null> {
   console.log(`[UserQueries] Fetching profile data for username: ${username}`);
@@ -80,7 +57,7 @@ export async function getUserProfileData(username: string): Promise<UserProfileD
   try {
     const userWithLists = await prisma.user.findUnique({
       where: { username: username },
-      ...userProfilePayload, // select を適用 (include は使っていないのでこのままでOK)
+      select: userProfilePayload.select,
     });
 
     if (!userWithLists) {
@@ -104,7 +81,7 @@ export async function getUserByUsername(username: string): Promise<UserSnippet |
   try {
     const user = await prisma.user.findUnique({
       where: { username },
-      select: { id: true, username: true, name: true, image: true},
+      select: userSnippetSelect
     });
     return user;
   } catch (error) {

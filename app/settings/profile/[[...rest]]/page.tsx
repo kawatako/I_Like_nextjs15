@@ -8,7 +8,7 @@ import {
   CardContent,
   CardDescription,
 } from "@/components/ui/card";
-import { EditCustomProfileForm } from "@/components/component/profile/EditCustomProfileForm";
+import { EditCustomProfileForm } from "@/components/component/profiles/EditCustomProfileForm";
 import { redirect } from "next/navigation";
 import { getCurrentLoginUserData } from "@/lib/data/userQueries";
 

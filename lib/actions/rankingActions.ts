@@ -5,13 +5,12 @@ import { auth } from "@clerk/nextjs/server";
 import prisma from "../client";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
-import { Sentiment, Prisma, ListStatus, FeedType } from "@prisma/client";
+import { Prisma, ListStatus, FeedType } from "@prisma/client";
 import { redirect } from "next/navigation";
 import { getProfileRankingsPaginated } from "@/lib/data/rankingQueries";
 import {
   type RankingListSnippet} from "@/lib/types"
 import type { ActionResult, PaginatedResponse } from "@/lib/types";
-
 
 // --- Zod スキーマ ---
 const subjectAllowedCharsRegex =
@@ -43,149 +42,277 @@ const ItemDescriptionSchema = z
 // TODO: 必要であれば imageUrl の Zod スキーマも定義
 
 // --- 型定義 ---
-// ランキング保存アクション用 (既存)
+interface RankingDataForSave {
+  subject: string;
+  description: string | null;
+  listImageUrl?: string | null; // リストヘッダー画像 URL (任意)
+  tags?: string[];
+}
+
 interface ItemDataForSave {
+  id?: string;
   itemName: string;
   itemDescription?: string | null;
   imageUrl?: string | null;
 }
 
-// ★ 追加: 新規ランキング一括作成アクション用 ★
-interface ItemDataForCreate {
-  itemName: string;
-  itemDescription?: string | null;
-  imageUrl?: string | null; // 将来用
+interface CreateRankingData extends Omit<RankingDataForSave, 'listImageUrl'> { // listImageUrl は別引数でも良い
+  listImageUrl?: string | null;
 }
-type CreateCompleteRankingResult = { success: boolean; error?: string; newListId?: string; };
 
-// ランキング全体保存・更新アクション (Edit フロー用)
-export async function saveRankingListItemsAction(
-  listId: string,
-  itemsData: ItemDataForSave[],
-  listSubject: string,
-  listDescription: string | null,
-  targetStatus: ListStatus
-): Promise<ActionResult> {
+// --- Server Actions ---
+
+/**
+* @param rankingData - ランキングの基本情報 { subject, description, listImageUrl?, tags? }
+* @param itemsData - ランキングアイテムの配列 [{ itemName, itemDescription?, imageUrl? }]
+* @param status - 保存するステータス (DRAFT or PUBLISHED)
+* @returns ActionResult & { newListId?: string }
+*/
+export async function createCompleteRankingAction(
+  rankingData: RankingDataForSave,
+  itemsData: ItemDataForSave[],     // ★ 引数の型を変更 ★
+  status: ListStatus
+): Promise<ActionResult & { newListId?: string }> { // 戻り値に newListId を含める
+
+  // 1. 認証チェック & ユーザー情報取得
   const { userId: clerkId } = await auth();
-  if (!clerkId) {
-    return { success: false, error: "ログインしてください。" };
-  }
+  if (!clerkId) { return { success: false, error: "ログインしてください。" }; }
+  let userDbId: string | null = null;
+  let username: string | null = null;
   try {
-    SubjectSchema.parse(listSubject);
-    if (itemsData.length > 10) {
-      throw new Error("アイテムは10個までしか登録できません。");
-    }
-    itemsData.forEach((item, index) => {
-      if (!item.itemName || item.itemName.trim() === "") {
-        throw new Error(`${index + 1}番目のアイテム名が入力されていません。`);
+    const user = await prisma.user.findUnique({ where: { clerkId: clerkId }, select: { id: true, username: true } });
+    if (!user?.id || !user?.username) { throw new Error("ユーザー情報が見つかりません。"); }
+    userDbId = user.id;
+    username = user.username;
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "ユーザー情報の取得に失敗しました。";
+    return { success: false, error: message };
+  }
+
+  // 2. 入力バリデーション (sentiment 削除)
+  const tags = rankingData.tags ?? []; // ★ rankingData.tags でアクセス ★
+  try {
+    SubjectSchema.parse(rankingData.subject);
+    DescriptionSchema.parse(rankingData.description ?? "");
+    if (itemsData.length > 10) throw new Error("アイテムは10個まで");
+    if (status === ListStatus.PUBLISHED && itemsData.length === 0) throw new Error("公開にはアイテム必須");
+    // ★ forEach の item に型注釈を追加 ★
+    itemsData.forEach((item: ItemDataForSave, index: number) => {
+      ItemNameSchema.parse(item.itemName);
+      ItemDescriptionSchema.parse(item.itemDescription ?? "");
+      if (status === ListStatus.PUBLISHED && (!item.itemName || item.itemName.trim() === "")) {
+        throw new Error(`${index + 1}番目アイテム名必須`);
       }
     });
+    // ★ map/filter の tagName に型注釈を追加 ★
+    if (tags.some((tagName: string) => tagName.trim().length === 0 || tagName.length > 30)) {
+      throw new Error("タグ名は1〜30文字");
+    }
+    if (tags.length > 5) throw new Error("タグは5個まで");
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return {
-        error: error.errors.map((e) => e.message).join("\n"),
-        success: false,
-      };
-    }
-    if (error instanceof Error) {
-      return { success: false, error: error.message };
-    }
-    return {
-      success: false,
-      error: "入力内容の検証中にエラーが発生しました。",
-    };
+    if (error instanceof z.ZodError) { return { error: error.errors.map((e) => e.message).join("\n"), success: false }; }
+    if (error instanceof Error) { return { success: false, error: error.message }; }
+    return { success: false, error: "入力内容の検証中にエラーが発生しました。" };
   }
+
+  console.log(`[Action/createCompleteRanking] Attempt by user ${userDbId}, status: ${status}`);
   try {
-    const user = await prisma.user.findUnique({
-      where: { clerkId: clerkId },
-      select: { id: true },
+    const newList = await prisma.$transaction(async (tx) => {
+      // タグの処理 (Upsert & ID 取得)
+      // ★ map/filter の tagName に型注釈 ★
+      const tagConnectOrCreateData = tags
+        .map((tagName: string) => tagName.trim())
+        .filter((tagName: string) => tagName.length > 0)
+        .map((tagName: string) => ({ where: { name: tagName }, create: { name: tagName } }));
+
+      const upsertedTags = await Promise.all(
+        // ★ map の data に型注釈 ★
+        tagConnectOrCreateData.map((data: { where: { name: string }, create: { name: string } }) =>
+          tx.tag.upsert({ where: data.where, create: data.create, update: {}, select: { id: true } })
+        )
+      );
+      // ★ map の tag に型注釈 ★
+      const tagIdsToConnect = upsertedTags.map((tag: { id: string }) => ({ id: tag.id }));
+
+      // a. ランキングリストを作成
+      const createdList = await tx.rankingList.create({
+        data: {
+          authorId: userDbId,
+          subject: rankingData.subject.trim(),
+          description: rankingData.description?.trim() || null,
+          status: status,
+          listImageUrl: rankingData.listImageUrl, // ★ listImageUrl を保存 ★
+          displayOrder: null, // 新規作成時は null
+          tags: {
+            connect: tagIdsToConnect
+          }
+        },
+      });
+      // b. アイテムを作成 (もしあれば)
+      if (itemsData.length > 0) {
+        await tx.rankedItem.createMany({
+          data: itemsData.map((item, index) => ({
+            listId: createdList.id,
+            rank: index + 1,
+            itemName: item.itemName.trim(),
+            itemDescription: item.itemDescription?.trim() || null,
+            imageUrl: item.imageUrl, // ★ imageUrl を保存 ★
+          })),
+        });
+      }
+      // c. 公開する場合は FeedItem も作成
+      if (status === ListStatus.PUBLISHED) {
+        await tx.feedItem.create({
+          data: { userId: userDbId, type: FeedType.RANKING_UPDATE, rankingListId: createdList.id },
+        });
+        console.log(`FeedItem (RANKING_UPDATE) created for new list ${createdList.id}`);
+      }
+      return createdList; // 作成されたリスト情報を返す
     });
-    if (!user) {
-      throw new Error("データベースにユーザーが見つかりません。");
+
+    console.log(`[Action/createCompleteRanking] Successfully created RankingList ${newList.id} with ${itemsData.length} items by user ${userDbId}`);
+
+    // 4. キャッシュ再検証
+    revalidatePath(`/rankings/${newList.id}`); // 作成されたリストの詳細ページ
+    if (username) { revalidatePath(`/profile/${username}`); } // 作成者のプロフィール
+    if (status === ListStatus.PUBLISHED) {
+      revalidatePath("/"); // ホームタイムライン
+      revalidatePath("/trends"); // トレンドページ (仮)
     }
-    const userDbId = user.id;
-    const list = await prisma.rankingList.findUnique({
-      where: { id: listId, authorId: userDbId },
-      select: { id: true },
-    });
-    if (!list) {
-      throw new Error("リストが見つからないか、編集権限がありません。");
-    }
+
+    // 5. 成功結果を返す
+    return { success: true, newListId: newList.id };
+
+  } catch (error) {
+    // 6. エラーハンドリング
+    console.error("[Action/createCompleteRanking] Error creating complete ranking list:", error);
+    const message = error instanceof Error ? error.message : "ランキングの作成中に予期せぬエラーが発生しました。";
+    return { success: false, error: message };
+  }
+}
+
+
+/**
+ * [ACTION] 既存ランキングリストのアイテム、情報、ステータスを更新する (タグ・画像対応版)
+ * @param listId 更新対象の RankingList ID
+ * @param itemsData 更新後のアイテム配列 [{ id?, itemName, itemDescription?, imageUrl? }] ★ id を含むように変更推奨 ★
+ * @param listSubject 更新後のタイトル
+ * @param listDescription 更新後の説明
+ * @param listImageUrl 更新後のヘッダー画像 URL (任意)
+ * @param tags 更新後のタグ名の配列 (任意) ★ 追加 ★
+ * @param targetStatus 更新後のステータス
+ * @returns ActionResult
+ */
+export async function saveRankingListItemsAction(
+  listId: string,
+  itemsData: ItemDataForSave[],     // ★ itemsData の型には id? を含めたい ★
+  listSubject: string,
+  listDescription: string | null,
+  listImageUrl: string | null | undefined,
+  tags: string[],                   // ★ tags 引数を追加 ★
+  targetStatus: ListStatus
+): Promise<ActionResult> {
+  // 1. 認証チェック & ユーザー情報取得
+  const { userId: clerkId } = await auth();
+  if (!clerkId) return { success: false, error: "ログインしてください。" };
+  let userDbId: string | null = null;
+  try {
+    const user = await prisma.user.findUnique({ where: { clerkId: clerkId }, select: { id: true } });
+    if (!user?.id) { throw new Error("ユーザー情報が見つかりません。"); }
+    userDbId = user.id;
+  } catch (error) { return { success: false, error: error instanceof Error ? error.message : "ユーザー情報取得エラー" }; }
+
+  // 2. 入力バリデーション
+  try { SubjectSchema.parse(listSubject); DescriptionSchema.parse(listDescription ?? "");
+    if (tags.some(tag => tag.trim().length === 0 || tag.length > 30)) throw new Error("タグ名は1文字以上30文字以内...");
+    if (tags.length > 5) throw new Error("タグは5個まで...");
+  }
+  catch (error) { /* ... バリデーションエラー処理 ... */ }
+
+  console.log(`[Action/saveRankingListItems] Saving list ${listId} by user ${userDbId}`);
+  try {
+    // 3. 編集権限チェック (リストが存在し、自分が作者であるか)
+    const list = await prisma.rankingList.findUnique({ where: { id: listId, authorId: userDbId }, select: { id: true, status: true } });
+    if (!list) { throw new Error("リストが見つからないか、編集権限がありません。"); }
+
+    // 4. DB更新 (トランザクション)
     await prisma.$transaction(async (tx) => {
+            // ★★★ タグの処理 (Upsert & ID 取得) ★★★
+            const tagConnectOrCreateData = tags
+            .map(tagName => tagName.trim())
+            .filter(tagName => tagName.length > 0)
+            .map((tagName: string) => ({ where: { name: tagName }, create: { name: tagName } }));
+          const upsertedTags = await Promise.all(
+              tagConnectOrCreateData.map(data => tx.tag.upsert({
+                  where: data.where, create: data.create, update: {}, select: { id: true }
+              }))
+          );
+          const tagIdsToSet = upsertedTags.map((tag: { id: string }) => ({ id: tag.id }));
+          // a. 既存アイテムを全削除
       await tx.rankedItem.deleteMany({ where: { listId: listId } });
+      // b. 新しいアイテムを作成 (imageUrl を含む)
       if (itemsData.length > 0) {
         await tx.rankedItem.createMany({
           data: itemsData.map((item, index) => ({
             listId: listId,
-            itemName: item.itemName.trim(),
             rank: index + 1,
+            itemName: item.itemName.trim(),
             itemDescription: item.itemDescription?.trim() || null,
-            imageUrl: item.imageUrl?.trim() || null,
+            imageUrl: item.imageUrl, // ★ imageUrl を保存 ★
           })),
         });
       }
+      // c. ランキングリスト本体を更新 (listImageUrl を追加)
       await tx.rankingList.update({
         where: { id: listId, authorId: userDbId },
         data: {
           subject: listSubject.trim(),
           description: listDescription?.trim() || null,
           status: targetStatus,
-          updatedAt: new Date(),
+          listImageUrl: listImageUrl, // ★ listImageUrl を更新 ★
+          updatedAt: new Date(), // 更新日時を記録
+          tags: {
+            set: tagIdsToSet
+          }
         },
       });
-    });
-    console.log(
-      `RankingList ${listId} and its items saved with status ${targetStatus}`
-    );
-    if (targetStatus === ListStatus.PUBLISHED) {
-      try {
-        await prisma.feedItem.create({
-          data: {
-            userId: userDbId,
-            type: FeedType.RANKING_UPDATE,
-            rankingListId: listId,
-          },
-        });
-        console.log(`FeedItem (RANKING_UPDATE) created for list ${listId}`);
-      } catch (feedError) {
-        console.error(
-          `Failed to create FeedItem for ranking list ${listId}:`,
-          feedError
-        );
+      // d. もし公開 (PUBLISHED) に変更された場合、FeedItem を作成 (または更新)
+      if (targetStatus === ListStatus.PUBLISHED) {
+         // 既に FeedItem が存在するか確認した方が良いかもしれない
+         await tx.feedItem.upsert({ // ★ upsert で作成または更新 ★
+           where: { rankingListId_type: { rankingListId: listId, type: FeedType.RANKING_UPDATE } }, // 複合ユニークインデックスがあれば使える
+                                                                                                    // なければ findFirst + create/update
+           create: { userId: userDbId, type: FeedType.RANKING_UPDATE, rankingListId: listId },
+           update: { updatedAt: new Date() }, // 更新日時を更新
+         });
+         console.log(`FeedItem (RANKING_UPDATE) created/updated for list ${listId}`);
+      } else if (targetStatus === ListStatus.DRAFT && list.status === ListStatus.PUBLISHED) {
+          // もし公開から下書きに変更されたら、FeedItem を削除する？ (仕様による)
+          // await tx.feedItem.deleteMany({ where: { rankingListId: listId, type: FeedType.RANKING_UPDATE } });
       }
-    }
+    });
+
+    console.log(`[Action/saveRankingListItems] Success: List ${listId} saved.`);
+    // 5. キャッシュ再検証
     revalidatePath(`/rankings/${listId}/edit`);
     revalidatePath(`/rankings/${listId}`);
-    if (targetStatus === ListStatus.PUBLISHED) {
-      const listAuthor = await prisma.user.findUnique({
-        where: { id: userDbId },
-        select: { username: true },
-      });
-      if (listAuthor?.username) {
-        revalidatePath(`/profile/${listAuthor.username}`);
-      }
-      revalidatePath("/");
-      revalidatePath("/trends");
-    }
-    return { success: true };
+    // 関連する可能性のあるパスも再検証
+    const listAuthor = await prisma.user.findUnique({ where: { id: userDbId }, select: { username: true } });
+    if (listAuthor?.username) { revalidatePath(`/profile/${listAuthor.username}`); }
+    if (targetStatus === ListStatus.PUBLISHED) { revalidatePath("/"); revalidatePath("/trends"); }
+
+    return { success: true }; // 成功
+
   } catch (error) {
-    console.error(`Error saving ranking list ${listId}:`, error);
-    let returnState: ActionResult;
-    if (error instanceof Error) {
-      returnState = { success: false, error: error.message };
-    } else {
-      returnState = {
-        success: false,
-        error: "リストの保存中に予期せぬエラーが発生しました。",
-      };
-    }
-    return returnState;
+    console.error(`[Action/saveRankingListItems] Error saving ranking list ${listId}:`, error);
+    const message = error instanceof Error ? error.message : "リストの保存中に予期せぬエラーが発生しました。";
+    return { success: false, error: message };
   }
 }
 
 // ランキング削除アクション
 export async function deleteRankingListAction(
-  prevState: ActionResult,
+  prevState: ActionResult | null,
   formData: FormData
 ): Promise<ActionResult> {
   const { userId: clerkId } = await auth();
@@ -198,46 +325,25 @@ export async function deleteRankingListAction(
   }
   let user: { id: string; username: string | null } | null = null;
   try {
-    user = await prisma.user.findUnique({
-      where: { clerkId: clerkId },
-      select: { id: true, username: true },
-    });
-    if (!user) {
-      throw new Error("データベースにユーザーが見つかりません。");
-    }
+    user = await prisma.user.findUnique({ where: { clerkId: clerkId }, select: { id: true, username: true } });
+    if (!user) { throw new Error("データベースにユーザーが見つかりません。"); }
     const userDbId = user.id;
-    // TODO: 削除時に FeedItem も削除するか検討
-    const result = await prisma.rankingList.deleteMany({
-      where: { id: listId, authorId: userDbId },
+    // ★ 削除前に FeedItem も削除する (onDelete: SetNull のため) ★
+    //    関連する Retweet や QuoteRetweet も考慮が必要か？ -> 複雑になるため一旦 FeedItem (RANKING_UPDATE) のみ
+    await prisma.$transaction(async (tx) => {
+      await tx.feedItem.deleteMany({ where: { rankingListId: listId, type: FeedType.RANKING_UPDATE }});
+      const result = await tx.rankingList.deleteMany({ where: { id: listId, authorId: userDbId } });
+      if (result.count === 0) { throw new Error("リストが見つからないか、削除権限がありません。"); }
     });
-    if (result.count === 0) {
-      throw new Error("リストが見つからないか、削除権限がありません。");
-    }
-    console.log(
-      `RankingList ${listId} deleted successfully by user ${userDbId}`
-    );
-    if (user.username) {
-      revalidatePath(`/profile/${user.username}`);
-    }
-    revalidatePath("/");
-    revalidatePath("/trends");
-    revalidatePath(`/rankings/${listId}`);
-  } catch (error) {
-    console.error(`Error deleting ranking list ${listId}:`, error);
-    const errorMessage =
-      error instanceof Error
-        ? error.message
-        : "リストの削除中に予期せぬエラーが発生しました。";
-    return { success: false, error: errorMessage };
-  }
-  if (user?.username) {
-    redirect(`/profile/${user.username}`);
-  } else {
-    console.warn(
-      `Username not found for redirect after deleting list ${listId}.`
-    );
-    redirect("/");
-  }
+    console.log(`RankingList ${listId} deleted successfully by user ${userDbId}`);
+    // キャッシュ再検証
+    if (user.username) { revalidatePath(`/profile/${user.username}`); }
+    revalidatePath("/"); revalidatePath("/trends"); revalidatePath(`/rankings/${listId}`);
+    // return { success: true }; // redirect するので不要
+  } catch (error) {     const message = error instanceof Error ? error.message : "削除中にエラー発生"; }
+  // ★ redirect は try-catch の外が良い ★
+  if (user?.username) { redirect(`/profile/${user.username}`); }
+  else { redirect("/"); }
 }
 
 // 並び替え順序保存アクション
@@ -334,162 +440,3 @@ export async function loadMoreProfileRankingsAction(
   }
 }
 
-/**
- * 新しいランキングリストとアイテムを一括で作成・保存する Server Action
- * @param rankingData - ランキングの基本情報 { sentiment, subject, description }
- * @param itemsData - ランキングアイテムの配列 [{ itemName, itemDescription?, imageUrl? }]
- * @param status - 保存するステータス (DRAFT or PUBLISHED)
- * @returns CreateCompleteRankingResult
- */
-export async function createCompleteRankingAction(
-  rankingData: {
-    sentiment: Sentiment | null;
-    subject: string;
-    description: string | null;
-  },
-  itemsData: ItemDataForCreate[],
-  status: ListStatus
-): Promise<CreateCompleteRankingResult> {
-  // ★ 戻り値の型を追加 ★
-
-  // 1. 認証チェック
-  const { userId: clerkId } = await auth();
-  if (!clerkId) {
-    return { success: false, error: "ログインしてください。" };
-  }
-
-  // 2. DBユーザーIDを取得
-  let userDbId: string | null = null;
-  let username: string | null = null;
-  try {
-    const user = await prisma.user.findUnique({
-      where: { clerkId: clerkId },
-      select: { id: true, username: true },
-    });
-    if (!user?.id || !user?.username) {
-      throw new Error("ユーザー情報が見つかりません。");
-    }
-    userDbId = user.id;
-    username = user.username;
-  } catch (error) {
-    const message =
-      error instanceof Error
-        ? error.message
-        : "ユーザー情報の取得に失敗しました。";
-    return { success: false, error: message };
-  }
-
-  // 3. 入力バリデーション (サーバーサイド)
-  try {
-    if (!rankingData.sentiment) {
-      throw new Error("ランキングの種類が選択されていません。");
-    }
-    SubjectSchema.parse(rankingData.subject);
-    DescriptionSchema.parse(rankingData.description ?? "");
-    if (itemsData.length > 10) {
-      throw new Error("アイテムは10個までしか登録できません。");
-    }
-    if (status === ListStatus.PUBLISHED && itemsData.length === 0) {
-      throw new Error("公開するにはアイテムを1つ以上登録してください。");
-    }
-    itemsData.forEach((item, index) => {
-      ItemNameSchema.parse(item.itemName);
-      ItemDescriptionSchema.parse(item.itemDescription ?? "");
-      // TODO: imageUrl のバリデーション
-      if (
-        status === ListStatus.PUBLISHED &&
-        (!item.itemName || item.itemName.trim() === "")
-      ) {
-        throw new Error(
-          `公開するには、${index + 1}番目のアイテム名を入力してください。`
-        );
-      }
-    });
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return {
-        error: error.errors.map((e) => e.message).join("\n"),
-        success: false,
-      };
-    }
-    if (error instanceof Error) {
-      return { success: false, error: error.message };
-    }
-    return {
-      success: false,
-      error: "入力内容の検証中にエラーが発生しました。",
-    };
-  }
-
-  console.log(
-    `[Action/createCompleteRanking] Attempting creation by user ${userDbId}, status: ${status}`
-  );
-
-  try {
-    // 4. データベースへの書き込み (トランザクション)
-    const newList = await prisma.$transaction(async (tx) => {
-      const createdList = await tx.rankingList.create({
-        data: {
-          authorId: userDbId,
-          sentiment: rankingData.sentiment!,
-          subject: rankingData.subject.trim(),
-          description: rankingData.description?.trim() || null,
-          status: status,
-          displayOrder: null,
-        },
-      });
-      if (itemsData.length > 0) {
-        await tx.rankedItem.createMany({
-          data: itemsData.map((item, index) => ({
-            listId: createdList.id,
-            rank: index + 1,
-            itemName: item.itemName.trim(),
-            itemDescription: item.itemDescription?.trim() || null,
-            imageUrl: item.imageUrl?.trim() || null,
-          })),
-        });
-      }
-      if (status === ListStatus.PUBLISHED) {
-        await tx.feedItem.create({
-          data: {
-            userId: userDbId,
-            type: FeedType.RANKING_UPDATE,
-            rankingListId: createdList.id,
-          },
-        });
-        console.log(
-          `FeedItem (RANKING_UPDATE) created for new list ${createdList.id}`
-        );
-      }
-      return createdList;
-    });
-
-    console.log(
-      `[Action/createCompleteRanking] Successfully created RankingList ${newList.id} with ${itemsData.length} items by user ${userDbId}`
-    );
-
-    // 5. キャッシュ再検証
-    revalidatePath(`/rankings/${newList.id}`);
-    if (username) {
-      revalidatePath(`/profile/${username}`);
-      if (status === ListStatus.PUBLISHED) {
-        revalidatePath("/");
-        revalidatePath("/trends");
-      }
-    }
-
-    // 6. 成功結果を返す
-    return { success: true, newListId: newList.id };
-  } catch (error) {
-    // 7. エラーハンドリング
-    console.error(
-      "[Action/createCompleteRanking] Error creating complete ranking list:",
-      error
-    );
-    const message =
-      error instanceof Error
-        ? error.message
-        : "ランキングの作成中に予期せぬエラーが発生しました。";
-    return { success: false, error: message };
-  }
-}

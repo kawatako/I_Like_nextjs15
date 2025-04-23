@@ -1,7 +1,7 @@
 // app/trends/page.tsx
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from "next/link";
-import { Sentiment, ListStatus } from "@prisma/client";
+import {  ListStatus } from "@prisma/client";
 import {
   getNewestPublishedRankings,
   getRankingsByCurrentUser,
@@ -22,7 +22,6 @@ export default async function TrendsPage(
   props: {
     searchParams?: Promise<{
       tab?: string;
-      sentiment?: string;
       subject?: string;
     }>;
   }
@@ -30,7 +29,6 @@ export default async function TrendsPage(
   const searchParams = await props.searchParams;
   const resolvedSearchParams = searchParams ? await searchParams : {};
   const tabParam = resolvedSearchParams.tab;
-  const sentimentParam = resolvedSearchParams.sentiment;
   const subjectParam = resolvedSearchParams.subject;
 
   const newestRankings = await getNewestPublishedRankings(30);
@@ -41,7 +39,6 @@ export default async function TrendsPage(
 
   // --- 平均ランクデータの条件付き取得 ---
   let averageRankItems: AveragedRankItem[] = [];
-  let selectedSentiment: Sentiment | null = null;
   let selectedSubject: string | null = null;
   let showAverageRankForTotalTab = false;
   let showAverageRankForTrendsTab = false;

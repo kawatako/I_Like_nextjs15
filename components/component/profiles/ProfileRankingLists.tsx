@@ -1,9 +1,9 @@
-// components/component/rankings/ProfileRankingLists.tsx
+// components/component/profile/ProfileRankingLists.tsx
 "use client";
 
 import { useState, useEffect, useRef, useCallback} from 'react'; // ★ SVGProps を追加 (GripVertical で使う場合) ★
 import Link from "next/link";
-import { ListStatus, Sentiment } from "@prisma/client";
+import { ListStatus} from "@prisma/client";
 import type { RankingListSnippet } from "@/lib/types"; // RankingSnippetForProfile 型をインポート
 import { loadMoreProfileRankingsAction,updateRankingListOrderAction } from "@/lib/actions/rankingActions"; // Server Action をインポート
 import { Badge } from "@/components/ui/badge"; // Badge をインポート
@@ -61,7 +61,6 @@ function SortableListItem({ list, isCurrentUser }: SortableItemProps) {
     zIndex: isDragging ? 10 : undefined,
   };
 
-  const sentimentLabel = list.sentiment === Sentiment.LIKE ? "好きな" : "嫌いな";
   const listDetailUrl = `/rankings/${list.id}`;
 
   return (
@@ -72,7 +71,7 @@ function SortableListItem({ list, isCurrentUser }: SortableItemProps) {
         </button>
       )}
       <Link href={listDetailUrl} className={`flex-1 block p-4 rounded-lg border bg-card text-card-foreground shadow-sm hover:bg-muted/50 transition-colors ${!isCurrentUser ? "ml-7" : ""}`}>
-        <h3 className='text-lg font-semibold mb-2'> <span className='mr-2'>{sentimentLabel}</span> {list.subject} </h3>
+        <h3 className='text-lg font-semibold mb-2'> {list.subject} </h3>
         {list.items.length > 0 ? ( <ol className='list-none pl-4 space-y-1 text-sm text-muted-foreground'> {list.items.map((item) => ( <li key={item.id} className='truncate'> <span className='font-medium mr-2'>{item.rank}.</span> {item.itemName} </li> ))} {(list._count?.items ?? 0) > list.items.length && ( <li className='text-xs text-muted-foreground pt-1'>...</li> )} </ol> ) : ( <p className='text-sm text-muted-foreground pl-4'> アイテムがありません。 </p> )}
         <div className='text-xs text-muted-foreground mt-2 text-right'> {list.status === ListStatus.DRAFT && ( <Badge variant='outline' className='mr-2'> 下書き </Badge> )} {new Date(list.updatedAt).toLocaleDateString("ja-JP")} 更新 </div>
       </Link>
