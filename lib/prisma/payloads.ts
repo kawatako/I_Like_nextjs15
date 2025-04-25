@@ -136,7 +136,7 @@ export const feedItemPayload = Prisma.validator<Prisma.FeedItemDefaultArgs>()({
 /** プロフィールページで取得するユーザーデータ全体 */
 export const userProfilePayload = Prisma.validator<Prisma.UserDefaultArgs>()({
   select: {
-    id: true, clerkId: true, username: true, image: true, name: true, bio: true, coverImageUrl: true, socialLinks: true, createdAt: true,
+    id: true, clerkId: true, username: true, image: true, name: true, bio: true, coverImageUrl: true,location: true,birthday: true, socialLinks: true, createdAt: true,
     rankingLists: { // 公開リストのみ
       where: { status: ListStatus.PUBLISHED },
       select: rankingListSnippetSelect, // ★ rankingListSnippetSelect を使用 ★

@@ -20,9 +20,9 @@ export default function MainContentForHome({
       </div>
       <div className="flex-1 overflow-y-auto">
         <TimelineFeed
-          initialItems={initialFeedItems}
-          initialNextCursor={initialNextCursor}
-          loggedInUserDbId={loggedInUserDbId} // ログインユーザーのDB IDを渡す
+        feedType="home"
+        loggedInUserDbId={loggedInUserDbId}
+        // feedType: "home"）の場合targetUserId は使わない
         />
       </div>
     </div>

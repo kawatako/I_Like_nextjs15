@@ -27,6 +27,9 @@ export default async function FollowsPage(props: FollowsPageProps) {
     notFound();
   }
   const targetUserDbId = targetUser.id;
+  if (!loggedInClerkId) {
+    throw new Error("User is not logged in.");
+  }
   const loggedInUserDbId = await getUserDbIdByClerkId(loggedInClerkId);
   const isOwner = loggedInUserDbId === targetUserDbId;
 

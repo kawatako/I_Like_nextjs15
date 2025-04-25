@@ -1,101 +1,122 @@
-// components/component/profile/ProfileHeader.tsx
+// components/component/profiles/ProfileHeader.tsx
+"use client";
+
 import Link from "next/link";
+import Image from 'next/image';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import type { UserProfileData } from "@/lib/types"; // UserProfileData 型をインポート
-import type { FollowStatusInfo } from "@/lib/actions/followActions";
-import { FollowButton } from "@/components/component/follows/FollowButton";
+// ★ 必要な型をインポート ★
+import type { UserProfileData } from "@/lib/types";
+import type { FollowStatusInfo } from '@/lib/actions/followActions'; // ★ 詳細な型をインポート ★
+import { FollowButton } from "@/components/component/follows/FollowButton"; // ★ FollowButton をインポート ★
+// ★ アイコンをインポート ★
+import { MapPinIcon, CakeIcon, LinkIcon, /* 他のSNSアイコン */ } from 'lucide-react';
 
 interface ProfileHeaderProps {
-  userProfileData: UserProfileData; // _count を含むユーザーデータ
-  isCurrentUser: boolean; // 表示中のプロフィールが自分自身か
+  userProfileData: UserProfileData;
+  isCurrentUser: boolean;
+  // ★ initialFollowStatus の型を詳細な FollowStatusInfo に ★
   initialFollowStatus: FollowStatusInfo | null;
 }
 
 export function ProfileHeader({
   userProfileData,
   isCurrentUser,
-  initialFollowStatus,
+  initialFollowStatus, // ★ 詳細な型で受け取る ★
 }: ProfileHeaderProps) {
-  const username = userProfileData.username;
-  if (!username) {
-    // username が null や undefined の場合のフォールバック (通常は発生しないはず)
-    return <div>ユーザー情報の取得に失敗しました。</div>;
+
+  if (!userProfileData || !userProfileData.username) {
+    return <div className="p-4 text-center text-muted-foreground">ユーザー情報の読み込みに失敗しました。</div>;
   }
+  const { username, name, bio, image, coverImageUrl, location, birthday, socialLinks, _count } = userProfileData;
 
-  // フォロー・フォロワー数を取得 (null の場合は 0 に)
-  const followingCount = userProfileData._count?.following ?? 0;
-  const followersCount = userProfileData._count?.followedBy ?? 0;
-
-  // フォロー・フォロワーページへのリンク先を生成
+  const followingCount = _count?.following ?? 0;
+  const followersCount = _count?.followedBy ?? 0;
   const followingHref = `/follows/${username}?tab=following`;
   const followersHref = `/follows/${username}?tab=followers`;
 
+  // 生年月日フォーマット
+  const formattedBirthday = birthday
+    ? new Date(birthday).toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' })
+    : null;
+
+  // SNSリンクのパース
+  let socialLinksData: { x?: string | null, instagram?: string | null, tiktok?: string | null, website?: string | null } = {};
+  if (typeof socialLinks === 'object' && socialLinks !== null) {
+     socialLinksData = {
+        x: typeof (socialLinks as any).x === 'string' ? (socialLinks as any).x : null,
+        instagram: typeof (socialLinks as any).instagram === 'string' ? (socialLinks as any).instagram : null,
+        tiktok: typeof (socialLinks as any).tiktok === 'string' ? (socialLinks as any).tiktok : null,
+        website: typeof (socialLinks as any).website === 'string' ? (socialLinks as any).website : null,
+     };
+  }
+
   return (
-    <section className='mb-8 flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 border-b pb-8'>
-      {" "}
-      {/* 区切り線と余白追加 */}
-      {/* 左側: アバター */}
-      <Avatar className='w-24 h-24 sm:w-32 sm:h-32 border text-4xl flex-shrink-0'>
-        {" "}
-        {/* サイズ調整、縮小防止 */}
-        <AvatarImage
-          src={userProfileData.image ?? undefined}
-          alt={`${username} のプロフィール画像`}
-        />
-        <AvatarFallback>{username?.slice(0, 2).toUpperCase()}</AvatarFallback>
-      </Avatar>
-      <div className='flex flex-col items-center sm:items-start gap-3 flex-1 w-full'>
-        {/* 上段: ユーザー名とボタン */}
-        <div className='flex flex-col sm:flex-row justify-between items-center w-full gap-2'>
-          <div className='text-center sm:text-left'>
-            <h1 className='text-2xl sm:text-3xl font-bold break-all'>
-              {userProfileData.name || username}
-            </h1>
+    <section className='mb-8 border-b pb-8'>
+      {/* カバー画像 */}
+      <div className="relative h-40 sm:h-48 md:h-60 bg-muted overflow-hidden">
+        {coverImageUrl ? (
+          <Image src={coverImageUrl} alt={`${username} のカバー画像`} fill className="object-cover" priority />
+        ) : (
+          <div className="w-full h-full bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 dark:from-gray-700 dark:via-gray-800 dark:to-gray-700"></div>
+        )}
+      </div>
+
+      {/* プロフィール本体 */}
+      <div className="px-4 sm:px-6 relative">
+        {/* アバター */}
+        <div className="relative -mt-12 sm:-mt-16 z-10 w-fit">
+          <Avatar className='w-24 h-24 sm:w-32 sm:h-32 border-4 border-background text-4xl'>
+            <AvatarImage src={image ?? undefined} alt={`${username} のプロフィール画像`} />
+            <AvatarFallback>{username.slice(0, 2).toUpperCase()}</AvatarFallback>
+          </Avatar>
+        </div>
+
+        {/* 編集/フォローボタン */}
+        <div className="absolute top-4 right-4 sm:right-6 z-10">
+           {isCurrentUser ? (
+              <Link href={`/profile/${username}/edit`} passHref>
+                <Button variant='outline' size='sm'>プロフィールを編集</Button>
+              </Link>
+            ) : initialFollowStatus ? ( // ★ initialFollowStatus が null でないことを確認 ★
+              // ★★★ FollowButton に詳細な initialFollowStatusInfo を渡す ★★★
+              <FollowButton
+                targetUserId={userProfileData.id}
+                targetUsername={username}
+                initialFollowStatusInfo={initialFollowStatus} // ← そのまま渡す
+              />
+            ) : ( <Button variant='secondary' size='sm' disabled>...</Button> )}
+        </div>
+
+        {/* ユーザー情報 */}
+        <div className="mt-4 space-y-3">
+          {/* 名前とユーザー名 */}
+          <div>
+            <h1 className='text-2xl sm:text-3xl font-bold break-all'>{name || username}</h1>
             <p className='text-muted-foreground'>@{username}</p>
           </div>
-          <div className='flex-shrink-0'>
-            {isCurrentUser ? (
-              <Link href='/settings/profile'>
-                <Button variant='outline' size='sm'>
-                  プロフィールを編集
-                </Button>
-              </Link>
-            ) : initialFollowStatus ? (
-              <FollowButton
-                targetUserId={userProfileData.id} // ★ 対象ユーザーの DB ID
-                targetUsername={username} // ★ 対象ユーザーの username
-                initialFollowStatusInfo={initialFollowStatus} // ★ 取得したフォロー状態
-              />
-            ) : (
-              // フォロー状態が不明な場合のフォールバック (通常は発生しないはず)
-              <Button variant='secondary' size='sm' disabled>
-                読み込み中...
-              </Button>
-            )}
+          {/* 自己紹介 */}
+          {bio && ( <p className='text-sm max-w-prose whitespace-pre-wrap'>{bio}</p> )}
+          {/* 場所・誕生日・Webサイト */}
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
+             {location && ( <div className="flex items-center gap-1"><MapPinIcon className="h-4 w-4"/> {location}</div> )}
+             {formattedBirthday && ( <div className="flex items-center gap-1"><CakeIcon className="h-4 w-4"/> {formattedBirthday}</div> )}
+             {socialLinksData.website && (
+                <div className="flex items-center gap-1">
+                   <LinkIcon className="h-4 w-4"/>
+                   <a href={socialLinksData.website} target="_blank" rel="noopener noreferrer nofollow" className="text-primary hover:underline truncate max-w-xs">
+                      {socialLinksData.website.replace(/^https?:\/\//, '').replace(/\/$/, '')}
+                   </a>
+                </div>
+             )}
+             {/* TODO: 他のSNSリンク */}
+          </div>
+          {/* フォロー・フォロワー数 */}
+          <div className='flex gap-4 text-sm pt-1'>
+            <Link href={followingHref} className='hover:underline'><span className='font-semibold'>{followingCount}</span> <span className='text-muted-foreground'>フォロー中</span></Link>
+            <Link href={followersHref} className='hover:underline'><span className='font-semibold'>{followersCount}</span> <span className='text-muted-foreground'>フォロワー</span></Link>
           </div>
         </div>
-
-        {/* 中段: フォロー・フォロワー数 */}
-        <div className='flex gap-4 text-sm'>
-          <Link href={followingHref} className='hover:underline'>
-            <span className='font-semibold'>{followingCount}</span>
-            <span className='text-muted-foreground ml-1'>フォロー中</span>
-          </Link>
-          <Link href={followersHref} className='hover:underline'>
-            <span className='font-semibold'>{followersCount}</span>
-            <span className='text-muted-foreground ml-1'>フォロワー</span>
-          </Link>
-        </div>
-
-        {/* 下段: 自己紹介 */}
-        {userProfileData.bio && (
-          <p className='text-sm text-center sm:text-left max-w-prose whitespace-pre-wrap'>
-            {" "}
-            {/* 改行を反映 */}
-            {userProfileData.bio}
-          </p>
-        )}
       </div>
     </section>
   );

@@ -1,4 +1,4 @@
-// components/component/rankings/ImageUploader.tsx
+// components/component/common/ImageUploader.tsx
 "use client";
 
 import { useRef, useState, type ChangeEvent, useEffect } from "react";

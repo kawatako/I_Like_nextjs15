@@ -18,6 +18,9 @@ export default async function FeedDetailPage({ params }: FeedDetailPageProps) {
   const { userId: clerkId } = await auth(); // ログインユーザーの Clerk ID を取得
 
   // ログインユーザーの DB ID を取得 (いいね判定などに使う)
+  if (!clerkId) {
+    notFound(); // Handle the case where clerkId is null
+  }
   const loggedInUserDbId = await getUserDbIdByClerkId(clerkId);
 
   // ★ 作成した関数で FeedItem の詳細データを取得 ★

@@ -24,7 +24,7 @@ export default async function ProfilePage({ params: paramsProp, searchParams: se
 
   const isCurrentUser = currentClerkId === userProfileData.clerkId;
   const targetUserDbId = userProfileData.id;
-  const loggedInUserDbId = await getUserDbIdByClerkId(currentClerkId);
+  const loggedInUserDbId = currentClerkId ? await getUserDbIdByClerkId(currentClerkId) : null;
   const followStatusInfo = await getFollowStatus(loggedInUserDbId, targetUserDbId);
 
   const currentTab = typeof searchParams?.tab === 'string' ? searchParams.tab : undefined;
