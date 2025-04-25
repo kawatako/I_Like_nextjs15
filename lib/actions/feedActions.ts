@@ -5,6 +5,7 @@ import { auth } from "@clerk/nextjs/server";
 import prisma from "@/lib/client";
 import { getUserDbIdByClerkId } from "@/lib/data/userQueries";
 import { getHomeFeed } from "@/lib/data/feedQueries";
+import { feedItemPayload } from "@/lib/prisma/payloads";
 import { FeedItemWithRelations } from "@/lib/types";
 import { PaginatedResponse } from "@/lib/types";
 import { ActionResult } from "@/lib/types";
@@ -13,40 +14,89 @@ import { revalidatePath } from "next/cache";
 
 // 無限スクロールで一度に読み込む件数
 const TIMELINE_PAGE_LIMIT = 20;
+
+// ★ 汎用フィード取得アクション ★
+export type FeedKey = | ['homeFeed', string | null, string | null] // type, userId (self), cursor
+              | ['profileFeed', string, string | null]; // type, targetUserId, cursor
+              // 他のフィードタイプも追加可能
+
 /**
- * [SERVER ACTION] ログインユーザーのホームタイムラインを取得 (ページネーション対応)
- * useSWRInfinite の fetcher から呼び出されることを想定
- * @param cursor - 前のページの最後の FeedItem の ID (最初のページは undefined)
- * @returns PaginatedResponse<FeedItemWithRelations> - アイテムリストと次のカーソル
+ * profile機能のfeed取得で使用する
+ * SWR の fetcher からキー配列を受け取ることを想定
+ * @param key - SWR キー配列 (例: ['homeFeed', userId, cursor] or ['profileFeed', targetUserId, cursor])
+ * @returns PaginatedResponse<FeedItemWithRelations>
  */
-export async function getPaginatedFeedItemsAction(
-  cursor?: string // ★ 引数をカーソルのみに変更 ★
+export async function getPaginatedFeedAction(
+  key: FeedKey
 ): Promise<PaginatedResponse<FeedItemWithRelations>> {
 
-  console.log(`[Action/getPaginatedFeedItems] Fetching page with cursor: ${cursor}`);
+  const feedType = key[0];
+  const userId = key[1]; // homeFeed では自分の ID, profileFeed では targetUserId
+  const cursor = key[2];
+  const take = TIMELINE_PAGE_LIMIT + 1; // 定数名修正
+  const skip = cursor ? 1 : 0;
+  const cursorOptions = cursor ? { id: cursor } : undefined;
 
-  // 1. 認証チェック
+  console.log(`[Action/getPaginatedFeed] Fetching type: ${feedType}, userId: ${userId}, cursor: ${cursor}`);
+
+  // 認証はホームフィードの場合のみ必須かもしれないが、念のためチェック
   const { userId: clerkId } = await auth();
-  if (!clerkId) { /* ... */ return { items: [], nextCursor: null }; }
-
-  // 2. DBユーザーID取得
-  const userDbId = await getUserDbIdByClerkId(clerkId);
-  if (!userDbId) { /* ... */ return { items: [], nextCursor: null }; }
+  let loggedInUserDbId: string | null = null;
+  if(clerkId) {
+      loggedInUserDbId = await getUserDbIdByClerkId(clerkId);
+  }
+  // ホームフィード取得にはログイン必須
+  if (feedType === 'homeFeed' && !loggedInUserDbId) {
+      console.warn("[Action/getPaginatedFeed] User not authenticated for home feed.");
+      return { items: [], nextCursor: null };
+  }
 
   try {
-    // 4. 既存のデータ取得関数を呼び出す
-    const result = await getHomeFeed({
-      userId: userDbId,
-      limit: TIMELINE_PAGE_LIMIT,
-      cursor: cursor
-    });
-    return result; // { items, nextCursor } を返す
+    let feedItems: FeedItemWithRelations[] = [];
+
+    if (feedType === 'homeFeed') {
+      // ホームフィード取得 (既存ロジック呼び出し)
+      if (!loggedInUserDbId) throw new Error("Home feed requires authentication"); // 再度チェック
+      const result = await getHomeFeed({ userId: loggedInUserDbId, limit: TIMELINE_PAGE_LIMIT, cursor: cursor ?? undefined});
+      feedItems = result.items; // getHomeFeed が PaginatedResponse を返すので items を取り出す
+
+    } else if (feedType === 'profileFeed') {
+      // ★★★ プロフィールフィード取得ロジック ★★★
+      if (!userId) { throw new Error("Target user ID is required for profile feed."); }
+      console.log(`[Action/getPaginatedFeed] Fetching profileFeed for user ${userId}`);
+      feedItems = await prisma.feedItem.findMany({
+        where: {
+          userId: userId, // ★ 指定されたユーザーの FeedItem ★
+          // 必要に応じてリツイートを含めるかなどの条件を追加
+          // 例: type: { in: [FeedType.POST, FeedType.QUOTE_RETWEET, FeedType.RANKING_UPDATE] } // RT を除く場合
+        },
+        select: feedItemPayload.select, // payloads.ts からインポート
+        orderBy: { createdAt: 'desc' },
+        take: take,
+        skip: skip,
+        cursor: cursorOptions,
+      });
+    } else {
+      // 未知のフィードタイプ
+      console.warn(`[Action/getPaginatedFeed] Unknown feed type: ${feedType}`);
+      return { items: [], nextCursor: null };
+    }
+
+    // 次のカーソル計算 (共通)
+    let nextCursor: string | null = null;
+    if (feedItems.length > TIMELINE_PAGE_LIMIT) {
+      const nextItem = feedItems.pop();
+      if (nextItem) { nextCursor = nextItem.id; }
+    }
+    console.log(`[Action/getPaginatedFeed] Found ${feedItems.length} items. Next cursor: ${nextCursor}`);
+    return { items: feedItems, nextCursor: nextCursor };
+
   } catch (error) {
-    console.error("[Action/getPaginatedFeedItems] Error calling getHomeFeed:", error);
-    // エラー時は空の結果を返す (またはエラーを示すオブジェクトを返す)
+    console.error(`[Action/getPaginatedFeed] Error fetching ${feedType} for user ${userId}:`, error);
     return { items: [], nextCursor: null };
   }
 }
+
 
 //指定された FeedItem へのリツイートを行う Server Action
 export async function retweetAction(feedItemId: string): Promise<ActionResult> {
@@ -142,6 +192,7 @@ export async function retweetAction(feedItemId: string): Promise<ActionResult> {
     return { success: false, error: message };
   }
 }
+
 
 /**
  * 指定された FeedItem へのリツイートを取り消す Server Action
