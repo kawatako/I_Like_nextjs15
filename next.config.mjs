@@ -12,6 +12,10 @@ const nextConfig = {
        // port: "", // ポート番号 (通常は空)
        // pathname: "/**", // ホスト名以下の任意のパスを許可
       },
+      {
+        protocol: 'https',
+        hostname: 'img.clerk.com', // Clerk の画像用ホスト名
+      },
     ],
   },
 };

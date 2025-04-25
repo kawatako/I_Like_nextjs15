@@ -11,7 +11,6 @@ import { getPaginatedFeedAction, type FeedKey } from '@/lib/actions/feedActions'
 import { FeedType } from "@prisma/client";
 import { Loader2 } from "@/components/component/Icons";
 import { useInfiniteScroll } from "@/components/hooks/useInfiniteScroll"; // パスを確認
-import type { BareFetcher } from 'swr'; // ★ BareFetcher をインポート (ただし、fetcher の型注釈からは削除推奨) ★
 
 // Props 定義
 interface TimelineFeedProps {

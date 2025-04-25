@@ -6,13 +6,10 @@ import type { UserSnippet, RankingListSnippet, UserProfileData } from "@/lib/typ
 import {  userProfilePayload,userSnippetSelect } from "../prisma/payloads"
 
 //Clerk ID を基に、データベース内の対応するユーザーの内部ID (User.id) を取得
-export async function getUserDbIdByClerkId(clerkId: string | null | undefined): Promise<string | null> {
-  if (!clerkId) {
-    return null;
-  }
+export async function getUserDbIdByClerkId(clerkId: string): Promise<string | null> {
   try {
     const user = await prisma.user.findUnique({
-      where: { clerkId: clerkId },
+      where: { clerkId },
       select: { id: true },
     });
     return user?.id ?? null;

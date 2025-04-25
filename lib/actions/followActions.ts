@@ -8,14 +8,7 @@ import { revalidatePath } from "next/cache";
 import { auth } from "@clerk/nextjs/server";
 import { PaginatedResponse, ActionResult } from "../types";
 import type { UserSnippet } from "@/lib/types";
-
-// ユーザー情報の型定義 (変更なし)
-const userSnippetSelect = {
-  id: true,
-  username: true,
-  name: true,
-  image: true,
-} satisfies Prisma.UserSelect;
+import { userSnippetSelect } from "@/lib/prisma/payloads";
 
 // フォローリクエストの型定義 (変更なし)
 const followRequestWithRequesterPayload =
@@ -353,17 +346,17 @@ export type FollowStatusInfo = {
 };
 
 /**
- * 指定された2ユーザー間のフォロー状態を取得します。
- * @param viewerDbId ページを閲覧しているユーザーの DB ID (ログインしていない場合は null)
- * @param targetUserId プロフィールページの対象ユーザーの DB ID
- * @returns FollowStatusInfo 型のオブジェクト
+ * [ACTION/QUERY] 2ユーザー間の詳細なフォロー状態を取得する
+ * @param loggedInUserId ログイン中のユーザーの DB ID (未ログインなら null)
+ * @param targetUserId プロフィール表示対象ユーザーの DB ID
+ * @returns FollowStatusInfo | null フォロー状態、またはエラー/対象なし時に null
  */
 export async function getFollowStatus(
-  viewerDbId: string | null,
+  loggedInUserId: string | null,
   targetUserId: string
 ): Promise<FollowStatusInfo | null> {
   console.log(
-    `[FollowQueries] Checking follow status between viewer ${viewerDbId} and target ${targetUserId}`
+    `[FollowQueries] Checking follow status between viewer ${loggedInUserId} and target ${targetUserId}`
   );
 
   // 対象ユーザーが存在するか、isPrivate かなどを取得
@@ -371,156 +364,50 @@ export async function getFollowStatus(
     where: { id: targetUserId },
     select: { id: true, username: true, isPrivate: true },
   });
-
+    // 対象ユーザーが見つからない場合は null
   if (!targetUser) {
     console.log(`[FollowQueries] Target user ${targetUserId} not found.`);
     return null; // 対象ユーザーが見つからない
   }
 
-  // 自分自身のプロフィールの場合
-  if (viewerDbId === targetUserId) {
-    return {
-      status: "SELF",
+    // 基本情報を準備
+    const baseInfo = {
       targetUserId: targetUser.id,
       targetUsername: targetUser.username,
       targetIsPrivate: targetUser.isPrivate,
     };
+    
+    // 2. 状態判定
+  // 自分自身のプロフィールの場合
+  if (loggedInUserId === targetUserId) {
+    return { ...baseInfo, status: "SELF" };
   }
 
   // ログインしていない場合 (フォロー/リクエスト不可)
-  if (!viewerDbId) {
-    return {
-      status: "CANNOT_FOLLOW",
-      targetUserId: targetUser.id,
-      targetUsername: targetUser.username,
-      targetIsPrivate: targetUser.isPrivate,
-    };
+  if (!loggedInUserId) {
+    return { ...baseInfo, status: "CANNOT_FOLLOW" }; // 未ログイン
   }
 
   // --- ログインしている場合のチェック ---
   try {
-    // 1. 既にフォローしているか確認 (Follow レコードが存在するか)
-    const existingFollow = await prisma.follow.findUnique({
-      where: {
-        followerId_followingId: {
-          followerId: viewerDbId,
-          followingId: targetUserId,
-        },
-      },
-      select: { createdAt: true }, // 存在確認だけなので select は軽量に
-    });
+    // 3. 各状態をチェック
+    const follow = await prisma.follow.findUnique({ where: { followerId_followingId: { followerId: loggedInUserId, followingId: targetUserId } } });
+    if (follow) return { ...baseInfo, status: "FOLLOWING" };
 
-    if (existingFollow) {
-      console.log(
-        `[FollowQueries] Viewer ${viewerDbId} IS FOLLOWING ${targetUserId}`
-      );
-      return {
-        status: "FOLLOWING",
-        targetUserId: targetUser.id,
-        targetUsername: targetUser.username,
-        targetIsPrivate: targetUser.isPrivate,
-      };
-    }
+    const sentRequest = await prisma.followRequest.findFirst({ where: { requesterId: loggedInUserId, requestedId: targetUserId, status: FollowRequestStatus.PENDING } });
+    if (sentRequest) return { ...baseInfo, status: "REQUEST_SENT" };
 
-    // 2. フォローリクエストを送信済みか確認 (FollowRequest レコード (PENDING) が存在するか)
-    const sentRequest = await prisma.followRequest.findUnique({
-      where: {
-        requesterId_requestedId: {
-          requesterId: viewerDbId,
-          requestedId: targetUserId,
-        },
-        status: FollowRequestStatus.PENDING, // PENDING のリクエストのみチェック
-      },
-      select: { id: true }, // IDがあればキャンセル用に使える
-    });
+    const receivedRequest = await prisma.followRequest.findFirst({ where: { requesterId: targetUserId, requestedId: loggedInUserId, status: FollowRequestStatus.PENDING } });
+    if (receivedRequest) return { ...baseInfo, status: "REQUEST_RECEIVED" };
 
-    if (sentRequest) {
-      console.log(
-        `[FollowQueries] Viewer ${viewerDbId} HAS REQUESTED ${targetUserId}`
-      );
-      // return { status: "REQUEST_SENT", targetUserId: targetUser.id, targetUsername: targetUser.username, targetIsPrivate: targetUser.isPrivate, followRequestId: sentRequest.id };
-      return {
-        status: "REQUEST_SENT",
-        targetUserId: targetUser.id,
-        targetUsername: targetUser.username,
-        targetIsPrivate: targetUser.isPrivate,
-      }; // followRequestId は一旦含めない
-    }
+    // TODO: 拒否された状態やブロック状態のチェックをここに追加する場合
 
-    // 3. 相手からフォローリクエストが来ているか確認 (承認待ち)
-    const receivedRequest = await prisma.followRequest.findUnique({
-      where: {
-        requesterId_requestedId: {
-          requesterId: targetUserId, // 相手が申請者
-          requestedId: viewerDbId, // 自分が申請先
-        },
-        status: FollowRequestStatus.PENDING,
-      },
-      select: { id: true },
-    });
+    // 上記いずれでもなければ「フォローしていない」
+    return { ...baseInfo, status: "NOT_FOLLOWING" };
 
-    if (receivedRequest) {
-      console.log(
-        `[FollowQueries] Viewer ${viewerDbId} HAS RECEIVED REQUEST FROM ${targetUserId}`
-      );
-      return {
-        status: "REQUEST_RECEIVED",
-        targetUserId: targetUser.id,
-        targetUsername: targetUser.username,
-        targetIsPrivate: targetUser.isPrivate,
-      };
-    }
-
-    // 4. 拒否された履歴があるか確認 (拒否後は再申請不可とする場合)
-    const rejectedRequest = await prisma.followRequest.findUnique({
-      where: {
-        requesterId_requestedId: {
-          requesterId: viewerDbId,
-          requestedId: targetUserId,
-        },
-        status: FollowRequestStatus.REJECTED, // REJECTED のリクエストをチェック
-      },
-      select: { id: true },
-    });
-
-    if (rejectedRequest) {
-      console.log(
-        `[FollowQueries] Viewer ${viewerDbId} WAS REJECTED BY ${targetUserId}`
-      );
-      // 拒否された場合の状態を返すか、CANNOT_FOLLOW にするかは要件次第
-      // ここでは仮に REQUEST_SENT と同じにするか、専用の状態を作る
-      // return { status: "REJECTED_BY_TARGET", ... };
-      return {
-        status: "CANNOT_FOLLOW",
-        targetUserId: targetUser.id,
-        targetUsername: targetUser.username,
-        targetIsPrivate: targetUser.isPrivate,
-      }; // 仮にフォロー不可とする
-    }
-
-    // 上記のいずれでもない場合: フォローもリクエストもしていない
-    console.log(
-      `[FollowQueries] Viewer ${viewerDbId} is NOT FOLLOWING and NO PENDING/REJECTED request for ${targetUserId}`
-    );
-    return {
-      status: "NOT_FOLLOWING",
-      targetUserId: targetUser.id,
-      targetUsername: targetUser.username,
-      targetIsPrivate: targetUser.isPrivate,
-    };
-
-    // TODO: ブロック機能実装時にはブロック状態もチェックする
   } catch (error) {
-    console.error(
-      `[FollowQueries] Error checking follow status between ${viewerDbId} and ${targetUserId}:`,
-      error
-    );
-    return {
-      status: "CANNOT_FOLLOW",
-      targetUserId: targetUser.id,
-      targetUsername: targetUser.username,
-      targetIsPrivate: targetUser.isPrivate,
-    }; // エラー時はフォロー不可とする
+    console.error(`[FollowActions] Error fetching follow status between ${loggedInUserId} and ${targetUserId}:`, error);
+    return { ...baseInfo, status: "CANNOT_FOLLOW" }; // エラー時
   }
 }
 
