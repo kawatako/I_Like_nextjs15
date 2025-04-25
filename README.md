@@ -960,3 +960,97 @@ useSWRInfinite が返す data を使ってフィード項目を map して表示
 FeedInteraction.tsx を修正します。
 handleLikeToggle 関数内で、いいね/いいね解除の Server Action (likePostAction など) が成功したことを確認した後、SWR の mutate 関数を呼び出します。
 mutate には、TimelineFeed で使っている useSWRInfinite のキーを渡して、タイムラインデータの再検証をトリガーします。
+
+
+
+
+
+# profile機能修正案
+aapp/
+└── profile/
+    └── [username]/               # 動的ルート (ユーザー名)
+        ├── page.tsx              # ✅ RSC: ユーザー/初期タブデータ取得、ProfileTabsClient 呼び出し
+        └── tabs/                 # タブ関連コンポーネント
+            ├── ProfileTabsClient.tsx # ⚛️ Client: タブUI、URL連動、タブコンテンツ表示切り替え
+            ├── RankingTab.tsx        # ✅ RSC: <ProfileRankingListsClient> を呼び出す (作成した公開リスト)
+            ├── DraftsTab.tsx         # ✅ RSC: <ProfileRankingListsClient> を呼び出す (作成した下書きリスト)
+            ├── FeedTab.tsx           # ✅ RSC: <TimelineFeed> を呼び出す (ユーザーのフィード)
+            ├── LikesTab.tsx          # ✅ RSC: <LikedFeedListClient> (仮) を呼び出す (いいねしたフィード) ★追加仕様反映★
+            └── RankingLikesTab.tsx   # ✅ RSC: <LikedRankingListClient> (仮) を呼び出す (いいねしたランキング) ★新規★
+
+components/
+└── component/
+    ├── profiles/
+    │   └── UserProfileHeader.tsx # プロフィールヘッダー
+    ├── rankings/
+    │   ├── ProfileRankingListsClient.tsx # ⚛️ Client: ランキング一覧表示(SWR, DnD) ★新規 or 改修★
+    │   └── LikedRankingListClient.tsx  # ⚛️ Client: いいねしたランキング一覧表示(SWR) ★新規 or 流用★
+    ├── feeds/
+    │   ├── TimelineFeed.tsx        # ⚛️ Client: フィード一覧表示(SWR) (既存を流用/改修)
+    │   └── LikedFeedListClient.tsx   # ⚛️ Client: いいねしたフィード一覧表示(SWR) ★新規★
+    └── (その他)
+
+lib/
+├── data/
+│   ├── userQueries.ts
+│   ├── rankingQueries.ts
+│   ├── feedQueries.ts
+│   └── likeQueries.ts        # いいね関連のデータ取得 (要新規作成 or 追記)
+├── actions/
+│   ├── ... (既存のアクション) ...
+│   └── likeActions.ts        # いいね解除アクションなど
+└── types.ts
+└── prisma/
+    └── payloads.ts
+└── hooks/
+    ├── useInfiniteScroll.ts
+    ├── useCardInteraction.ts
+    └── useImageUploader.ts
+
+    app/profile/[username]/page.tsx (RSC):
+ページのエントリーポイントであり、サーバーサイドで実行されます。
+ユーザー認証、プロフィール対象ユーザーのデータ取得、最初に表示するタブの初期データ取得を行います。
+クライアントコンポーネントである <ProfileTabsClient> を呼び出し、取得したデータを渡します。プロフィールヘッダー部分もここでレンダリングする構成も考えられます。
+app/profile/[username]/tabs/ProfileTabsClient.tsx (Client):
+タブの UI (shadcn/ui の Tabs など) を担当します。
+useSearchParams で URL の ?tab= を読み取り、タブの状態を管理・更新します。
+現在選択されているタブに応じて、対応する *Tab.tsx コンポーネントを動的にレンダリングします。（*Tab.tsx は RSC なので、直接呼び出すのではなく、Next.js の Server Component in Client Component のパターンを使うか、あるいは Props を渡すだけにするなどの工夫が必要かもしれません。または、各タブコンテンツ自体をクライアントコンポーネントにする方がシンプルな場合もあります。）
+app/profile/[username]/tabs/*Tab.tsx (主に RSC):
+各タブの内容の骨格を定義します。
+サーバーサイドで必要な初期データを取得するロジックを持つことができます（page.tsx で取得したものを Props で受け取る、あるいは自身で async 関数として取得）。
+実際にリスト表示やインタラクションを行う部分は、components ディレクトリ内のクライアントコンポーネント (例: ProfileRankingListsClient.tsx, TimelineFeed.tsx) を呼び出してレンダリングします。
+components/component/... (Client Components が主):
+ProfileRankingListsClient.tsx: ProfileRankingLists.tsx をクライアントコンポーネント化し、useInfiniteScroll や dnd-kit を使って無限スクロールと並び替えを実装します。データ取得は Server Action を呼び出します。
+TimelineFeed.tsx: 既にクライアントコンポーネントとして実装済み (useSWRInfinite 使用)。
+LikesListClient.tsx (仮): いいね一覧を表示し、いいね解除ボタンなどのインタラクションを持つクライアントコンポーネント。
+
+page.tsx (RSC): 役割は変わりません。URL から username を取得し、対象ユーザーの基本情報 (UserProfileData) と、最初に表示するタブ（例: ランキングタブ）の初期データをサーバーサイドで取得します。そして <ProfileTabsClient> を呼び出し、これらのデータを渡します。
+ProfileTabsClient.tsx (Client):
+shadcn/ui の Tabs コンポーネントなどを使ってタブの UI を描画します。
+useSearchParams() と useRouter() を使って、ブラウザの URL (?tab=...) と現在選択されているタブの状態を双方向で同期させます。
+選択されているタブに応じて、対応するタブコンテンツコンポーネント (RankingTab, DraftsTab, FeedTab, LikesTab, RankingLikesTab) を表示します。（コンテンツのデータ取得自体は各タブコンポーネントまたはその内部のクライアントコンポーネントが行う方が、タブ切り替え時のパフォーマンスが良いかもしれません）。
+RankingTab.tsx / DraftsTab.tsx (RSC):
+それぞれ公開/下書きのランキングリストを表示するためのクライアントコンポーネント (ProfileRankingListsClient) を呼び出します。初期データは page.tsx から受け取るか、ここで取得します。
+FeedTab.tsx (RSC):
+ユーザー自身のフィードを表示するためのクライアントコンポーネント (TimelineFeed) を呼び出します。初期データは page.tsx から受け取るか、ここで取得します。（プロフィール用のフィード取得ロジックが必要です）
+LikesTab.tsx (RSC):
+【新規】 ユーザーがいいねしたフィードアイテム（Post, QuoteRetweet など）を取得するデータ取得ロジック（likeQueries.ts に新設）を呼び出します。
+取得したデータを表示するための新しいクライアントコンポーネント (LikedFeedListClient - 仮称) を呼び出します。このコンポーネントは無限スクロールと、各アイテムのいいね解除ボタンを持ちます。
+RankingLikesTab.tsx (RSC):
+【新規】 ユーザーがいいねしたランキングリストを取得するデータ取得ロジック（likeQueries.ts に新設）を呼び出します。
+取得したデータを表示するためのクライアントコンポーネント (LikedRankingListClient - 仮称) を呼び出します。ProfileRankingListsClient を流用できるか検討します（DnD は不要）。無限スクロールと、いいね解除ボタンが必要です。
+各種リスト表示用 Client Components:
+ProfileRankingListsClient, TimelineFeed, LikedFeedListClient, LikedRankingListClient はそれぞれクライアントコンポーネント ("use client") です。
+内部で useSWRInfinite と対応するデータ取得用 Server Action を呼び出して、無限スクロールを実現します。
+取得したデータを map して、対応するアイテム表示用コンポーネント (SortableListItem, 各種カードなど) をレンダリングします。
+必要なインタラクション（並び替え、いいね解除など）を実装します。
+3. 実装の進め方（推奨）:
+
+この構成で実装を進めるとして、以下の順番が考えられます。
+
+タブの骨組み作成: まず page.tsx と ProfileTabsClient.tsx を実装し、タブ UI と URL 連動の基本的な切り替えができるようにします。各タブの中身は一旦プレースホルダー（例: <p>Ranking Tab Content</p>）で構いません。
+既存機能タブの実装:
+RankingTab / DraftsTab: ProfileRankingListsClient を作成（または既存の ProfileRankingLists を改修）し、無限スクロールと（isCurrentUser なら）並び替え機能を実装します。データ取得アクション (loadMoreProfileRankingsAction) は既存のものが使えます。
+FeedTab: TimelineFeed を改修し、特定ユーザーのフィードを取得する Server Action を呼び出すようにします（新しいアクションが必要）。
+新規機能タブの実装:
+LikesTab / RankingLikesTab: それぞれ新しいデータ取得ロジック (likeQueries.ts に関数追加 + アクション追加) と、新しいリスト表示用クライアントコンポーネント (LikedFeedListClient, LikedRankingListClient) を作成します。

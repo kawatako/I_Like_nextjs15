@@ -59,9 +59,6 @@ export default async function UserProfileSettingsPage() {
               routing='path'
               appearance={{
                 elements: {
-                  // UserProfile 自体を囲む要素に Card と同様のスタイルを適用
-                  // 注意: これが意図通りに機能するか、テーマの色が適用されるかは試す必要あり
-                  // また、パディング (p-6) も適用してみる
                   card: "border bg-card text-card-foreground rounded-lg shadow-sm p-6 w-full",
 
                   // 元の提案にあったリセット用スタイル (上記と競合する場合は調整)
