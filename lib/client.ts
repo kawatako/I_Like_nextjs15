@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 
 // globalThis に prisma プロパティがあるかチェックし、なければ undefined になるように型付け
 const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined
+  prisma: PrismaClient | undefined;
 };
 
 // prisma インスタンスを生成。
