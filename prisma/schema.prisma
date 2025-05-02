@@ -1,11 +1,19 @@
+// ─── Next.js（Node.js）用クライアント ───────────────────────
 generator client {
   provider = "prisma-client-js"
-  //output   = "../node_modules/.prisma/client" // 将来のために output を指定推奨
+  // 出力先を省略すると、デフォルトで node_modules/.prisma/client に生成
+}
+
+// ─── Deno（Edge Function）用クライアント ──────────────────
+generator edgeClient {
+  provider        = "prisma-client-js"
+  previewFeatures = ["deno"]
+  output          = "../supabase/functions/_shared/generated/client/deno"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = env("SUPABASE_DB_URL")
 }
 
 // ランキングリストの公開状態 Enum
@@ -29,6 +37,14 @@ enum FeedType {
   QUOTE_RETWEET // 引用リツイート
 }
 
+//トレンド集計期間を表す
+enum TrendPeriod {
+  //DAILY   // 日次　リクエストが膨大になるので保留
+  WEEKLY  // 週次
+  MONTHLY // 月次
+  //ALL_TIME // 総合期間　リクエスト数が膨大になるので保留
+}
+
 // ★★★ Tag モデルを新規追加 ★★★
 model Tag {
   id             String        @id @default(cuid())
@@ -36,6 +52,8 @@ model Tag {
   rankingLists   RankingList[] @relation("RankingListTags") // RankingList との多対多
   createdAt      DateTime      @default(now())
 
+  // ★ この Tag のトレンド集計結果へのリレーション (Tag削除時に一緒に消える) ★
+  trendingStats  TrendingTag[] // onDelete: Cascade はリレーションフィールドには直接書けない(モデル側で設定)
   @@index([name]) // 名前での検索を考慮
 }
 
@@ -105,6 +123,48 @@ model RankedItem {
 
   @@index([itemName])
   @@index([listId, rank])
+}
+
+//人気ランキングタイトル（Subject）集計結果モデル
+model TrendingSubject {
+  id             String      @id @default(cuid())
+  subject        String      // ランキングタイトル
+  count          Int         // 期間内の作成（または公開）された数
+  period         TrendPeriod // 集計期間 (DAILY, WEEKLY, MONTHLY)
+  calculationDate DateTime   // 集計が実行された日付 (その日の0時など)
+
+  @@unique([subject, period, calculationDate])    // 同じ日の同じ期間の同じタイトルは重複しないように
+  @@index([period, calculationDate, count(sort: Desc)])   // トレンド表示用にインデックスを貼る (期間、日付で絞り込み、カウントでソート)
+}
+
+//トレンドタグ　集計結果モデル
+model TrendingTag {
+  id             String      @id @default(cuid())
+  tagId          String      // Tag モデルへの参照ID
+  tagName        String      // Tag 名 (表示用に非正規化)
+  count          Int         // 期間内の使用回数
+  period         TrendPeriod // 集計期間
+  calculationDate DateTime    // 集計実行日
+
+  tag            Tag         @relation(fields: [tagId], references: [id], onDelete: Cascade)    // Tag モデルへのリレーション
+
+  @@unique([tagId, period, calculationDate])    // 同じ日の同じ期間の同じタグは重複しないように
+  @@index([period, calculationDate, count(sort: Desc)])   // トレンド表示用にインデックスを貼る
+}
+
+//注目アイテム（RankedItem の itemName）集計結果モデル
+model TrendingItem {
+  id             String      @id @default(cuid())
+  itemName       String      // アイテム名 (表記ゆれ問題あり)
+  rankScore      Float       // 期間内のランクに基づくスコア (浮動小数点数)スコアリング方法を検討 (例: 1位=3点, 2位=2点, 3位=1点 の合計)
+  period         TrendPeriod // 集計期間
+  calculationDate DateTime    // 集計実行日
+
+  // 同じ日の同じ期間の同じアイテム名は重複しないようにしたいが、表記ゆれを考えると難しいので検討
+  // @@unique([itemName, period, calculationDate])
+  // アイテム名での検索とトレンド表示用にインデックスを貼る
+  @@index([itemName])
+  @@index([period, calculationDate, rankScore(sort: Desc)])
 }
 
 model Post {
