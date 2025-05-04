@@ -16,7 +16,7 @@ export default function TrendingSubjects({
   subjects,
   isLoading,
   isError
-}: Props) {
+}: Props) { 
   if (isLoading) return <p>Loading…</p>;
   if (isError)   return <p>Error</p>;
 
