@@ -1,4 +1,3 @@
-// app/trends/page.tsx
 "use client";
 
 import { useState } from "react";
@@ -14,66 +13,60 @@ import {
 } from "@/components/hooks/useTrends";
 
 export default function TrendsPage() {
-  // ① 大項目タブ：new / weekly / monthly
   const [section, setSection] = useState<"new" | "weekly" | "monthly">("new");
-  // ② 小項目タブ：titles / tags / items
-  const [category, setCategory] = useState<"titles" | "tags" | "items">(
-    "titles"
-  );
+  const [category, setCategory] = useState<"titles" | "tags" | "items">("titles");
 
-  // ── データ取得フック ──
-  const newList = useNewList();
-  const weeklySubjects = useTrendingSubjects("WEEKLY");
+  const newList         = useNewList();
+  const weeklySubjects  = useTrendingSubjects("WEEKLY");
   const monthlySubjects = useTrendingSubjects("MONTHLY");
-  const weeklyTags = useTrendingTags("WEEKLY");
-  const monthlyTags = useTrendingTags("MONTHLY");
-  const weeklyItems = useTrendingItems("WEEKLY");
-  const monthlyItems = useTrendingItems("MONTHLY");
+  const weeklyTags      = useTrendingTags("WEEKLY");
+  const monthlyTags     = useTrendingTags("MONTHLY");
+  const weeklyItems     = useTrendingItems("WEEKLY");
+  const monthlyItems    = useTrendingItems("MONTHLY");
 
   return (
-    <div className='p-4 space-y-6'>
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
       {/* 大タブ */}
-      <div className='flex space-x-4'>
-        {["new", "weekly", "monthly"].map((key) => (
+      <div className="flex space-x-6 border-b">
+        {["new","weekly","monthly"].map((key) => (
           <button
             key={key}
-            className={section === key ? "font-bold" : ""}
             onClick={() => setSection(key as any)}
+            className={`pb-2 ${
+              section === key
+                ? "border-b-2 border-primary text-primary font-semibold"
+                : "text-muted-foreground"
+            }`}
           >
-            {key === "new"
-              ? "新着"
-              : key === "weekly"
-              ? "週間トレンド"
-              : "月間トレンド"}
+            {key === "new" ? "新着" : key === "weekly" ? "週間" : "月間"}
           </button>
         ))}
       </div>
 
-      {/* 小タブ：新着は “titles” 固定 */}
+      {/* 小タブ（週間／月間のみ） */}
       {section !== "new" && (
-        <div className='flex space-x-4'>
-          <button
-            onClick={() => setCategory("titles")}
-            className={category === "titles" ? "font-bold" : ""}
-          >
-            タイトル
-          </button>
-          <button
-            onClick={() => setCategory("tags")}
-            className={category === "tags" ? "font-bold" : ""}
-          >
-            タグ
-          </button>
-          <button
-            onClick={() => setCategory("items")}
-            className={category === "items" ? "font-bold" : ""}
-          >
-            アイテム
-          </button>
+        <div className="flex space-x-4">
+          {[
+            ["titles","タイトル"],
+            ["tags","タグ"],
+            ["items","アイテム"],
+          ].map(([val,label]) => (
+            <button
+              key={val}
+              onClick={() => setCategory(val as any)}
+              className={`pb-1 ${
+                category === val
+                  ? "border-b-2 border-primary text-primary font-medium"
+                  : "text-muted-foreground"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
         </div>
       )}
 
-      {/* コンテンツ表示 */}
+      {/* コンテンツ */}
       <div>
         {section === "new" && <NewList {...newList} />}
 
