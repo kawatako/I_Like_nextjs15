@@ -1,4 +1,3 @@
-// components/component/trends/NewList.tsx
 import React from "react";
 
 export interface NewListEntry {
@@ -13,21 +12,21 @@ interface Props {
   isError: any;
 }
 
-export default function NewList({
-  lists,
-  isLoading,
-  isError
-}: Props) {
+export default function NewList({ lists, isLoading, isError }: Props) {
   if (isLoading) return <p>Loading…</p>;
   if (isError)   return <p>Error</p>;
 
   return (
-    <ul>
-      {lists.map((item: NewListEntry, idx: number) => (
-        <li key={item.id /* id があるのでこちらをキーに */}>
-          <strong>{item.subject}</strong>
-          <br />
-          <small>{new Date(item.createdAt).toLocaleString()}</small>
+    <ul className="space-y-4">
+      {lists.map((item) => (
+        <li
+          key={item.id}
+          className="rounded-lg shadow-sm bg-white p-4 hover:bg-gray-50 hover:shadow-lg transition-shadow"
+        >
+          <h3 className="font-bold text-base">{item.subject}</h3>
+          <div className="text-sm text-muted-foreground mt-1">
+            {new Date(item.createdAt).toLocaleString()}
+          </div>
         </li>
       ))}
     </ul>
