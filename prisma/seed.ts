@@ -12,6 +12,10 @@ import {
   Retweet,
   Like,
   RankedItem, // モデル型
+  TrendPeriod,
+  TrendingSubject,
+  TrendingTag,
+  TrendingItem,
 } from "@prisma/client";
 import { fakerJA as faker } from "@faker-js/faker";
 
@@ -31,7 +35,7 @@ function createItemsData(itemNames: string[], descriptions?: string[]) {
 async function main() {
   console.log(`Start seeding ...`);
 
-  // --- 1. 既存データの削除 (変更なし) ---
+  // --- 1. 既存データの削除 
   console.log("Deleting existing data...");
   await prisma.like.deleteMany();
   await prisma.retweet.deleteMany();
@@ -160,6 +164,39 @@ async function main() {
   console.log(
     `Created <span class="math-inline">\{createdRankingLists\.length\} ranking lists \(</span>{publishedLists.length} published).`
   );
+
+  //追加のトレンドデータ
+console.log("Creating 100 dummy ranking lists…");
+const subjectsPool = Array.from({ length: 10 }, () => faker.lorem.words(2));
+const allPublishedLists: { id: string; subject: string; createdAt: Date }[] = [];
+
+for (let i = 0; i < 100; i++) {
+  const author = faker.helpers.arrayElement([userA, userB, userC, userkawa]);
+  const subject = faker.helpers.arrayElement(subjectsPool);
+  const createdAt = faker.date.recent({ days: 30 });
+  const status = ListStatus.PUBLISHED;
+  const list = await prisma.rankingList.create({
+    data: {
+      subject,
+      authorId: author.id,
+      status,
+      createdAt,
+      updatedAt: createdAt,
+      items: {
+        create: Array.from(
+          { length: faker.number.int({ min: 3, max: 10 }) },
+          (_, idx) => ({
+            itemName: faker.commerce.productName(),
+            rank: idx + 1,
+          })
+        ),
+      },
+    },
+    include: { items: true },
+  });
+  allPublishedLists.push({ id: list.id, subject, createdAt });
+}
+console.log("→ created", allPublishedLists.length, "lists");
 
   // --- 4. 投稿作成 ---
   console.log("Creating posts...");
@@ -509,7 +546,104 @@ async function main() {
     console.error("Error creating like data:", error);
   }
 
+  console.log("Seeding TrendingSubject / TrendingTag / TrendingItem…");
+// 週次 SUBJECT
+await prisma.$executeRawUnsafe(`
+  INSERT INTO public."TrendingSubject"
+    ("id", "subject", "count", "period", "calculationDate")
+  SELECT
+    gen_random_uuid()                          AS "id",
+    rl.subject                                 AS "subject",
+    COUNT(*)                                   AS "count",
+    '${TrendPeriod.WEEKLY}'::"TrendPeriod"     AS "period",
+    date_trunc('day', now())                   AS "calculationDate"
+  FROM public."RankingList" AS rl
+  WHERE rl.status = 'PUBLISHED'
+    AND rl."createdAt" >= now() - INTERVAL '7 days'
+  GROUP BY rl.subject;
+`);
+
+// 月次 SUBJECT
+await prisma.$executeRawUnsafe(`
+  INSERT INTO public."TrendingSubject"
+    ("id", "subject", "count", "period", "calculationDate")
+  SELECT
+    gen_random_uuid()                          AS "id",
+    rl.subject                                 AS "subject",
+    COUNT(*)                                   AS "count",
+    '${TrendPeriod.MONTHLY}'::"TrendPeriod"    AS "period",
+    date_trunc('day', now())                   AS "calculationDate"
+  FROM public."RankingList" AS rl
+  WHERE rl.status = 'PUBLISHED'
+    AND rl."createdAt" >= now() - INTERVAL '30 days'
+  GROUP BY rl.subject;
+`);
+
+// 週次 TAG
+await prisma.$executeRawUnsafe(`
+  INSERT INTO public."TrendingTag"
+    ("id", "tagId", "tagName", "count", "period", "calculationDate")
+  SELECT
+    gen_random_uuid()                          AS "id",
+    t.id                                       AS "tagId",
+    t.name                                     AS "tagName",
+    COUNT(*)                                   AS "count",
+    '${TrendPeriod.WEEKLY}'::"TrendPeriod"     AS "period",
+    date_trunc('day', now())                   AS "calculationDate"
+  FROM public."_RankingListTags" AS p
+    JOIN public."Tag"         AS t  ON t.id = p."B"
+    JOIN public."RankingList" AS rl ON rl.id = p."A"
+  WHERE rl.status = 'PUBLISHED'
+    AND rl."createdAt" >= now() - INTERVAL '7 days'
+  GROUP BY
+    t.id,
+    t.name;
+`);
+
+// 週次 ITEM
+await prisma.$executeRawUnsafe(`
+  INSERT INTO public."TrendingItem"
+    ("id", "itemName", "rankScore", "period", "calculationDate")
+  SELECT
+    gen_random_uuid()                                  AS "id",
+    ri."itemName"                                      AS "itemName",
+    SUM(
+      CASE
+        WHEN ri.rank = 1 THEN 3
+        WHEN ri.rank = 2 THEN 2
+        ELSE 1
+      END
+    )::float                                           AS "rankScore",
+    '${TrendPeriod.WEEKLY}'::"TrendPeriod"             AS "period",
+    date_trunc('day', now())                           AS "calculationDate"
+  FROM public."RankedItem"   AS ri
+    JOIN public."RankingList" AS rl ON rl.id = ri."listId"
+  WHERE rl.status = 'PUBLISHED'
+    AND rl."createdAt" >= now() - INTERVAL '7 days'
+  GROUP BY
+    ri."itemName";
+`);
   console.log(`Seeding finished.`);
+
+    // --- 11. AverageItemRank シード (全期間) ---
+    console.log("Seeding AverageItemRank...");
+    await prisma.$executeRawUnsafe(`
+      INSERT INTO public."AverageItemRank"
+        (id, subject, "itemName", "avgRank", count, "calculationDate")
+      SELECT
+        gen_random_uuid()          AS "id",
+        rl.subject                 AS "subject",
+        ri."itemName"              AS "itemName",      
+        ROUND(AVG(ri.rank)::numeric, 2) AS "avgRank",
+        COUNT(*) AS count,
+        date_trunc('day', NOW()) AS "calculationDate"
+      FROM public."RankedItem" ri
+      JOIN public."RankingList" rl ON rl.id = ri."listId"
+      WHERE rl.status = 'PUBLISHED'
+      GROUP BY rl.subject, ri."itemName"
+      ORDER BY rl.subject, AVG(ri.rank)
+    `);
+    console.log("AverageItemRank seeded.");
 } // --- main 関数の終わり ---
 
 main()
@@ -521,3 +655,5 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
+
+

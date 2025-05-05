@@ -40,20 +40,19 @@ enum FeedType {
 //トレンド集計期間を表す
 enum TrendPeriod {
   //DAILY   // 日次　リクエストが膨大になるので保留
-  WEEKLY  // 週次
+  WEEKLY // 週次
   MONTHLY // 月次
   //ALL_TIME // 総合期間　リクエスト数が膨大になるので保留
 }
 
-// ★★★ Tag モデルを新規追加 ★★★
+// ★★★ Tag モデル ★★★
 model Tag {
-  id             String        @id @default(cuid())
-  name           String        @unique // タグ名はユニーク
-  rankingLists   RankingList[] @relation("RankingListTags") // RankingList との多対多
-  createdAt      DateTime      @default(now())
+  id            String        @id @default(cuid())
+  name          String        @unique // タグ名はユニーク
+  rankingLists  RankingList[] @relation("RankingListTags") // RankingList との多対多
+  createdAt     DateTime      @default(now())
+  trendingStats TrendingTag[] @relation("TagToTrendingTag")
 
-  // ★ この Tag のトレンド集計結果へのリレーション (Tag削除時に一緒に消える) ★
-  trendingStats  TrendingTag[] // onDelete: Cascade はリレーションフィールドには直接書けない(モデル側で設定)
   @@index([name]) // 名前での検索を考慮
 }
 
@@ -79,27 +78,27 @@ model User {
   rankingLists           RankingList[] // User が作成したランキングリスト
   sentFollowRequests     FollowRequest[] @relation("SentRequests")
   receivedFollowRequests FollowRequest[] @relation("ReceivedRequests")
-  feedItems               FeedItem[]
-  retweets               Retweet[]   
+  feedItems              FeedItem[]
+  retweets               Retweet[]
 }
 
 // ランキングリストを表すモデル
 model RankingList {
-  id           String     @id @default(cuid())
+  id           String       @id @default(cuid())
   subject      String
   description  String?
-  status       ListStatus @default(DRAFT) // 公開状態 (デフォルトは下書き)
+  status       ListStatus   @default(DRAFT) // 公開状態 (デフォルトは下書き)
   listImageUrl String?
-  authorId String
-  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  items RankedItem[]
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  authorId     String
+  author       User         @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  items        RankedItem[]
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
   displayOrder Int?
-  feedItems      FeedItem[]
-  likes          Like[]     // このランキングに付けられた「いいね」
-  likeCount      Int        @default(0) // いいねカウンター
-  tags          Tag[]      @relation("RankingListTags")
+  feedItems    FeedItem[]
+  likes        Like[] // このランキングに付けられた「いいね」
+  likeCount    Int          @default(0) // いいねカウンター
+  tags         Tag[]        @relation("RankingListTags")
 
   @@index([subject])
   @@index([authorId])
@@ -125,69 +124,80 @@ model RankedItem {
   @@index([listId, rank])
 }
 
-//人気ランキングタイトル（Subject）集計結果モデル
+/// ─── トレンド集計モデル ───────────────────────────────────────────
+
+// 人気ランキングタイトル（Subject）集計結果
 model TrendingSubject {
-  id             String      @id @default(cuid())
-  subject        String      // ランキングタイトル
-  count          Int         // 期間内の作成（または公開）された数
-  period         TrendPeriod // 集計期間 (DAILY, WEEKLY, MONTHLY)
-  calculationDate DateTime   // 集計が実行された日付 (その日の0時など)
+  id              String      @id @default(cuid())
+  subject         String // ランキングタイトル
+  count           Int // 期間内の作成（または公開）された数
+  period          TrendPeriod // 集計期間
+  calculationDate DateTime // 集計実行日
 
-  @@unique([subject, period, calculationDate])    // 同じ日の同じ期間の同じタイトルは重複しないように
-  @@index([period, calculationDate, count(sort: Desc)])   // トレンド表示用にインデックスを貼る (期間、日付で絞り込み、カウントでソート)
+  @@unique([subject, period, calculationDate])
+  @@index([period, calculationDate, count(sort: Desc)])
 }
 
-//トレンドタグ　集計結果モデル
+// トレンドタグ　集計結果
 model TrendingTag {
-  id             String      @id @default(cuid())
-  tagId          String      // Tag モデルへの参照ID
-  tagName        String      // Tag 名 (表示用に非正規化)
-  count          Int         // 期間内の使用回数
-  period         TrendPeriod // 集計期間
-  calculationDate DateTime    // 集計実行日
+  id              String      @id @default(cuid())
+  tagId           String // Tag モデルへの参照ID
+  tag             Tag         @relation("TagToTrendingTag", fields: [tagId], references: [id], onDelete: Cascade)
+  tagName         String // 表示用に非正規化
+  count           Int // 期間内の使用回数
+  period          TrendPeriod // 集計期間
+  calculationDate DateTime // 集計実行日
 
-  tag            Tag         @relation(fields: [tagId], references: [id], onDelete: Cascade)    // Tag モデルへのリレーション
-
-  @@unique([tagId, period, calculationDate])    // 同じ日の同じ期間の同じタグは重複しないように
-  @@index([period, calculationDate, count(sort: Desc)])   // トレンド表示用にインデックスを貼る
+  @@unique([tagId, period, calculationDate])
+  @@index([period, calculationDate, count(sort: Desc)])
 }
 
-//注目アイテム（RankedItem の itemName）集計結果モデル
+// 注目アイテム（RankedItem の itemName）集計結果
 model TrendingItem {
-  id             String      @id @default(cuid())
-  itemName       String      // アイテム名 (表記ゆれ問題あり)
-  rankScore      Float       // 期間内のランクに基づくスコア (浮動小数点数)スコアリング方法を検討 (例: 1位=3点, 2位=2点, 3位=1点 の合計)
-  period         TrendPeriod // 集計期間
-  calculationDate DateTime    // 集計実行日
+  id              String      @id @default(cuid())
+  itemName        String // アイテム名
+  rankScore       Float // スコア
+  period          TrendPeriod // 集計期間
+  calculationDate DateTime // 集計実行日
 
-  // 同じ日の同じ期間の同じアイテム名は重複しないようにしたいが、表記ゆれを考えると難しいので検討
-  // @@unique([itemName, period, calculationDate])
-  // アイテム名での検索とトレンド表示用にインデックスを貼る
   @@index([itemName])
   @@index([period, calculationDate, rankScore(sort: Desc)])
+}
+
+// 平均順位（全期間）
+model AverageItemRank {
+  id              String   @id @default(cuid())
+  subject         String
+  itemName        String
+  avgRank         Float // 平均順位
+  count           Int // 出現回数
+  calculationDate DateTime
+
+  @@index([subject])
+  @@index([calculationDate])
 }
 
 model Post {
   id        String     @id @default(cuid())
   content   String
-  imageUrl String?
+  imageUrl  String?
   author    User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId  String
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   replies   Reply[]
-  feedItems  FeedItem[]
-  likes      Like[]     // この投稿に付けられた「いいね」
-  likeCount  Int        @default(0) // いいねカウンター
+  feedItems FeedItem[]
+  likes     Like[] // この投稿に付けられた「いいね」
+  likeCount Int        @default(0) // いいねカウンター
 
   @@index([authorId])
 }
 
 model Retweet {
   id         String   @id @default(cuid())
-  userId     String   // リツイートしたユーザーのID (User.id)
+  userId     String // リツイートしたユーザーのID (User.id)
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  feedItemId String   // リツイートされた FeedItem の ID
+  feedItemId String // リツイートされた FeedItem の ID
   feedItem   FeedItem @relation(fields: [feedItemId], references: [id], onDelete: Cascade)
   createdAt  DateTime @default(now())
 
@@ -203,28 +213,29 @@ model FeedItem {
   type      FeedType // この FeedItem の種類 (投稿、ランキング更新など)
   createdAt DateTime @default(now()) // 作成日時 (タイムラインの並び順の基準)
   updatedAt DateTime @updatedAt // 更新日時 (いいね数やRT数などの更新用に)
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   // 関連するデータへの参照 (タイプに応じていずれか、または複数が設定される)
-  postId              String?
-  post                Post?       @relation(fields: [postId], references: [id], onDelete: SetNull)
-  rankingListId       String?
-  rankingList         RankingList? @relation(fields: [rankingListId], references: [id], onDelete: SetNull)
+  postId        String?
+  post          Post?        @relation(fields: [postId], references: [id], onDelete: SetNull)
+  rankingListId String?
+  rankingList   RankingList? @relation(fields: [rankingListId], references: [id], onDelete: SetNull)
 
-  retweetOfFeedItemId String?     // リツイート元の FeedItem ID (Optional)
-  retweetOfFeedItem   FeedItem?     @relation("RetweetOrigin", fields: [retweetOfFeedItemId], references: [id], onDelete: SetNull, map: "retweet_of_feed_item_id") // リツイート元への参照
-  retweetedByItems    FeedItem[]    @relation("RetweetOrigin") // この FeedItem をリツイートしている FeedItem (type: RETWEET) のリスト
+  retweetOfFeedItemId String? // リツイート元の FeedItem ID (Optional)
+  retweetOfFeedItem   FeedItem?  @relation("RetweetOrigin", fields: [retweetOfFeedItemId], references: [id], onDelete: SetNull, map: "retweet_of_feed_item_id") // リツイート元への参照
+  retweetedByItems    FeedItem[] @relation("RetweetOrigin") // この FeedItem をリツイートしている FeedItem (type: RETWEET) のリスト
 
-  retweets            Retweet[]
+  retweets Retweet[]
 
   // --- 引用リツイート関連 (修正) ---
-  quotedFeedItemId    String?     // 引用元の FeedItem ID (Optional)
-  quotedFeedItem      FeedItem?     @relation("QuoteOrigin", fields: [quotedFeedItemId], references: [id], onDelete: SetNull, map: "quoted_feed_item_id") // 引用元への参照
-  quotedByItems       FeedItem[]    @relation("QuoteOrigin") // この FeedItem を引用している FeedItem (type: QUOTE_RETWEET) のリスト
+  quotedFeedItemId String? // 引用元の FeedItem ID (Optional)
+  quotedFeedItem   FeedItem?  @relation("QuoteOrigin", fields: [quotedFeedItemId], references: [id], onDelete: SetNull, map: "quoted_feed_item_id") // 引用元への参照
+  quotedByItems    FeedItem[] @relation("QuoteOrigin") // この FeedItem を引用している FeedItem (type: QUOTE_RETWEET) のリスト
 
-  quoteRetweetCount   Int           @default(0) // 引用された数
+  quoteRetweetCount Int @default(0) // 引用された数
 
+  @@unique([rankingListId, type])
   // --- インデックス (変更なし) ---
   @@index([userId, createdAt(sort: Desc)])
   @@index([createdAt(sort: Desc)])
@@ -232,20 +243,19 @@ model FeedItem {
   @@index([rankingListId])
   @@index([retweetOfFeedItemId])
   @@index([quotedFeedItemId])
-  @@unique([rankingListId, type])
 }
 
 model Like {
-  id            String        @id @default(cuid())
-  userId        String        // いいねしたユーザーの ID (User.id)
-  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt     DateTime      @default(now())
+  id        String   @id @default(cuid())
+  userId    String // いいねしたユーザーの ID (User.id)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
 
   // いいね対象への Optional なリレーション (どちらか一つだけセットされる想定)
   postId        String?
-  post          Post?         @relation(fields: [postId], references: [id], onDelete: Cascade)
+  post          Post?        @relation(fields: [postId], references: [id], onDelete: Cascade)
   rankingListId String?
-  rankingList   RankingList?  @relation(fields: [rankingListId], references: [id], onDelete: Cascade)
+  rankingList   RankingList? @relation(fields: [rankingListId], references: [id], onDelete: Cascade)
 
   // インデックスは個別に設定
   @@index([postId])
