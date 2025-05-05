@@ -100,3 +100,33 @@ export function useTrendingItems(period: 'WEEKLY' | 'MONTHLY') {
     isError:   error,
   }
 }
+
+
+// --- 平均順位（全期間） ---
+export interface AverageRank {
+  itemName: string
+  avgRank: number
+  count: number
+  calculationDate: string
+}
+export function useAverageItemRank(subject: string) {
+  const key = ['average-item-rank', subject] as const
+  const fetcher = async (): Promise<AverageRank[]> => {
+    const { data, error } = await supabase
+      .from('AverageItemRank')             // ジェネリックは削除
+      .select('itemName,avgRank,count,calculationDate')
+      .eq('subject', subject)
+      .order('avgRank', { ascending: true })
+      .limit(10)
+
+    if (error) throw error
+    return data
+  }
+
+  const { data, error } = useSWR<AverageRank[]>(key, fetcher)
+  return {
+    averageRanks: data ?? [],
+    isLoading:   !error && !data,
+    isError:      error,
+  }
+}

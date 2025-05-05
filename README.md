@@ -123,7 +123,7 @@ FeedItem モデル中心。フォロー中のユーザー (+自分自身) のア
 タブ内容: RankingTab, DraftsTab (共通 ProfileRankingListsClient 使用), FeedTab (ProfileTimelineFeed 使用), RankingLikesTab (LikedRankingListClient 使用), LikesTab (LikedFeedList 使用) を実装中/完了。
 編集: 編集ページ (edit/page.tsx - RSC) と編集フォーム (ProfileEditForm.tsx - Client) を作成中。Server Action (updateProfileAction) は実装済み。フォームからのアクション呼び出しと UI 実装が次のステップ。
 5.8. トレンド機能:
-仕様: 人気タイトル数(月/週)、新着リスト、トレンドタグ数(月/週)、注目アイテムスコア(月/週)。
+仕様: 人気タイトル数(月/週)、新着リスト、トレンドタグ数(月/週)、注目アイテムスコア(月/週)。各ランキングの集計結果(累計)
 方針: バッチ集計 (Supabase Functions/Cron Jobs) + 専用テーブル (TrendingSubject, TrendingTag, TrendingItem, TrendPeriod Enum)。
 状況: DB スキーマ定義完了、マイグレーション済み。集計用 Edge Function と表示 UI は未実装。
 5.9. 検索機能 (計画): タイトル、アイテム名、タグでの部分一致検索、新着順表示。
@@ -151,7 +151,9 @@ LikesTab のクライアントコンポーネント (LikedFeedList) とデータ
 ランキング検索機能の実装。
 通知機能の実装。
 コメント機能の実装。
-サジェスト機能の実装。
+ランキング作成時のサジェスト機能の実装。
+他SNSへのシェアボタン
+関連のランキング
 
 8. 課題・検討事項
 トレンド機能「注目アイテム」のアイテム名表記ゆれへの対応策検討。
