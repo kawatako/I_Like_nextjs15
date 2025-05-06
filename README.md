@@ -59,7 +59,7 @@ Node.js: 20.15.1
 │   │   ├── modals/           # モーダル (RetweetQuoteDialog, QuoteCommentModal)
 │   │   ├── posts/            # 投稿関連 (PostForm, PostDetail)
 │   │   ├── profiles/         # プロフィール関連 (ProfileHeader, ProfileTabsClient, 各リストClient)
-│   │   ├── rankings/         # ランキング関連 (NewRankingForm, RankingEditView, RankingView, EditableRankedItem, LikedRankingListItem)
+│   │   ├── rankings/         # ランキング関連 (NewRankingForm, RankingEditView, RankingDetailView, EditableRankedItem, LikedRankingListItem)
 │   │   └── Icons.tsx         # アイコン集約
 │   └── ui/                   # shadcn/ui コンポーネント
 ├── lib/                      # 共通ロジック、ユーティリティ、サービス
@@ -101,7 +101,7 @@ TrendingSubject / TrendingTag / TrendingItem: 各トレンドの集計結果を�
 5.2. 投稿機能: テキストと画像1枚の投稿に対応。PostForm (Client) + createPostAction (Server Action) + useImageUploader で実装。（実装済み・動作確認済み）
 5.3. ランキング機能:
 作成/編集: NewRankingForm (新規) と RankingEditView (編集) コンポーネントを使用（将来的な統合を検討）ヘッダー画像、アイテム画像の添付に対応（UI 実装済み）。タグ入力 UI をこれから実装。アイテムの DnD 並び替えは実装済み。Server Action (createCompleteRankingAction, saveRankingListItemsAction) は画像 URL 保存に対応済みだが、タグ処理は未実装。
-表示 (詳細): RankingView.tsx で表示。ヘッダー画像、アイテム画像表示に対応済み。タグ表示は未実装。
+表示 (詳細): RankingDetailView.tsx で表示。ヘッダー画像、アイテム画像表示に対応済み。タグ表示は未実装。
 表示 (プロフィール一覧): ProfileRankingListsClient.tsx と SortableListItem.tsx を使用。SWR による無限スクロール、DnD による並び替えに対応済み。「TOP N」表示形式に修正済み。
 5.4. タイムライン機能:
 FeedItem モデル中心。フォロー中のユーザー (+自分自身) のアクティビティを時系列表示。
@@ -139,7 +139,7 @@ UI コンポーネント: CardHeader, ImageUploader, TagInput (これから作�
 タグ入力 UI (TagInput) の作成とフォーム (NewRankingForm, RankingEditView) への組み込み。
 アイテム画像 UI (EditableRankedItem) の実装とフォームへの組み込み。
 Server Actions (createCompleteRankingAction, saveRankingListItemsAction) へのタグ処理ロジック実装と画像 URL 連携の最終確認。
-詳細表示 (RankingView)、一覧表示 (ProfileRankingLists) へのタグ・画像表示追加。
+詳細表示 (RankingDetailView)、一覧表示 (ProfileRankingLists) へのタグ・画像表示追加。
 プロフィール編集機能の完成:
 ProfileEditForm コンポーネントの完成（handleSubmit ロジック）。
 updateProfileAction との連携・動作確認。
