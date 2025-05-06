@@ -1,45 +1,59 @@
 // app/rankings/[listId]/page.tsx
-import { auth } from "@clerk/nextjs/server";
 import Link from "next/link";
+import { auth } from "@clerk/nextjs/server";
 import { notFound } from "next/navigation";
-import { Button } from "@/components/ui/button";
 import { getRankingDetailsForView } from "@/lib/data/rankingQueries";
-import { RankingView } from "@/components/component/rankings/RankingView";
+import { getUserProfileData, getUserDbIdByClerkId } from "@/lib/data/userQueries";
+import { getFollowStatus } from "@/lib/actions/followActions";
+import { ProfileHeader } from "@/components/component/profiles/ProfileHeader";
+import { RankingDetailView } from "@/components/component/rankings/RankingDetailView";
+import { Button } from "@/components/ui/button";
 
-interface RankingDetailPageProps {
-  params: Promise<{
-    listId: string;
-  }>;
+interface Props {
+  params: Promise<{ listId: string }>;
 }
 
-export default async function RankingDetailPage(
-  props: RankingDetailPageProps
-) {
-  const { listId } = await props.params;
-  const { userId: loggedInUserId } = await auth();
+export default async function RankingDetailPage( props: Props) {
+  const { params } = await props
+  const { listId } = await params;
+  // 1) ランキング本体
+  const raw = await getRankingDetailsForView(listId);
+  if (!raw) return notFound();
 
-  // 閲覧用のランキングデータを取得
-  const rankingData = await getRankingDetailsForView(listId);
+  // 2) 投稿者プロフィール（ヘッダー用）
+  const userProfileData = await getUserProfileData(raw.author.username);
+  if (!userProfileData) return notFound();
 
-  // データがない場合や閲覧権限がない場合（例：下書き）は 404
-  if (!rankingData) {
-    notFound();
-  }
+  // 3) isOwner
+  const { userId: clerkUserId } = await auth();
+  const isOwner = clerkUserId === userProfileData.clerkId;
 
-  // 所有者かどうかを判定 (rankingData に creatorId が含まれている必要あり)
-  const isOwner = loggedInUserId === rankingData.author.id;
+  // 4) フォロー状態
+  const followStatusInfo = await getFollowStatus(
+    clerkUserId ? await getUserDbIdByClerkId(clerkUserId) : null,
+    userProfileData.id
+  );
 
   return (
     <>
-      {/* 所有者であれば編集ボタンを表示 */}
+      {/* プロフィールヘッダー */}
+      <ProfileHeader
+        userProfileData={userProfileData}
+        isCurrentUser={isOwner}
+        initialFollowStatus={followStatusInfo}
+      />
+
+      {/* オーナーだけに表示する「編集する」 */}
       {isOwner && (
-        <div className='mb-6 flex justify-end'>
-          <Link href={`/rankings/${listId}/edit`} passHref>
-            <Button variant='outline'>編集する</Button>
+        <div className="mb-4 flex justify-end px-4">
+          <Link href={`/rankings/${listId}/edit`}>
+            <Button variant="outline">編集する</Button>
           </Link>
         </div>
       )}
-      <RankingView ranking={rankingData} />
+
+      {/* ランキング詳細 */}
+      <RankingDetailView ranking={raw} isOwner={isOwner} />
     </>
   );
 }

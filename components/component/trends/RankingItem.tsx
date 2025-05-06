@@ -3,7 +3,7 @@
 
 import React from "react";
 import Image from "next/image";
-import { Trophy } from "lucide-react";
+import { Trophy } from "@/components/component/Icons"; // アイコンのパスを確認
 import { Card, CardContent } from "@/components/ui/card";
 import { AverageRank } from "@/components/hooks/useTrends"
 

@@ -149,16 +149,10 @@ export default function PostForm() {
 
   return (
     <div className='flex space-x-4 p-4 border-b'>
-      <Avatar>
-        {" "}
-        <AvatarImage src={user.imageUrl} />{" "}
-        <AvatarFallback>{/*...*/}</AvatarFallback>{" "}
-      </Avatar>
-      {/* ★ onSubmit ハンドラを設定 ★ */}
       <form ref={formRef} onSubmit={handleSubmit} className='flex-1 space-y-2'>
         <Textarea
           name='content'
-          placeholder='いまどうしてる？'
+          placeholder='投稿してみよう'
           rows={3}
           maxLength={280}
           className='w-full resize-none border-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent'

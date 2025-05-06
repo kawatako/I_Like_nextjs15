@@ -85,21 +85,19 @@ export const rankingListViewSelect = Prisma.validator<Prisma.RankingListSelect>(
   createdAt: true,
   updatedAt: true,
   likeCount: true,
-  likes: { select: { userId: true } },
-  author: { select: userSnippetSelect }, // ★ UserSnippet を使用 ★
-  items: { // 全アイテムを取得
-    orderBy: { rank: "asc" },
-    select: { id: true, rank: true, itemName: true, itemDescription: true, imageUrl: true,createdAt:true,listId: true }
+  author: { select: userSnippetSelect },
+  items: {
+    orderBy: { rank: 'asc' },
+    select: { id: true, rank: true, itemName: true, itemDescription: true, imageUrl: true },
   },
-  tags: { // ★ tags の正しい select 構文 ★
-    select: {
-      id: true, // Tag の ID
-      name: true, // Tag の 名前
-
-    }
+  tags: {
+    select: { id: true, name: true }
   },
-   _count: { select: { items: true } }
-});
+  _count: {
+    select: { items: true}
+  },
+  // comments: { select: { … } } はコメント機能実装後
+})
 
 // --- Nested Feed Item Select (for Retweet/Quote origins) ---
 // ★ ネストされた FeedItem を取得するための Select ★
