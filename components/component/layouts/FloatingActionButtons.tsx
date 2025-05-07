@@ -1,5 +1,5 @@
 // components/component/layouts/FloatingActionButtons.tsx
-"use client"; // Link コンポーネントや将来的な onClick を使うため
+"use client"; 
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button"; // shadcn/ui の Button

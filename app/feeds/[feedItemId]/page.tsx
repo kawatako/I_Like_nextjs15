@@ -10,11 +10,11 @@ import RetweetCard from "@/components/component/feeds/cards/RetweetCard";
 import QuoteRetweetCard from "@/components/component/feeds/cards/QuoteRetweetCard";
 
 interface FeedDetailPageProps {
-  params: {feedItemId: string};
+  params: Promise<{feedItemId: string}>;
 }
 
 export default async function FeedDetailPage({ params }: FeedDetailPageProps) {
-  const { feedItemId } =  params;
+  const { feedItemId } =  await params;
   const { userId: clerkId } = await auth(); // ログインユーザーの Clerk ID を取得
 
   // ログインユーザーの DB ID を取得 (いいね判定などに使う)

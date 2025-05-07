@@ -8,6 +8,9 @@ import { Trophy, Heart, MessageCircle, Share2 } from "lucide-react";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import type { RankingListViewData } from "@/lib/types";
+import { UsersIcon, PlusSquareIcon } from '@/components/component/Icons';
+import Link from "next/link";
+
 
 interface Props {
   ranking: RankingListViewData;
@@ -19,6 +22,9 @@ export function RankingDetailView({ ranking, isOwner }: Props) {
 
   return (
     <div className="max-w-4xl mx-auto p-4">
+      <h2 className="text-2xl md:text-3xl font-bold mb-4 text-center sm:text-left"> {/* ヘッダーと同じスタイル例 */}
+         {ranking.subject} <span className="text-xl font-normal text-muted-foreground">TOP {ranking._count?.items ?? 0}</span> {/* TOP N も表示 */}
+      </h2>
       {/* 説明 */}
       {ranking.description && (
         <p className="mb-6 text-muted-foreground">{ranking.description}</p>
@@ -27,7 +33,16 @@ export function RankingDetailView({ ranking, isOwner }: Props) {
       {/* エンゲージメント */}
       <div className="flex gap-4 mb-8 items-center">
         <Heart className="h-5 w-5" /> <span>{ranking.likeCount}</span>
-        <MessageCircle className="h-5 w-5" /> <span>—</span>
+        <MessageCircle className="h-5 w-5" />
+        <Link
+          href={`/trends/average/${encodeURIComponent(ranking.subject)}`} >
+          <UsersIcon className="h-5 w-5" />
+        </Link>
+        <Link
+          href={`/rankings/create`} // クエリパラメータで subject を渡す
+        >
+          <PlusSquareIcon className="h-5 w-5" />
+        </Link>
         <Share2 className="h-5 w-5" />
       </div>
 
