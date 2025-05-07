@@ -1,28 +1,28 @@
 // lib/data/feedQueries.ts
 import prisma from "@/lib/client";
-import { Prisma, FeedItem, User, Post, RankingList, RankedItem, ListStatus, FeedType } from "@prisma/client"; // ★ Prisma と Enum をインポート ★
-import type { UserSnippet, FeedItemWithRelations, PaginatedResponse,RankingListSnippet } from "@/lib/types";
-import {feedItemPayload,rankingListSnippetSelect,userSnippetSelect,postPayload} from "../prisma/payloads"
+import type { PaginatedResponse, FeedItemWithRelations } from "@/lib/types";
+import { feedItemPayload } from "../prisma/payloads";
 
-// ★ ネストされた FeedItem 用 Select (RankingList の select を修正) ★
-const nestedFeedItemSelect = Prisma.validator<Prisma.FeedItemSelect>()({
-  id: true, type: true, createdAt: true, updatedAt: true, userId: true, postId: true, rankingListId: true, quoteRetweetCount: true,
-  user: { select: userSnippetSelect },
-  post: { select: postPayload.select },
-  rankingList: { select: rankingListSnippetSelect },
-  _count: { select: { retweets: true } },
-});
-
-// --- 型定義 ---
-// ★ lib/types.ts で定義・エクスポートするのを推奨 ★
-// export type UserSnippet = Prisma.UserGetPayload<{ select: typeof userSnippetSelect; }>;
-// export type FeedItemWithRelations = Prisma.FeedItemGetPayload<typeof feedItemPayload>;
-// export type PaginatedResponse<T> = { items: T[]; nextCursor: string | null };
-
-// --- 関数本体 ---
 /**
- * 指定されたユーザーのホームタイムラインフィード(「いつ」「誰が」「何をしたか（投稿、ランキング更新、RTなど)を取得する 
+ * Prisma から返ってくる FeedItem ペイロードを、
+ * FeedItemWithRelations の型に合わせて再帰的にマッピングする
  */
+function mapFeedItem(fi: any): FeedItemWithRelations {
+  return {
+    // id, type, createdAt, updatedAt, userId, postId, etc...
+    ...fi,
+    post: fi.post ?? undefined,
+    rankingList: fi.rankingList ?? undefined,
+    // 再帰的にマッピング
+    retweetOfFeedItem: fi.retweetOfFeedItem
+      ? mapFeedItem(fi.retweetOfFeedItem)
+      : undefined,
+    quotedFeedItem: fi.quotedFeedItem
+      ? mapFeedItem(fi.quotedFeedItem)
+      : undefined,
+  };
+}
+
 export async function getHomeFeed({
   userId,
   limit,
@@ -36,6 +36,7 @@ export async function getHomeFeed({
     console.warn("[getHomeFeed] userId is required.");
     return { items: [], nextCursor: null };
   }
+
   const take = limit + 1;
 
   try {
@@ -44,64 +45,50 @@ export async function getHomeFeed({
       select: { followingId: true },
     });
     const followingIds = following.map((f) => f.followingId);
-    const targetUserIds = followingIds;
 
-    const feedItems = await prisma.feedItem.findMany({
-      where: {
-        userId: { in: targetUserIds },
-        // NOT: { userId: userId, type: FeedType.RETWEET } // 自分のRT非表示
-      },
-      select: feedItemPayload.select, // ★ select を使用 ★
+    const rawItems = await prisma.feedItem.findMany({
+      where: { userId: { in: followingIds } },
+      select: feedItemPayload.select,
       orderBy: { createdAt: "desc" },
-      take: take,
+      take,
       skip: cursor ? 1 : 0,
       cursor: cursor ? { id: cursor } : undefined,
     });
 
     let nextCursor: string | null = null;
-    if (feedItems.length > limit) {
-      const nextItem = feedItems.pop();
-      nextCursor = nextItem!.id;
+    if (rawItems.length > limit) {
+      const nxt = rawItems.pop();
+      nextCursor = nxt?.id ?? null;
     }
-    return { items: feedItems, nextCursor };
 
+    const items = rawItems.map(mapFeedItem);
+
+    return { items, nextCursor };
   } catch (error) {
     console.error("[getHomeFeed] Error fetching home feed:", error);
     return { items: [], nextCursor: null };
   }
 }
 
-/**
- * 指定された FeedItem ID に基づいて、関連データを含む詳細情報を取得する
- * @param feedItemId 詳細を取得したい FeedItem の ID
- * @returns FeedItemWithRelations 型のオブジェクト、または null (見つからない場合)
- */
-export async function getFeedItemDetails(feedItemId: string): Promise<FeedItemWithRelations | null> {
-  console.log(`[FeedQueries] Fetching details for FeedItem: ${feedItemId}`);
+export async function getFeedItemDetails(
+  feedItemId: string
+): Promise<FeedItemWithRelations | null> {
   if (!feedItemId) {
     console.warn("[getFeedItemDetails] feedItemId is required.");
     return null;
   }
 
   try {
-    const feedItem = await prisma.feedItem.findUnique({
+    const fi = await prisma.feedItem.findUnique({
       where: { id: feedItemId },
-      // ★ feedItemPayload で定義した select/include をそのまま使う ★
-      //    これにより、表示に必要な関連データ (user, post, rankingList, counts, likes etc.) が含まれる
-      select: feedItemPayload.select, // select を使う場合
-      // include: feedItemPayload.include, // include を使う場合
+      select: feedItemPayload.select,
     });
-
-    if (!feedItem) {
-      console.log(`[FeedQueries] FeedItem not found: ${feedItemId}`);
+    if (!fi) {
       return null;
     }
-
-    console.log(`[FeedQueries] Successfully fetched details for FeedItem: ${feedItemId}`);
-    return feedItem as FeedItemWithRelations; // 必要であれば型アサーション
-
+    return mapFeedItem(fi);
   } catch (error) {
-    console.error(`[FeedQueries] Error fetching details for FeedItem ${feedItemId}:`, error);
+    console.error("[getFeedItemDetails] Error fetching details:", error);
     return null;
   }
 }

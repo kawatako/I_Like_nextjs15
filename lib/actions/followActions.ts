@@ -2,28 +2,17 @@
 "use server";
 
 import prisma from "@/lib/client";
-import { Prisma, FollowRequestStatus } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { getUserDbIdByClerkId } from "@/lib/data/userQueries";
 import { revalidatePath } from "next/cache";
 import { auth } from "@clerk/nextjs/server";
-import { PaginatedResponse, ActionResult } from "../types";
-import type { UserSnippet } from "@/lib/types";
+import { PaginatedResponse, FollowActionResult,UserSnippet,FollowRequestWithRequester } from "../types";
 import { userSnippetSelect } from "@/lib/prisma/payloads";
 
-// フォローリクエストの型定義 (変更なし)
-const followRequestWithRequesterPayload =
-  Prisma.validator<Prisma.FollowRequestDefaultArgs>()({
-    include: {
-      requester: { select: userSnippetSelect }, // リクエスター情報を含める
-    },
-  });
-
-export type FollowRequestWithRequester = Prisma.FollowRequestGetPayload<
-  typeof followRequestWithRequesterPayload
->;
-
-type FollowActionResult = ActionResult & { status?: "following" | "requested" | "not_following" | "error"; };
-
+// フォローリクエストの型定義
+const followRequestWithRequesterPayload = {
+  include: { requester: { select: userSnippetSelect } }
+} as const;
 
 //[PAGINATED] 指定されたユーザーがフォローしているユーザー一覧 (カーソルベース)
 export async function getPaginatedFollowing({
@@ -58,8 +47,8 @@ export async function getPaginatedFollowing({
       const nextItem = follows.pop();
       nextCursor = nextItem?.id ?? null; // ★ 次のカーソルとして ID を使用 ★
     }
-
-    const items = follows.map((follow) => follow.following); // ← エラーが解消されるはず
+    type FollowRecord = { id: string; following: UserSnippet };
+    const items = follows.map((follow: FollowRecord) => follow.following); // ← エラーが解消されるはず
     return { items, nextCursor };
   } catch (error) {
     /* ... エラーハンドリング ... */ return { items: [], nextCursor: null };
@@ -99,8 +88,8 @@ export async function getPaginatedFollowers({
       const nextItem = follows.pop();
       nextCursor = nextItem?.id ?? null; // ★ 次のカーソルとして ID を使用 ★
     }
-
-    const items = follows.map((follow) => follow.follower); // ← エラーが解消されるはず
+    type FollowerRecord = { id: string; follower: UserSnippet };
+    const items = follows.map((follow: FollowerRecord) => follow.follower);
     return { items, nextCursor };
   } catch (error) {
     /* ... エラーハンドリング ... */ return { items: [], nextCursor: null };
@@ -124,7 +113,7 @@ export async function getPaginatedReceivedFollowRequests({
     const requests = await prisma.followRequest.findMany({
       where: {
         requestedId: targetUserId,
-        status: FollowRequestStatus.PENDING,
+        status: "PENDING",
       },
       include: followRequestWithRequesterPayload.include,
       orderBy: {
@@ -171,13 +160,13 @@ export async function acceptFollowRequestAction(
 
   try {
     // データベース操作をトランザクション内で実行し、整合性を保つ
-    const result = await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // 1. 承認対象のリクエストを取得 (自分が申請先で、かつ PENDING のもの)
       const request = await tx.followRequest.findUnique({
         where: {
           id: requestId,
           requestedId: loggedInUserDbId, // 自分がリクエストされていることを確認
-          status: FollowRequestStatus.PENDING, // 申請中であることを確認
+          status: "PENDING", // 申請中であることを確認
         },
         select: {
           // フォローレコード作成に必要なIDと、キャッシュ再検証用のユーザー名を取得
@@ -203,7 +192,7 @@ export async function acceptFollowRequestAction(
           // status: FollowRequestStatus.PENDING,
         },
         data: {
-          status: FollowRequestStatus.ACCEPTED,
+          status: "ACCEPTED",
           updatedAt: new Date(),
         },
       });
@@ -281,10 +270,10 @@ export async function rejectFollowRequestAction(
       where: {
         id: requestId,
         requestedId: loggedInUserDbId, // 自分がリクエストされている
-        status: FollowRequestStatus.PENDING, // 申請中である
+        status: "PENDING", // 申請中である
       },
       data: {
-        status: FollowRequestStatus.REJECTED,
+        status: "REJECTED",
         updatedAt: new Date(),
       },
     });
@@ -394,10 +383,10 @@ export async function getFollowStatus(
     const follow = await prisma.follow.findUnique({ where: { followerId_followingId: { followerId: loggedInUserId, followingId: targetUserId } } });
     if (follow) return { ...baseInfo, status: "FOLLOWING" };
 
-    const sentRequest = await prisma.followRequest.findFirst({ where: { requesterId: loggedInUserId, requestedId: targetUserId, status: FollowRequestStatus.PENDING } });
+    const sentRequest = await prisma.followRequest.findFirst({ where: { requesterId: loggedInUserId, requestedId: targetUserId, status: "PENDING" } });
     if (sentRequest) return { ...baseInfo, status: "REQUEST_SENT" };
 
-    const receivedRequest = await prisma.followRequest.findFirst({ where: { requesterId: targetUserId, requestedId: loggedInUserId, status: FollowRequestStatus.PENDING } });
+    const receivedRequest = await prisma.followRequest.findFirst({ where: { requesterId: targetUserId, requestedId: loggedInUserId, status: "PENDING" } });
     if (receivedRequest) return { ...baseInfo, status: "REQUEST_RECEIVED" };
 
     // TODO: 拒否された状態やブロック状態のチェックをここに追加する場合
@@ -474,7 +463,7 @@ export async function followUserAction(
           requesterId: loggedInUserDbId,
           requestedId: targetUserDbId,
         },
-        status: FollowRequestStatus.PENDING,
+        status: "PENDING",
       },
     });
     if (existingRequest) {
@@ -491,7 +480,7 @@ export async function followUserAction(
           requesterId: loggedInUserDbId,
           requestedId: targetUserDbId,
         },
-        status: FollowRequestStatus.REJECTED,
+        status: "REJECTED",
       },
     });
     if (rejectedRequest) {
@@ -540,7 +529,7 @@ export async function followUserAction(
         data: {
           requesterId: loggedInUserDbId,
           requestedId: targetUserDbId,
-          status: FollowRequestStatus.PENDING, // デフォルトだが明示
+          status: "PENDING", // デフォルトだが明示
         },
       });
       console.log(
@@ -674,7 +663,7 @@ export async function cancelFollowRequestAction(
       where: {
         requesterId: loggedInUserDbId,
         requestedId: targetUserDbId,
-        status: FollowRequestStatus.PENDING,
+        status: "PENDING",
       },
     });
 

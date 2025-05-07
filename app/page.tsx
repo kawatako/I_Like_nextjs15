@@ -12,8 +12,6 @@ export default async function Home() {
     redirect("/sign-in");
   }
 
-  // ★ LeftSidebar 用のデータ取得は layout.tsx に移ったが、
-  //    MainContentForHome (中のPostFormなど) が別途必要とするなら残す ★
   const currentLoginUserData = await getCurrentLoginUserData(clerkId);
   if (!currentLoginUserData?.id || !currentLoginUserData?.username) {
     console.error("ログインユーザーのDB情報が見つかりません。");
@@ -21,7 +19,6 @@ export default async function Home() {
   }
   const userDbId = currentLoginUserData.id;
 
-  // タイムラインデータ取得 (変更なし)
   const initialLimit = 20;
   let initialFeedItems: FeedItemWithRelations[] = [];
   let initialNextCursor: string | null = null;

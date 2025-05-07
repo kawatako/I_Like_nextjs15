@@ -1,6 +1,100 @@
 // components/Icons.tsx
 import { SVGProps } from "react";
 
+export const MapPinIcon = (props: SVGProps<SVGSVGElement>) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={2}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    {...props}
+  >
+    <path d="M21 10c0 6-9 13-9 13S3 16 3 10a9 9 0 1 1 18 0z" />
+    <circle cx={12} cy={10} r={3} />
+  </svg>
+);
+
+export const CakeIcon = (props: SVGProps<SVGSVGElement>) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={2}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    {...props}
+  >
+    <path d="M12 2v6" />
+    <path d="M5 8h14v13H5z" />
+    <path d="M5 15h14" />
+    <path d="M8 8v-1a2 2 0 0 1 4 0v1" />
+  </svg>
+);
+
+export const LinkIcon = (props: SVGProps<SVGSVGElement>) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={2}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    {...props}
+  >
+    <path d="M10 13a5 5 0 0 1 0-7.07l1.41-1.41a5 5 0 0 1 7.07 7.07l-1.41 1.41" />
+    <path d="M14 11a5 5 0 0 1 0 7.07l-1.41 1.41a5 5 0 0 1-7.07-7.07l1.41-1.41" />
+  </svg>
+);
+
+export const TwitterIcon = (props: SVGProps<SVGSVGElement>) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={2}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    {...props}
+  >
+    <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z" />
+  </svg>
+);
+
+export const InstagramIcon = (props: SVGProps<SVGSVGElement>) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={2}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    {...props}
+  >
+    <rect x={2} y={2} width={20} height={20} rx={5} ry={5} />
+    <path d="M16 11.37a4 4 0 1 1-4.37-4.37 4 4 0 0 1 4.37 4.37z" />
+    <line x1={17.5} y1={6.5} x2={17.5} y2={6.5} />
+  </svg>
+);
+
+export const TikTokIcon = (props: SVGProps<SVGSVGElement>) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 64 64"
+    fill="currentColor"
+    {...props}
+  >
+    <rect x="8" y="8" width="48" height="12" rx="6" ry="6" />
+    <rect x="28" y="8" width="8" height="48" rx="4" ry="4" />
+  </svg>
+);
+
 export const PlusSquareIcon = (props: SVGProps<SVGSVGElement>) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"

@@ -6,11 +6,20 @@ import { auth } from "@clerk/nextjs/server";
 import prisma from "@/lib/client"; // Prisma Client のパスを確認
 import { getUserDbIdByClerkId } from "@/lib/data/userQueries"; // DB ID 取得関数
 import { revalidatePath } from "next/cache";
-import { Prisma, FeedType } from "@prisma/client";
-import type { ActionResult,PaginatedResponse, RankingListSnippet,FeedItemWithRelations } from "@/lib/types";
+import { Prisma } from "@prisma/client";
+import type {
+  ActionResult,
+  PaginatedResponse,
+  RankingListSnippet,
+  FeedItemWithRelations,
+} from "@/lib/types";
 import { feedItemPayload } from "@/lib/prisma/payloads"; // payloads からインポート
 import { rankingListSnippetSelect } from "@/lib/prisma/payloads"; // payloads.ts からインポート
 
+type LikeRecord = {
+  id: string;
+  rankingList: RankingListSnippet | null;
+};
 
 /**
  * [ACTION] 指定された投稿に「いいね」する
@@ -39,7 +48,7 @@ export async function likePostAction(postId: string): Promise<ActionResult> {
 
   try {
     // 4. データベース操作 (トランザクション)
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // 既にいいね済みか確認 (冪等性のため)
       const existingLike = await tx.like.findFirst({
         where: { userId: userDbId, postId: postId },
@@ -72,14 +81,11 @@ export async function likePostAction(postId: string): Promise<ActionResult> {
     // revalidatePath(`/profile/...`); // プロフィール (いいね一覧など)
 
     return { success: true };
-  } catch (error) {
+  } catch (error:unknown) {
     console.error(`[LikeAction/Post] Error liking Post ${postId}:`, error);
-    // P2002 は findFirst で回避しているが念のため
-    if (
-      error instanceof Prisma.PrismaClientKnownRequestError &&
-      error.code === "P2002"
-    ) {
-      return { success: true }; // 重複は成功扱い
+    // P2002 を直接キャッチしたい場合は any でチェックする
+    if (error instanceof Error && (error as any).code === "P2002") {
+      return { success: true };
     }
     const message =
       error instanceof Error
@@ -105,7 +111,7 @@ export async function unlikePostAction(postId: string): Promise<ActionResult> {
 
   console.log(`[UnlikeAction/Post] User ${userDbId} unliking Post ${postId}`);
   try {
-    const result = await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // a. Like レコードを削除
       const deletedLike = await tx.like.deleteMany({
         where: { userId: userDbId, postId: postId },
@@ -137,7 +143,7 @@ export async function unlikePostAction(postId: string): Promise<ActionResult> {
       );
     }
     return { success: true }; // Like がなくてもエラーとはしない
-  } catch (error) {
+  } catch (error:unknown) {
     console.error(`[UnlikeAction/Post] Error unliking Post ${postId}:`, error);
     const message =
       error instanceof Error
@@ -193,13 +199,11 @@ export async function likeRankingListAction(
     revalidatePath(`/rankings/${rankingListId}`);
     // revalidatePath(`/profile/...`);
     return { success: true };
-  } catch (error) {
-    /* ... エラー処理 (P2002含む) ... */
-    if (
-      error instanceof Prisma.PrismaClientKnownRequestError &&
-      error.code === "P2002"
-    )
+  } catch (error:unknown) {
+    // P2002 を直接キャッチしたい場合は any でチェックする
+    if (error instanceof Error && (error as any).code === "P2002") {
       return { success: true };
+    }
     const message =
       error instanceof Error
         ? error.message
@@ -256,8 +260,7 @@ export async function unlikeRankingListAction(
       );
     }
     return { success: true };
-  } catch (error) {
-    /* ... エラー処理 ... */
+  } catch (error:unknown) {
     const message =
       error instanceof Error
         ? error.message
@@ -270,8 +273,12 @@ export async function unlikeRankingListAction(
 const LIKED_RANKINGS_LIMIT = 20; // 1ページあたりの件数
 
 // ★ 戻り値の型定義
-export type LikedRankingResultItem = { likeId: string; list: RankingListSnippet };
-export type PaginatedLikedRankingsResponse = PaginatedResponse<LikedRankingResultItem>;
+export type LikedRankingResultItem = {
+  likeId: string;
+  list: RankingListSnippet;
+};
+export type PaginatedLikedRankingsResponse =
+  PaginatedResponse<LikedRankingResultItem>;
 
 /**
  * [SERVER ACTION] 指定されたユーザーがいいねしたランキングリストを取得 (ページネーション)
@@ -282,9 +289,10 @@ export type PaginatedLikedRankingsResponse = PaginatedResponse<LikedRankingResul
 export async function getLikedRankingsAction(
   targetUserId: string,
   cursor?: string | null // Like ID をカーソルとして使う
-): Promise<PaginatedLikedRankingsResponse>  {
-
-  console.log(`[Action/getLikedRankings] Fetching liked rankings for user ${targetUserId}, cursor: ${cursor}`);
+): Promise<PaginatedLikedRankingsResponse> {
+  console.log(
+    `[Action/getLikedRankings] Fetching liked rankings for user ${targetUserId}, cursor: ${cursor}`
+  );
   if (!targetUserId) {
     console.warn("[Action/getLikedRankings] targetUserId is required.");
     return { items: [], nextCursor: null };
@@ -304,11 +312,12 @@ export async function getLikedRankingsAction(
       select: {
         id: true, // ★ カーソル用に Like の ID を取得 ★
         createdAt: true, // ★ いいねした日時でソート ★
-        rankingList: { // ★ 関連する RankingList を取得 ★
-          select: rankingListSnippetSelect // ★ Snippet 用 Select を使用 ★
-        }
+        rankingList: {
+          // ★ 関連する RankingList を取得 ★
+          select: rankingListSnippetSelect, // ★ Snippet 用 Select を使用 ★
+        },
       },
-      orderBy: { createdAt: 'desc' }, // いいねした日時順
+      orderBy: { createdAt: "desc" }, // いいねした日時順
       take: take,
       skip: skip,
       cursor: cursorOptions,
@@ -325,19 +334,22 @@ export async function getLikedRankingsAction(
 
     // 結果を RankingListSnippet の配列に変換
     // rankingList が null の可能性も考慮 (DB制約上は起こらないはずだが念のため)
-    const resultItems: LikedRankingResultItem[] = likes
-      .filter(like => like.rankingList !== null) // 念のため rankingList が null でないかチェック
-      .map(like => ({
-        likeId: like.id,
-        list: like.rankingList as RankingListSnippet // 型アサーション (select で取得しているので)
-      }));
+    interface LikeRecord { id: string; rankingList: RankingListSnippet | null }
+    const likeRecords: LikeRecord[] = likes;
+    const resultItems = likeRecords
+      .filter((l): l is LikeRecord & { rankingList: RankingListSnippet } => l.rankingList !== null)
+      .map((l) => ({ likeId: l.id, list: l.rankingList }));
 
-    console.log(`[Action/getLikedRankings] Found ${resultItems.length} items. Next cursor: ${nextCursor}`);
+    console.log(
+      `[Action/getLikedRankings] Found ${resultItems.length} items. Next cursor: ${nextCursor}`
+    );
     // ★ 整形したデータを返す ★
     return { items: resultItems, nextCursor };
-
-  } catch (error) {
-    console.error(`[Action/getLikedRankings] Error fetching liked rankings for user ${targetUserId}:`, error);
+  } catch (error:unknown) {
+    console.error(
+      `[Action/getLikedRankings] Error fetching liked rankings for user ${targetUserId}:`,
+      error
+    );
     return { items: [], nextCursor: null };
   }
 }
@@ -350,6 +362,7 @@ export type LikedFeedResultItem = {
   feedItem: FeedItemWithRelations; // 対応する FeedItem データ
 };
 
+
 /**
  * [SERVER ACTION] 指定されたユーザーがいいねした FeedItem を取得 (ページネーション)
  * いいねした日時順 (新しい順) で返す
@@ -361,10 +374,7 @@ export async function getLikedFeedItemsAction(
   targetUserId: string,
   cursor?: string | null
 ): Promise<PaginatedResponse<LikedFeedResultItem>> {
-
-  console.log(`[Action/getLikedFeedItems] Fetching liked feed items for user ${targetUserId}, cursor: ${cursor}`);
   if (!targetUserId) {
-    console.warn("[Action/getLikedFeedItems] targetUserId is required.");
     return { items: [], nextCursor: null };
   }
 
@@ -372,73 +382,57 @@ export async function getLikedFeedItemsAction(
   const skip = cursor ? 1 : 0;
   const cursorOptions = cursor ? { id: cursor } : undefined;
 
-  try {
-    // 1. ユーザーがいいねした Post または RankingList の Like レコードを日時順で取得 (ページネーション)
-    const likes = await prisma.like.findMany({
-      where: {
-        userId: targetUserId,
-        OR: [ // Post または RankingList へのいいね
-          { postId: { not: null } },
-          { rankingListId: { not: null } }
-        ]
-      },
-      select: {
-        id: true,         // カーソル用
-        createdAt: true,  // ソート用
-        postId: true,
-        rankingListId: true
-      },
-      orderBy: { createdAt: 'desc' }, // いいねした日時順
-      take: take,
-      skip: skip,
-      cursor: cursorOptions,
-    });
+  // 1. いいねレコードを取得
+  type LikeRecord = { id: string; postId: string | null; rankingListId: string | null; createdAt: Date };
+  const likes: LikeRecord[] = await prisma.like.findMany({
+    where: { userId: targetUserId },
+    select: { id: true, postId: true, rankingListId: true, createdAt: true },
+    orderBy: { createdAt: "desc" },
+    take,
+    skip,
+    cursor: cursorOptions,
+  });
 
-    // 2. 次のカーソルを決定
-    let nextCursor: string | null = null;
-    if (likes.length > LIKED_FEED_LIMIT) {
-      const nextLike = likes.pop();
-      if (nextLike) { nextCursor = nextLike.id; }
-    }
-
-    // 3. 取得した Like に対応する FeedItem を取得
-    const postIds = likes.map(like => like.postId).filter((id): id is string => id !== null);
-    const rankingListIds = likes.map(like => like.rankingListId).filter((id): id is string => id !== null);
-    const feedItems = await prisma.feedItem.findMany({
-      where: {
-        OR: [
-          { postId: { in: postIds } }, // いいねした Post に関連する FeedItem
-          { rankingListId: { in: rankingListIds } }, // いいねした RankingList に関連する FeedItem
-        ],
-        // 必要なら FeedItem のタイプを絞る (例: RT を除くなど)
-        type: { in: [FeedType.POST, FeedType.QUOTE_RETWEET, FeedType.RANKING_UPDATE] }
-      },
-      select: feedItemPayload.select, // カード表示に必要な情報を取得
-    });
-
-    // 4. FeedItem を Like の日時順に並び替え & 整形
-    const feedItemMap = new Map(feedItems.map(item => [item.postId ?? item.rankingListId, item]));
-    // ★★★ items 配列の要素を { likeId, feedItem } の形に整形 ★★★
-    const sortedResultItems: LikedFeedResultItem[] = likes
-      .map(like => {
-        const correspondingFeedItem = feedItemMap.get(like.postId ?? like.rankingListId);
-        // 対応する FeedItem が見つかった場合のみ結果に含める
-        if (correspondingFeedItem) {
-          return {
-            likeId: like.id, // ★ likeId を含める ★
-            feedItem: correspondingFeedItem as FeedItemWithRelations // 型アサーション
-          };
-        }
-        return null; // 見つからなければ null
-      })
-      .filter((item): item is LikedFeedResultItem => item !== null); // null を除去し型ガード
-
-    console.log(`[Action/getLikedFeedItems] Found ${sortedResultItems.length} items. Next cursor: ${nextCursor}`);
-    return { items: sortedResultItems, nextCursor }; // ★ 整形したデータを返す ★
-
-
-  } catch (error) {
-    console.error(`[Action/getLikedFeedItems] Error fetching liked feed items for user ${targetUserId}:`, error);
-    return { items: [], nextCursor: null };
+  // 2. 次のカーソル
+  let nextCursor: string | null = null;
+  if (likes.length > LIKED_FEED_LIMIT) {
+    const next = likes.pop();
+    nextCursor = next ? next.id : null;
   }
+
+  // 3. FeedItem を取得
+  const postIds = likes.map((l) => l.postId).filter((id): id is string => !!id);
+  const rankingListIds = likes.map((l) => l.rankingListId).filter((id): id is string => !!id);
+
+  const feedItems: FeedItemWithRelations[] = await prisma.feedItem.findMany({
+    where: {
+      OR: [
+        { postId: { in: postIds } },
+        { rankingListId: { in: rankingListIds } },
+      ],
+    },
+    select: feedItemPayload.select,
+  });
+
+  // 4. ID → FeedItem マップを作成
+  const feedItemMap = new Map<string, FeedItemWithRelations>();
+  feedItems.forEach((fi) => {
+    if (fi.post) {
+      feedItemMap.set(fi.post.id, fi);
+    } else if (fi.rankingList) {
+      feedItemMap.set(fi.rankingList.id, fi);
+    }
+  });
+
+  // 5. 元の likes 順に並べ替えつつ、{ likeId, feedItem } の配列を作成
+  const items: LikedFeedResultItem[] = likes
+    .map((l): LikedFeedResultItem | null => {
+      const key = l.postId ?? l.rankingListId;
+      if (!key) return null;
+      const fi = feedItemMap.get(key);
+      return fi ? { likeId: l.id, feedItem: fi } : null;
+    })
+    .filter((x): x is LikedFeedResultItem => x !== null);
+
+  return { items, nextCursor };
 }

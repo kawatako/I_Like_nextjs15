@@ -1,92 +1,187 @@
 // lib/types.ts
-import type { Prisma, User, Post, RankingList, FeedItem } from "@prisma/client";
-// --- 共通のペイロード/セレクト定義をインポート ---
-import {
-  userSnippetSelect,
-  feedItemPayload,
-  userProfilePayload,
-  postPayload,
-  rankingListSnippetSelect,
-  rankingListViewSelect,
-  rankingListEditSelect,
-} from "@/lib/prisma/payloads";
-// --- 汎用型定義 ---
 
-/**
- * Server Action の汎用的な戻り値の型。
- * 操作の成功/失敗、エラーメッセージ、およびアクション固有の追加データを含む。
- */
+/** ランキングのステータス */
+export type ListStatus = "DRAFT" | "PUBLISHED";
+
+/** フィードの種類 */
+export type FeedType = "POST" | "RANKING_UPDATE" | "RETWEET" | "QUOTE_RETWEET";
+
+/** フォローリクエストのステータス */
+export type FollowRequestStatus = "PENDING" | "ACCEPTED" | "REJECTED";
+/// フォローリクエストのステータスを表す型
+export type FollowStatus =
+  | "SELF"
+  | "NOT_FOLLOWING"
+  | "FOLLOWING"
+  | "REQUEST_SENT"
+  | "REQUEST_RECEIVED"
+  | "BLOCKED"
+  | "BLOCKED_BY"
+  | "CANNOT_FOLLOW";
+
+export type TrendPeriod =
+  "WEEKLY" | "MONTHLY";
+
+/** 無限スクロール等で使う共通レスポンス */
+export type PaginatedResponse<T> = {
+  items: T[];
+  nextCursor: string | null;
+};
+
+/** Server Action の汎用戻り値 */
 export type ActionResult = {
   success: boolean;
   error?: string;
-  [key: string]: any; // 例: { success: true, newListId: '...' }
+  [key: string]: any;
 };
 
-/**
- * ページネーション（無限スクロールなど）で使われる共通のレスポンス形式。
- * @template T 取得するアイテムの型
- */
-export type PaginatedResponse<T> = {
-  items: T[]; // 取得したアイテムの配列
-  nextCursor: string | null; // 次のページを取得するためのカーソル (なければ null)
-};
+/** ユーザーの最小限スニペット */
+export interface UserSnippet {
+  id: string;
+  username: string;
+  name: string | null;
+  image: string | null;
+}
 
-// --- ユーザー関連の型定義 ---
+/** 投稿＋メタ情報 */
+export interface PostWithData {
+  id: string;
+  content: string;
+  imageUrl: string | null;
+  createdAt: Date;
+  author: UserSnippet;
+  _count: { replies: number };
+  likes: { userId: string }[];
+  likeCount: number;
+}
 
-/**
- * ユーザーの基本的な情報（スニペット）。
- * アバター、名前、ユーザー名など、多くの場所で簡易的にユーザーを表示するために使用。
- * （由来: lib/data/userQueries.ts の userSnippetSelect - { id, username, name, image }）
- */
-export type UserSnippet = Prisma.UserGetPayload<{
-  select: typeof userSnippetSelect;
-}>;
+/** ランキングリストのアイテム（上位数件） */
+export interface RankingListItemSnippet {
+  id: string;
+  rank: number;
+  itemName: string;
+  imageUrl: string | null;
+}
 
-/**
- * プロフィールページで表示するための、ユーザーとその関連情報（公開ランキングリスト、フォロワー/フォロー数など）を含むデータ型。
- * （由来: lib/data/userQueries.ts の userProfilePayload - { id, clerkId, username, ..., rankingLists (一部), _count{following, followedBy} }）
- */
-export type UserProfileData = Prisma.UserGetPayload<typeof userProfilePayload>;
+/** ランキングリスト概要 */
+export interface RankingListSnippet {
+  id: string;
+  subject: string;
+  description: string | null;
+  listImageUrl: string | null;
+  status: ListStatus;
+  displayOrder: number | null;
+  createdAt: Date;
+  updatedAt: Date;
+  items: RankingListItemSnippet[];
+  likes: { userId: string }[];
+  likeCount: number;
+  _count: { items: number };
+}
 
-// --- 投稿 (Post) 関連の型定義 ---
+/** ランキングリスト詳細表示用 */
+export interface RankingListViewData {
+  id: string;
+  subject: string;
+  description: string | null;
+  status: ListStatus;
+  listImageUrl: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+  likeCount: number;
+  author: UserSnippet;
+  items: {
+    id: string;
+    rank: number;
+    itemName: string;
+    itemDescription: string | null;
+    imageUrl: string | null;
+  }[];
+  tags: { id: string; name: string }[];
+  _count: { items: number };
+}
 
-/**
- * 投稿とその関連情報（作者、いいね数/状態、リプライ数）を含むデータ型。
- * タイムラインカード、投稿詳細、プロフィール投稿リストなどで使用。
- * （由来: lib/data/postQueries.ts の postPayload - { id, content, createdAt, author(snippet), likes, likeCount, _count{replies} }）
- */
-export type PostWithData = Prisma.PostGetPayload<typeof postPayload>;
+/** ランキング編集ページ用 */
+export interface RankingListEditableData {
+  id: string;
+  subject: string;
+  description: string | null;
+  status: ListStatus;
+  listImageUrl: string | null;
+  author: { id: string; username: string };
+  items: {
+    id: string;
+    rank: number;
+    itemName: string;
+    itemDescription: string | null;
+    imageUrl: string | null;
+  }[];
+  tags: { id: string; name: string }[];
+}
 
-// --- ランキングリスト (RankingList) 関連の型定義 ---
+/** プロフィールページでのユーザーデータ */
+export interface UserProfileData {
+  id: string;
+  clerkId: string;
+  username: string;
+  image: string | null;
+  name: string | null;
+  bio: string | null;
+  coverImageUrl: string | null;
+  location: string | null;
+  birthday: Date | null;
+  socialLinks: Record<string, string> | null;
+  rankingLists: RankingListSnippet[];
+  _count: {
+    following: number;
+    followedBy: number;
+  };
+}
 
-/**
- * ランキングリストの概要情報（スニペット）。
- * プロフィールページやタイムラインカードでのプレビュー表示用。アイテムリストは一部のみ含む。いいね情報も含む。
- * （由来: lib/data/rankingQueries.ts の rankingListSnippetSelect - { id, subject, items(top3), likes, likeCount, _count{items}, ... }）
- */
-export type RankingListSnippet = Prisma.RankingListGetPayload<{
-  select: typeof rankingListSnippetSelect;
-}>;
+/** FeedItem＋関連情報 */
+export interface FeedItemWithRelations {
+  id: string;
+  type: FeedType;
+  createdAt: Date;
+  updatedAt: Date;
+  user: UserSnippet;
+  post?: PostWithData;
+  rankingList?: RankingListSnippet;
+  retweetOfFeedItem?: FeedItemWithRelations;
+  quotedFeedItem?: FeedItemWithRelations;
+  quoteRetweetCount: number;
+  _count: { retweets: number };
+}
 
-// 詳細表示用データの型
-export type RankingListViewData = Prisma.RankingListGetPayload<{
-  select: typeof rankingListViewSelect;
-}>;
+// getFollowStatus が返す情報の型
+export interface FollowStatusInfo {
+  status: FollowStatus;
+  targetUserId: string;
+  targetUsername: string;
+  targetIsPrivate: boolean;
+  followRequestId?: string;  // フォローリクエスト送信済みの場合のリクエストID
+}
 
-/** ランキング編集ページ用のデータ型 */
-export type RankingListEditableData = Prisma.RankingListGetPayload<{
-  select: typeof rankingListEditSelect; // ★ rankingQueries からインポート ★
-}>;
+// フォロー／フォロー解除／リクエスト承認・拒否などのアクション結果に含めるステータス
+export interface FollowActionResult extends ActionResult {
+  status?: "following" | "not_following" | "requested" | "error";
+}
 
-// --- タイムライン項目 (FeedItem) 関連の型定義 ---
+// フォローリクエストを一覧取得するときの型
+export interface FollowRequestWithRequester {
+  id: string;
+  requesterId: string;
+  requestedId: string;
+  status: "PENDING" | "ACCEPTED" | "REJECTED";
+  createdAt: Date;
+  updatedAt: Date;
+  requester: UserSnippet;
+}
 
-/**
- * タイムラインに表示する FeedItem とその関連情報（ユーザー、投稿、ランキング、リツイート元、引用元、各種カウントなど）をすべて含む型。
- * getHomeFeed 関数や FeedItem 詳細ページなどで使用。
- * （由来: lib/data/feedQueries.ts の feedItemPayload - { id, type, user, post(with likes), rankingList(with likes), retweetOfFeedItem(nested), quotedFeedItem(nested), _count{retweets}, quoteRetweetCount, ... }）
- */
-export type FeedItemWithRelations = Prisma.FeedItemGetPayload<
-  typeof feedItemPayload
->;
-
-// --- トレンド関連の型定義 ---
+// フォロー一覧ページ／タブで使うアイテム型
+// 「フォロー中」「フォロワー」どちらも UserSnippet の配列を返すので追加不要ですが
+// カーソル用に id（follow テーブルのレコードID）を含める場合は
+export interface FollowCursorRecord {
+  id: string;         // follow テーブルのレコードID（カーソル用）
+  user: UserSnippet;  // following または follower の user 情報
+}

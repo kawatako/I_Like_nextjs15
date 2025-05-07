@@ -24,7 +24,6 @@ interface LeftSidebarProps {
   currentLoginUserData: UserData | null;
 }
 
-// --- ↓↓↓ navItems 配列を更新 ↓↓↓ ---
 const navItems = [
   { icon: HomeIcon, label: "Home", href: "/" },
   {

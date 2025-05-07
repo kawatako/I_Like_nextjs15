@@ -1,7 +1,6 @@
 // lib/data/postQueries.ts
 import prisma from "../client";
-import { Prisma } from "@prisma/client";
-import { userSnippetSelect,postPayload } from "../prisma/payloads"; // User スニペット
+import { postPayload } from "../prisma/payloads"; // User スニペット
 import type { PostWithData } from "@/lib/types";
 
 /**

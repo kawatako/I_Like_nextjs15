@@ -1,6 +1,6 @@
 // components/component/layouts/FloatingActionButtons.tsx
+// 使わない
 "use client"; 
-
 import Link from "next/link";
 import { Button } from "@/components/ui/button"; // shadcn/ui の Button
 // lucide-react からアイコンをインポート (なければ npm install lucide-react)
@@ -16,24 +16,9 @@ export function FloatingActionButtons() {
     <div
       className={`fixed ${bottomOffset} right-4 z-40 flex flex-col space-y-2 md:hidden`}
     >
-      {/* 投稿作成ボタン (+) */}
-      <Link href='/posts/new' passHref>
-        {" "}
-        {/* ★ 要変更: 投稿作成ページのパス */}
-        <Button
-          variant='default'
-          size='icon'
-          className='rounded-full shadow-lg w-14 h-14'
-        >
-          <PlusIcon className='h-6 w-6' />
-          <span className='sr-only'>投稿を作成</span>{" "}
-          {/* スクリーンリーダー用 */}
-        </Button>
-      </Link>
 
       {/* ランキング作成ボタン (王冠) */}
       <Link href='/rankings/new' passHref>
-        {" "}
         {/* ★ 要変更: ランキング作成ページのパス */}
         <Button
           variant='secondary'
