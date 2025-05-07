@@ -1,88 +1,114 @@
 // lib/data/userQueries.ts
+import prisma from "@/lib/client";
+import type { UserProfileData as UserProfileDataType, UserSnippet } from "@/lib/types";
+import { userProfilePayload, userSnippetSelect } from "@/lib/prisma/payloads";
 
-import prisma from "@/lib/client"; // Prisma Client のインポートパスを確認・修正
-import { ListStatus, Prisma } from "@prisma/client";
-import type { UserSnippet, RankingListSnippet, UserProfileData } from "@/lib/types"; // 共通型をインポート
-import {  userProfilePayload,userSnippetSelect } from "../prisma/payloads"
-
-//Clerk ID を基に、データベース内の対応するユーザーの内部ID (User.id) を取得
+// Clerk ID から内部 DB ID を取得
 export async function getUserDbIdByClerkId(clerkId: string): Promise<string | null> {
-  try {
-    const user = await prisma.user.findUnique({
-      where: { clerkId },
-      select: { id: true },
-    });
-    return user?.id ?? null;
-  } catch (error) {
-    console.error(`[UserQueries] Error fetching user DB ID for clerkId ${clerkId}:`, error);
-    return null;
-  }
+  const u = await prisma.user.findUnique({
+    where: { clerkId },
+    select: { id: true },
+  });
+  return u?.id ?? null;
 }
 
-//現在ログインしているユーザーの詳細データを Clerk ID を基に取得
-export async function getCurrentLoginUserData(clerkUserId: string) {
-  console.log(`[UserQueries] Searching for user with clerkId: ${clerkUserId}`);
-  if(!clerkUserId) return null; // Clerk ID がなければ null を返す
-
-  try {
-    const user = await prisma.user.findUnique({
-      where: { clerkId: clerkUserId },
-      select: { // UI で共通して必要になる可能性のあるフィールドを選択
-        id: true,
-        clerkId: true,
-        username: true,
-        image: true,
-        name: true,
-        bio: true,
-        coverImageUrl: true, 
-        socialLinks: true
-      },
-    });
-    console.log(`[UserQueries] Found user data for header/sidebar:`, user ? "User found" : "User not found");
-    return user;
-  } catch (error) {
-    console.error(`[UserQueries] Error fetching current user data for clerkId ${clerkUserId}:`, error);
-    return null;
-  }
+// 現在ログイン中ユーザーのスニペットデータ取得
+export async function getCurrentLoginUserData(
+  clerkUserId: string
+): Promise<{
+  id: string;
+  clerkId: string;
+  username: string;
+  image: string | null;
+  name: string | null;
+  bio: string | null;
+  coverImageUrl: string | null;
+  socialLinks: Record<string, string> | null;
+} | null> {
+  if (!clerkUserId) return null;
+  const raw = await prisma.user.findUnique({
+    where: { clerkId: clerkUserId },
+    select: {
+      id: true,
+      clerkId: true,
+      username: true,
+      image: true,
+      name: true,
+      bio: true,
+      coverImageUrl: true,
+      socialLinks: true,
+    },
+  });
+  if (!raw) return null;
+  return {
+    id: raw.id,
+    clerkId: raw.clerkId,
+    username: raw.username,
+    image: raw.image,
+    name: raw.name,
+    bio: raw.bio,
+    coverImageUrl: raw.coverImageUrl,
+    // Prisma の Json は unknown → Record<string,string> にキャスト
+    socialLinks: (raw.socialLinks as unknown as Record<string, string>) ?? null,
+  };
 }
 
-//指定されたユーザー名の公開プロフィールデータを取得
-export async function getUserProfileData(username: string): Promise<UserProfileData | null> {
-  console.log(`[UserQueries] Fetching profile data for username: ${username}`);
+// プロフィールページ用のデータ取得
+export async function getUserProfileData(
+  username: string
+): Promise<UserProfileDataType | null> {
+  if (!username) {
+    return null;
+  }
+
+  // Payload の select/include 定義を any キャストして型チェックをバイパス
+  const raw = (await prisma.user.findUnique({
+    where: { username },
+    ...(userProfilePayload as any),
+  })) as any;
+
+  if (!raw) {
+    return null;
+  }
+
+  return {
+    id: raw.id,
+    clerkId: raw.clerkId,
+    username: raw.username,
+    image: raw.image,
+    name: raw.name,
+    bio: raw.bio,
+    coverImageUrl: raw.coverImageUrl,
+    location: raw.location,
+    birthday: raw.birthday,
+    socialLinks: (raw.socialLinks as Record<string, string>) ?? null,
+    rankingLists: raw.rankingLists,  
+    _count: {
+      following: raw._count.following,  
+      followedBy: raw._count.followedBy, 
+    },
+  };
+}
+
+// フォロー／アンフォロー用のユーザースニペット取得
+export async function getUserByUsername(
+  username: string
+): Promise<UserSnippet | null> {
   if (!username) return null;
-
-  try {
-    const userWithLists = await prisma.user.findUnique({
-      where: { username: username },
-      select: userProfilePayload.select,
-    });
-
-    if (!userWithLists) {
-      console.log(`[UserQueries] User profile not found for username: ${username}`);
-      return null;
-    }
-
-    console.log(`[UserQueries] Successfully fetched profile for ${username}`);
-    return userWithLists;
-
-  } catch (error) {
-    console.error(`[UserQueries] Error fetching profile data for username ${username}:`, error);
-    return null;
-  }
+  const u = await prisma.user.findUnique({
+    where: { username },
+    select: userSnippetSelect,
+  });
+  return u ?? null;
 }
 
-// ユーザー名からユーザーの基本情報を取得(follow/unfollow 機能)
-export async function getUserByUsername(username: string): Promise<UserSnippet | null>  {
-  console.log(`[UserQueries] Fetching user by username: ${username}`);
-  if (!username) return null;
-  try {
-    const user = await prisma.user.findUnique({
-      where: { username },
-      select: userSnippetSelect
-    });
-    return user;
-  } catch (error) {
-    console.error(`[UserQueries] Error fetching user by username ${username}:`, error);
-    return null;
-  }
+// Clerk ID → username だけ欲しいときの小ヘルパー
+export async function getUsernameFromDb(
+  clerkId: string
+): Promise<string | null> {
+  const u = await prisma.user.findUnique({
+    where: { clerkId },
+    select: { username: true },
+  });
+  return u?.username ?? null;
 }

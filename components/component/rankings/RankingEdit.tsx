@@ -7,7 +7,7 @@ import {
   useTransition,
 } from "react";
 import { useRouter } from "next/navigation";
-import { ListStatus } from "@prisma/client";
+import { ListStatus } from "@/lib/types";
 import {
   Card,
   CardHeader,
@@ -199,7 +199,7 @@ export function RankingEdit({ rankingList }: Props) {
       if (result.success) {
         toast({
           title:
-            status === ListStatus.DRAFT
+            status === "DRAFT"
               ? "下書きを保存しました。"
               : "公開更新しました。",
         });
@@ -304,13 +304,13 @@ export function RankingEdit({ rankingList }: Props) {
         <div className="flex justify-end items-center space-x-2 pt-4 border-t">
           <Button
             variant="outline"
-            onClick={() => handleSave(ListStatus.DRAFT)}
+            onClick={() => handleSave("DRAFT")}
             disabled={isSaving}
           >
             下書き保存
           </Button>
           <Button
-            onClick={() => handleSave(ListStatus.PUBLISHED)}
+            onClick={() => handleSave("PUBLISHED")}
             disabled={isSaving}
           >
             更新して公開

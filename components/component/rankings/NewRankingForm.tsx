@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { ListStatus } from "@prisma/client";
+import { ListStatus } from "@/lib/types";
 import { z } from "zod";
 import { useToast } from "@/components/hooks/use-toast";
 import {
@@ -185,7 +185,7 @@ export function NewRankingForm() {
           return;
         }
       }
-      if (status === ListStatus.PUBLISHED && editableItems.length === 0) {
+      if (status === "PUBLISHED" && editableItems.length === 0) {
         setFormError("公開にはアイテムを1つ以上登録してください。");
         return;
       }
@@ -237,7 +237,7 @@ export function NewRankingForm() {
       if (result.success) {
         toast({
           title:
-            status === ListStatus.DRAFT ? "下書き保存しました。" : "作成・公開しました。",
+            status === "DRAFT" ? "下書き保存しました。" : "作成・公開しました。",
         });
         router.push(`/rankings/${result.newListId}`);
       } else {
@@ -360,7 +360,7 @@ export function NewRankingForm() {
         <div className="flex justify-end items-center space-x-2 pt-4 border-t">
           <Button
             variant="outline"
-            onClick={() => handleSave(ListStatus.DRAFT)}
+            onClick={() => handleSave("DRAFT")}
             disabled={isSubmitting}
           >
             {isSubmitting ? (
@@ -369,7 +369,7 @@ export function NewRankingForm() {
             {isSubmitting ? "保存中…" : "下書き保存"}
           </Button>
           <Button
-            onClick={() => handleSave(ListStatus.PUBLISHED)}
+            onClick={() => handleSave("PUBLISHED")}
             disabled={isSubmitting}
           >
             {isSubmitting ? (

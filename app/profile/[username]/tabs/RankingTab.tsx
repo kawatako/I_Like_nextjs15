@@ -1,6 +1,5 @@
 // app/profile/[username]/tabs/RankingTab.tsx
-import { ListStatus } from "@prisma/client";
-import { ProfileRankingLists } from "@/components/component/profiles/ProfileRankingLists"; // 作成したクライアントコンポーネント
+import { ProfileRankingLists } from "@/components/component/profiles/ProfileRankingLists";
 
 interface RankingTabProps {
   targetUserId: string;
@@ -16,7 +15,7 @@ export default function RankingTab({ targetUserId, username, isCurrentUser }: Ra
     <ProfileRankingLists
       targetUserId={targetUserId}
       username={username}
-      status={ListStatus.PUBLISHED} // 公開リストを指定
+      status="PUBLISHED"
       isCurrentUser={isCurrentUser}
     />
   );

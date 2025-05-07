@@ -8,15 +8,18 @@ import { ProfileHeader } from "@/components/component/profiles/ProfileHeader";
 import ProfileTabsClient from "./tabs/ProfileTabsClient"; // Client Component for Tabs UI
 
 interface ProfilePageProps {
-  params: { username: string };
-  searchParams:  { [key: string]: string | string[] | undefined }
-}
+    params: Promise<{ username: string }>;
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+  }
 
-export default async function ProfilePage({ params: paramsProp, searchParams: searchParamsProp }: ProfilePageProps) {
-  const params = await paramsProp;
-  const searchParams = await searchParamsProp;
+  export default async function ProfilePage({
+      params,
+      searchParams,
+    }: ProfilePageProps) {
+      // Promise を解決してから使う
+      const { username } = await params;
+      const sp = await searchParams;
 
-  const username = params.username;
   const { userId: currentClerkId } = await auth();
 
   const userProfileData = await getUserProfileData(username);
@@ -27,7 +30,7 @@ export default async function ProfilePage({ params: paramsProp, searchParams: se
   const loggedInUserDbId = currentClerkId ? await getUserDbIdByClerkId(currentClerkId) : null;
   const followStatusInfo = await getFollowStatus(loggedInUserDbId, targetUserDbId);
 
-  const currentTab = typeof searchParams?.tab === 'string' ? searchParams.tab : undefined;
+  const currentTab = typeof sp.tab === "string" ? (sp.tab as "title" | "item" | "tag") : undefined;
 
   return (
     <>
