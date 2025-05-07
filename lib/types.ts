@@ -90,11 +90,3 @@ export type FeedItemWithRelations = Prisma.FeedItemGetPayload<
 >;
 
 // --- トレンド関連の型定義 ---
-// これらはトレンド機能に特化しているため、ここに置くか、
-// lib/data/trendQueries.ts や lib/types/trends.ts などに分けるか検討の余地あり。
-// export type NewestRankingItem = { ... };
-// export type MyRankingListItem = { ... };
-// export type PopularThemeItem = { ... };
-// export type WeeklyThemeItem = { ... };
-// export type AveragedRankItem = { ... };
-// export type SearchedRankingItem = { ... };

@@ -42,18 +42,17 @@ export default async function RankingDetailPage( props: Props) {
         isCurrentUser={isOwner}
         initialFollowStatus={followStatusInfo}
       />
+      {/* ランキング詳細 */}
+      <RankingDetailView ranking={raw} isOwner={isOwner} />
 
-      {/* オーナーだけに表示する「編集する」 */}
-      {isOwner && (
+            {/* オーナーだけに表示する「編集する」 */}
+            {isOwner && (
         <div className="mb-4 flex justify-end px-4">
           <Link href={`/rankings/${listId}/edit`}>
             <Button variant="outline">編集する</Button>
           </Link>
         </div>
       )}
-
-      {/* ランキング詳細 */}
-      <RankingDetailView ranking={raw} isOwner={isOwner} />
     </>
   );
 }

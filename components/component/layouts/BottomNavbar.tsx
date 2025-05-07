@@ -1,5 +1,5 @@
 // components/component/layouts/BottomNavbar.tsx
-"use client"; // クライアントフック (usePathname, useUser) を使うため
+"use client"; 
 
 import Link from "next/link";
 import { usePathname } from "next/navigation"; // 現在のパスを取得

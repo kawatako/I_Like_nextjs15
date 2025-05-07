@@ -2,7 +2,6 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useCallback } from 'react';
-// ★ SWRInfiniteResponse 型もインポート ★
 import useSWRInfinite, { type SWRInfiniteKeyLoader, type SWRInfiniteConfiguration, type SWRInfiniteResponse } from 'swr/infinite';
 import { useInView } from 'react-intersection-observer';
 import type { PaginatedResponse, ActionResult } from '@/lib/types';
@@ -11,7 +10,7 @@ import type { BareFetcher } from 'swr';
 
 // カスタムフックが返す値の型定義
 // ★ mutate の型を SWRInfiniteResponse から取得するように変更 ★
-export interface UseInfiniteScrollReturn<ItemType, Data extends PaginatedResponse<ItemType> = PaginatedResponse<ItemType>> { // ★ ItemType もジェネリクスに ★
+export interface UseInfiniteScrollReturn<ItemType, Data extends PaginatedResponse<ItemType> = PaginatedResponse<ItemType>> {
   data: ItemType[];
   error: any;
   isLoadingInitialData: boolean;
@@ -55,7 +54,6 @@ export function useInfiniteScroll<Data extends PaginatedResponse<any>>(
     return isLoading || (size > 0 && pages && typeof pages[size - 1] === 'undefined' && !isReachingEnd);
   }, [isLoading, size, pages, isReachingEnd]);
 
-  // --- Intersection Observer (変更なし) ---
   const { ref: loadMoreRef, inView } = useInView({ threshold });
   useEffect(() => {
     if (inView && !isReachingEnd && !isLoadingMore && !isValidating) {
@@ -68,14 +66,12 @@ export function useInfiniteScroll<Data extends PaginatedResponse<any>>(
     data: flattenedData as ItemType[],
     error,
     isLoadingInitialData,
-    // ★★★ undefined の場合に false を返すように修正 ★★★
     isLoadingMore: isLoadingMore ?? false,
     isReachingEnd: isReachingEnd ?? false,
-    // ★★★ ここまで ★★★
     loadMoreRef,
     isValidating,
     size,
     setSize,
-    mutate, // ★ useSWRInfinite から取得した mutate をそのまま返す ★
+    mutate,
   };
 }
