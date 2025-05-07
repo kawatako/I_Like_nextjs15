@@ -477,8 +477,8 @@ export namespace Prisma {
   export import Exact = $Public.Exact
 
   /**
-   * Prisma Client JS version: 6.6.0
-   * Query Engine version: f676762280b54cd07c770017ed3711ddde35f37a
+   * Prisma Client JS version: 6.7.0
+   * Query Engine version: 3cff47a7f5d65c3ea74883f1d736e41d68ce91ed
    */
   export type PrismaVersion = {
     client: string
@@ -2199,13 +2199,13 @@ export namespace Prisma {
    */
 
   export type TagCountOutputType = {
-    rankingLists: number
     trendingStats: number
+    rankingLists: number
   }
 
   export type TagCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    rankingLists?: boolean | TagCountOutputTypeCountRankingListsArgs
     trendingStats?: boolean | TagCountOutputTypeCountTrendingStatsArgs
+    rankingLists?: boolean | TagCountOutputTypeCountRankingListsArgs
   }
 
   // Custom InputTypes
@@ -2222,15 +2222,15 @@ export namespace Prisma {
   /**
    * TagCountOutputType without action
    */
-  export type TagCountOutputTypeCountRankingListsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: RankingListWhereInput
+  export type TagCountOutputTypeCountTrendingStatsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TrendingTagWhereInput
   }
 
   /**
    * TagCountOutputType without action
    */
-  export type TagCountOutputTypeCountTrendingStatsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: TrendingTagWhereInput
+  export type TagCountOutputTypeCountRankingListsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: RankingListWhereInput
   }
 
 
@@ -2239,28 +2239,28 @@ export namespace Prisma {
    */
 
   export type UserCountOutputType = {
-    posts: number
-    likes: number
-    replies: number
-    followedBy: number
-    following: number
-    rankingLists: number
-    sentFollowRequests: number
-    receivedFollowRequests: number
     feedItems: number
+    following: number
+    followedBy: number
+    receivedFollowRequests: number
+    sentFollowRequests: number
+    likes: number
+    posts: number
+    rankingLists: number
+    replies: number
     retweets: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    posts?: boolean | UserCountOutputTypeCountPostsArgs
-    likes?: boolean | UserCountOutputTypeCountLikesArgs
-    replies?: boolean | UserCountOutputTypeCountRepliesArgs
-    followedBy?: boolean | UserCountOutputTypeCountFollowedByArgs
-    following?: boolean | UserCountOutputTypeCountFollowingArgs
-    rankingLists?: boolean | UserCountOutputTypeCountRankingListsArgs
-    sentFollowRequests?: boolean | UserCountOutputTypeCountSentFollowRequestsArgs
-    receivedFollowRequests?: boolean | UserCountOutputTypeCountReceivedFollowRequestsArgs
     feedItems?: boolean | UserCountOutputTypeCountFeedItemsArgs
+    following?: boolean | UserCountOutputTypeCountFollowingArgs
+    followedBy?: boolean | UserCountOutputTypeCountFollowedByArgs
+    receivedFollowRequests?: boolean | UserCountOutputTypeCountReceivedFollowRequestsArgs
+    sentFollowRequests?: boolean | UserCountOutputTypeCountSentFollowRequestsArgs
+    likes?: boolean | UserCountOutputTypeCountLikesArgs
+    posts?: boolean | UserCountOutputTypeCountPostsArgs
+    rankingLists?: boolean | UserCountOutputTypeCountRankingListsArgs
+    replies?: boolean | UserCountOutputTypeCountRepliesArgs
     retweets?: boolean | UserCountOutputTypeCountRetweetsArgs
   }
 
@@ -2278,29 +2278,8 @@ export namespace Prisma {
   /**
    * UserCountOutputType without action
    */
-  export type UserCountOutputTypeCountPostsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: PostWhereInput
-  }
-
-  /**
-   * UserCountOutputType without action
-   */
-  export type UserCountOutputTypeCountLikesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: LikeWhereInput
-  }
-
-  /**
-   * UserCountOutputType without action
-   */
-  export type UserCountOutputTypeCountRepliesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: ReplyWhereInput
-  }
-
-  /**
-   * UserCountOutputType without action
-   */
-  export type UserCountOutputTypeCountFollowedByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: FollowWhereInput
+  export type UserCountOutputTypeCountFeedItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: FeedItemWhereInput
   }
 
   /**
@@ -2313,15 +2292,8 @@ export namespace Prisma {
   /**
    * UserCountOutputType without action
    */
-  export type UserCountOutputTypeCountRankingListsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: RankingListWhereInput
-  }
-
-  /**
-   * UserCountOutputType without action
-   */
-  export type UserCountOutputTypeCountSentFollowRequestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: FollowRequestWhereInput
+  export type UserCountOutputTypeCountFollowedByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: FollowWhereInput
   }
 
   /**
@@ -2334,8 +2306,36 @@ export namespace Prisma {
   /**
    * UserCountOutputType without action
    */
-  export type UserCountOutputTypeCountFeedItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: FeedItemWhereInput
+  export type UserCountOutputTypeCountSentFollowRequestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: FollowRequestWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountLikesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: LikeWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountPostsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PostWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountRankingListsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: RankingListWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountRepliesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ReplyWhereInput
   }
 
   /**
@@ -2351,16 +2351,16 @@ export namespace Prisma {
    */
 
   export type RankingListCountOutputType = {
-    items: number
     feedItems: number
     likes: number
+    items: number
     tags: number
   }
 
   export type RankingListCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    items?: boolean | RankingListCountOutputTypeCountItemsArgs
     feedItems?: boolean | RankingListCountOutputTypeCountFeedItemsArgs
     likes?: boolean | RankingListCountOutputTypeCountLikesArgs
+    items?: boolean | RankingListCountOutputTypeCountItemsArgs
     tags?: boolean | RankingListCountOutputTypeCountTagsArgs
   }
 
@@ -2373,13 +2373,6 @@ export namespace Prisma {
      * Select specific fields to fetch from the RankingListCountOutputType
      */
     select?: RankingListCountOutputTypeSelect<ExtArgs> | null
-  }
-
-  /**
-   * RankingListCountOutputType without action
-   */
-  export type RankingListCountOutputTypeCountItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: RankedItemWhereInput
   }
 
   /**
@@ -2399,6 +2392,13 @@ export namespace Prisma {
   /**
    * RankingListCountOutputType without action
    */
+  export type RankingListCountOutputTypeCountItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: RankedItemWhereInput
+  }
+
+  /**
+   * RankingListCountOutputType without action
+   */
   export type RankingListCountOutputTypeCountTagsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: TagWhereInput
   }
@@ -2409,15 +2409,15 @@ export namespace Prisma {
    */
 
   export type PostCountOutputType = {
-    replies: number
     feedItems: number
     likes: number
+    replies: number
   }
 
   export type PostCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    replies?: boolean | PostCountOutputTypeCountRepliesArgs
     feedItems?: boolean | PostCountOutputTypeCountFeedItemsArgs
     likes?: boolean | PostCountOutputTypeCountLikesArgs
+    replies?: boolean | PostCountOutputTypeCountRepliesArgs
   }
 
   // Custom InputTypes
@@ -2434,13 +2434,6 @@ export namespace Prisma {
   /**
    * PostCountOutputType without action
    */
-  export type PostCountOutputTypeCountRepliesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: ReplyWhereInput
-  }
-
-  /**
-   * PostCountOutputType without action
-   */
   export type PostCountOutputTypeCountFeedItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: FeedItemWhereInput
   }
@@ -2452,21 +2445,28 @@ export namespace Prisma {
     where?: LikeWhereInput
   }
 
+  /**
+   * PostCountOutputType without action
+   */
+  export type PostCountOutputTypeCountRepliesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ReplyWhereInput
+  }
+
 
   /**
    * Count Type FeedItemCountOutputType
    */
 
   export type FeedItemCountOutputType = {
+    quotedByItems: number
     retweetedByItems: number
     retweets: number
-    quotedByItems: number
   }
 
   export type FeedItemCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    quotedByItems?: boolean | FeedItemCountOutputTypeCountQuotedByItemsArgs
     retweetedByItems?: boolean | FeedItemCountOutputTypeCountRetweetedByItemsArgs
     retweets?: boolean | FeedItemCountOutputTypeCountRetweetsArgs
-    quotedByItems?: boolean | FeedItemCountOutputTypeCountQuotedByItemsArgs
   }
 
   // Custom InputTypes
@@ -2483,6 +2483,13 @@ export namespace Prisma {
   /**
    * FeedItemCountOutputType without action
    */
+  export type FeedItemCountOutputTypeCountQuotedByItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: FeedItemWhereInput
+  }
+
+  /**
+   * FeedItemCountOutputType without action
+   */
   export type FeedItemCountOutputTypeCountRetweetedByItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: FeedItemWhereInput
   }
@@ -2492,13 +2499,6 @@ export namespace Prisma {
    */
   export type FeedItemCountOutputTypeCountRetweetsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: RetweetWhereInput
-  }
-
-  /**
-   * FeedItemCountOutputType without action
-   */
-  export type FeedItemCountOutputTypeCountQuotedByItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: FeedItemWhereInput
   }
 
 
@@ -2654,8 +2654,8 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     createdAt?: boolean
-    rankingLists?: boolean | Tag$rankingListsArgs<ExtArgs>
     trendingStats?: boolean | Tag$trendingStatsArgs<ExtArgs>
+    rankingLists?: boolean | Tag$rankingListsArgs<ExtArgs>
     _count?: boolean | TagCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["tag"]>
 
@@ -2679,8 +2679,8 @@ export namespace Prisma {
 
   export type TagOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "createdAt", ExtArgs["result"]["tag"]>
   export type TagInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    rankingLists?: boolean | Tag$rankingListsArgs<ExtArgs>
     trendingStats?: boolean | Tag$trendingStatsArgs<ExtArgs>
+    rankingLists?: boolean | Tag$rankingListsArgs<ExtArgs>
     _count?: boolean | TagCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type TagIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -2689,8 +2689,8 @@ export namespace Prisma {
   export type $TagPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Tag"
     objects: {
-      rankingLists: Prisma.$RankingListPayload<ExtArgs>[]
       trendingStats: Prisma.$TrendingTagPayload<ExtArgs>[]
+      rankingLists: Prisma.$RankingListPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -3090,8 +3090,8 @@ export namespace Prisma {
    */
   export interface Prisma__TagClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    rankingLists<T extends Tag$rankingListsArgs<ExtArgs> = {}>(args?: Subset<T, Tag$rankingListsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RankingListPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     trendingStats<T extends Tag$trendingStatsArgs<ExtArgs> = {}>(args?: Subset<T, Tag$trendingStatsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TrendingTagPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    rankingLists<T extends Tag$rankingListsArgs<ExtArgs> = {}>(args?: Subset<T, Tag$rankingListsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RankingListPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3512,30 +3512,6 @@ export namespace Prisma {
   }
 
   /**
-   * Tag.rankingLists
-   */
-  export type Tag$rankingListsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the RankingList
-     */
-    select?: RankingListSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the RankingList
-     */
-    omit?: RankingListOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: RankingListInclude<ExtArgs> | null
-    where?: RankingListWhereInput
-    orderBy?: RankingListOrderByWithRelationInput | RankingListOrderByWithRelationInput[]
-    cursor?: RankingListWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: RankingListScalarFieldEnum | RankingListScalarFieldEnum[]
-  }
-
-  /**
    * Tag.trendingStats
    */
   export type Tag$trendingStatsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3557,6 +3533,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: TrendingTagScalarFieldEnum | TrendingTagScalarFieldEnum[]
+  }
+
+  /**
+   * Tag.rankingLists
+   */
+  export type Tag$rankingListsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RankingList
+     */
+    select?: RankingListSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RankingList
+     */
+    omit?: RankingListOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RankingListInclude<ExtArgs> | null
+    where?: RankingListWhereInput
+    orderBy?: RankingListOrderByWithRelationInput | RankingListOrderByWithRelationInput[]
+    cursor?: RankingListWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: RankingListScalarFieldEnum | RankingListScalarFieldEnum[]
   }
 
   /**
@@ -3599,8 +3599,8 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     isPrivate: boolean | null
-    location: string | null
     birthday: Date | null
+    location: string | null
   }
 
   export type UserMaxAggregateOutputType = {
@@ -3614,8 +3614,8 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     isPrivate: boolean | null
-    location: string | null
     birthday: Date | null
+    location: string | null
   }
 
   export type UserCountAggregateOutputType = {
@@ -3630,8 +3630,8 @@ export namespace Prisma {
     createdAt: number
     updatedAt: number
     isPrivate: number
-    location: number
     birthday: number
+    location: number
     _all: number
   }
 
@@ -3647,8 +3647,8 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     isPrivate?: true
-    location?: true
     birthday?: true
+    location?: true
   }
 
   export type UserMaxAggregateInputType = {
@@ -3662,8 +3662,8 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     isPrivate?: true
-    location?: true
     birthday?: true
+    location?: true
   }
 
   export type UserCountAggregateInputType = {
@@ -3678,8 +3678,8 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     isPrivate?: true
-    location?: true
     birthday?: true
+    location?: true
     _all?: true
   }
 
@@ -3767,8 +3767,8 @@ export namespace Prisma {
     createdAt: Date
     updatedAt: Date
     isPrivate: boolean
-    location: string | null
     birthday: Date | null
+    location: string | null
     _count: UserCountAggregateOutputType | null
     _min: UserMinAggregateOutputType | null
     _max: UserMaxAggregateOutputType | null
@@ -3800,17 +3800,17 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     isPrivate?: boolean
-    location?: boolean
     birthday?: boolean
-    posts?: boolean | User$postsArgs<ExtArgs>
-    likes?: boolean | User$likesArgs<ExtArgs>
-    replies?: boolean | User$repliesArgs<ExtArgs>
-    followedBy?: boolean | User$followedByArgs<ExtArgs>
-    following?: boolean | User$followingArgs<ExtArgs>
-    rankingLists?: boolean | User$rankingListsArgs<ExtArgs>
-    sentFollowRequests?: boolean | User$sentFollowRequestsArgs<ExtArgs>
-    receivedFollowRequests?: boolean | User$receivedFollowRequestsArgs<ExtArgs>
+    location?: boolean
     feedItems?: boolean | User$feedItemsArgs<ExtArgs>
+    following?: boolean | User$followingArgs<ExtArgs>
+    followedBy?: boolean | User$followedByArgs<ExtArgs>
+    receivedFollowRequests?: boolean | User$receivedFollowRequestsArgs<ExtArgs>
+    sentFollowRequests?: boolean | User$sentFollowRequestsArgs<ExtArgs>
+    likes?: boolean | User$likesArgs<ExtArgs>
+    posts?: boolean | User$postsArgs<ExtArgs>
+    rankingLists?: boolean | User$rankingListsArgs<ExtArgs>
+    replies?: boolean | User$repliesArgs<ExtArgs>
     retweets?: boolean | User$retweetsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
@@ -3827,8 +3827,8 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     isPrivate?: boolean
-    location?: boolean
     birthday?: boolean
+    location?: boolean
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -3843,8 +3843,8 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     isPrivate?: boolean
-    location?: boolean
     birthday?: boolean
+    location?: boolean
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectScalar = {
@@ -3859,21 +3859,21 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     isPrivate?: boolean
-    location?: boolean
     birthday?: boolean
+    location?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "clerkId" | "username" | "name" | "bio" | "image" | "coverImageUrl" | "socialLinks" | "createdAt" | "updatedAt" | "isPrivate" | "location" | "birthday", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "clerkId" | "username" | "name" | "bio" | "image" | "coverImageUrl" | "socialLinks" | "createdAt" | "updatedAt" | "isPrivate" | "birthday" | "location", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    posts?: boolean | User$postsArgs<ExtArgs>
-    likes?: boolean | User$likesArgs<ExtArgs>
-    replies?: boolean | User$repliesArgs<ExtArgs>
-    followedBy?: boolean | User$followedByArgs<ExtArgs>
-    following?: boolean | User$followingArgs<ExtArgs>
-    rankingLists?: boolean | User$rankingListsArgs<ExtArgs>
-    sentFollowRequests?: boolean | User$sentFollowRequestsArgs<ExtArgs>
-    receivedFollowRequests?: boolean | User$receivedFollowRequestsArgs<ExtArgs>
     feedItems?: boolean | User$feedItemsArgs<ExtArgs>
+    following?: boolean | User$followingArgs<ExtArgs>
+    followedBy?: boolean | User$followedByArgs<ExtArgs>
+    receivedFollowRequests?: boolean | User$receivedFollowRequestsArgs<ExtArgs>
+    sentFollowRequests?: boolean | User$sentFollowRequestsArgs<ExtArgs>
+    likes?: boolean | User$likesArgs<ExtArgs>
+    posts?: boolean | User$postsArgs<ExtArgs>
+    rankingLists?: boolean | User$rankingListsArgs<ExtArgs>
+    replies?: boolean | User$repliesArgs<ExtArgs>
     retweets?: boolean | User$retweetsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
@@ -3883,15 +3883,15 @@ export namespace Prisma {
   export type $UserPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "User"
     objects: {
-      posts: Prisma.$PostPayload<ExtArgs>[]
-      likes: Prisma.$LikePayload<ExtArgs>[]
-      replies: Prisma.$ReplyPayload<ExtArgs>[]
-      followedBy: Prisma.$FollowPayload<ExtArgs>[]
-      following: Prisma.$FollowPayload<ExtArgs>[]
-      rankingLists: Prisma.$RankingListPayload<ExtArgs>[]
-      sentFollowRequests: Prisma.$FollowRequestPayload<ExtArgs>[]
-      receivedFollowRequests: Prisma.$FollowRequestPayload<ExtArgs>[]
       feedItems: Prisma.$FeedItemPayload<ExtArgs>[]
+      following: Prisma.$FollowPayload<ExtArgs>[]
+      followedBy: Prisma.$FollowPayload<ExtArgs>[]
+      receivedFollowRequests: Prisma.$FollowRequestPayload<ExtArgs>[]
+      sentFollowRequests: Prisma.$FollowRequestPayload<ExtArgs>[]
+      likes: Prisma.$LikePayload<ExtArgs>[]
+      posts: Prisma.$PostPayload<ExtArgs>[]
+      rankingLists: Prisma.$RankingListPayload<ExtArgs>[]
+      replies: Prisma.$ReplyPayload<ExtArgs>[]
       retweets: Prisma.$RetweetPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -3906,8 +3906,8 @@ export namespace Prisma {
       createdAt: Date
       updatedAt: Date
       isPrivate: boolean
-      location: string | null
       birthday: Date | null
+      location: string | null
     }, ExtArgs["result"]["user"]>
     composites: {}
   }
@@ -4302,15 +4302,15 @@ export namespace Prisma {
    */
   export interface Prisma__UserClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    posts<T extends User$postsArgs<ExtArgs> = {}>(args?: Subset<T, User$postsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PostPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    likes<T extends User$likesArgs<ExtArgs> = {}>(args?: Subset<T, User$likesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LikePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    replies<T extends User$repliesArgs<ExtArgs> = {}>(args?: Subset<T, User$repliesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReplyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    followedBy<T extends User$followedByArgs<ExtArgs> = {}>(args?: Subset<T, User$followedByArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FollowPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    following<T extends User$followingArgs<ExtArgs> = {}>(args?: Subset<T, User$followingArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FollowPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    rankingLists<T extends User$rankingListsArgs<ExtArgs> = {}>(args?: Subset<T, User$rankingListsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RankingListPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    sentFollowRequests<T extends User$sentFollowRequestsArgs<ExtArgs> = {}>(args?: Subset<T, User$sentFollowRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FollowRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    receivedFollowRequests<T extends User$receivedFollowRequestsArgs<ExtArgs> = {}>(args?: Subset<T, User$receivedFollowRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FollowRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     feedItems<T extends User$feedItemsArgs<ExtArgs> = {}>(args?: Subset<T, User$feedItemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FeedItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    following<T extends User$followingArgs<ExtArgs> = {}>(args?: Subset<T, User$followingArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FollowPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    followedBy<T extends User$followedByArgs<ExtArgs> = {}>(args?: Subset<T, User$followedByArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FollowPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    receivedFollowRequests<T extends User$receivedFollowRequestsArgs<ExtArgs> = {}>(args?: Subset<T, User$receivedFollowRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FollowRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    sentFollowRequests<T extends User$sentFollowRequestsArgs<ExtArgs> = {}>(args?: Subset<T, User$sentFollowRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FollowRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    likes<T extends User$likesArgs<ExtArgs> = {}>(args?: Subset<T, User$likesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LikePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    posts<T extends User$postsArgs<ExtArgs> = {}>(args?: Subset<T, User$postsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PostPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    rankingLists<T extends User$rankingListsArgs<ExtArgs> = {}>(args?: Subset<T, User$rankingListsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RankingListPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    replies<T extends User$repliesArgs<ExtArgs> = {}>(args?: Subset<T, User$repliesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReplyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     retweets<T extends User$retweetsArgs<ExtArgs> = {}>(args?: Subset<T, User$retweetsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RetweetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -4352,8 +4352,8 @@ export namespace Prisma {
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
     readonly isPrivate: FieldRef<"User", 'Boolean'>
-    readonly location: FieldRef<"User", 'String'>
     readonly birthday: FieldRef<"User", 'DateTime'>
+    readonly location: FieldRef<"User", 'String'>
   }
     
 
@@ -4742,99 +4742,27 @@ export namespace Prisma {
   }
 
   /**
-   * User.posts
+   * User.feedItems
    */
-  export type User$postsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type User$feedItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Post
+     * Select specific fields to fetch from the FeedItem
      */
-    select?: PostSelect<ExtArgs> | null
+    select?: FeedItemSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the Post
+     * Omit specific fields from the FeedItem
      */
-    omit?: PostOmit<ExtArgs> | null
+    omit?: FeedItemOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: PostInclude<ExtArgs> | null
-    where?: PostWhereInput
-    orderBy?: PostOrderByWithRelationInput | PostOrderByWithRelationInput[]
-    cursor?: PostWhereUniqueInput
+    include?: FeedItemInclude<ExtArgs> | null
+    where?: FeedItemWhereInput
+    orderBy?: FeedItemOrderByWithRelationInput | FeedItemOrderByWithRelationInput[]
+    cursor?: FeedItemWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: PostScalarFieldEnum | PostScalarFieldEnum[]
-  }
-
-  /**
-   * User.likes
-   */
-  export type User$likesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Like
-     */
-    select?: LikeSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Like
-     */
-    omit?: LikeOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: LikeInclude<ExtArgs> | null
-    where?: LikeWhereInput
-    orderBy?: LikeOrderByWithRelationInput | LikeOrderByWithRelationInput[]
-    cursor?: LikeWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: LikeScalarFieldEnum | LikeScalarFieldEnum[]
-  }
-
-  /**
-   * User.replies
-   */
-  export type User$repliesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Reply
-     */
-    select?: ReplySelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Reply
-     */
-    omit?: ReplyOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ReplyInclude<ExtArgs> | null
-    where?: ReplyWhereInput
-    orderBy?: ReplyOrderByWithRelationInput | ReplyOrderByWithRelationInput[]
-    cursor?: ReplyWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: ReplyScalarFieldEnum | ReplyScalarFieldEnum[]
-  }
-
-  /**
-   * User.followedBy
-   */
-  export type User$followedByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Follow
-     */
-    select?: FollowSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Follow
-     */
-    omit?: FollowOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: FollowInclude<ExtArgs> | null
-    where?: FollowWhereInput
-    orderBy?: FollowOrderByWithRelationInput | FollowOrderByWithRelationInput[]
-    cursor?: FollowWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: FollowScalarFieldEnum | FollowScalarFieldEnum[]
+    distinct?: FeedItemScalarFieldEnum | FeedItemScalarFieldEnum[]
   }
 
   /**
@@ -4862,51 +4790,27 @@ export namespace Prisma {
   }
 
   /**
-   * User.rankingLists
+   * User.followedBy
    */
-  export type User$rankingListsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type User$followedByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the RankingList
+     * Select specific fields to fetch from the Follow
      */
-    select?: RankingListSelect<ExtArgs> | null
+    select?: FollowSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the RankingList
+     * Omit specific fields from the Follow
      */
-    omit?: RankingListOmit<ExtArgs> | null
+    omit?: FollowOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: RankingListInclude<ExtArgs> | null
-    where?: RankingListWhereInput
-    orderBy?: RankingListOrderByWithRelationInput | RankingListOrderByWithRelationInput[]
-    cursor?: RankingListWhereUniqueInput
+    include?: FollowInclude<ExtArgs> | null
+    where?: FollowWhereInput
+    orderBy?: FollowOrderByWithRelationInput | FollowOrderByWithRelationInput[]
+    cursor?: FollowWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: RankingListScalarFieldEnum | RankingListScalarFieldEnum[]
-  }
-
-  /**
-   * User.sentFollowRequests
-   */
-  export type User$sentFollowRequestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the FollowRequest
-     */
-    select?: FollowRequestSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the FollowRequest
-     */
-    omit?: FollowRequestOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: FollowRequestInclude<ExtArgs> | null
-    where?: FollowRequestWhereInput
-    orderBy?: FollowRequestOrderByWithRelationInput | FollowRequestOrderByWithRelationInput[]
-    cursor?: FollowRequestWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: FollowRequestScalarFieldEnum | FollowRequestScalarFieldEnum[]
+    distinct?: FollowScalarFieldEnum | FollowScalarFieldEnum[]
   }
 
   /**
@@ -4934,27 +4838,123 @@ export namespace Prisma {
   }
 
   /**
-   * User.feedItems
+   * User.sentFollowRequests
    */
-  export type User$feedItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type User$sentFollowRequestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the FeedItem
+     * Select specific fields to fetch from the FollowRequest
      */
-    select?: FeedItemSelect<ExtArgs> | null
+    select?: FollowRequestSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the FeedItem
+     * Omit specific fields from the FollowRequest
      */
-    omit?: FeedItemOmit<ExtArgs> | null
+    omit?: FollowRequestOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: FeedItemInclude<ExtArgs> | null
-    where?: FeedItemWhereInput
-    orderBy?: FeedItemOrderByWithRelationInput | FeedItemOrderByWithRelationInput[]
-    cursor?: FeedItemWhereUniqueInput
+    include?: FollowRequestInclude<ExtArgs> | null
+    where?: FollowRequestWhereInput
+    orderBy?: FollowRequestOrderByWithRelationInput | FollowRequestOrderByWithRelationInput[]
+    cursor?: FollowRequestWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: FeedItemScalarFieldEnum | FeedItemScalarFieldEnum[]
+    distinct?: FollowRequestScalarFieldEnum | FollowRequestScalarFieldEnum[]
+  }
+
+  /**
+   * User.likes
+   */
+  export type User$likesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Like
+     */
+    select?: LikeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Like
+     */
+    omit?: LikeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LikeInclude<ExtArgs> | null
+    where?: LikeWhereInput
+    orderBy?: LikeOrderByWithRelationInput | LikeOrderByWithRelationInput[]
+    cursor?: LikeWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: LikeScalarFieldEnum | LikeScalarFieldEnum[]
+  }
+
+  /**
+   * User.posts
+   */
+  export type User$postsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Post
+     */
+    select?: PostSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Post
+     */
+    omit?: PostOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostInclude<ExtArgs> | null
+    where?: PostWhereInput
+    orderBy?: PostOrderByWithRelationInput | PostOrderByWithRelationInput[]
+    cursor?: PostWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PostScalarFieldEnum | PostScalarFieldEnum[]
+  }
+
+  /**
+   * User.rankingLists
+   */
+  export type User$rankingListsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RankingList
+     */
+    select?: RankingListSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RankingList
+     */
+    omit?: RankingListOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RankingListInclude<ExtArgs> | null
+    where?: RankingListWhereInput
+    orderBy?: RankingListOrderByWithRelationInput | RankingListOrderByWithRelationInput[]
+    cursor?: RankingListWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: RankingListScalarFieldEnum | RankingListScalarFieldEnum[]
+  }
+
+  /**
+   * User.replies
+   */
+  export type User$repliesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Reply
+     */
+    select?: ReplySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Reply
+     */
+    omit?: ReplyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReplyInclude<ExtArgs> | null
+    where?: ReplyWhereInput
+    orderBy?: ReplyOrderByWithRelationInput | ReplyOrderByWithRelationInput[]
+    cursor?: ReplyWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ReplyScalarFieldEnum | ReplyScalarFieldEnum[]
   }
 
   /**
@@ -5242,10 +5242,10 @@ export namespace Prisma {
     updatedAt?: boolean
     displayOrder?: boolean
     likeCount?: boolean
-    author?: boolean | UserDefaultArgs<ExtArgs>
-    items?: boolean | RankingList$itemsArgs<ExtArgs>
     feedItems?: boolean | RankingList$feedItemsArgs<ExtArgs>
     likes?: boolean | RankingList$likesArgs<ExtArgs>
+    items?: boolean | RankingList$itemsArgs<ExtArgs>
+    author?: boolean | UserDefaultArgs<ExtArgs>
     tags?: boolean | RankingList$tagsArgs<ExtArgs>
     _count?: boolean | RankingListCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["rankingList"]>
@@ -5293,10 +5293,10 @@ export namespace Prisma {
 
   export type RankingListOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "subject" | "description" | "status" | "listImageUrl" | "authorId" | "createdAt" | "updatedAt" | "displayOrder" | "likeCount", ExtArgs["result"]["rankingList"]>
   export type RankingListInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    author?: boolean | UserDefaultArgs<ExtArgs>
-    items?: boolean | RankingList$itemsArgs<ExtArgs>
     feedItems?: boolean | RankingList$feedItemsArgs<ExtArgs>
     likes?: boolean | RankingList$likesArgs<ExtArgs>
+    items?: boolean | RankingList$itemsArgs<ExtArgs>
+    author?: boolean | UserDefaultArgs<ExtArgs>
     tags?: boolean | RankingList$tagsArgs<ExtArgs>
     _count?: boolean | RankingListCountOutputTypeDefaultArgs<ExtArgs>
   }
@@ -5310,10 +5310,10 @@ export namespace Prisma {
   export type $RankingListPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "RankingList"
     objects: {
-      author: Prisma.$UserPayload<ExtArgs>
-      items: Prisma.$RankedItemPayload<ExtArgs>[]
       feedItems: Prisma.$FeedItemPayload<ExtArgs>[]
       likes: Prisma.$LikePayload<ExtArgs>[]
+      items: Prisma.$RankedItemPayload<ExtArgs>[]
+      author: Prisma.$UserPayload<ExtArgs>
       tags: Prisma.$TagPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -5721,10 +5721,10 @@ export namespace Prisma {
    */
   export interface Prisma__RankingListClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    author<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    items<T extends RankingList$itemsArgs<ExtArgs> = {}>(args?: Subset<T, RankingList$itemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RankedItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     feedItems<T extends RankingList$feedItemsArgs<ExtArgs> = {}>(args?: Subset<T, RankingList$feedItemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FeedItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     likes<T extends RankingList$likesArgs<ExtArgs> = {}>(args?: Subset<T, RankingList$likesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LikePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    items<T extends RankingList$itemsArgs<ExtArgs> = {}>(args?: Subset<T, RankingList$itemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RankedItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    author<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     tags<T extends RankingList$tagsArgs<ExtArgs> = {}>(args?: Subset<T, RankingList$tagsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TagPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -6161,30 +6161,6 @@ export namespace Prisma {
   }
 
   /**
-   * RankingList.items
-   */
-  export type RankingList$itemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the RankedItem
-     */
-    select?: RankedItemSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the RankedItem
-     */
-    omit?: RankedItemOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: RankedItemInclude<ExtArgs> | null
-    where?: RankedItemWhereInput
-    orderBy?: RankedItemOrderByWithRelationInput | RankedItemOrderByWithRelationInput[]
-    cursor?: RankedItemWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: RankedItemScalarFieldEnum | RankedItemScalarFieldEnum[]
-  }
-
-  /**
    * RankingList.feedItems
    */
   export type RankingList$feedItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -6230,6 +6206,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: LikeScalarFieldEnum | LikeScalarFieldEnum[]
+  }
+
+  /**
+   * RankingList.items
+   */
+  export type RankingList$itemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RankedItem
+     */
+    select?: RankedItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RankedItem
+     */
+    omit?: RankedItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RankedItemInclude<ExtArgs> | null
+    where?: RankedItemWhereInput
+    orderBy?: RankedItemOrderByWithRelationInput | RankedItemOrderByWithRelationInput[]
+    cursor?: RankedItemWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: RankedItemScalarFieldEnum | RankedItemScalarFieldEnum[]
   }
 
   /**
@@ -10583,8 +10583,8 @@ export namespace Prisma {
     subject: string | null
     itemName: string | null
     avgRank: number | null
-    count: number | null
     calculationDate: Date | null
+    count: number | null
   }
 
   export type AverageItemRankMaxAggregateOutputType = {
@@ -10592,8 +10592,8 @@ export namespace Prisma {
     subject: string | null
     itemName: string | null
     avgRank: number | null
-    count: number | null
     calculationDate: Date | null
+    count: number | null
   }
 
   export type AverageItemRankCountAggregateOutputType = {
@@ -10601,8 +10601,8 @@ export namespace Prisma {
     subject: number
     itemName: number
     avgRank: number
-    count: number
     calculationDate: number
+    count: number
     _all: number
   }
 
@@ -10622,8 +10622,8 @@ export namespace Prisma {
     subject?: true
     itemName?: true
     avgRank?: true
-    count?: true
     calculationDate?: true
+    count?: true
   }
 
   export type AverageItemRankMaxAggregateInputType = {
@@ -10631,8 +10631,8 @@ export namespace Prisma {
     subject?: true
     itemName?: true
     avgRank?: true
-    count?: true
     calculationDate?: true
+    count?: true
   }
 
   export type AverageItemRankCountAggregateInputType = {
@@ -10640,8 +10640,8 @@ export namespace Prisma {
     subject?: true
     itemName?: true
     avgRank?: true
-    count?: true
     calculationDate?: true
+    count?: true
     _all?: true
   }
 
@@ -10736,8 +10736,8 @@ export namespace Prisma {
     subject: string
     itemName: string
     avgRank: number
-    count: number
     calculationDate: Date
+    count: number
     _count: AverageItemRankCountAggregateOutputType | null
     _avg: AverageItemRankAvgAggregateOutputType | null
     _sum: AverageItemRankSumAggregateOutputType | null
@@ -10764,8 +10764,8 @@ export namespace Prisma {
     subject?: boolean
     itemName?: boolean
     avgRank?: boolean
-    count?: boolean
     calculationDate?: boolean
+    count?: boolean
   }, ExtArgs["result"]["averageItemRank"]>
 
   export type AverageItemRankSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -10773,8 +10773,8 @@ export namespace Prisma {
     subject?: boolean
     itemName?: boolean
     avgRank?: boolean
-    count?: boolean
     calculationDate?: boolean
+    count?: boolean
   }, ExtArgs["result"]["averageItemRank"]>
 
   export type AverageItemRankSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -10782,8 +10782,8 @@ export namespace Prisma {
     subject?: boolean
     itemName?: boolean
     avgRank?: boolean
-    count?: boolean
     calculationDate?: boolean
+    count?: boolean
   }, ExtArgs["result"]["averageItemRank"]>
 
   export type AverageItemRankSelectScalar = {
@@ -10791,11 +10791,11 @@ export namespace Prisma {
     subject?: boolean
     itemName?: boolean
     avgRank?: boolean
-    count?: boolean
     calculationDate?: boolean
+    count?: boolean
   }
 
-  export type AverageItemRankOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "subject" | "itemName" | "avgRank" | "count" | "calculationDate", ExtArgs["result"]["averageItemRank"]>
+  export type AverageItemRankOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "subject" | "itemName" | "avgRank" | "calculationDate" | "count", ExtArgs["result"]["averageItemRank"]>
 
   export type $AverageItemRankPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "AverageItemRank"
@@ -10805,8 +10805,8 @@ export namespace Prisma {
       subject: string
       itemName: string
       avgRank: number
-      count: number
       calculationDate: Date
+      count: number
     }, ExtArgs["result"]["averageItemRank"]>
     composites: {}
   }
@@ -11234,8 +11234,8 @@ export namespace Prisma {
     readonly subject: FieldRef<"AverageItemRank", 'String'>
     readonly itemName: FieldRef<"AverageItemRank", 'String'>
     readonly avgRank: FieldRef<"AverageItemRank", 'Float'>
-    readonly count: FieldRef<"AverageItemRank", 'Int'>
     readonly calculationDate: FieldRef<"AverageItemRank", 'DateTime'>
+    readonly count: FieldRef<"AverageItemRank", 'Int'>
   }
     
 
@@ -11625,31 +11625,31 @@ export namespace Prisma {
   export type PostMinAggregateOutputType = {
     id: string | null
     content: string | null
-    imageUrl: string | null
     authorId: string | null
     createdAt: Date | null
     updatedAt: Date | null
     likeCount: number | null
+    imageUrl: string | null
   }
 
   export type PostMaxAggregateOutputType = {
     id: string | null
     content: string | null
-    imageUrl: string | null
     authorId: string | null
     createdAt: Date | null
     updatedAt: Date | null
     likeCount: number | null
+    imageUrl: string | null
   }
 
   export type PostCountAggregateOutputType = {
     id: number
     content: number
-    imageUrl: number
     authorId: number
     createdAt: number
     updatedAt: number
     likeCount: number
+    imageUrl: number
     _all: number
   }
 
@@ -11665,31 +11665,31 @@ export namespace Prisma {
   export type PostMinAggregateInputType = {
     id?: true
     content?: true
-    imageUrl?: true
     authorId?: true
     createdAt?: true
     updatedAt?: true
     likeCount?: true
+    imageUrl?: true
   }
 
   export type PostMaxAggregateInputType = {
     id?: true
     content?: true
-    imageUrl?: true
     authorId?: true
     createdAt?: true
     updatedAt?: true
     likeCount?: true
+    imageUrl?: true
   }
 
   export type PostCountAggregateInputType = {
     id?: true
     content?: true
-    imageUrl?: true
     authorId?: true
     createdAt?: true
     updatedAt?: true
     likeCount?: true
+    imageUrl?: true
     _all?: true
   }
 
@@ -11782,11 +11782,11 @@ export namespace Prisma {
   export type PostGroupByOutputType = {
     id: string
     content: string
-    imageUrl: string | null
     authorId: string
     createdAt: Date
     updatedAt: Date
     likeCount: number
+    imageUrl: string | null
     _count: PostCountAggregateOutputType | null
     _avg: PostAvgAggregateOutputType | null
     _sum: PostSumAggregateOutputType | null
@@ -11811,56 +11811,56 @@ export namespace Prisma {
   export type PostSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     content?: boolean
-    imageUrl?: boolean
     authorId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     likeCount?: boolean
-    author?: boolean | UserDefaultArgs<ExtArgs>
-    replies?: boolean | Post$repliesArgs<ExtArgs>
+    imageUrl?: boolean
     feedItems?: boolean | Post$feedItemsArgs<ExtArgs>
     likes?: boolean | Post$likesArgs<ExtArgs>
+    author?: boolean | UserDefaultArgs<ExtArgs>
+    replies?: boolean | Post$repliesArgs<ExtArgs>
     _count?: boolean | PostCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["post"]>
 
   export type PostSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     content?: boolean
-    imageUrl?: boolean
     authorId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     likeCount?: boolean
+    imageUrl?: boolean
     author?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["post"]>
 
   export type PostSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     content?: boolean
-    imageUrl?: boolean
     authorId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     likeCount?: boolean
+    imageUrl?: boolean
     author?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["post"]>
 
   export type PostSelectScalar = {
     id?: boolean
     content?: boolean
-    imageUrl?: boolean
     authorId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     likeCount?: boolean
+    imageUrl?: boolean
   }
 
-  export type PostOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "content" | "imageUrl" | "authorId" | "createdAt" | "updatedAt" | "likeCount", ExtArgs["result"]["post"]>
+  export type PostOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "content" | "authorId" | "createdAt" | "updatedAt" | "likeCount" | "imageUrl", ExtArgs["result"]["post"]>
   export type PostInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    author?: boolean | UserDefaultArgs<ExtArgs>
-    replies?: boolean | Post$repliesArgs<ExtArgs>
     feedItems?: boolean | Post$feedItemsArgs<ExtArgs>
     likes?: boolean | Post$likesArgs<ExtArgs>
+    author?: boolean | UserDefaultArgs<ExtArgs>
+    replies?: boolean | Post$repliesArgs<ExtArgs>
     _count?: boolean | PostCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type PostIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -11873,19 +11873,19 @@ export namespace Prisma {
   export type $PostPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Post"
     objects: {
-      author: Prisma.$UserPayload<ExtArgs>
-      replies: Prisma.$ReplyPayload<ExtArgs>[]
       feedItems: Prisma.$FeedItemPayload<ExtArgs>[]
       likes: Prisma.$LikePayload<ExtArgs>[]
+      author: Prisma.$UserPayload<ExtArgs>
+      replies: Prisma.$ReplyPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       content: string
-      imageUrl: string | null
       authorId: string
       createdAt: Date
       updatedAt: Date
       likeCount: number
+      imageUrl: string | null
     }, ExtArgs["result"]["post"]>
     composites: {}
   }
@@ -12280,10 +12280,10 @@ export namespace Prisma {
    */
   export interface Prisma__PostClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    author<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    replies<T extends Post$repliesArgs<ExtArgs> = {}>(args?: Subset<T, Post$repliesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReplyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     feedItems<T extends Post$feedItemsArgs<ExtArgs> = {}>(args?: Subset<T, Post$feedItemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FeedItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     likes<T extends Post$likesArgs<ExtArgs> = {}>(args?: Subset<T, Post$likesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LikePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    author<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    replies<T extends Post$repliesArgs<ExtArgs> = {}>(args?: Subset<T, Post$repliesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReplyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -12315,11 +12315,11 @@ export namespace Prisma {
   interface PostFieldRefs {
     readonly id: FieldRef<"Post", 'String'>
     readonly content: FieldRef<"Post", 'String'>
-    readonly imageUrl: FieldRef<"Post", 'String'>
     readonly authorId: FieldRef<"Post", 'String'>
     readonly createdAt: FieldRef<"Post", 'DateTime'>
     readonly updatedAt: FieldRef<"Post", 'DateTime'>
     readonly likeCount: FieldRef<"Post", 'Int'>
+    readonly imageUrl: FieldRef<"Post", 'String'>
   }
     
 
@@ -12716,30 +12716,6 @@ export namespace Prisma {
   }
 
   /**
-   * Post.replies
-   */
-  export type Post$repliesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Reply
-     */
-    select?: ReplySelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Reply
-     */
-    omit?: ReplyOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ReplyInclude<ExtArgs> | null
-    where?: ReplyWhereInput
-    orderBy?: ReplyOrderByWithRelationInput | ReplyOrderByWithRelationInput[]
-    cursor?: ReplyWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: ReplyScalarFieldEnum | ReplyScalarFieldEnum[]
-  }
-
-  /**
    * Post.feedItems
    */
   export type Post$feedItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -12785,6 +12761,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: LikeScalarFieldEnum | LikeScalarFieldEnum[]
+  }
+
+  /**
+   * Post.replies
+   */
+  export type Post$repliesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Reply
+     */
+    select?: ReplySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Reply
+     */
+    omit?: ReplyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReplyInclude<ExtArgs> | null
+    where?: ReplyWhereInput
+    orderBy?: ReplyOrderByWithRelationInput | ReplyOrderByWithRelationInput[]
+    cursor?: ReplyWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ReplyScalarFieldEnum | ReplyScalarFieldEnum[]
   }
 
   /**
@@ -12962,8 +12962,8 @@ export namespace Prisma {
     userId?: boolean
     feedItemId?: boolean
     createdAt?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
     feedItem?: boolean | FeedItemDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["retweet"]>
 
   export type RetweetSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -12971,8 +12971,8 @@ export namespace Prisma {
     userId?: boolean
     feedItemId?: boolean
     createdAt?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
     feedItem?: boolean | FeedItemDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["retweet"]>
 
   export type RetweetSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -12980,8 +12980,8 @@ export namespace Prisma {
     userId?: boolean
     feedItemId?: boolean
     createdAt?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
     feedItem?: boolean | FeedItemDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["retweet"]>
 
   export type RetweetSelectScalar = {
@@ -12993,23 +12993,23 @@ export namespace Prisma {
 
   export type RetweetOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "feedItemId" | "createdAt", ExtArgs["result"]["retweet"]>
   export type RetweetInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
     feedItem?: boolean | FeedItemDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }
   export type RetweetIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
     feedItem?: boolean | FeedItemDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }
   export type RetweetIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
     feedItem?: boolean | FeedItemDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }
 
   export type $RetweetPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Retweet"
     objects: {
-      user: Prisma.$UserPayload<ExtArgs>
       feedItem: Prisma.$FeedItemPayload<ExtArgs>
+      user: Prisma.$UserPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -13410,8 +13410,8 @@ export namespace Prisma {
    */
   export interface Prisma__RetweetClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     feedItem<T extends FeedItemDefaultArgs<ExtArgs> = {}>(args?: Subset<T, FeedItemDefaultArgs<ExtArgs>>): Prisma__FeedItemClient<$Result.GetResult<Prisma.$FeedItemPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -14097,14 +14097,14 @@ export namespace Prisma {
     retweetOfFeedItemId?: boolean
     quotedFeedItemId?: boolean
     quoteRetweetCount?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
     post?: boolean | FeedItem$postArgs<ExtArgs>
     rankingList?: boolean | FeedItem$rankingListArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    quotedFeedItem?: boolean | FeedItem$quotedFeedItemArgs<ExtArgs>
+    quotedByItems?: boolean | FeedItem$quotedByItemsArgs<ExtArgs>
     retweetOfFeedItem?: boolean | FeedItem$retweetOfFeedItemArgs<ExtArgs>
     retweetedByItems?: boolean | FeedItem$retweetedByItemsArgs<ExtArgs>
     retweets?: boolean | FeedItem$retweetsArgs<ExtArgs>
-    quotedFeedItem?: boolean | FeedItem$quotedFeedItemArgs<ExtArgs>
-    quotedByItems?: boolean | FeedItem$quotedByItemsArgs<ExtArgs>
     _count?: boolean | FeedItemCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["feedItem"]>
 
@@ -14119,11 +14119,11 @@ export namespace Prisma {
     retweetOfFeedItemId?: boolean
     quotedFeedItemId?: boolean
     quoteRetweetCount?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
     post?: boolean | FeedItem$postArgs<ExtArgs>
     rankingList?: boolean | FeedItem$rankingListArgs<ExtArgs>
-    retweetOfFeedItem?: boolean | FeedItem$retweetOfFeedItemArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
     quotedFeedItem?: boolean | FeedItem$quotedFeedItemArgs<ExtArgs>
+    retweetOfFeedItem?: boolean | FeedItem$retweetOfFeedItemArgs<ExtArgs>
   }, ExtArgs["result"]["feedItem"]>
 
   export type FeedItemSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -14137,11 +14137,11 @@ export namespace Prisma {
     retweetOfFeedItemId?: boolean
     quotedFeedItemId?: boolean
     quoteRetweetCount?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
     post?: boolean | FeedItem$postArgs<ExtArgs>
     rankingList?: boolean | FeedItem$rankingListArgs<ExtArgs>
-    retweetOfFeedItem?: boolean | FeedItem$retweetOfFeedItemArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
     quotedFeedItem?: boolean | FeedItem$quotedFeedItemArgs<ExtArgs>
+    retweetOfFeedItem?: boolean | FeedItem$retweetOfFeedItemArgs<ExtArgs>
   }, ExtArgs["result"]["feedItem"]>
 
   export type FeedItemSelectScalar = {
@@ -14159,42 +14159,42 @@ export namespace Prisma {
 
   export type FeedItemOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "type" | "createdAt" | "updatedAt" | "userId" | "postId" | "rankingListId" | "retweetOfFeedItemId" | "quotedFeedItemId" | "quoteRetweetCount", ExtArgs["result"]["feedItem"]>
   export type FeedItemInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
     post?: boolean | FeedItem$postArgs<ExtArgs>
     rankingList?: boolean | FeedItem$rankingListArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    quotedFeedItem?: boolean | FeedItem$quotedFeedItemArgs<ExtArgs>
+    quotedByItems?: boolean | FeedItem$quotedByItemsArgs<ExtArgs>
     retweetOfFeedItem?: boolean | FeedItem$retweetOfFeedItemArgs<ExtArgs>
     retweetedByItems?: boolean | FeedItem$retweetedByItemsArgs<ExtArgs>
     retweets?: boolean | FeedItem$retweetsArgs<ExtArgs>
-    quotedFeedItem?: boolean | FeedItem$quotedFeedItemArgs<ExtArgs>
-    quotedByItems?: boolean | FeedItem$quotedByItemsArgs<ExtArgs>
     _count?: boolean | FeedItemCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type FeedItemIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
     post?: boolean | FeedItem$postArgs<ExtArgs>
     rankingList?: boolean | FeedItem$rankingListArgs<ExtArgs>
-    retweetOfFeedItem?: boolean | FeedItem$retweetOfFeedItemArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
     quotedFeedItem?: boolean | FeedItem$quotedFeedItemArgs<ExtArgs>
+    retweetOfFeedItem?: boolean | FeedItem$retweetOfFeedItemArgs<ExtArgs>
   }
   export type FeedItemIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
     post?: boolean | FeedItem$postArgs<ExtArgs>
     rankingList?: boolean | FeedItem$rankingListArgs<ExtArgs>
-    retweetOfFeedItem?: boolean | FeedItem$retweetOfFeedItemArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
     quotedFeedItem?: boolean | FeedItem$quotedFeedItemArgs<ExtArgs>
+    retweetOfFeedItem?: boolean | FeedItem$retweetOfFeedItemArgs<ExtArgs>
   }
 
   export type $FeedItemPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "FeedItem"
     objects: {
-      user: Prisma.$UserPayload<ExtArgs>
       post: Prisma.$PostPayload<ExtArgs> | null
       rankingList: Prisma.$RankingListPayload<ExtArgs> | null
+      user: Prisma.$UserPayload<ExtArgs>
+      quotedFeedItem: Prisma.$FeedItemPayload<ExtArgs> | null
+      quotedByItems: Prisma.$FeedItemPayload<ExtArgs>[]
       retweetOfFeedItem: Prisma.$FeedItemPayload<ExtArgs> | null
       retweetedByItems: Prisma.$FeedItemPayload<ExtArgs>[]
       retweets: Prisma.$RetweetPayload<ExtArgs>[]
-      quotedFeedItem: Prisma.$FeedItemPayload<ExtArgs> | null
-      quotedByItems: Prisma.$FeedItemPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -14601,14 +14601,14 @@ export namespace Prisma {
    */
   export interface Prisma__FeedItemClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     post<T extends FeedItem$postArgs<ExtArgs> = {}>(args?: Subset<T, FeedItem$postArgs<ExtArgs>>): Prisma__PostClient<$Result.GetResult<Prisma.$PostPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     rankingList<T extends FeedItem$rankingListArgs<ExtArgs> = {}>(args?: Subset<T, FeedItem$rankingListArgs<ExtArgs>>): Prisma__RankingListClient<$Result.GetResult<Prisma.$RankingListPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    quotedFeedItem<T extends FeedItem$quotedFeedItemArgs<ExtArgs> = {}>(args?: Subset<T, FeedItem$quotedFeedItemArgs<ExtArgs>>): Prisma__FeedItemClient<$Result.GetResult<Prisma.$FeedItemPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    quotedByItems<T extends FeedItem$quotedByItemsArgs<ExtArgs> = {}>(args?: Subset<T, FeedItem$quotedByItemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FeedItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     retweetOfFeedItem<T extends FeedItem$retweetOfFeedItemArgs<ExtArgs> = {}>(args?: Subset<T, FeedItem$retweetOfFeedItemArgs<ExtArgs>>): Prisma__FeedItemClient<$Result.GetResult<Prisma.$FeedItemPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     retweetedByItems<T extends FeedItem$retweetedByItemsArgs<ExtArgs> = {}>(args?: Subset<T, FeedItem$retweetedByItemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FeedItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     retweets<T extends FeedItem$retweetsArgs<ExtArgs> = {}>(args?: Subset<T, FeedItem$retweetsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RetweetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    quotedFeedItem<T extends FeedItem$quotedFeedItemArgs<ExtArgs> = {}>(args?: Subset<T, FeedItem$quotedFeedItemArgs<ExtArgs>>): Prisma__FeedItemClient<$Result.GetResult<Prisma.$FeedItemPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-    quotedByItems<T extends FeedItem$quotedByItemsArgs<ExtArgs> = {}>(args?: Subset<T, FeedItem$quotedByItemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FeedItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -15082,6 +15082,49 @@ export namespace Prisma {
   }
 
   /**
+   * FeedItem.quotedFeedItem
+   */
+  export type FeedItem$quotedFeedItemArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FeedItem
+     */
+    select?: FeedItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FeedItem
+     */
+    omit?: FeedItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FeedItemInclude<ExtArgs> | null
+    where?: FeedItemWhereInput
+  }
+
+  /**
+   * FeedItem.quotedByItems
+   */
+  export type FeedItem$quotedByItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FeedItem
+     */
+    select?: FeedItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FeedItem
+     */
+    omit?: FeedItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FeedItemInclude<ExtArgs> | null
+    where?: FeedItemWhereInput
+    orderBy?: FeedItemOrderByWithRelationInput | FeedItemOrderByWithRelationInput[]
+    cursor?: FeedItemWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: FeedItemScalarFieldEnum | FeedItemScalarFieldEnum[]
+  }
+
+  /**
    * FeedItem.retweetOfFeedItem
    */
   export type FeedItem$retweetOfFeedItemArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -15146,49 +15189,6 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: RetweetScalarFieldEnum | RetweetScalarFieldEnum[]
-  }
-
-  /**
-   * FeedItem.quotedFeedItem
-   */
-  export type FeedItem$quotedFeedItemArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the FeedItem
-     */
-    select?: FeedItemSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the FeedItem
-     */
-    omit?: FeedItemOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: FeedItemInclude<ExtArgs> | null
-    where?: FeedItemWhereInput
-  }
-
-  /**
-   * FeedItem.quotedByItems
-   */
-  export type FeedItem$quotedByItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the FeedItem
-     */
-    select?: FeedItemSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the FeedItem
-     */
-    omit?: FeedItemOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: FeedItemInclude<ExtArgs> | null
-    where?: FeedItemWhereInput
-    orderBy?: FeedItemOrderByWithRelationInput | FeedItemOrderByWithRelationInput[]
-    cursor?: FeedItemWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: FeedItemScalarFieldEnum | FeedItemScalarFieldEnum[]
   }
 
   /**
@@ -15374,9 +15374,9 @@ export namespace Prisma {
     createdAt?: boolean
     postId?: boolean
     rankingListId?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
     post?: boolean | Like$postArgs<ExtArgs>
     rankingList?: boolean | Like$rankingListArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["like"]>
 
   export type LikeSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -15385,9 +15385,9 @@ export namespace Prisma {
     createdAt?: boolean
     postId?: boolean
     rankingListId?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
     post?: boolean | Like$postArgs<ExtArgs>
     rankingList?: boolean | Like$rankingListArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["like"]>
 
   export type LikeSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -15396,9 +15396,9 @@ export namespace Prisma {
     createdAt?: boolean
     postId?: boolean
     rankingListId?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
     post?: boolean | Like$postArgs<ExtArgs>
     rankingList?: boolean | Like$rankingListArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["like"]>
 
   export type LikeSelectScalar = {
@@ -15411,27 +15411,27 @@ export namespace Prisma {
 
   export type LikeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "createdAt" | "postId" | "rankingListId", ExtArgs["result"]["like"]>
   export type LikeInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
     post?: boolean | Like$postArgs<ExtArgs>
     rankingList?: boolean | Like$rankingListArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }
   export type LikeIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
     post?: boolean | Like$postArgs<ExtArgs>
     rankingList?: boolean | Like$rankingListArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }
   export type LikeIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
     post?: boolean | Like$postArgs<ExtArgs>
     rankingList?: boolean | Like$rankingListArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }
 
   export type $LikePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Like"
     objects: {
-      user: Prisma.$UserPayload<ExtArgs>
       post: Prisma.$PostPayload<ExtArgs> | null
       rankingList: Prisma.$RankingListPayload<ExtArgs> | null
+      user: Prisma.$UserPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -15833,9 +15833,9 @@ export namespace Prisma {
    */
   export interface Prisma__LikeClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     post<T extends Like$postArgs<ExtArgs> = {}>(args?: Subset<T, Like$postArgs<ExtArgs>>): Prisma__PostClient<$Result.GetResult<Prisma.$PostPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     rankingList<T extends Like$rankingListArgs<ExtArgs> = {}>(args?: Subset<T, Like$rankingListArgs<ExtArgs>>): Prisma__RankingListClient<$Result.GetResult<Prisma.$RankingListPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -16494,8 +16494,8 @@ export namespace Prisma {
     postId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
     post?: boolean | PostDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["reply"]>
 
   export type ReplySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -16505,8 +16505,8 @@ export namespace Prisma {
     postId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
     post?: boolean | PostDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["reply"]>
 
   export type ReplySelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -16516,8 +16516,8 @@ export namespace Prisma {
     postId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
     post?: boolean | PostDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["reply"]>
 
   export type ReplySelectScalar = {
@@ -16531,23 +16531,23 @@ export namespace Prisma {
 
   export type ReplyOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "content" | "userId" | "postId" | "createdAt" | "updatedAt", ExtArgs["result"]["reply"]>
   export type ReplyInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
     post?: boolean | PostDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }
   export type ReplyIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
     post?: boolean | PostDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }
   export type ReplyIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
     post?: boolean | PostDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }
 
   export type $ReplyPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Reply"
     objects: {
-      user: Prisma.$UserPayload<ExtArgs>
       post: Prisma.$PostPayload<ExtArgs>
+      user: Prisma.$UserPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -16950,8 +16950,8 @@ export namespace Prisma {
    */
   export interface Prisma__ReplyClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     post<T extends PostDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PostDefaultArgs<ExtArgs>>): Prisma__PostClient<$Result.GetResult<Prisma.$PostPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -17573,8 +17573,8 @@ export namespace Prisma {
     updatedAt?: boolean
     requesterId?: boolean
     requestedId?: boolean
-    requester?: boolean | UserDefaultArgs<ExtArgs>
     requested?: boolean | UserDefaultArgs<ExtArgs>
+    requester?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["followRequest"]>
 
   export type FollowRequestSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -17584,8 +17584,8 @@ export namespace Prisma {
     updatedAt?: boolean
     requesterId?: boolean
     requestedId?: boolean
-    requester?: boolean | UserDefaultArgs<ExtArgs>
     requested?: boolean | UserDefaultArgs<ExtArgs>
+    requester?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["followRequest"]>
 
   export type FollowRequestSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -17595,8 +17595,8 @@ export namespace Prisma {
     updatedAt?: boolean
     requesterId?: boolean
     requestedId?: boolean
-    requester?: boolean | UserDefaultArgs<ExtArgs>
     requested?: boolean | UserDefaultArgs<ExtArgs>
+    requester?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["followRequest"]>
 
   export type FollowRequestSelectScalar = {
@@ -17610,23 +17610,23 @@ export namespace Prisma {
 
   export type FollowRequestOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "status" | "createdAt" | "updatedAt" | "requesterId" | "requestedId", ExtArgs["result"]["followRequest"]>
   export type FollowRequestInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    requester?: boolean | UserDefaultArgs<ExtArgs>
     requested?: boolean | UserDefaultArgs<ExtArgs>
+    requester?: boolean | UserDefaultArgs<ExtArgs>
   }
   export type FollowRequestIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    requester?: boolean | UserDefaultArgs<ExtArgs>
     requested?: boolean | UserDefaultArgs<ExtArgs>
+    requester?: boolean | UserDefaultArgs<ExtArgs>
   }
   export type FollowRequestIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    requester?: boolean | UserDefaultArgs<ExtArgs>
     requested?: boolean | UserDefaultArgs<ExtArgs>
+    requester?: boolean | UserDefaultArgs<ExtArgs>
   }
 
   export type $FollowRequestPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "FollowRequest"
     objects: {
-      requester: Prisma.$UserPayload<ExtArgs>
       requested: Prisma.$UserPayload<ExtArgs>
+      requester: Prisma.$UserPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -18029,8 +18029,8 @@ export namespace Prisma {
    */
   export interface Prisma__FollowRequestClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    requester<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     requested<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    requester<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -19568,8 +19568,8 @@ export namespace Prisma {
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     isPrivate: 'isPrivate',
-    location: 'location',
-    birthday: 'birthday'
+    birthday: 'birthday',
+    location: 'location'
   };
 
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -19643,8 +19643,8 @@ export namespace Prisma {
     subject: 'subject',
     itemName: 'itemName',
     avgRank: 'avgRank',
-    count: 'count',
-    calculationDate: 'calculationDate'
+    calculationDate: 'calculationDate',
+    count: 'count'
   };
 
   export type AverageItemRankScalarFieldEnum = (typeof AverageItemRankScalarFieldEnum)[keyof typeof AverageItemRankScalarFieldEnum]
@@ -19653,11 +19653,11 @@ export namespace Prisma {
   export const PostScalarFieldEnum: {
     id: 'id',
     content: 'content',
-    imageUrl: 'imageUrl',
     authorId: 'authorId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
-    likeCount: 'likeCount'
+    likeCount: 'likeCount',
+    imageUrl: 'imageUrl'
   };
 
   export type PostScalarFieldEnum = (typeof PostScalarFieldEnum)[keyof typeof PostScalarFieldEnum]
@@ -19923,16 +19923,16 @@ export namespace Prisma {
     id?: StringFilter<"Tag"> | string
     name?: StringFilter<"Tag"> | string
     createdAt?: DateTimeFilter<"Tag"> | Date | string
-    rankingLists?: RankingListListRelationFilter
     trendingStats?: TrendingTagListRelationFilter
+    rankingLists?: RankingListListRelationFilter
   }
 
   export type TagOrderByWithRelationInput = {
     id?: SortOrder
     name?: SortOrder
     createdAt?: SortOrder
-    rankingLists?: RankingListOrderByRelationAggregateInput
     trendingStats?: TrendingTagOrderByRelationAggregateInput
+    rankingLists?: RankingListOrderByRelationAggregateInput
   }
 
   export type TagWhereUniqueInput = Prisma.AtLeast<{
@@ -19942,8 +19942,8 @@ export namespace Prisma {
     OR?: TagWhereInput[]
     NOT?: TagWhereInput | TagWhereInput[]
     createdAt?: DateTimeFilter<"Tag"> | Date | string
-    rankingLists?: RankingListListRelationFilter
     trendingStats?: TrendingTagListRelationFilter
+    rankingLists?: RankingListListRelationFilter
   }, "id" | "name">
 
   export type TagOrderByWithAggregationInput = {
@@ -19979,17 +19979,17 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     isPrivate?: BoolFilter<"User"> | boolean
-    location?: StringNullableFilter<"User"> | string | null
     birthday?: DateTimeNullableFilter<"User"> | Date | string | null
-    posts?: PostListRelationFilter
-    likes?: LikeListRelationFilter
-    replies?: ReplyListRelationFilter
-    followedBy?: FollowListRelationFilter
-    following?: FollowListRelationFilter
-    rankingLists?: RankingListListRelationFilter
-    sentFollowRequests?: FollowRequestListRelationFilter
-    receivedFollowRequests?: FollowRequestListRelationFilter
+    location?: StringNullableFilter<"User"> | string | null
     feedItems?: FeedItemListRelationFilter
+    following?: FollowListRelationFilter
+    followedBy?: FollowListRelationFilter
+    receivedFollowRequests?: FollowRequestListRelationFilter
+    sentFollowRequests?: FollowRequestListRelationFilter
+    likes?: LikeListRelationFilter
+    posts?: PostListRelationFilter
+    rankingLists?: RankingListListRelationFilter
+    replies?: ReplyListRelationFilter
     retweets?: RetweetListRelationFilter
   }
 
@@ -20005,17 +20005,17 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isPrivate?: SortOrder
-    location?: SortOrderInput | SortOrder
     birthday?: SortOrderInput | SortOrder
-    posts?: PostOrderByRelationAggregateInput
-    likes?: LikeOrderByRelationAggregateInput
-    replies?: ReplyOrderByRelationAggregateInput
-    followedBy?: FollowOrderByRelationAggregateInput
-    following?: FollowOrderByRelationAggregateInput
-    rankingLists?: RankingListOrderByRelationAggregateInput
-    sentFollowRequests?: FollowRequestOrderByRelationAggregateInput
-    receivedFollowRequests?: FollowRequestOrderByRelationAggregateInput
+    location?: SortOrderInput | SortOrder
     feedItems?: FeedItemOrderByRelationAggregateInput
+    following?: FollowOrderByRelationAggregateInput
+    followedBy?: FollowOrderByRelationAggregateInput
+    receivedFollowRequests?: FollowRequestOrderByRelationAggregateInput
+    sentFollowRequests?: FollowRequestOrderByRelationAggregateInput
+    likes?: LikeOrderByRelationAggregateInput
+    posts?: PostOrderByRelationAggregateInput
+    rankingLists?: RankingListOrderByRelationAggregateInput
+    replies?: ReplyOrderByRelationAggregateInput
     retweets?: RetweetOrderByRelationAggregateInput
   }
 
@@ -20034,17 +20034,17 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     isPrivate?: BoolFilter<"User"> | boolean
-    location?: StringNullableFilter<"User"> | string | null
     birthday?: DateTimeNullableFilter<"User"> | Date | string | null
-    posts?: PostListRelationFilter
-    likes?: LikeListRelationFilter
-    replies?: ReplyListRelationFilter
-    followedBy?: FollowListRelationFilter
-    following?: FollowListRelationFilter
-    rankingLists?: RankingListListRelationFilter
-    sentFollowRequests?: FollowRequestListRelationFilter
-    receivedFollowRequests?: FollowRequestListRelationFilter
+    location?: StringNullableFilter<"User"> | string | null
     feedItems?: FeedItemListRelationFilter
+    following?: FollowListRelationFilter
+    followedBy?: FollowListRelationFilter
+    receivedFollowRequests?: FollowRequestListRelationFilter
+    sentFollowRequests?: FollowRequestListRelationFilter
+    likes?: LikeListRelationFilter
+    posts?: PostListRelationFilter
+    rankingLists?: RankingListListRelationFilter
+    replies?: ReplyListRelationFilter
     retweets?: RetweetListRelationFilter
   }, "id" | "clerkId" | "username">
 
@@ -20060,8 +20060,8 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isPrivate?: SortOrder
-    location?: SortOrderInput | SortOrder
     birthday?: SortOrderInput | SortOrder
+    location?: SortOrderInput | SortOrder
     _count?: UserCountOrderByAggregateInput
     _max?: UserMaxOrderByAggregateInput
     _min?: UserMinOrderByAggregateInput
@@ -20082,8 +20082,8 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     isPrivate?: BoolWithAggregatesFilter<"User"> | boolean
-    location?: StringNullableWithAggregatesFilter<"User"> | string | null
     birthday?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
+    location?: StringNullableWithAggregatesFilter<"User"> | string | null
   }
 
   export type RankingListWhereInput = {
@@ -20100,10 +20100,10 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"RankingList"> | Date | string
     displayOrder?: IntNullableFilter<"RankingList"> | number | null
     likeCount?: IntFilter<"RankingList"> | number
-    author?: XOR<UserScalarRelationFilter, UserWhereInput>
-    items?: RankedItemListRelationFilter
     feedItems?: FeedItemListRelationFilter
     likes?: LikeListRelationFilter
+    items?: RankedItemListRelationFilter
+    author?: XOR<UserScalarRelationFilter, UserWhereInput>
     tags?: TagListRelationFilter
   }
 
@@ -20118,10 +20118,10 @@ export namespace Prisma {
     updatedAt?: SortOrder
     displayOrder?: SortOrderInput | SortOrder
     likeCount?: SortOrder
-    author?: UserOrderByWithRelationInput
-    items?: RankedItemOrderByRelationAggregateInput
     feedItems?: FeedItemOrderByRelationAggregateInput
     likes?: LikeOrderByRelationAggregateInput
+    items?: RankedItemOrderByRelationAggregateInput
+    author?: UserOrderByWithRelationInput
     tags?: TagOrderByRelationAggregateInput
   }
 
@@ -20139,10 +20139,10 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"RankingList"> | Date | string
     displayOrder?: IntNullableFilter<"RankingList"> | number | null
     likeCount?: IntFilter<"RankingList"> | number
-    author?: XOR<UserScalarRelationFilter, UserWhereInput>
-    items?: RankedItemListRelationFilter
     feedItems?: FeedItemListRelationFilter
     likes?: LikeListRelationFilter
+    items?: RankedItemListRelationFilter
+    author?: XOR<UserScalarRelationFilter, UserWhereInput>
     tags?: TagListRelationFilter
   }, "id">
 
@@ -20427,8 +20427,8 @@ export namespace Prisma {
     subject?: StringFilter<"AverageItemRank"> | string
     itemName?: StringFilter<"AverageItemRank"> | string
     avgRank?: FloatFilter<"AverageItemRank"> | number
-    count?: IntFilter<"AverageItemRank"> | number
     calculationDate?: DateTimeFilter<"AverageItemRank"> | Date | string
+    count?: IntFilter<"AverageItemRank"> | number
   }
 
   export type AverageItemRankOrderByWithRelationInput = {
@@ -20436,8 +20436,8 @@ export namespace Prisma {
     subject?: SortOrder
     itemName?: SortOrder
     avgRank?: SortOrder
-    count?: SortOrder
     calculationDate?: SortOrder
+    count?: SortOrder
   }
 
   export type AverageItemRankWhereUniqueInput = Prisma.AtLeast<{
@@ -20448,8 +20448,8 @@ export namespace Prisma {
     subject?: StringFilter<"AverageItemRank"> | string
     itemName?: StringFilter<"AverageItemRank"> | string
     avgRank?: FloatFilter<"AverageItemRank"> | number
-    count?: IntFilter<"AverageItemRank"> | number
     calculationDate?: DateTimeFilter<"AverageItemRank"> | Date | string
+    count?: IntFilter<"AverageItemRank"> | number
   }, "id">
 
   export type AverageItemRankOrderByWithAggregationInput = {
@@ -20457,8 +20457,8 @@ export namespace Prisma {
     subject?: SortOrder
     itemName?: SortOrder
     avgRank?: SortOrder
-    count?: SortOrder
     calculationDate?: SortOrder
+    count?: SortOrder
     _count?: AverageItemRankCountOrderByAggregateInput
     _avg?: AverageItemRankAvgOrderByAggregateInput
     _max?: AverageItemRankMaxOrderByAggregateInput
@@ -20474,8 +20474,8 @@ export namespace Prisma {
     subject?: StringWithAggregatesFilter<"AverageItemRank"> | string
     itemName?: StringWithAggregatesFilter<"AverageItemRank"> | string
     avgRank?: FloatWithAggregatesFilter<"AverageItemRank"> | number
-    count?: IntWithAggregatesFilter<"AverageItemRank"> | number
     calculationDate?: DateTimeWithAggregatesFilter<"AverageItemRank"> | Date | string
+    count?: IntWithAggregatesFilter<"AverageItemRank"> | number
   }
 
   export type PostWhereInput = {
@@ -20484,29 +20484,29 @@ export namespace Prisma {
     NOT?: PostWhereInput | PostWhereInput[]
     id?: StringFilter<"Post"> | string
     content?: StringFilter<"Post"> | string
-    imageUrl?: StringNullableFilter<"Post"> | string | null
     authorId?: StringFilter<"Post"> | string
     createdAt?: DateTimeFilter<"Post"> | Date | string
     updatedAt?: DateTimeFilter<"Post"> | Date | string
     likeCount?: IntFilter<"Post"> | number
-    author?: XOR<UserScalarRelationFilter, UserWhereInput>
-    replies?: ReplyListRelationFilter
+    imageUrl?: StringNullableFilter<"Post"> | string | null
     feedItems?: FeedItemListRelationFilter
     likes?: LikeListRelationFilter
+    author?: XOR<UserScalarRelationFilter, UserWhereInput>
+    replies?: ReplyListRelationFilter
   }
 
   export type PostOrderByWithRelationInput = {
     id?: SortOrder
     content?: SortOrder
-    imageUrl?: SortOrderInput | SortOrder
     authorId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     likeCount?: SortOrder
-    author?: UserOrderByWithRelationInput
-    replies?: ReplyOrderByRelationAggregateInput
+    imageUrl?: SortOrderInput | SortOrder
     feedItems?: FeedItemOrderByRelationAggregateInput
     likes?: LikeOrderByRelationAggregateInput
+    author?: UserOrderByWithRelationInput
+    replies?: ReplyOrderByRelationAggregateInput
   }
 
   export type PostWhereUniqueInput = Prisma.AtLeast<{
@@ -20515,25 +20515,25 @@ export namespace Prisma {
     OR?: PostWhereInput[]
     NOT?: PostWhereInput | PostWhereInput[]
     content?: StringFilter<"Post"> | string
-    imageUrl?: StringNullableFilter<"Post"> | string | null
     authorId?: StringFilter<"Post"> | string
     createdAt?: DateTimeFilter<"Post"> | Date | string
     updatedAt?: DateTimeFilter<"Post"> | Date | string
     likeCount?: IntFilter<"Post"> | number
-    author?: XOR<UserScalarRelationFilter, UserWhereInput>
-    replies?: ReplyListRelationFilter
+    imageUrl?: StringNullableFilter<"Post"> | string | null
     feedItems?: FeedItemListRelationFilter
     likes?: LikeListRelationFilter
+    author?: XOR<UserScalarRelationFilter, UserWhereInput>
+    replies?: ReplyListRelationFilter
   }, "id">
 
   export type PostOrderByWithAggregationInput = {
     id?: SortOrder
     content?: SortOrder
-    imageUrl?: SortOrderInput | SortOrder
     authorId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     likeCount?: SortOrder
+    imageUrl?: SortOrderInput | SortOrder
     _count?: PostCountOrderByAggregateInput
     _avg?: PostAvgOrderByAggregateInput
     _max?: PostMaxOrderByAggregateInput
@@ -20547,11 +20547,11 @@ export namespace Prisma {
     NOT?: PostScalarWhereWithAggregatesInput | PostScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Post"> | string
     content?: StringWithAggregatesFilter<"Post"> | string
-    imageUrl?: StringNullableWithAggregatesFilter<"Post"> | string | null
     authorId?: StringWithAggregatesFilter<"Post"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Post"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Post"> | Date | string
     likeCount?: IntWithAggregatesFilter<"Post"> | number
+    imageUrl?: StringNullableWithAggregatesFilter<"Post"> | string | null
   }
 
   export type RetweetWhereInput = {
@@ -20562,8 +20562,8 @@ export namespace Prisma {
     userId?: StringFilter<"Retweet"> | string
     feedItemId?: StringFilter<"Retweet"> | string
     createdAt?: DateTimeFilter<"Retweet"> | Date | string
-    user?: XOR<UserScalarRelationFilter, UserWhereInput>
     feedItem?: XOR<FeedItemScalarRelationFilter, FeedItemWhereInput>
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
 
   export type RetweetOrderByWithRelationInput = {
@@ -20571,8 +20571,8 @@ export namespace Prisma {
     userId?: SortOrder
     feedItemId?: SortOrder
     createdAt?: SortOrder
-    user?: UserOrderByWithRelationInput
     feedItem?: FeedItemOrderByWithRelationInput
+    user?: UserOrderByWithRelationInput
   }
 
   export type RetweetWhereUniqueInput = Prisma.AtLeast<{
@@ -20584,8 +20584,8 @@ export namespace Prisma {
     userId?: StringFilter<"Retweet"> | string
     feedItemId?: StringFilter<"Retweet"> | string
     createdAt?: DateTimeFilter<"Retweet"> | Date | string
-    user?: XOR<UserScalarRelationFilter, UserWhereInput>
     feedItem?: XOR<FeedItemScalarRelationFilter, FeedItemWhereInput>
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }, "id" | "userId_feedItemId">
 
   export type RetweetOrderByWithAggregationInput = {
@@ -20622,14 +20622,14 @@ export namespace Prisma {
     retweetOfFeedItemId?: StringNullableFilter<"FeedItem"> | string | null
     quotedFeedItemId?: StringNullableFilter<"FeedItem"> | string | null
     quoteRetweetCount?: IntFilter<"FeedItem"> | number
-    user?: XOR<UserScalarRelationFilter, UserWhereInput>
     post?: XOR<PostNullableScalarRelationFilter, PostWhereInput> | null
     rankingList?: XOR<RankingListNullableScalarRelationFilter, RankingListWhereInput> | null
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    quotedFeedItem?: XOR<FeedItemNullableScalarRelationFilter, FeedItemWhereInput> | null
+    quotedByItems?: FeedItemListRelationFilter
     retweetOfFeedItem?: XOR<FeedItemNullableScalarRelationFilter, FeedItemWhereInput> | null
     retweetedByItems?: FeedItemListRelationFilter
     retweets?: RetweetListRelationFilter
-    quotedFeedItem?: XOR<FeedItemNullableScalarRelationFilter, FeedItemWhereInput> | null
-    quotedByItems?: FeedItemListRelationFilter
   }
 
   export type FeedItemOrderByWithRelationInput = {
@@ -20643,14 +20643,14 @@ export namespace Prisma {
     retweetOfFeedItemId?: SortOrderInput | SortOrder
     quotedFeedItemId?: SortOrderInput | SortOrder
     quoteRetweetCount?: SortOrder
-    user?: UserOrderByWithRelationInput
     post?: PostOrderByWithRelationInput
     rankingList?: RankingListOrderByWithRelationInput
+    user?: UserOrderByWithRelationInput
+    quotedFeedItem?: FeedItemOrderByWithRelationInput
+    quotedByItems?: FeedItemOrderByRelationAggregateInput
     retweetOfFeedItem?: FeedItemOrderByWithRelationInput
     retweetedByItems?: FeedItemOrderByRelationAggregateInput
     retweets?: RetweetOrderByRelationAggregateInput
-    quotedFeedItem?: FeedItemOrderByWithRelationInput
-    quotedByItems?: FeedItemOrderByRelationAggregateInput
   }
 
   export type FeedItemWhereUniqueInput = Prisma.AtLeast<{
@@ -20668,14 +20668,14 @@ export namespace Prisma {
     retweetOfFeedItemId?: StringNullableFilter<"FeedItem"> | string | null
     quotedFeedItemId?: StringNullableFilter<"FeedItem"> | string | null
     quoteRetweetCount?: IntFilter<"FeedItem"> | number
-    user?: XOR<UserScalarRelationFilter, UserWhereInput>
     post?: XOR<PostNullableScalarRelationFilter, PostWhereInput> | null
     rankingList?: XOR<RankingListNullableScalarRelationFilter, RankingListWhereInput> | null
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    quotedFeedItem?: XOR<FeedItemNullableScalarRelationFilter, FeedItemWhereInput> | null
+    quotedByItems?: FeedItemListRelationFilter
     retweetOfFeedItem?: XOR<FeedItemNullableScalarRelationFilter, FeedItemWhereInput> | null
     retweetedByItems?: FeedItemListRelationFilter
     retweets?: RetweetListRelationFilter
-    quotedFeedItem?: XOR<FeedItemNullableScalarRelationFilter, FeedItemWhereInput> | null
-    quotedByItems?: FeedItemListRelationFilter
   }, "id" | "rankingListId_type">
 
   export type FeedItemOrderByWithAggregationInput = {
@@ -20721,9 +20721,9 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Like"> | Date | string
     postId?: StringNullableFilter<"Like"> | string | null
     rankingListId?: StringNullableFilter<"Like"> | string | null
-    user?: XOR<UserScalarRelationFilter, UserWhereInput>
     post?: XOR<PostNullableScalarRelationFilter, PostWhereInput> | null
     rankingList?: XOR<RankingListNullableScalarRelationFilter, RankingListWhereInput> | null
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
 
   export type LikeOrderByWithRelationInput = {
@@ -20732,9 +20732,9 @@ export namespace Prisma {
     createdAt?: SortOrder
     postId?: SortOrderInput | SortOrder
     rankingListId?: SortOrderInput | SortOrder
-    user?: UserOrderByWithRelationInput
     post?: PostOrderByWithRelationInput
     rankingList?: RankingListOrderByWithRelationInput
+    user?: UserOrderByWithRelationInput
   }
 
   export type LikeWhereUniqueInput = Prisma.AtLeast<{
@@ -20746,9 +20746,9 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Like"> | Date | string
     postId?: StringNullableFilter<"Like"> | string | null
     rankingListId?: StringNullableFilter<"Like"> | string | null
-    user?: XOR<UserScalarRelationFilter, UserWhereInput>
     post?: XOR<PostNullableScalarRelationFilter, PostWhereInput> | null
     rankingList?: XOR<RankingListNullableScalarRelationFilter, RankingListWhereInput> | null
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }, "id">
 
   export type LikeOrderByWithAggregationInput = {
@@ -20783,8 +20783,8 @@ export namespace Prisma {
     postId?: StringFilter<"Reply"> | string
     createdAt?: DateTimeFilter<"Reply"> | Date | string
     updatedAt?: DateTimeFilter<"Reply"> | Date | string
-    user?: XOR<UserScalarRelationFilter, UserWhereInput>
     post?: XOR<PostScalarRelationFilter, PostWhereInput>
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
 
   export type ReplyOrderByWithRelationInput = {
@@ -20794,8 +20794,8 @@ export namespace Prisma {
     postId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    user?: UserOrderByWithRelationInput
     post?: PostOrderByWithRelationInput
+    user?: UserOrderByWithRelationInput
   }
 
   export type ReplyWhereUniqueInput = Prisma.AtLeast<{
@@ -20808,8 +20808,8 @@ export namespace Prisma {
     postId?: StringFilter<"Reply"> | string
     createdAt?: DateTimeFilter<"Reply"> | Date | string
     updatedAt?: DateTimeFilter<"Reply"> | Date | string
-    user?: XOR<UserScalarRelationFilter, UserWhereInput>
     post?: XOR<PostScalarRelationFilter, PostWhereInput>
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }, "id">
 
   export type ReplyOrderByWithAggregationInput = {
@@ -20846,8 +20846,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"FollowRequest"> | Date | string
     requesterId?: StringFilter<"FollowRequest"> | string
     requestedId?: StringFilter<"FollowRequest"> | string
-    requester?: XOR<UserScalarRelationFilter, UserWhereInput>
     requested?: XOR<UserScalarRelationFilter, UserWhereInput>
+    requester?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
 
   export type FollowRequestOrderByWithRelationInput = {
@@ -20857,8 +20857,8 @@ export namespace Prisma {
     updatedAt?: SortOrder
     requesterId?: SortOrder
     requestedId?: SortOrder
-    requester?: UserOrderByWithRelationInput
     requested?: UserOrderByWithRelationInput
+    requester?: UserOrderByWithRelationInput
   }
 
   export type FollowRequestWhereUniqueInput = Prisma.AtLeast<{
@@ -20872,8 +20872,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"FollowRequest"> | Date | string
     requesterId?: StringFilter<"FollowRequest"> | string
     requestedId?: StringFilter<"FollowRequest"> | string
-    requester?: XOR<UserScalarRelationFilter, UserWhereInput>
     requested?: XOR<UserScalarRelationFilter, UserWhereInput>
+    requester?: XOR<UserScalarRelationFilter, UserWhereInput>
   }, "id" | "requesterId_requestedId">
 
   export type FollowRequestOrderByWithAggregationInput = {
@@ -20958,32 +20958,32 @@ export namespace Prisma {
     id?: string
     name: string
     createdAt?: Date | string
-    rankingLists?: RankingListCreateNestedManyWithoutTagsInput
     trendingStats?: TrendingTagCreateNestedManyWithoutTagInput
+    rankingLists?: RankingListCreateNestedManyWithoutTagsInput
   }
 
   export type TagUncheckedCreateInput = {
     id?: string
     name: string
     createdAt?: Date | string
-    rankingLists?: RankingListUncheckedCreateNestedManyWithoutTagsInput
     trendingStats?: TrendingTagUncheckedCreateNestedManyWithoutTagInput
+    rankingLists?: RankingListUncheckedCreateNestedManyWithoutTagsInput
   }
 
   export type TagUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    rankingLists?: RankingListUpdateManyWithoutTagsNestedInput
     trendingStats?: TrendingTagUpdateManyWithoutTagNestedInput
+    rankingLists?: RankingListUpdateManyWithoutTagsNestedInput
   }
 
   export type TagUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    rankingLists?: RankingListUncheckedUpdateManyWithoutTagsNestedInput
     trendingStats?: TrendingTagUncheckedUpdateManyWithoutTagNestedInput
+    rankingLists?: RankingListUncheckedUpdateManyWithoutTagsNestedInput
   }
 
   export type TagCreateManyInput = {
@@ -21016,17 +21016,17 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isPrivate?: boolean
-    location?: string | null
     birthday?: Date | string | null
-    posts?: PostCreateNestedManyWithoutAuthorInput
-    likes?: LikeCreateNestedManyWithoutUserInput
-    replies?: ReplyCreateNestedManyWithoutUserInput
-    followedBy?: FollowCreateNestedManyWithoutFollowingInput
-    following?: FollowCreateNestedManyWithoutFollowerInput
-    rankingLists?: RankingListCreateNestedManyWithoutAuthorInput
-    sentFollowRequests?: FollowRequestCreateNestedManyWithoutRequesterInput
-    receivedFollowRequests?: FollowRequestCreateNestedManyWithoutRequestedInput
+    location?: string | null
     feedItems?: FeedItemCreateNestedManyWithoutUserInput
+    following?: FollowCreateNestedManyWithoutFollowerInput
+    followedBy?: FollowCreateNestedManyWithoutFollowingInput
+    receivedFollowRequests?: FollowRequestCreateNestedManyWithoutRequestedInput
+    sentFollowRequests?: FollowRequestCreateNestedManyWithoutRequesterInput
+    likes?: LikeCreateNestedManyWithoutUserInput
+    posts?: PostCreateNestedManyWithoutAuthorInput
+    rankingLists?: RankingListCreateNestedManyWithoutAuthorInput
+    replies?: ReplyCreateNestedManyWithoutUserInput
     retweets?: RetweetCreateNestedManyWithoutUserInput
   }
 
@@ -21042,17 +21042,17 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isPrivate?: boolean
-    location?: string | null
     birthday?: Date | string | null
-    posts?: PostUncheckedCreateNestedManyWithoutAuthorInput
-    likes?: LikeUncheckedCreateNestedManyWithoutUserInput
-    replies?: ReplyUncheckedCreateNestedManyWithoutUserInput
-    followedBy?: FollowUncheckedCreateNestedManyWithoutFollowingInput
-    following?: FollowUncheckedCreateNestedManyWithoutFollowerInput
-    rankingLists?: RankingListUncheckedCreateNestedManyWithoutAuthorInput
-    sentFollowRequests?: FollowRequestUncheckedCreateNestedManyWithoutRequesterInput
-    receivedFollowRequests?: FollowRequestUncheckedCreateNestedManyWithoutRequestedInput
+    location?: string | null
     feedItems?: FeedItemUncheckedCreateNestedManyWithoutUserInput
+    following?: FollowUncheckedCreateNestedManyWithoutFollowerInput
+    followedBy?: FollowUncheckedCreateNestedManyWithoutFollowingInput
+    receivedFollowRequests?: FollowRequestUncheckedCreateNestedManyWithoutRequestedInput
+    sentFollowRequests?: FollowRequestUncheckedCreateNestedManyWithoutRequesterInput
+    likes?: LikeUncheckedCreateNestedManyWithoutUserInput
+    posts?: PostUncheckedCreateNestedManyWithoutAuthorInput
+    rankingLists?: RankingListUncheckedCreateNestedManyWithoutAuthorInput
+    replies?: ReplyUncheckedCreateNestedManyWithoutUserInput
     retweets?: RetweetUncheckedCreateNestedManyWithoutUserInput
   }
 
@@ -21068,17 +21068,17 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
-    location?: NullableStringFieldUpdateOperationsInput | string | null
     birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    posts?: PostUpdateManyWithoutAuthorNestedInput
-    likes?: LikeUpdateManyWithoutUserNestedInput
-    replies?: ReplyUpdateManyWithoutUserNestedInput
-    followedBy?: FollowUpdateManyWithoutFollowingNestedInput
-    following?: FollowUpdateManyWithoutFollowerNestedInput
-    rankingLists?: RankingListUpdateManyWithoutAuthorNestedInput
-    sentFollowRequests?: FollowRequestUpdateManyWithoutRequesterNestedInput
-    receivedFollowRequests?: FollowRequestUpdateManyWithoutRequestedNestedInput
+    location?: NullableStringFieldUpdateOperationsInput | string | null
     feedItems?: FeedItemUpdateManyWithoutUserNestedInput
+    following?: FollowUpdateManyWithoutFollowerNestedInput
+    followedBy?: FollowUpdateManyWithoutFollowingNestedInput
+    receivedFollowRequests?: FollowRequestUpdateManyWithoutRequestedNestedInput
+    sentFollowRequests?: FollowRequestUpdateManyWithoutRequesterNestedInput
+    likes?: LikeUpdateManyWithoutUserNestedInput
+    posts?: PostUpdateManyWithoutAuthorNestedInput
+    rankingLists?: RankingListUpdateManyWithoutAuthorNestedInput
+    replies?: ReplyUpdateManyWithoutUserNestedInput
     retweets?: RetweetUpdateManyWithoutUserNestedInput
   }
 
@@ -21094,17 +21094,17 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
-    location?: NullableStringFieldUpdateOperationsInput | string | null
     birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    posts?: PostUncheckedUpdateManyWithoutAuthorNestedInput
-    likes?: LikeUncheckedUpdateManyWithoutUserNestedInput
-    replies?: ReplyUncheckedUpdateManyWithoutUserNestedInput
-    followedBy?: FollowUncheckedUpdateManyWithoutFollowingNestedInput
-    following?: FollowUncheckedUpdateManyWithoutFollowerNestedInput
-    rankingLists?: RankingListUncheckedUpdateManyWithoutAuthorNestedInput
-    sentFollowRequests?: FollowRequestUncheckedUpdateManyWithoutRequesterNestedInput
-    receivedFollowRequests?: FollowRequestUncheckedUpdateManyWithoutRequestedNestedInput
+    location?: NullableStringFieldUpdateOperationsInput | string | null
     feedItems?: FeedItemUncheckedUpdateManyWithoutUserNestedInput
+    following?: FollowUncheckedUpdateManyWithoutFollowerNestedInput
+    followedBy?: FollowUncheckedUpdateManyWithoutFollowingNestedInput
+    receivedFollowRequests?: FollowRequestUncheckedUpdateManyWithoutRequestedNestedInput
+    sentFollowRequests?: FollowRequestUncheckedUpdateManyWithoutRequesterNestedInput
+    likes?: LikeUncheckedUpdateManyWithoutUserNestedInput
+    posts?: PostUncheckedUpdateManyWithoutAuthorNestedInput
+    rankingLists?: RankingListUncheckedUpdateManyWithoutAuthorNestedInput
+    replies?: ReplyUncheckedUpdateManyWithoutUserNestedInput
     retweets?: RetweetUncheckedUpdateManyWithoutUserNestedInput
   }
 
@@ -21120,8 +21120,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isPrivate?: boolean
-    location?: string | null
     birthday?: Date | string | null
+    location?: string | null
   }
 
   export type UserUpdateManyMutationInput = {
@@ -21136,8 +21136,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
-    location?: NullableStringFieldUpdateOperationsInput | string | null
     birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type UserUncheckedUpdateManyInput = {
@@ -21152,8 +21152,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
-    location?: NullableStringFieldUpdateOperationsInput | string | null
     birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type RankingListCreateInput = {
@@ -21166,10 +21166,10 @@ export namespace Prisma {
     updatedAt?: Date | string
     displayOrder?: number | null
     likeCount?: number
-    author: UserCreateNestedOneWithoutRankingListsInput
-    items?: RankedItemCreateNestedManyWithoutRankingListInput
     feedItems?: FeedItemCreateNestedManyWithoutRankingListInput
     likes?: LikeCreateNestedManyWithoutRankingListInput
+    items?: RankedItemCreateNestedManyWithoutRankingListInput
+    author: UserCreateNestedOneWithoutRankingListsInput
     tags?: TagCreateNestedManyWithoutRankingListsInput
   }
 
@@ -21184,9 +21184,9 @@ export namespace Prisma {
     updatedAt?: Date | string
     displayOrder?: number | null
     likeCount?: number
-    items?: RankedItemUncheckedCreateNestedManyWithoutRankingListInput
     feedItems?: FeedItemUncheckedCreateNestedManyWithoutRankingListInput
     likes?: LikeUncheckedCreateNestedManyWithoutRankingListInput
+    items?: RankedItemUncheckedCreateNestedManyWithoutRankingListInput
     tags?: TagUncheckedCreateNestedManyWithoutRankingListsInput
   }
 
@@ -21200,10 +21200,10 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     displayOrder?: NullableIntFieldUpdateOperationsInput | number | null
     likeCount?: IntFieldUpdateOperationsInput | number
-    author?: UserUpdateOneRequiredWithoutRankingListsNestedInput
-    items?: RankedItemUpdateManyWithoutRankingListNestedInput
     feedItems?: FeedItemUpdateManyWithoutRankingListNestedInput
     likes?: LikeUpdateManyWithoutRankingListNestedInput
+    items?: RankedItemUpdateManyWithoutRankingListNestedInput
+    author?: UserUpdateOneRequiredWithoutRankingListsNestedInput
     tags?: TagUpdateManyWithoutRankingListsNestedInput
   }
 
@@ -21218,9 +21218,9 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     displayOrder?: NullableIntFieldUpdateOperationsInput | number | null
     likeCount?: IntFieldUpdateOperationsInput | number
-    items?: RankedItemUncheckedUpdateManyWithoutRankingListNestedInput
     feedItems?: FeedItemUncheckedUpdateManyWithoutRankingListNestedInput
     likes?: LikeUncheckedUpdateManyWithoutRankingListNestedInput
+    items?: RankedItemUncheckedUpdateManyWithoutRankingListNestedInput
     tags?: TagUncheckedUpdateManyWithoutRankingListsNestedInput
   }
 
@@ -21510,8 +21510,8 @@ export namespace Prisma {
     subject: string
     itemName: string
     avgRank: number
-    count: number
     calculationDate: Date | string
+    count: number
   }
 
   export type AverageItemRankUncheckedCreateInput = {
@@ -21519,8 +21519,8 @@ export namespace Prisma {
     subject: string
     itemName: string
     avgRank: number
-    count: number
     calculationDate: Date | string
+    count: number
   }
 
   export type AverageItemRankUpdateInput = {
@@ -21528,8 +21528,8 @@ export namespace Prisma {
     subject?: StringFieldUpdateOperationsInput | string
     itemName?: StringFieldUpdateOperationsInput | string
     avgRank?: FloatFieldUpdateOperationsInput | number
-    count?: IntFieldUpdateOperationsInput | number
     calculationDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    count?: IntFieldUpdateOperationsInput | number
   }
 
   export type AverageItemRankUncheckedUpdateInput = {
@@ -21537,8 +21537,8 @@ export namespace Prisma {
     subject?: StringFieldUpdateOperationsInput | string
     itemName?: StringFieldUpdateOperationsInput | string
     avgRank?: FloatFieldUpdateOperationsInput | number
-    count?: IntFieldUpdateOperationsInput | number
     calculationDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    count?: IntFieldUpdateOperationsInput | number
   }
 
   export type AverageItemRankCreateManyInput = {
@@ -21546,8 +21546,8 @@ export namespace Prisma {
     subject: string
     itemName: string
     avgRank: number
-    count: number
     calculationDate: Date | string
+    count: number
   }
 
   export type AverageItemRankUpdateManyMutationInput = {
@@ -21555,8 +21555,8 @@ export namespace Prisma {
     subject?: StringFieldUpdateOperationsInput | string
     itemName?: StringFieldUpdateOperationsInput | string
     avgRank?: FloatFieldUpdateOperationsInput | number
-    count?: IntFieldUpdateOperationsInput | number
     calculationDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    count?: IntFieldUpdateOperationsInput | number
   }
 
   export type AverageItemRankUncheckedUpdateManyInput = {
@@ -21564,96 +21564,96 @@ export namespace Prisma {
     subject?: StringFieldUpdateOperationsInput | string
     itemName?: StringFieldUpdateOperationsInput | string
     avgRank?: FloatFieldUpdateOperationsInput | number
-    count?: IntFieldUpdateOperationsInput | number
     calculationDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    count?: IntFieldUpdateOperationsInput | number
   }
 
   export type PostCreateInput = {
     id?: string
     content: string
-    imageUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     likeCount?: number
-    author: UserCreateNestedOneWithoutPostsInput
-    replies?: ReplyCreateNestedManyWithoutPostInput
+    imageUrl?: string | null
     feedItems?: FeedItemCreateNestedManyWithoutPostInput
     likes?: LikeCreateNestedManyWithoutPostInput
+    author: UserCreateNestedOneWithoutPostsInput
+    replies?: ReplyCreateNestedManyWithoutPostInput
   }
 
   export type PostUncheckedCreateInput = {
     id?: string
     content: string
-    imageUrl?: string | null
     authorId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     likeCount?: number
-    replies?: ReplyUncheckedCreateNestedManyWithoutPostInput
+    imageUrl?: string | null
     feedItems?: FeedItemUncheckedCreateNestedManyWithoutPostInput
     likes?: LikeUncheckedCreateNestedManyWithoutPostInput
+    replies?: ReplyUncheckedCreateNestedManyWithoutPostInput
   }
 
   export type PostUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
-    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     likeCount?: IntFieldUpdateOperationsInput | number
-    author?: UserUpdateOneRequiredWithoutPostsNestedInput
-    replies?: ReplyUpdateManyWithoutPostNestedInput
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     feedItems?: FeedItemUpdateManyWithoutPostNestedInput
     likes?: LikeUpdateManyWithoutPostNestedInput
+    author?: UserUpdateOneRequiredWithoutPostsNestedInput
+    replies?: ReplyUpdateManyWithoutPostNestedInput
   }
 
   export type PostUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
-    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     authorId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     likeCount?: IntFieldUpdateOperationsInput | number
-    replies?: ReplyUncheckedUpdateManyWithoutPostNestedInput
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     feedItems?: FeedItemUncheckedUpdateManyWithoutPostNestedInput
     likes?: LikeUncheckedUpdateManyWithoutPostNestedInput
+    replies?: ReplyUncheckedUpdateManyWithoutPostNestedInput
   }
 
   export type PostCreateManyInput = {
     id?: string
     content: string
-    imageUrl?: string | null
     authorId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     likeCount?: number
+    imageUrl?: string | null
   }
 
   export type PostUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
-    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     likeCount?: IntFieldUpdateOperationsInput | number
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type PostUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
-    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     authorId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     likeCount?: IntFieldUpdateOperationsInput | number
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type RetweetCreateInput = {
     id?: string
     createdAt?: Date | string
-    user: UserCreateNestedOneWithoutRetweetsInput
     feedItem: FeedItemCreateNestedOneWithoutRetweetsInput
+    user: UserCreateNestedOneWithoutRetweetsInput
   }
 
   export type RetweetUncheckedCreateInput = {
@@ -21666,8 +21666,8 @@ export namespace Prisma {
   export type RetweetUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    user?: UserUpdateOneRequiredWithoutRetweetsNestedInput
     feedItem?: FeedItemUpdateOneRequiredWithoutRetweetsNestedInput
+    user?: UserUpdateOneRequiredWithoutRetweetsNestedInput
   }
 
   export type RetweetUncheckedUpdateInput = {
@@ -21702,14 +21702,14 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     quoteRetweetCount?: number
-    user: UserCreateNestedOneWithoutFeedItemsInput
     post?: PostCreateNestedOneWithoutFeedItemsInput
     rankingList?: RankingListCreateNestedOneWithoutFeedItemsInput
+    user: UserCreateNestedOneWithoutFeedItemsInput
+    quotedFeedItem?: FeedItemCreateNestedOneWithoutQuotedByItemsInput
+    quotedByItems?: FeedItemCreateNestedManyWithoutQuotedFeedItemInput
     retweetOfFeedItem?: FeedItemCreateNestedOneWithoutRetweetedByItemsInput
     retweetedByItems?: FeedItemCreateNestedManyWithoutRetweetOfFeedItemInput
     retweets?: RetweetCreateNestedManyWithoutFeedItemInput
-    quotedFeedItem?: FeedItemCreateNestedOneWithoutQuotedByItemsInput
-    quotedByItems?: FeedItemCreateNestedManyWithoutQuotedFeedItemInput
   }
 
   export type FeedItemUncheckedCreateInput = {
@@ -21723,9 +21723,9 @@ export namespace Prisma {
     retweetOfFeedItemId?: string | null
     quotedFeedItemId?: string | null
     quoteRetweetCount?: number
+    quotedByItems?: FeedItemUncheckedCreateNestedManyWithoutQuotedFeedItemInput
     retweetedByItems?: FeedItemUncheckedCreateNestedManyWithoutRetweetOfFeedItemInput
     retweets?: RetweetUncheckedCreateNestedManyWithoutFeedItemInput
-    quotedByItems?: FeedItemUncheckedCreateNestedManyWithoutQuotedFeedItemInput
   }
 
   export type FeedItemUpdateInput = {
@@ -21734,14 +21734,14 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     quoteRetweetCount?: IntFieldUpdateOperationsInput | number
-    user?: UserUpdateOneRequiredWithoutFeedItemsNestedInput
     post?: PostUpdateOneWithoutFeedItemsNestedInput
     rankingList?: RankingListUpdateOneWithoutFeedItemsNestedInput
+    user?: UserUpdateOneRequiredWithoutFeedItemsNestedInput
+    quotedFeedItem?: FeedItemUpdateOneWithoutQuotedByItemsNestedInput
+    quotedByItems?: FeedItemUpdateManyWithoutQuotedFeedItemNestedInput
     retweetOfFeedItem?: FeedItemUpdateOneWithoutRetweetedByItemsNestedInput
     retweetedByItems?: FeedItemUpdateManyWithoutRetweetOfFeedItemNestedInput
     retweets?: RetweetUpdateManyWithoutFeedItemNestedInput
-    quotedFeedItem?: FeedItemUpdateOneWithoutQuotedByItemsNestedInput
-    quotedByItems?: FeedItemUpdateManyWithoutQuotedFeedItemNestedInput
   }
 
   export type FeedItemUncheckedUpdateInput = {
@@ -21755,9 +21755,9 @@ export namespace Prisma {
     retweetOfFeedItemId?: NullableStringFieldUpdateOperationsInput | string | null
     quotedFeedItemId?: NullableStringFieldUpdateOperationsInput | string | null
     quoteRetweetCount?: IntFieldUpdateOperationsInput | number
+    quotedByItems?: FeedItemUncheckedUpdateManyWithoutQuotedFeedItemNestedInput
     retweetedByItems?: FeedItemUncheckedUpdateManyWithoutRetweetOfFeedItemNestedInput
     retweets?: RetweetUncheckedUpdateManyWithoutFeedItemNestedInput
-    quotedByItems?: FeedItemUncheckedUpdateManyWithoutQuotedFeedItemNestedInput
   }
 
   export type FeedItemCreateManyInput = {
@@ -21797,9 +21797,9 @@ export namespace Prisma {
   export type LikeCreateInput = {
     id?: string
     createdAt?: Date | string
-    user: UserCreateNestedOneWithoutLikesInput
     post?: PostCreateNestedOneWithoutLikesInput
     rankingList?: RankingListCreateNestedOneWithoutLikesInput
+    user: UserCreateNestedOneWithoutLikesInput
   }
 
   export type LikeUncheckedCreateInput = {
@@ -21813,9 +21813,9 @@ export namespace Prisma {
   export type LikeUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    user?: UserUpdateOneRequiredWithoutLikesNestedInput
     post?: PostUpdateOneWithoutLikesNestedInput
     rankingList?: RankingListUpdateOneWithoutLikesNestedInput
+    user?: UserUpdateOneRequiredWithoutLikesNestedInput
   }
 
   export type LikeUncheckedUpdateInput = {
@@ -21852,8 +21852,8 @@ export namespace Prisma {
     content: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    user: UserCreateNestedOneWithoutRepliesInput
     post: PostCreateNestedOneWithoutRepliesInput
+    user: UserCreateNestedOneWithoutRepliesInput
   }
 
   export type ReplyUncheckedCreateInput = {
@@ -21870,8 +21870,8 @@ export namespace Prisma {
     content?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    user?: UserUpdateOneRequiredWithoutRepliesNestedInput
     post?: PostUpdateOneRequiredWithoutRepliesNestedInput
+    user?: UserUpdateOneRequiredWithoutRepliesNestedInput
   }
 
   export type ReplyUncheckedUpdateInput = {
@@ -21913,8 +21913,8 @@ export namespace Prisma {
     status?: $Enums.FollowRequestStatus
     createdAt?: Date | string
     updatedAt?: Date | string
-    requester: UserCreateNestedOneWithoutSentFollowRequestsInput
     requested: UserCreateNestedOneWithoutReceivedFollowRequestsInput
+    requester: UserCreateNestedOneWithoutSentFollowRequestsInput
   }
 
   export type FollowRequestUncheckedCreateInput = {
@@ -21931,8 +21931,8 @@ export namespace Prisma {
     status?: EnumFollowRequestStatusFieldUpdateOperationsInput | $Enums.FollowRequestStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    requester?: UserUpdateOneRequiredWithoutSentFollowRequestsNestedInput
     requested?: UserUpdateOneRequiredWithoutReceivedFollowRequestsNestedInput
+    requester?: UserUpdateOneRequiredWithoutSentFollowRequestsNestedInput
   }
 
   export type FollowRequestUncheckedUpdateInput = {
@@ -22042,23 +22042,23 @@ export namespace Prisma {
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
 
-  export type RankingListListRelationFilter = {
-    every?: RankingListWhereInput
-    some?: RankingListWhereInput
-    none?: RankingListWhereInput
-  }
-
   export type TrendingTagListRelationFilter = {
     every?: TrendingTagWhereInput
     some?: TrendingTagWhereInput
     none?: TrendingTagWhereInput
   }
 
-  export type RankingListOrderByRelationAggregateInput = {
-    _count?: SortOrder
+  export type RankingListListRelationFilter = {
+    every?: RankingListWhereInput
+    some?: RankingListWhereInput
+    none?: RankingListWhereInput
   }
 
   export type TrendingTagOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type RankingListOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -22166,22 +22166,10 @@ export namespace Prisma {
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
-  export type PostListRelationFilter = {
-    every?: PostWhereInput
-    some?: PostWhereInput
-    none?: PostWhereInput
-  }
-
-  export type LikeListRelationFilter = {
-    every?: LikeWhereInput
-    some?: LikeWhereInput
-    none?: LikeWhereInput
-  }
-
-  export type ReplyListRelationFilter = {
-    every?: ReplyWhereInput
-    some?: ReplyWhereInput
-    none?: ReplyWhereInput
+  export type FeedItemListRelationFilter = {
+    every?: FeedItemWhereInput
+    some?: FeedItemWhereInput
+    none?: FeedItemWhereInput
   }
 
   export type FollowListRelationFilter = {
@@ -22196,10 +22184,22 @@ export namespace Prisma {
     none?: FollowRequestWhereInput
   }
 
-  export type FeedItemListRelationFilter = {
-    every?: FeedItemWhereInput
-    some?: FeedItemWhereInput
-    none?: FeedItemWhereInput
+  export type LikeListRelationFilter = {
+    every?: LikeWhereInput
+    some?: LikeWhereInput
+    none?: LikeWhereInput
+  }
+
+  export type PostListRelationFilter = {
+    every?: PostWhereInput
+    some?: PostWhereInput
+    none?: PostWhereInput
+  }
+
+  export type ReplyListRelationFilter = {
+    every?: ReplyWhereInput
+    some?: ReplyWhereInput
+    none?: ReplyWhereInput
   }
 
   export type RetweetListRelationFilter = {
@@ -22213,15 +22213,7 @@ export namespace Prisma {
     nulls?: NullsOrder
   }
 
-  export type PostOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
-  export type LikeOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
-  export type ReplyOrderByRelationAggregateInput = {
+  export type FeedItemOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -22233,7 +22225,15 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
-  export type FeedItemOrderByRelationAggregateInput = {
+  export type LikeOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type PostOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ReplyOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -22253,8 +22253,8 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isPrivate?: SortOrder
-    location?: SortOrder
     birthday?: SortOrder
+    location?: SortOrder
   }
 
   export type UserMaxOrderByAggregateInput = {
@@ -22268,8 +22268,8 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isPrivate?: SortOrder
-    location?: SortOrder
     birthday?: SortOrder
+    location?: SortOrder
   }
 
   export type UserMinOrderByAggregateInput = {
@@ -22283,8 +22283,8 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isPrivate?: SortOrder
-    location?: SortOrder
     birthday?: SortOrder
+    location?: SortOrder
   }
 
   export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -22382,15 +22382,15 @@ export namespace Prisma {
     not?: NestedIntFilter<$PrismaModel> | number
   }
 
-  export type UserScalarRelationFilter = {
-    is?: UserWhereInput
-    isNot?: UserWhereInput
-  }
-
   export type RankedItemListRelationFilter = {
     every?: RankedItemWhereInput
     some?: RankedItemWhereInput
     none?: RankedItemWhereInput
+  }
+
+  export type UserScalarRelationFilter = {
+    is?: UserWhereInput
+    isNot?: UserWhereInput
   }
 
   export type TagListRelationFilter = {
@@ -22706,8 +22706,8 @@ export namespace Prisma {
     subject?: SortOrder
     itemName?: SortOrder
     avgRank?: SortOrder
-    count?: SortOrder
     calculationDate?: SortOrder
+    count?: SortOrder
   }
 
   export type AverageItemRankAvgOrderByAggregateInput = {
@@ -22720,8 +22720,8 @@ export namespace Prisma {
     subject?: SortOrder
     itemName?: SortOrder
     avgRank?: SortOrder
-    count?: SortOrder
     calculationDate?: SortOrder
+    count?: SortOrder
   }
 
   export type AverageItemRankMinOrderByAggregateInput = {
@@ -22729,8 +22729,8 @@ export namespace Prisma {
     subject?: SortOrder
     itemName?: SortOrder
     avgRank?: SortOrder
-    count?: SortOrder
     calculationDate?: SortOrder
+    count?: SortOrder
   }
 
   export type AverageItemRankSumOrderByAggregateInput = {
@@ -22741,11 +22741,11 @@ export namespace Prisma {
   export type PostCountOrderByAggregateInput = {
     id?: SortOrder
     content?: SortOrder
-    imageUrl?: SortOrder
     authorId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     likeCount?: SortOrder
+    imageUrl?: SortOrder
   }
 
   export type PostAvgOrderByAggregateInput = {
@@ -22755,21 +22755,21 @@ export namespace Prisma {
   export type PostMaxOrderByAggregateInput = {
     id?: SortOrder
     content?: SortOrder
-    imageUrl?: SortOrder
     authorId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     likeCount?: SortOrder
+    imageUrl?: SortOrder
   }
 
   export type PostMinOrderByAggregateInput = {
     id?: SortOrder
     content?: SortOrder
-    imageUrl?: SortOrder
     authorId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     likeCount?: SortOrder
+    imageUrl?: SortOrder
   }
 
   export type PostSumOrderByAggregateInput = {
@@ -23022,12 +23022,6 @@ export namespace Prisma {
     createdAt?: SortOrder
   }
 
-  export type RankingListCreateNestedManyWithoutTagsInput = {
-    create?: XOR<RankingListCreateWithoutTagsInput, RankingListUncheckedCreateWithoutTagsInput> | RankingListCreateWithoutTagsInput[] | RankingListUncheckedCreateWithoutTagsInput[]
-    connectOrCreate?: RankingListCreateOrConnectWithoutTagsInput | RankingListCreateOrConnectWithoutTagsInput[]
-    connect?: RankingListWhereUniqueInput | RankingListWhereUniqueInput[]
-  }
-
   export type TrendingTagCreateNestedManyWithoutTagInput = {
     create?: XOR<TrendingTagCreateWithoutTagInput, TrendingTagUncheckedCreateWithoutTagInput> | TrendingTagCreateWithoutTagInput[] | TrendingTagUncheckedCreateWithoutTagInput[]
     connectOrCreate?: TrendingTagCreateOrConnectWithoutTagInput | TrendingTagCreateOrConnectWithoutTagInput[]
@@ -23035,7 +23029,7 @@ export namespace Prisma {
     connect?: TrendingTagWhereUniqueInput | TrendingTagWhereUniqueInput[]
   }
 
-  export type RankingListUncheckedCreateNestedManyWithoutTagsInput = {
+  export type RankingListCreateNestedManyWithoutTagsInput = {
     create?: XOR<RankingListCreateWithoutTagsInput, RankingListUncheckedCreateWithoutTagsInput> | RankingListCreateWithoutTagsInput[] | RankingListUncheckedCreateWithoutTagsInput[]
     connectOrCreate?: RankingListCreateOrConnectWithoutTagsInput | RankingListCreateOrConnectWithoutTagsInput[]
     connect?: RankingListWhereUniqueInput | RankingListWhereUniqueInput[]
@@ -23048,25 +23042,18 @@ export namespace Prisma {
     connect?: TrendingTagWhereUniqueInput | TrendingTagWhereUniqueInput[]
   }
 
+  export type RankingListUncheckedCreateNestedManyWithoutTagsInput = {
+    create?: XOR<RankingListCreateWithoutTagsInput, RankingListUncheckedCreateWithoutTagsInput> | RankingListCreateWithoutTagsInput[] | RankingListUncheckedCreateWithoutTagsInput[]
+    connectOrCreate?: RankingListCreateOrConnectWithoutTagsInput | RankingListCreateOrConnectWithoutTagsInput[]
+    connect?: RankingListWhereUniqueInput | RankingListWhereUniqueInput[]
+  }
+
   export type StringFieldUpdateOperationsInput = {
     set?: string
   }
 
   export type DateTimeFieldUpdateOperationsInput = {
     set?: Date | string
-  }
-
-  export type RankingListUpdateManyWithoutTagsNestedInput = {
-    create?: XOR<RankingListCreateWithoutTagsInput, RankingListUncheckedCreateWithoutTagsInput> | RankingListCreateWithoutTagsInput[] | RankingListUncheckedCreateWithoutTagsInput[]
-    connectOrCreate?: RankingListCreateOrConnectWithoutTagsInput | RankingListCreateOrConnectWithoutTagsInput[]
-    upsert?: RankingListUpsertWithWhereUniqueWithoutTagsInput | RankingListUpsertWithWhereUniqueWithoutTagsInput[]
-    set?: RankingListWhereUniqueInput | RankingListWhereUniqueInput[]
-    disconnect?: RankingListWhereUniqueInput | RankingListWhereUniqueInput[]
-    delete?: RankingListWhereUniqueInput | RankingListWhereUniqueInput[]
-    connect?: RankingListWhereUniqueInput | RankingListWhereUniqueInput[]
-    update?: RankingListUpdateWithWhereUniqueWithoutTagsInput | RankingListUpdateWithWhereUniqueWithoutTagsInput[]
-    updateMany?: RankingListUpdateManyWithWhereWithoutTagsInput | RankingListUpdateManyWithWhereWithoutTagsInput[]
-    deleteMany?: RankingListScalarWhereInput | RankingListScalarWhereInput[]
   }
 
   export type TrendingTagUpdateManyWithoutTagNestedInput = {
@@ -23083,7 +23070,7 @@ export namespace Prisma {
     deleteMany?: TrendingTagScalarWhereInput | TrendingTagScalarWhereInput[]
   }
 
-  export type RankingListUncheckedUpdateManyWithoutTagsNestedInput = {
+  export type RankingListUpdateManyWithoutTagsNestedInput = {
     create?: XOR<RankingListCreateWithoutTagsInput, RankingListUncheckedCreateWithoutTagsInput> | RankingListCreateWithoutTagsInput[] | RankingListUncheckedCreateWithoutTagsInput[]
     connectOrCreate?: RankingListCreateOrConnectWithoutTagsInput | RankingListCreateOrConnectWithoutTagsInput[]
     upsert?: RankingListUpsertWithWhereUniqueWithoutTagsInput | RankingListUpsertWithWhereUniqueWithoutTagsInput[]
@@ -23110,60 +23097,17 @@ export namespace Prisma {
     deleteMany?: TrendingTagScalarWhereInput | TrendingTagScalarWhereInput[]
   }
 
-  export type PostCreateNestedManyWithoutAuthorInput = {
-    create?: XOR<PostCreateWithoutAuthorInput, PostUncheckedCreateWithoutAuthorInput> | PostCreateWithoutAuthorInput[] | PostUncheckedCreateWithoutAuthorInput[]
-    connectOrCreate?: PostCreateOrConnectWithoutAuthorInput | PostCreateOrConnectWithoutAuthorInput[]
-    createMany?: PostCreateManyAuthorInputEnvelope
-    connect?: PostWhereUniqueInput | PostWhereUniqueInput[]
-  }
-
-  export type LikeCreateNestedManyWithoutUserInput = {
-    create?: XOR<LikeCreateWithoutUserInput, LikeUncheckedCreateWithoutUserInput> | LikeCreateWithoutUserInput[] | LikeUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: LikeCreateOrConnectWithoutUserInput | LikeCreateOrConnectWithoutUserInput[]
-    createMany?: LikeCreateManyUserInputEnvelope
-    connect?: LikeWhereUniqueInput | LikeWhereUniqueInput[]
-  }
-
-  export type ReplyCreateNestedManyWithoutUserInput = {
-    create?: XOR<ReplyCreateWithoutUserInput, ReplyUncheckedCreateWithoutUserInput> | ReplyCreateWithoutUserInput[] | ReplyUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: ReplyCreateOrConnectWithoutUserInput | ReplyCreateOrConnectWithoutUserInput[]
-    createMany?: ReplyCreateManyUserInputEnvelope
-    connect?: ReplyWhereUniqueInput | ReplyWhereUniqueInput[]
-  }
-
-  export type FollowCreateNestedManyWithoutFollowingInput = {
-    create?: XOR<FollowCreateWithoutFollowingInput, FollowUncheckedCreateWithoutFollowingInput> | FollowCreateWithoutFollowingInput[] | FollowUncheckedCreateWithoutFollowingInput[]
-    connectOrCreate?: FollowCreateOrConnectWithoutFollowingInput | FollowCreateOrConnectWithoutFollowingInput[]
-    createMany?: FollowCreateManyFollowingInputEnvelope
-    connect?: FollowWhereUniqueInput | FollowWhereUniqueInput[]
-  }
-
-  export type FollowCreateNestedManyWithoutFollowerInput = {
-    create?: XOR<FollowCreateWithoutFollowerInput, FollowUncheckedCreateWithoutFollowerInput> | FollowCreateWithoutFollowerInput[] | FollowUncheckedCreateWithoutFollowerInput[]
-    connectOrCreate?: FollowCreateOrConnectWithoutFollowerInput | FollowCreateOrConnectWithoutFollowerInput[]
-    createMany?: FollowCreateManyFollowerInputEnvelope
-    connect?: FollowWhereUniqueInput | FollowWhereUniqueInput[]
-  }
-
-  export type RankingListCreateNestedManyWithoutAuthorInput = {
-    create?: XOR<RankingListCreateWithoutAuthorInput, RankingListUncheckedCreateWithoutAuthorInput> | RankingListCreateWithoutAuthorInput[] | RankingListUncheckedCreateWithoutAuthorInput[]
-    connectOrCreate?: RankingListCreateOrConnectWithoutAuthorInput | RankingListCreateOrConnectWithoutAuthorInput[]
-    createMany?: RankingListCreateManyAuthorInputEnvelope
+  export type RankingListUncheckedUpdateManyWithoutTagsNestedInput = {
+    create?: XOR<RankingListCreateWithoutTagsInput, RankingListUncheckedCreateWithoutTagsInput> | RankingListCreateWithoutTagsInput[] | RankingListUncheckedCreateWithoutTagsInput[]
+    connectOrCreate?: RankingListCreateOrConnectWithoutTagsInput | RankingListCreateOrConnectWithoutTagsInput[]
+    upsert?: RankingListUpsertWithWhereUniqueWithoutTagsInput | RankingListUpsertWithWhereUniqueWithoutTagsInput[]
+    set?: RankingListWhereUniqueInput | RankingListWhereUniqueInput[]
+    disconnect?: RankingListWhereUniqueInput | RankingListWhereUniqueInput[]
+    delete?: RankingListWhereUniqueInput | RankingListWhereUniqueInput[]
     connect?: RankingListWhereUniqueInput | RankingListWhereUniqueInput[]
-  }
-
-  export type FollowRequestCreateNestedManyWithoutRequesterInput = {
-    create?: XOR<FollowRequestCreateWithoutRequesterInput, FollowRequestUncheckedCreateWithoutRequesterInput> | FollowRequestCreateWithoutRequesterInput[] | FollowRequestUncheckedCreateWithoutRequesterInput[]
-    connectOrCreate?: FollowRequestCreateOrConnectWithoutRequesterInput | FollowRequestCreateOrConnectWithoutRequesterInput[]
-    createMany?: FollowRequestCreateManyRequesterInputEnvelope
-    connect?: FollowRequestWhereUniqueInput | FollowRequestWhereUniqueInput[]
-  }
-
-  export type FollowRequestCreateNestedManyWithoutRequestedInput = {
-    create?: XOR<FollowRequestCreateWithoutRequestedInput, FollowRequestUncheckedCreateWithoutRequestedInput> | FollowRequestCreateWithoutRequestedInput[] | FollowRequestUncheckedCreateWithoutRequestedInput[]
-    connectOrCreate?: FollowRequestCreateOrConnectWithoutRequestedInput | FollowRequestCreateOrConnectWithoutRequestedInput[]
-    createMany?: FollowRequestCreateManyRequestedInputEnvelope
-    connect?: FollowRequestWhereUniqueInput | FollowRequestWhereUniqueInput[]
+    update?: RankingListUpdateWithWhereUniqueWithoutTagsInput | RankingListUpdateWithWhereUniqueWithoutTagsInput[]
+    updateMany?: RankingListUpdateManyWithWhereWithoutTagsInput | RankingListUpdateManyWithWhereWithoutTagsInput[]
+    deleteMany?: RankingListScalarWhereInput | RankingListScalarWhereInput[]
   }
 
   export type FeedItemCreateNestedManyWithoutUserInput = {
@@ -23173,6 +23117,62 @@ export namespace Prisma {
     connect?: FeedItemWhereUniqueInput | FeedItemWhereUniqueInput[]
   }
 
+  export type FollowCreateNestedManyWithoutFollowerInput = {
+    create?: XOR<FollowCreateWithoutFollowerInput, FollowUncheckedCreateWithoutFollowerInput> | FollowCreateWithoutFollowerInput[] | FollowUncheckedCreateWithoutFollowerInput[]
+    connectOrCreate?: FollowCreateOrConnectWithoutFollowerInput | FollowCreateOrConnectWithoutFollowerInput[]
+    createMany?: FollowCreateManyFollowerInputEnvelope
+    connect?: FollowWhereUniqueInput | FollowWhereUniqueInput[]
+  }
+
+  export type FollowCreateNestedManyWithoutFollowingInput = {
+    create?: XOR<FollowCreateWithoutFollowingInput, FollowUncheckedCreateWithoutFollowingInput> | FollowCreateWithoutFollowingInput[] | FollowUncheckedCreateWithoutFollowingInput[]
+    connectOrCreate?: FollowCreateOrConnectWithoutFollowingInput | FollowCreateOrConnectWithoutFollowingInput[]
+    createMany?: FollowCreateManyFollowingInputEnvelope
+    connect?: FollowWhereUniqueInput | FollowWhereUniqueInput[]
+  }
+
+  export type FollowRequestCreateNestedManyWithoutRequestedInput = {
+    create?: XOR<FollowRequestCreateWithoutRequestedInput, FollowRequestUncheckedCreateWithoutRequestedInput> | FollowRequestCreateWithoutRequestedInput[] | FollowRequestUncheckedCreateWithoutRequestedInput[]
+    connectOrCreate?: FollowRequestCreateOrConnectWithoutRequestedInput | FollowRequestCreateOrConnectWithoutRequestedInput[]
+    createMany?: FollowRequestCreateManyRequestedInputEnvelope
+    connect?: FollowRequestWhereUniqueInput | FollowRequestWhereUniqueInput[]
+  }
+
+  export type FollowRequestCreateNestedManyWithoutRequesterInput = {
+    create?: XOR<FollowRequestCreateWithoutRequesterInput, FollowRequestUncheckedCreateWithoutRequesterInput> | FollowRequestCreateWithoutRequesterInput[] | FollowRequestUncheckedCreateWithoutRequesterInput[]
+    connectOrCreate?: FollowRequestCreateOrConnectWithoutRequesterInput | FollowRequestCreateOrConnectWithoutRequesterInput[]
+    createMany?: FollowRequestCreateManyRequesterInputEnvelope
+    connect?: FollowRequestWhereUniqueInput | FollowRequestWhereUniqueInput[]
+  }
+
+  export type LikeCreateNestedManyWithoutUserInput = {
+    create?: XOR<LikeCreateWithoutUserInput, LikeUncheckedCreateWithoutUserInput> | LikeCreateWithoutUserInput[] | LikeUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: LikeCreateOrConnectWithoutUserInput | LikeCreateOrConnectWithoutUserInput[]
+    createMany?: LikeCreateManyUserInputEnvelope
+    connect?: LikeWhereUniqueInput | LikeWhereUniqueInput[]
+  }
+
+  export type PostCreateNestedManyWithoutAuthorInput = {
+    create?: XOR<PostCreateWithoutAuthorInput, PostUncheckedCreateWithoutAuthorInput> | PostCreateWithoutAuthorInput[] | PostUncheckedCreateWithoutAuthorInput[]
+    connectOrCreate?: PostCreateOrConnectWithoutAuthorInput | PostCreateOrConnectWithoutAuthorInput[]
+    createMany?: PostCreateManyAuthorInputEnvelope
+    connect?: PostWhereUniqueInput | PostWhereUniqueInput[]
+  }
+
+  export type RankingListCreateNestedManyWithoutAuthorInput = {
+    create?: XOR<RankingListCreateWithoutAuthorInput, RankingListUncheckedCreateWithoutAuthorInput> | RankingListCreateWithoutAuthorInput[] | RankingListUncheckedCreateWithoutAuthorInput[]
+    connectOrCreate?: RankingListCreateOrConnectWithoutAuthorInput | RankingListCreateOrConnectWithoutAuthorInput[]
+    createMany?: RankingListCreateManyAuthorInputEnvelope
+    connect?: RankingListWhereUniqueInput | RankingListWhereUniqueInput[]
+  }
+
+  export type ReplyCreateNestedManyWithoutUserInput = {
+    create?: XOR<ReplyCreateWithoutUserInput, ReplyUncheckedCreateWithoutUserInput> | ReplyCreateWithoutUserInput[] | ReplyUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ReplyCreateOrConnectWithoutUserInput | ReplyCreateOrConnectWithoutUserInput[]
+    createMany?: ReplyCreateManyUserInputEnvelope
+    connect?: ReplyWhereUniqueInput | ReplyWhereUniqueInput[]
+  }
+
   export type RetweetCreateNestedManyWithoutUserInput = {
     create?: XOR<RetweetCreateWithoutUserInput, RetweetUncheckedCreateWithoutUserInput> | RetweetCreateWithoutUserInput[] | RetweetUncheckedCreateWithoutUserInput[]
     connectOrCreate?: RetweetCreateOrConnectWithoutUserInput | RetweetCreateOrConnectWithoutUserInput[]
@@ -23180,32 +23180,11 @@ export namespace Prisma {
     connect?: RetweetWhereUniqueInput | RetweetWhereUniqueInput[]
   }
 
-  export type PostUncheckedCreateNestedManyWithoutAuthorInput = {
-    create?: XOR<PostCreateWithoutAuthorInput, PostUncheckedCreateWithoutAuthorInput> | PostCreateWithoutAuthorInput[] | PostUncheckedCreateWithoutAuthorInput[]
-    connectOrCreate?: PostCreateOrConnectWithoutAuthorInput | PostCreateOrConnectWithoutAuthorInput[]
-    createMany?: PostCreateManyAuthorInputEnvelope
-    connect?: PostWhereUniqueInput | PostWhereUniqueInput[]
-  }
-
-  export type LikeUncheckedCreateNestedManyWithoutUserInput = {
-    create?: XOR<LikeCreateWithoutUserInput, LikeUncheckedCreateWithoutUserInput> | LikeCreateWithoutUserInput[] | LikeUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: LikeCreateOrConnectWithoutUserInput | LikeCreateOrConnectWithoutUserInput[]
-    createMany?: LikeCreateManyUserInputEnvelope
-    connect?: LikeWhereUniqueInput | LikeWhereUniqueInput[]
-  }
-
-  export type ReplyUncheckedCreateNestedManyWithoutUserInput = {
-    create?: XOR<ReplyCreateWithoutUserInput, ReplyUncheckedCreateWithoutUserInput> | ReplyCreateWithoutUserInput[] | ReplyUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: ReplyCreateOrConnectWithoutUserInput | ReplyCreateOrConnectWithoutUserInput[]
-    createMany?: ReplyCreateManyUserInputEnvelope
-    connect?: ReplyWhereUniqueInput | ReplyWhereUniqueInput[]
-  }
-
-  export type FollowUncheckedCreateNestedManyWithoutFollowingInput = {
-    create?: XOR<FollowCreateWithoutFollowingInput, FollowUncheckedCreateWithoutFollowingInput> | FollowCreateWithoutFollowingInput[] | FollowUncheckedCreateWithoutFollowingInput[]
-    connectOrCreate?: FollowCreateOrConnectWithoutFollowingInput | FollowCreateOrConnectWithoutFollowingInput[]
-    createMany?: FollowCreateManyFollowingInputEnvelope
-    connect?: FollowWhereUniqueInput | FollowWhereUniqueInput[]
+  export type FeedItemUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<FeedItemCreateWithoutUserInput, FeedItemUncheckedCreateWithoutUserInput> | FeedItemCreateWithoutUserInput[] | FeedItemUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: FeedItemCreateOrConnectWithoutUserInput | FeedItemCreateOrConnectWithoutUserInput[]
+    createMany?: FeedItemCreateManyUserInputEnvelope
+    connect?: FeedItemWhereUniqueInput | FeedItemWhereUniqueInput[]
   }
 
   export type FollowUncheckedCreateNestedManyWithoutFollowerInput = {
@@ -23215,18 +23194,11 @@ export namespace Prisma {
     connect?: FollowWhereUniqueInput | FollowWhereUniqueInput[]
   }
 
-  export type RankingListUncheckedCreateNestedManyWithoutAuthorInput = {
-    create?: XOR<RankingListCreateWithoutAuthorInput, RankingListUncheckedCreateWithoutAuthorInput> | RankingListCreateWithoutAuthorInput[] | RankingListUncheckedCreateWithoutAuthorInput[]
-    connectOrCreate?: RankingListCreateOrConnectWithoutAuthorInput | RankingListCreateOrConnectWithoutAuthorInput[]
-    createMany?: RankingListCreateManyAuthorInputEnvelope
-    connect?: RankingListWhereUniqueInput | RankingListWhereUniqueInput[]
-  }
-
-  export type FollowRequestUncheckedCreateNestedManyWithoutRequesterInput = {
-    create?: XOR<FollowRequestCreateWithoutRequesterInput, FollowRequestUncheckedCreateWithoutRequesterInput> | FollowRequestCreateWithoutRequesterInput[] | FollowRequestUncheckedCreateWithoutRequesterInput[]
-    connectOrCreate?: FollowRequestCreateOrConnectWithoutRequesterInput | FollowRequestCreateOrConnectWithoutRequesterInput[]
-    createMany?: FollowRequestCreateManyRequesterInputEnvelope
-    connect?: FollowRequestWhereUniqueInput | FollowRequestWhereUniqueInput[]
+  export type FollowUncheckedCreateNestedManyWithoutFollowingInput = {
+    create?: XOR<FollowCreateWithoutFollowingInput, FollowUncheckedCreateWithoutFollowingInput> | FollowCreateWithoutFollowingInput[] | FollowUncheckedCreateWithoutFollowingInput[]
+    connectOrCreate?: FollowCreateOrConnectWithoutFollowingInput | FollowCreateOrConnectWithoutFollowingInput[]
+    createMany?: FollowCreateManyFollowingInputEnvelope
+    connect?: FollowWhereUniqueInput | FollowWhereUniqueInput[]
   }
 
   export type FollowRequestUncheckedCreateNestedManyWithoutRequestedInput = {
@@ -23236,11 +23208,39 @@ export namespace Prisma {
     connect?: FollowRequestWhereUniqueInput | FollowRequestWhereUniqueInput[]
   }
 
-  export type FeedItemUncheckedCreateNestedManyWithoutUserInput = {
-    create?: XOR<FeedItemCreateWithoutUserInput, FeedItemUncheckedCreateWithoutUserInput> | FeedItemCreateWithoutUserInput[] | FeedItemUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: FeedItemCreateOrConnectWithoutUserInput | FeedItemCreateOrConnectWithoutUserInput[]
-    createMany?: FeedItemCreateManyUserInputEnvelope
-    connect?: FeedItemWhereUniqueInput | FeedItemWhereUniqueInput[]
+  export type FollowRequestUncheckedCreateNestedManyWithoutRequesterInput = {
+    create?: XOR<FollowRequestCreateWithoutRequesterInput, FollowRequestUncheckedCreateWithoutRequesterInput> | FollowRequestCreateWithoutRequesterInput[] | FollowRequestUncheckedCreateWithoutRequesterInput[]
+    connectOrCreate?: FollowRequestCreateOrConnectWithoutRequesterInput | FollowRequestCreateOrConnectWithoutRequesterInput[]
+    createMany?: FollowRequestCreateManyRequesterInputEnvelope
+    connect?: FollowRequestWhereUniqueInput | FollowRequestWhereUniqueInput[]
+  }
+
+  export type LikeUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<LikeCreateWithoutUserInput, LikeUncheckedCreateWithoutUserInput> | LikeCreateWithoutUserInput[] | LikeUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: LikeCreateOrConnectWithoutUserInput | LikeCreateOrConnectWithoutUserInput[]
+    createMany?: LikeCreateManyUserInputEnvelope
+    connect?: LikeWhereUniqueInput | LikeWhereUniqueInput[]
+  }
+
+  export type PostUncheckedCreateNestedManyWithoutAuthorInput = {
+    create?: XOR<PostCreateWithoutAuthorInput, PostUncheckedCreateWithoutAuthorInput> | PostCreateWithoutAuthorInput[] | PostUncheckedCreateWithoutAuthorInput[]
+    connectOrCreate?: PostCreateOrConnectWithoutAuthorInput | PostCreateOrConnectWithoutAuthorInput[]
+    createMany?: PostCreateManyAuthorInputEnvelope
+    connect?: PostWhereUniqueInput | PostWhereUniqueInput[]
+  }
+
+  export type RankingListUncheckedCreateNestedManyWithoutAuthorInput = {
+    create?: XOR<RankingListCreateWithoutAuthorInput, RankingListUncheckedCreateWithoutAuthorInput> | RankingListCreateWithoutAuthorInput[] | RankingListUncheckedCreateWithoutAuthorInput[]
+    connectOrCreate?: RankingListCreateOrConnectWithoutAuthorInput | RankingListCreateOrConnectWithoutAuthorInput[]
+    createMany?: RankingListCreateManyAuthorInputEnvelope
+    connect?: RankingListWhereUniqueInput | RankingListWhereUniqueInput[]
+  }
+
+  export type ReplyUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<ReplyCreateWithoutUserInput, ReplyUncheckedCreateWithoutUserInput> | ReplyCreateWithoutUserInput[] | ReplyUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ReplyCreateOrConnectWithoutUserInput | ReplyCreateOrConnectWithoutUserInput[]
+    createMany?: ReplyCreateManyUserInputEnvelope
+    connect?: ReplyWhereUniqueInput | ReplyWhereUniqueInput[]
   }
 
   export type RetweetUncheckedCreateNestedManyWithoutUserInput = {
@@ -23262,60 +23262,18 @@ export namespace Prisma {
     set?: Date | string | null
   }
 
-  export type PostUpdateManyWithoutAuthorNestedInput = {
-    create?: XOR<PostCreateWithoutAuthorInput, PostUncheckedCreateWithoutAuthorInput> | PostCreateWithoutAuthorInput[] | PostUncheckedCreateWithoutAuthorInput[]
-    connectOrCreate?: PostCreateOrConnectWithoutAuthorInput | PostCreateOrConnectWithoutAuthorInput[]
-    upsert?: PostUpsertWithWhereUniqueWithoutAuthorInput | PostUpsertWithWhereUniqueWithoutAuthorInput[]
-    createMany?: PostCreateManyAuthorInputEnvelope
-    set?: PostWhereUniqueInput | PostWhereUniqueInput[]
-    disconnect?: PostWhereUniqueInput | PostWhereUniqueInput[]
-    delete?: PostWhereUniqueInput | PostWhereUniqueInput[]
-    connect?: PostWhereUniqueInput | PostWhereUniqueInput[]
-    update?: PostUpdateWithWhereUniqueWithoutAuthorInput | PostUpdateWithWhereUniqueWithoutAuthorInput[]
-    updateMany?: PostUpdateManyWithWhereWithoutAuthorInput | PostUpdateManyWithWhereWithoutAuthorInput[]
-    deleteMany?: PostScalarWhereInput | PostScalarWhereInput[]
-  }
-
-  export type LikeUpdateManyWithoutUserNestedInput = {
-    create?: XOR<LikeCreateWithoutUserInput, LikeUncheckedCreateWithoutUserInput> | LikeCreateWithoutUserInput[] | LikeUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: LikeCreateOrConnectWithoutUserInput | LikeCreateOrConnectWithoutUserInput[]
-    upsert?: LikeUpsertWithWhereUniqueWithoutUserInput | LikeUpsertWithWhereUniqueWithoutUserInput[]
-    createMany?: LikeCreateManyUserInputEnvelope
-    set?: LikeWhereUniqueInput | LikeWhereUniqueInput[]
-    disconnect?: LikeWhereUniqueInput | LikeWhereUniqueInput[]
-    delete?: LikeWhereUniqueInput | LikeWhereUniqueInput[]
-    connect?: LikeWhereUniqueInput | LikeWhereUniqueInput[]
-    update?: LikeUpdateWithWhereUniqueWithoutUserInput | LikeUpdateWithWhereUniqueWithoutUserInput[]
-    updateMany?: LikeUpdateManyWithWhereWithoutUserInput | LikeUpdateManyWithWhereWithoutUserInput[]
-    deleteMany?: LikeScalarWhereInput | LikeScalarWhereInput[]
-  }
-
-  export type ReplyUpdateManyWithoutUserNestedInput = {
-    create?: XOR<ReplyCreateWithoutUserInput, ReplyUncheckedCreateWithoutUserInput> | ReplyCreateWithoutUserInput[] | ReplyUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: ReplyCreateOrConnectWithoutUserInput | ReplyCreateOrConnectWithoutUserInput[]
-    upsert?: ReplyUpsertWithWhereUniqueWithoutUserInput | ReplyUpsertWithWhereUniqueWithoutUserInput[]
-    createMany?: ReplyCreateManyUserInputEnvelope
-    set?: ReplyWhereUniqueInput | ReplyWhereUniqueInput[]
-    disconnect?: ReplyWhereUniqueInput | ReplyWhereUniqueInput[]
-    delete?: ReplyWhereUniqueInput | ReplyWhereUniqueInput[]
-    connect?: ReplyWhereUniqueInput | ReplyWhereUniqueInput[]
-    update?: ReplyUpdateWithWhereUniqueWithoutUserInput | ReplyUpdateWithWhereUniqueWithoutUserInput[]
-    updateMany?: ReplyUpdateManyWithWhereWithoutUserInput | ReplyUpdateManyWithWhereWithoutUserInput[]
-    deleteMany?: ReplyScalarWhereInput | ReplyScalarWhereInput[]
-  }
-
-  export type FollowUpdateManyWithoutFollowingNestedInput = {
-    create?: XOR<FollowCreateWithoutFollowingInput, FollowUncheckedCreateWithoutFollowingInput> | FollowCreateWithoutFollowingInput[] | FollowUncheckedCreateWithoutFollowingInput[]
-    connectOrCreate?: FollowCreateOrConnectWithoutFollowingInput | FollowCreateOrConnectWithoutFollowingInput[]
-    upsert?: FollowUpsertWithWhereUniqueWithoutFollowingInput | FollowUpsertWithWhereUniqueWithoutFollowingInput[]
-    createMany?: FollowCreateManyFollowingInputEnvelope
-    set?: FollowWhereUniqueInput | FollowWhereUniqueInput[]
-    disconnect?: FollowWhereUniqueInput | FollowWhereUniqueInput[]
-    delete?: FollowWhereUniqueInput | FollowWhereUniqueInput[]
-    connect?: FollowWhereUniqueInput | FollowWhereUniqueInput[]
-    update?: FollowUpdateWithWhereUniqueWithoutFollowingInput | FollowUpdateWithWhereUniqueWithoutFollowingInput[]
-    updateMany?: FollowUpdateManyWithWhereWithoutFollowingInput | FollowUpdateManyWithWhereWithoutFollowingInput[]
-    deleteMany?: FollowScalarWhereInput | FollowScalarWhereInput[]
+  export type FeedItemUpdateManyWithoutUserNestedInput = {
+    create?: XOR<FeedItemCreateWithoutUserInput, FeedItemUncheckedCreateWithoutUserInput> | FeedItemCreateWithoutUserInput[] | FeedItemUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: FeedItemCreateOrConnectWithoutUserInput | FeedItemCreateOrConnectWithoutUserInput[]
+    upsert?: FeedItemUpsertWithWhereUniqueWithoutUserInput | FeedItemUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: FeedItemCreateManyUserInputEnvelope
+    set?: FeedItemWhereUniqueInput | FeedItemWhereUniqueInput[]
+    disconnect?: FeedItemWhereUniqueInput | FeedItemWhereUniqueInput[]
+    delete?: FeedItemWhereUniqueInput | FeedItemWhereUniqueInput[]
+    connect?: FeedItemWhereUniqueInput | FeedItemWhereUniqueInput[]
+    update?: FeedItemUpdateWithWhereUniqueWithoutUserInput | FeedItemUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: FeedItemUpdateManyWithWhereWithoutUserInput | FeedItemUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: FeedItemScalarWhereInput | FeedItemScalarWhereInput[]
   }
 
   export type FollowUpdateManyWithoutFollowerNestedInput = {
@@ -23332,32 +23290,18 @@ export namespace Prisma {
     deleteMany?: FollowScalarWhereInput | FollowScalarWhereInput[]
   }
 
-  export type RankingListUpdateManyWithoutAuthorNestedInput = {
-    create?: XOR<RankingListCreateWithoutAuthorInput, RankingListUncheckedCreateWithoutAuthorInput> | RankingListCreateWithoutAuthorInput[] | RankingListUncheckedCreateWithoutAuthorInput[]
-    connectOrCreate?: RankingListCreateOrConnectWithoutAuthorInput | RankingListCreateOrConnectWithoutAuthorInput[]
-    upsert?: RankingListUpsertWithWhereUniqueWithoutAuthorInput | RankingListUpsertWithWhereUniqueWithoutAuthorInput[]
-    createMany?: RankingListCreateManyAuthorInputEnvelope
-    set?: RankingListWhereUniqueInput | RankingListWhereUniqueInput[]
-    disconnect?: RankingListWhereUniqueInput | RankingListWhereUniqueInput[]
-    delete?: RankingListWhereUniqueInput | RankingListWhereUniqueInput[]
-    connect?: RankingListWhereUniqueInput | RankingListWhereUniqueInput[]
-    update?: RankingListUpdateWithWhereUniqueWithoutAuthorInput | RankingListUpdateWithWhereUniqueWithoutAuthorInput[]
-    updateMany?: RankingListUpdateManyWithWhereWithoutAuthorInput | RankingListUpdateManyWithWhereWithoutAuthorInput[]
-    deleteMany?: RankingListScalarWhereInput | RankingListScalarWhereInput[]
-  }
-
-  export type FollowRequestUpdateManyWithoutRequesterNestedInput = {
-    create?: XOR<FollowRequestCreateWithoutRequesterInput, FollowRequestUncheckedCreateWithoutRequesterInput> | FollowRequestCreateWithoutRequesterInput[] | FollowRequestUncheckedCreateWithoutRequesterInput[]
-    connectOrCreate?: FollowRequestCreateOrConnectWithoutRequesterInput | FollowRequestCreateOrConnectWithoutRequesterInput[]
-    upsert?: FollowRequestUpsertWithWhereUniqueWithoutRequesterInput | FollowRequestUpsertWithWhereUniqueWithoutRequesterInput[]
-    createMany?: FollowRequestCreateManyRequesterInputEnvelope
-    set?: FollowRequestWhereUniqueInput | FollowRequestWhereUniqueInput[]
-    disconnect?: FollowRequestWhereUniqueInput | FollowRequestWhereUniqueInput[]
-    delete?: FollowRequestWhereUniqueInput | FollowRequestWhereUniqueInput[]
-    connect?: FollowRequestWhereUniqueInput | FollowRequestWhereUniqueInput[]
-    update?: FollowRequestUpdateWithWhereUniqueWithoutRequesterInput | FollowRequestUpdateWithWhereUniqueWithoutRequesterInput[]
-    updateMany?: FollowRequestUpdateManyWithWhereWithoutRequesterInput | FollowRequestUpdateManyWithWhereWithoutRequesterInput[]
-    deleteMany?: FollowRequestScalarWhereInput | FollowRequestScalarWhereInput[]
+  export type FollowUpdateManyWithoutFollowingNestedInput = {
+    create?: XOR<FollowCreateWithoutFollowingInput, FollowUncheckedCreateWithoutFollowingInput> | FollowCreateWithoutFollowingInput[] | FollowUncheckedCreateWithoutFollowingInput[]
+    connectOrCreate?: FollowCreateOrConnectWithoutFollowingInput | FollowCreateOrConnectWithoutFollowingInput[]
+    upsert?: FollowUpsertWithWhereUniqueWithoutFollowingInput | FollowUpsertWithWhereUniqueWithoutFollowingInput[]
+    createMany?: FollowCreateManyFollowingInputEnvelope
+    set?: FollowWhereUniqueInput | FollowWhereUniqueInput[]
+    disconnect?: FollowWhereUniqueInput | FollowWhereUniqueInput[]
+    delete?: FollowWhereUniqueInput | FollowWhereUniqueInput[]
+    connect?: FollowWhereUniqueInput | FollowWhereUniqueInput[]
+    update?: FollowUpdateWithWhereUniqueWithoutFollowingInput | FollowUpdateWithWhereUniqueWithoutFollowingInput[]
+    updateMany?: FollowUpdateManyWithWhereWithoutFollowingInput | FollowUpdateManyWithWhereWithoutFollowingInput[]
+    deleteMany?: FollowScalarWhereInput | FollowScalarWhereInput[]
   }
 
   export type FollowRequestUpdateManyWithoutRequestedNestedInput = {
@@ -23374,18 +23318,74 @@ export namespace Prisma {
     deleteMany?: FollowRequestScalarWhereInput | FollowRequestScalarWhereInput[]
   }
 
-  export type FeedItemUpdateManyWithoutUserNestedInput = {
-    create?: XOR<FeedItemCreateWithoutUserInput, FeedItemUncheckedCreateWithoutUserInput> | FeedItemCreateWithoutUserInput[] | FeedItemUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: FeedItemCreateOrConnectWithoutUserInput | FeedItemCreateOrConnectWithoutUserInput[]
-    upsert?: FeedItemUpsertWithWhereUniqueWithoutUserInput | FeedItemUpsertWithWhereUniqueWithoutUserInput[]
-    createMany?: FeedItemCreateManyUserInputEnvelope
-    set?: FeedItemWhereUniqueInput | FeedItemWhereUniqueInput[]
-    disconnect?: FeedItemWhereUniqueInput | FeedItemWhereUniqueInput[]
-    delete?: FeedItemWhereUniqueInput | FeedItemWhereUniqueInput[]
-    connect?: FeedItemWhereUniqueInput | FeedItemWhereUniqueInput[]
-    update?: FeedItemUpdateWithWhereUniqueWithoutUserInput | FeedItemUpdateWithWhereUniqueWithoutUserInput[]
-    updateMany?: FeedItemUpdateManyWithWhereWithoutUserInput | FeedItemUpdateManyWithWhereWithoutUserInput[]
-    deleteMany?: FeedItemScalarWhereInput | FeedItemScalarWhereInput[]
+  export type FollowRequestUpdateManyWithoutRequesterNestedInput = {
+    create?: XOR<FollowRequestCreateWithoutRequesterInput, FollowRequestUncheckedCreateWithoutRequesterInput> | FollowRequestCreateWithoutRequesterInput[] | FollowRequestUncheckedCreateWithoutRequesterInput[]
+    connectOrCreate?: FollowRequestCreateOrConnectWithoutRequesterInput | FollowRequestCreateOrConnectWithoutRequesterInput[]
+    upsert?: FollowRequestUpsertWithWhereUniqueWithoutRequesterInput | FollowRequestUpsertWithWhereUniqueWithoutRequesterInput[]
+    createMany?: FollowRequestCreateManyRequesterInputEnvelope
+    set?: FollowRequestWhereUniqueInput | FollowRequestWhereUniqueInput[]
+    disconnect?: FollowRequestWhereUniqueInput | FollowRequestWhereUniqueInput[]
+    delete?: FollowRequestWhereUniqueInput | FollowRequestWhereUniqueInput[]
+    connect?: FollowRequestWhereUniqueInput | FollowRequestWhereUniqueInput[]
+    update?: FollowRequestUpdateWithWhereUniqueWithoutRequesterInput | FollowRequestUpdateWithWhereUniqueWithoutRequesterInput[]
+    updateMany?: FollowRequestUpdateManyWithWhereWithoutRequesterInput | FollowRequestUpdateManyWithWhereWithoutRequesterInput[]
+    deleteMany?: FollowRequestScalarWhereInput | FollowRequestScalarWhereInput[]
+  }
+
+  export type LikeUpdateManyWithoutUserNestedInput = {
+    create?: XOR<LikeCreateWithoutUserInput, LikeUncheckedCreateWithoutUserInput> | LikeCreateWithoutUserInput[] | LikeUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: LikeCreateOrConnectWithoutUserInput | LikeCreateOrConnectWithoutUserInput[]
+    upsert?: LikeUpsertWithWhereUniqueWithoutUserInput | LikeUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: LikeCreateManyUserInputEnvelope
+    set?: LikeWhereUniqueInput | LikeWhereUniqueInput[]
+    disconnect?: LikeWhereUniqueInput | LikeWhereUniqueInput[]
+    delete?: LikeWhereUniqueInput | LikeWhereUniqueInput[]
+    connect?: LikeWhereUniqueInput | LikeWhereUniqueInput[]
+    update?: LikeUpdateWithWhereUniqueWithoutUserInput | LikeUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: LikeUpdateManyWithWhereWithoutUserInput | LikeUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: LikeScalarWhereInput | LikeScalarWhereInput[]
+  }
+
+  export type PostUpdateManyWithoutAuthorNestedInput = {
+    create?: XOR<PostCreateWithoutAuthorInput, PostUncheckedCreateWithoutAuthorInput> | PostCreateWithoutAuthorInput[] | PostUncheckedCreateWithoutAuthorInput[]
+    connectOrCreate?: PostCreateOrConnectWithoutAuthorInput | PostCreateOrConnectWithoutAuthorInput[]
+    upsert?: PostUpsertWithWhereUniqueWithoutAuthorInput | PostUpsertWithWhereUniqueWithoutAuthorInput[]
+    createMany?: PostCreateManyAuthorInputEnvelope
+    set?: PostWhereUniqueInput | PostWhereUniqueInput[]
+    disconnect?: PostWhereUniqueInput | PostWhereUniqueInput[]
+    delete?: PostWhereUniqueInput | PostWhereUniqueInput[]
+    connect?: PostWhereUniqueInput | PostWhereUniqueInput[]
+    update?: PostUpdateWithWhereUniqueWithoutAuthorInput | PostUpdateWithWhereUniqueWithoutAuthorInput[]
+    updateMany?: PostUpdateManyWithWhereWithoutAuthorInput | PostUpdateManyWithWhereWithoutAuthorInput[]
+    deleteMany?: PostScalarWhereInput | PostScalarWhereInput[]
+  }
+
+  export type RankingListUpdateManyWithoutAuthorNestedInput = {
+    create?: XOR<RankingListCreateWithoutAuthorInput, RankingListUncheckedCreateWithoutAuthorInput> | RankingListCreateWithoutAuthorInput[] | RankingListUncheckedCreateWithoutAuthorInput[]
+    connectOrCreate?: RankingListCreateOrConnectWithoutAuthorInput | RankingListCreateOrConnectWithoutAuthorInput[]
+    upsert?: RankingListUpsertWithWhereUniqueWithoutAuthorInput | RankingListUpsertWithWhereUniqueWithoutAuthorInput[]
+    createMany?: RankingListCreateManyAuthorInputEnvelope
+    set?: RankingListWhereUniqueInput | RankingListWhereUniqueInput[]
+    disconnect?: RankingListWhereUniqueInput | RankingListWhereUniqueInput[]
+    delete?: RankingListWhereUniqueInput | RankingListWhereUniqueInput[]
+    connect?: RankingListWhereUniqueInput | RankingListWhereUniqueInput[]
+    update?: RankingListUpdateWithWhereUniqueWithoutAuthorInput | RankingListUpdateWithWhereUniqueWithoutAuthorInput[]
+    updateMany?: RankingListUpdateManyWithWhereWithoutAuthorInput | RankingListUpdateManyWithWhereWithoutAuthorInput[]
+    deleteMany?: RankingListScalarWhereInput | RankingListScalarWhereInput[]
+  }
+
+  export type ReplyUpdateManyWithoutUserNestedInput = {
+    create?: XOR<ReplyCreateWithoutUserInput, ReplyUncheckedCreateWithoutUserInput> | ReplyCreateWithoutUserInput[] | ReplyUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ReplyCreateOrConnectWithoutUserInput | ReplyCreateOrConnectWithoutUserInput[]
+    upsert?: ReplyUpsertWithWhereUniqueWithoutUserInput | ReplyUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: ReplyCreateManyUserInputEnvelope
+    set?: ReplyWhereUniqueInput | ReplyWhereUniqueInput[]
+    disconnect?: ReplyWhereUniqueInput | ReplyWhereUniqueInput[]
+    delete?: ReplyWhereUniqueInput | ReplyWhereUniqueInput[]
+    connect?: ReplyWhereUniqueInput | ReplyWhereUniqueInput[]
+    update?: ReplyUpdateWithWhereUniqueWithoutUserInput | ReplyUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: ReplyUpdateManyWithWhereWithoutUserInput | ReplyUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: ReplyScalarWhereInput | ReplyScalarWhereInput[]
   }
 
   export type RetweetUpdateManyWithoutUserNestedInput = {
@@ -23402,60 +23402,18 @@ export namespace Prisma {
     deleteMany?: RetweetScalarWhereInput | RetweetScalarWhereInput[]
   }
 
-  export type PostUncheckedUpdateManyWithoutAuthorNestedInput = {
-    create?: XOR<PostCreateWithoutAuthorInput, PostUncheckedCreateWithoutAuthorInput> | PostCreateWithoutAuthorInput[] | PostUncheckedCreateWithoutAuthorInput[]
-    connectOrCreate?: PostCreateOrConnectWithoutAuthorInput | PostCreateOrConnectWithoutAuthorInput[]
-    upsert?: PostUpsertWithWhereUniqueWithoutAuthorInput | PostUpsertWithWhereUniqueWithoutAuthorInput[]
-    createMany?: PostCreateManyAuthorInputEnvelope
-    set?: PostWhereUniqueInput | PostWhereUniqueInput[]
-    disconnect?: PostWhereUniqueInput | PostWhereUniqueInput[]
-    delete?: PostWhereUniqueInput | PostWhereUniqueInput[]
-    connect?: PostWhereUniqueInput | PostWhereUniqueInput[]
-    update?: PostUpdateWithWhereUniqueWithoutAuthorInput | PostUpdateWithWhereUniqueWithoutAuthorInput[]
-    updateMany?: PostUpdateManyWithWhereWithoutAuthorInput | PostUpdateManyWithWhereWithoutAuthorInput[]
-    deleteMany?: PostScalarWhereInput | PostScalarWhereInput[]
-  }
-
-  export type LikeUncheckedUpdateManyWithoutUserNestedInput = {
-    create?: XOR<LikeCreateWithoutUserInput, LikeUncheckedCreateWithoutUserInput> | LikeCreateWithoutUserInput[] | LikeUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: LikeCreateOrConnectWithoutUserInput | LikeCreateOrConnectWithoutUserInput[]
-    upsert?: LikeUpsertWithWhereUniqueWithoutUserInput | LikeUpsertWithWhereUniqueWithoutUserInput[]
-    createMany?: LikeCreateManyUserInputEnvelope
-    set?: LikeWhereUniqueInput | LikeWhereUniqueInput[]
-    disconnect?: LikeWhereUniqueInput | LikeWhereUniqueInput[]
-    delete?: LikeWhereUniqueInput | LikeWhereUniqueInput[]
-    connect?: LikeWhereUniqueInput | LikeWhereUniqueInput[]
-    update?: LikeUpdateWithWhereUniqueWithoutUserInput | LikeUpdateWithWhereUniqueWithoutUserInput[]
-    updateMany?: LikeUpdateManyWithWhereWithoutUserInput | LikeUpdateManyWithWhereWithoutUserInput[]
-    deleteMany?: LikeScalarWhereInput | LikeScalarWhereInput[]
-  }
-
-  export type ReplyUncheckedUpdateManyWithoutUserNestedInput = {
-    create?: XOR<ReplyCreateWithoutUserInput, ReplyUncheckedCreateWithoutUserInput> | ReplyCreateWithoutUserInput[] | ReplyUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: ReplyCreateOrConnectWithoutUserInput | ReplyCreateOrConnectWithoutUserInput[]
-    upsert?: ReplyUpsertWithWhereUniqueWithoutUserInput | ReplyUpsertWithWhereUniqueWithoutUserInput[]
-    createMany?: ReplyCreateManyUserInputEnvelope
-    set?: ReplyWhereUniqueInput | ReplyWhereUniqueInput[]
-    disconnect?: ReplyWhereUniqueInput | ReplyWhereUniqueInput[]
-    delete?: ReplyWhereUniqueInput | ReplyWhereUniqueInput[]
-    connect?: ReplyWhereUniqueInput | ReplyWhereUniqueInput[]
-    update?: ReplyUpdateWithWhereUniqueWithoutUserInput | ReplyUpdateWithWhereUniqueWithoutUserInput[]
-    updateMany?: ReplyUpdateManyWithWhereWithoutUserInput | ReplyUpdateManyWithWhereWithoutUserInput[]
-    deleteMany?: ReplyScalarWhereInput | ReplyScalarWhereInput[]
-  }
-
-  export type FollowUncheckedUpdateManyWithoutFollowingNestedInput = {
-    create?: XOR<FollowCreateWithoutFollowingInput, FollowUncheckedCreateWithoutFollowingInput> | FollowCreateWithoutFollowingInput[] | FollowUncheckedCreateWithoutFollowingInput[]
-    connectOrCreate?: FollowCreateOrConnectWithoutFollowingInput | FollowCreateOrConnectWithoutFollowingInput[]
-    upsert?: FollowUpsertWithWhereUniqueWithoutFollowingInput | FollowUpsertWithWhereUniqueWithoutFollowingInput[]
-    createMany?: FollowCreateManyFollowingInputEnvelope
-    set?: FollowWhereUniqueInput | FollowWhereUniqueInput[]
-    disconnect?: FollowWhereUniqueInput | FollowWhereUniqueInput[]
-    delete?: FollowWhereUniqueInput | FollowWhereUniqueInput[]
-    connect?: FollowWhereUniqueInput | FollowWhereUniqueInput[]
-    update?: FollowUpdateWithWhereUniqueWithoutFollowingInput | FollowUpdateWithWhereUniqueWithoutFollowingInput[]
-    updateMany?: FollowUpdateManyWithWhereWithoutFollowingInput | FollowUpdateManyWithWhereWithoutFollowingInput[]
-    deleteMany?: FollowScalarWhereInput | FollowScalarWhereInput[]
+  export type FeedItemUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<FeedItemCreateWithoutUserInput, FeedItemUncheckedCreateWithoutUserInput> | FeedItemCreateWithoutUserInput[] | FeedItemUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: FeedItemCreateOrConnectWithoutUserInput | FeedItemCreateOrConnectWithoutUserInput[]
+    upsert?: FeedItemUpsertWithWhereUniqueWithoutUserInput | FeedItemUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: FeedItemCreateManyUserInputEnvelope
+    set?: FeedItemWhereUniqueInput | FeedItemWhereUniqueInput[]
+    disconnect?: FeedItemWhereUniqueInput | FeedItemWhereUniqueInput[]
+    delete?: FeedItemWhereUniqueInput | FeedItemWhereUniqueInput[]
+    connect?: FeedItemWhereUniqueInput | FeedItemWhereUniqueInput[]
+    update?: FeedItemUpdateWithWhereUniqueWithoutUserInput | FeedItemUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: FeedItemUpdateManyWithWhereWithoutUserInput | FeedItemUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: FeedItemScalarWhereInput | FeedItemScalarWhereInput[]
   }
 
   export type FollowUncheckedUpdateManyWithoutFollowerNestedInput = {
@@ -23472,32 +23430,18 @@ export namespace Prisma {
     deleteMany?: FollowScalarWhereInput | FollowScalarWhereInput[]
   }
 
-  export type RankingListUncheckedUpdateManyWithoutAuthorNestedInput = {
-    create?: XOR<RankingListCreateWithoutAuthorInput, RankingListUncheckedCreateWithoutAuthorInput> | RankingListCreateWithoutAuthorInput[] | RankingListUncheckedCreateWithoutAuthorInput[]
-    connectOrCreate?: RankingListCreateOrConnectWithoutAuthorInput | RankingListCreateOrConnectWithoutAuthorInput[]
-    upsert?: RankingListUpsertWithWhereUniqueWithoutAuthorInput | RankingListUpsertWithWhereUniqueWithoutAuthorInput[]
-    createMany?: RankingListCreateManyAuthorInputEnvelope
-    set?: RankingListWhereUniqueInput | RankingListWhereUniqueInput[]
-    disconnect?: RankingListWhereUniqueInput | RankingListWhereUniqueInput[]
-    delete?: RankingListWhereUniqueInput | RankingListWhereUniqueInput[]
-    connect?: RankingListWhereUniqueInput | RankingListWhereUniqueInput[]
-    update?: RankingListUpdateWithWhereUniqueWithoutAuthorInput | RankingListUpdateWithWhereUniqueWithoutAuthorInput[]
-    updateMany?: RankingListUpdateManyWithWhereWithoutAuthorInput | RankingListUpdateManyWithWhereWithoutAuthorInput[]
-    deleteMany?: RankingListScalarWhereInput | RankingListScalarWhereInput[]
-  }
-
-  export type FollowRequestUncheckedUpdateManyWithoutRequesterNestedInput = {
-    create?: XOR<FollowRequestCreateWithoutRequesterInput, FollowRequestUncheckedCreateWithoutRequesterInput> | FollowRequestCreateWithoutRequesterInput[] | FollowRequestUncheckedCreateWithoutRequesterInput[]
-    connectOrCreate?: FollowRequestCreateOrConnectWithoutRequesterInput | FollowRequestCreateOrConnectWithoutRequesterInput[]
-    upsert?: FollowRequestUpsertWithWhereUniqueWithoutRequesterInput | FollowRequestUpsertWithWhereUniqueWithoutRequesterInput[]
-    createMany?: FollowRequestCreateManyRequesterInputEnvelope
-    set?: FollowRequestWhereUniqueInput | FollowRequestWhereUniqueInput[]
-    disconnect?: FollowRequestWhereUniqueInput | FollowRequestWhereUniqueInput[]
-    delete?: FollowRequestWhereUniqueInput | FollowRequestWhereUniqueInput[]
-    connect?: FollowRequestWhereUniqueInput | FollowRequestWhereUniqueInput[]
-    update?: FollowRequestUpdateWithWhereUniqueWithoutRequesterInput | FollowRequestUpdateWithWhereUniqueWithoutRequesterInput[]
-    updateMany?: FollowRequestUpdateManyWithWhereWithoutRequesterInput | FollowRequestUpdateManyWithWhereWithoutRequesterInput[]
-    deleteMany?: FollowRequestScalarWhereInput | FollowRequestScalarWhereInput[]
+  export type FollowUncheckedUpdateManyWithoutFollowingNestedInput = {
+    create?: XOR<FollowCreateWithoutFollowingInput, FollowUncheckedCreateWithoutFollowingInput> | FollowCreateWithoutFollowingInput[] | FollowUncheckedCreateWithoutFollowingInput[]
+    connectOrCreate?: FollowCreateOrConnectWithoutFollowingInput | FollowCreateOrConnectWithoutFollowingInput[]
+    upsert?: FollowUpsertWithWhereUniqueWithoutFollowingInput | FollowUpsertWithWhereUniqueWithoutFollowingInput[]
+    createMany?: FollowCreateManyFollowingInputEnvelope
+    set?: FollowWhereUniqueInput | FollowWhereUniqueInput[]
+    disconnect?: FollowWhereUniqueInput | FollowWhereUniqueInput[]
+    delete?: FollowWhereUniqueInput | FollowWhereUniqueInput[]
+    connect?: FollowWhereUniqueInput | FollowWhereUniqueInput[]
+    update?: FollowUpdateWithWhereUniqueWithoutFollowingInput | FollowUpdateWithWhereUniqueWithoutFollowingInput[]
+    updateMany?: FollowUpdateManyWithWhereWithoutFollowingInput | FollowUpdateManyWithWhereWithoutFollowingInput[]
+    deleteMany?: FollowScalarWhereInput | FollowScalarWhereInput[]
   }
 
   export type FollowRequestUncheckedUpdateManyWithoutRequestedNestedInput = {
@@ -23514,18 +23458,74 @@ export namespace Prisma {
     deleteMany?: FollowRequestScalarWhereInput | FollowRequestScalarWhereInput[]
   }
 
-  export type FeedItemUncheckedUpdateManyWithoutUserNestedInput = {
-    create?: XOR<FeedItemCreateWithoutUserInput, FeedItemUncheckedCreateWithoutUserInput> | FeedItemCreateWithoutUserInput[] | FeedItemUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: FeedItemCreateOrConnectWithoutUserInput | FeedItemCreateOrConnectWithoutUserInput[]
-    upsert?: FeedItemUpsertWithWhereUniqueWithoutUserInput | FeedItemUpsertWithWhereUniqueWithoutUserInput[]
-    createMany?: FeedItemCreateManyUserInputEnvelope
-    set?: FeedItemWhereUniqueInput | FeedItemWhereUniqueInput[]
-    disconnect?: FeedItemWhereUniqueInput | FeedItemWhereUniqueInput[]
-    delete?: FeedItemWhereUniqueInput | FeedItemWhereUniqueInput[]
-    connect?: FeedItemWhereUniqueInput | FeedItemWhereUniqueInput[]
-    update?: FeedItemUpdateWithWhereUniqueWithoutUserInput | FeedItemUpdateWithWhereUniqueWithoutUserInput[]
-    updateMany?: FeedItemUpdateManyWithWhereWithoutUserInput | FeedItemUpdateManyWithWhereWithoutUserInput[]
-    deleteMany?: FeedItemScalarWhereInput | FeedItemScalarWhereInput[]
+  export type FollowRequestUncheckedUpdateManyWithoutRequesterNestedInput = {
+    create?: XOR<FollowRequestCreateWithoutRequesterInput, FollowRequestUncheckedCreateWithoutRequesterInput> | FollowRequestCreateWithoutRequesterInput[] | FollowRequestUncheckedCreateWithoutRequesterInput[]
+    connectOrCreate?: FollowRequestCreateOrConnectWithoutRequesterInput | FollowRequestCreateOrConnectWithoutRequesterInput[]
+    upsert?: FollowRequestUpsertWithWhereUniqueWithoutRequesterInput | FollowRequestUpsertWithWhereUniqueWithoutRequesterInput[]
+    createMany?: FollowRequestCreateManyRequesterInputEnvelope
+    set?: FollowRequestWhereUniqueInput | FollowRequestWhereUniqueInput[]
+    disconnect?: FollowRequestWhereUniqueInput | FollowRequestWhereUniqueInput[]
+    delete?: FollowRequestWhereUniqueInput | FollowRequestWhereUniqueInput[]
+    connect?: FollowRequestWhereUniqueInput | FollowRequestWhereUniqueInput[]
+    update?: FollowRequestUpdateWithWhereUniqueWithoutRequesterInput | FollowRequestUpdateWithWhereUniqueWithoutRequesterInput[]
+    updateMany?: FollowRequestUpdateManyWithWhereWithoutRequesterInput | FollowRequestUpdateManyWithWhereWithoutRequesterInput[]
+    deleteMany?: FollowRequestScalarWhereInput | FollowRequestScalarWhereInput[]
+  }
+
+  export type LikeUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<LikeCreateWithoutUserInput, LikeUncheckedCreateWithoutUserInput> | LikeCreateWithoutUserInput[] | LikeUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: LikeCreateOrConnectWithoutUserInput | LikeCreateOrConnectWithoutUserInput[]
+    upsert?: LikeUpsertWithWhereUniqueWithoutUserInput | LikeUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: LikeCreateManyUserInputEnvelope
+    set?: LikeWhereUniqueInput | LikeWhereUniqueInput[]
+    disconnect?: LikeWhereUniqueInput | LikeWhereUniqueInput[]
+    delete?: LikeWhereUniqueInput | LikeWhereUniqueInput[]
+    connect?: LikeWhereUniqueInput | LikeWhereUniqueInput[]
+    update?: LikeUpdateWithWhereUniqueWithoutUserInput | LikeUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: LikeUpdateManyWithWhereWithoutUserInput | LikeUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: LikeScalarWhereInput | LikeScalarWhereInput[]
+  }
+
+  export type PostUncheckedUpdateManyWithoutAuthorNestedInput = {
+    create?: XOR<PostCreateWithoutAuthorInput, PostUncheckedCreateWithoutAuthorInput> | PostCreateWithoutAuthorInput[] | PostUncheckedCreateWithoutAuthorInput[]
+    connectOrCreate?: PostCreateOrConnectWithoutAuthorInput | PostCreateOrConnectWithoutAuthorInput[]
+    upsert?: PostUpsertWithWhereUniqueWithoutAuthorInput | PostUpsertWithWhereUniqueWithoutAuthorInput[]
+    createMany?: PostCreateManyAuthorInputEnvelope
+    set?: PostWhereUniqueInput | PostWhereUniqueInput[]
+    disconnect?: PostWhereUniqueInput | PostWhereUniqueInput[]
+    delete?: PostWhereUniqueInput | PostWhereUniqueInput[]
+    connect?: PostWhereUniqueInput | PostWhereUniqueInput[]
+    update?: PostUpdateWithWhereUniqueWithoutAuthorInput | PostUpdateWithWhereUniqueWithoutAuthorInput[]
+    updateMany?: PostUpdateManyWithWhereWithoutAuthorInput | PostUpdateManyWithWhereWithoutAuthorInput[]
+    deleteMany?: PostScalarWhereInput | PostScalarWhereInput[]
+  }
+
+  export type RankingListUncheckedUpdateManyWithoutAuthorNestedInput = {
+    create?: XOR<RankingListCreateWithoutAuthorInput, RankingListUncheckedCreateWithoutAuthorInput> | RankingListCreateWithoutAuthorInput[] | RankingListUncheckedCreateWithoutAuthorInput[]
+    connectOrCreate?: RankingListCreateOrConnectWithoutAuthorInput | RankingListCreateOrConnectWithoutAuthorInput[]
+    upsert?: RankingListUpsertWithWhereUniqueWithoutAuthorInput | RankingListUpsertWithWhereUniqueWithoutAuthorInput[]
+    createMany?: RankingListCreateManyAuthorInputEnvelope
+    set?: RankingListWhereUniqueInput | RankingListWhereUniqueInput[]
+    disconnect?: RankingListWhereUniqueInput | RankingListWhereUniqueInput[]
+    delete?: RankingListWhereUniqueInput | RankingListWhereUniqueInput[]
+    connect?: RankingListWhereUniqueInput | RankingListWhereUniqueInput[]
+    update?: RankingListUpdateWithWhereUniqueWithoutAuthorInput | RankingListUpdateWithWhereUniqueWithoutAuthorInput[]
+    updateMany?: RankingListUpdateManyWithWhereWithoutAuthorInput | RankingListUpdateManyWithWhereWithoutAuthorInput[]
+    deleteMany?: RankingListScalarWhereInput | RankingListScalarWhereInput[]
+  }
+
+  export type ReplyUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<ReplyCreateWithoutUserInput, ReplyUncheckedCreateWithoutUserInput> | ReplyCreateWithoutUserInput[] | ReplyUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ReplyCreateOrConnectWithoutUserInput | ReplyCreateOrConnectWithoutUserInput[]
+    upsert?: ReplyUpsertWithWhereUniqueWithoutUserInput | ReplyUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: ReplyCreateManyUserInputEnvelope
+    set?: ReplyWhereUniqueInput | ReplyWhereUniqueInput[]
+    disconnect?: ReplyWhereUniqueInput | ReplyWhereUniqueInput[]
+    delete?: ReplyWhereUniqueInput | ReplyWhereUniqueInput[]
+    connect?: ReplyWhereUniqueInput | ReplyWhereUniqueInput[]
+    update?: ReplyUpdateWithWhereUniqueWithoutUserInput | ReplyUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: ReplyUpdateManyWithWhereWithoutUserInput | ReplyUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: ReplyScalarWhereInput | ReplyScalarWhereInput[]
   }
 
   export type RetweetUncheckedUpdateManyWithoutUserNestedInput = {
@@ -23542,19 +23542,6 @@ export namespace Prisma {
     deleteMany?: RetweetScalarWhereInput | RetweetScalarWhereInput[]
   }
 
-  export type UserCreateNestedOneWithoutRankingListsInput = {
-    create?: XOR<UserCreateWithoutRankingListsInput, UserUncheckedCreateWithoutRankingListsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutRankingListsInput
-    connect?: UserWhereUniqueInput
-  }
-
-  export type RankedItemCreateNestedManyWithoutRankingListInput = {
-    create?: XOR<RankedItemCreateWithoutRankingListInput, RankedItemUncheckedCreateWithoutRankingListInput> | RankedItemCreateWithoutRankingListInput[] | RankedItemUncheckedCreateWithoutRankingListInput[]
-    connectOrCreate?: RankedItemCreateOrConnectWithoutRankingListInput | RankedItemCreateOrConnectWithoutRankingListInput[]
-    createMany?: RankedItemCreateManyRankingListInputEnvelope
-    connect?: RankedItemWhereUniqueInput | RankedItemWhereUniqueInput[]
-  }
-
   export type FeedItemCreateNestedManyWithoutRankingListInput = {
     create?: XOR<FeedItemCreateWithoutRankingListInput, FeedItemUncheckedCreateWithoutRankingListInput> | FeedItemCreateWithoutRankingListInput[] | FeedItemUncheckedCreateWithoutRankingListInput[]
     connectOrCreate?: FeedItemCreateOrConnectWithoutRankingListInput | FeedItemCreateOrConnectWithoutRankingListInput[]
@@ -23569,17 +23556,23 @@ export namespace Prisma {
     connect?: LikeWhereUniqueInput | LikeWhereUniqueInput[]
   }
 
-  export type TagCreateNestedManyWithoutRankingListsInput = {
-    create?: XOR<TagCreateWithoutRankingListsInput, TagUncheckedCreateWithoutRankingListsInput> | TagCreateWithoutRankingListsInput[] | TagUncheckedCreateWithoutRankingListsInput[]
-    connectOrCreate?: TagCreateOrConnectWithoutRankingListsInput | TagCreateOrConnectWithoutRankingListsInput[]
-    connect?: TagWhereUniqueInput | TagWhereUniqueInput[]
-  }
-
-  export type RankedItemUncheckedCreateNestedManyWithoutRankingListInput = {
+  export type RankedItemCreateNestedManyWithoutRankingListInput = {
     create?: XOR<RankedItemCreateWithoutRankingListInput, RankedItemUncheckedCreateWithoutRankingListInput> | RankedItemCreateWithoutRankingListInput[] | RankedItemUncheckedCreateWithoutRankingListInput[]
     connectOrCreate?: RankedItemCreateOrConnectWithoutRankingListInput | RankedItemCreateOrConnectWithoutRankingListInput[]
     createMany?: RankedItemCreateManyRankingListInputEnvelope
     connect?: RankedItemWhereUniqueInput | RankedItemWhereUniqueInput[]
+  }
+
+  export type UserCreateNestedOneWithoutRankingListsInput = {
+    create?: XOR<UserCreateWithoutRankingListsInput, UserUncheckedCreateWithoutRankingListsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutRankingListsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type TagCreateNestedManyWithoutRankingListsInput = {
+    create?: XOR<TagCreateWithoutRankingListsInput, TagUncheckedCreateWithoutRankingListsInput> | TagCreateWithoutRankingListsInput[] | TagUncheckedCreateWithoutRankingListsInput[]
+    connectOrCreate?: TagCreateOrConnectWithoutRankingListsInput | TagCreateOrConnectWithoutRankingListsInput[]
+    connect?: TagWhereUniqueInput | TagWhereUniqueInput[]
   }
 
   export type FeedItemUncheckedCreateNestedManyWithoutRankingListInput = {
@@ -23594,6 +23587,13 @@ export namespace Prisma {
     connectOrCreate?: LikeCreateOrConnectWithoutRankingListInput | LikeCreateOrConnectWithoutRankingListInput[]
     createMany?: LikeCreateManyRankingListInputEnvelope
     connect?: LikeWhereUniqueInput | LikeWhereUniqueInput[]
+  }
+
+  export type RankedItemUncheckedCreateNestedManyWithoutRankingListInput = {
+    create?: XOR<RankedItemCreateWithoutRankingListInput, RankedItemUncheckedCreateWithoutRankingListInput> | RankedItemCreateWithoutRankingListInput[] | RankedItemUncheckedCreateWithoutRankingListInput[]
+    connectOrCreate?: RankedItemCreateOrConnectWithoutRankingListInput | RankedItemCreateOrConnectWithoutRankingListInput[]
+    createMany?: RankedItemCreateManyRankingListInputEnvelope
+    connect?: RankedItemWhereUniqueInput | RankedItemWhereUniqueInput[]
   }
 
   export type TagUncheckedCreateNestedManyWithoutRankingListsInput = {
@@ -23620,28 +23620,6 @@ export namespace Prisma {
     decrement?: number
     multiply?: number
     divide?: number
-  }
-
-  export type UserUpdateOneRequiredWithoutRankingListsNestedInput = {
-    create?: XOR<UserCreateWithoutRankingListsInput, UserUncheckedCreateWithoutRankingListsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutRankingListsInput
-    upsert?: UserUpsertWithoutRankingListsInput
-    connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutRankingListsInput, UserUpdateWithoutRankingListsInput>, UserUncheckedUpdateWithoutRankingListsInput>
-  }
-
-  export type RankedItemUpdateManyWithoutRankingListNestedInput = {
-    create?: XOR<RankedItemCreateWithoutRankingListInput, RankedItemUncheckedCreateWithoutRankingListInput> | RankedItemCreateWithoutRankingListInput[] | RankedItemUncheckedCreateWithoutRankingListInput[]
-    connectOrCreate?: RankedItemCreateOrConnectWithoutRankingListInput | RankedItemCreateOrConnectWithoutRankingListInput[]
-    upsert?: RankedItemUpsertWithWhereUniqueWithoutRankingListInput | RankedItemUpsertWithWhereUniqueWithoutRankingListInput[]
-    createMany?: RankedItemCreateManyRankingListInputEnvelope
-    set?: RankedItemWhereUniqueInput | RankedItemWhereUniqueInput[]
-    disconnect?: RankedItemWhereUniqueInput | RankedItemWhereUniqueInput[]
-    delete?: RankedItemWhereUniqueInput | RankedItemWhereUniqueInput[]
-    connect?: RankedItemWhereUniqueInput | RankedItemWhereUniqueInput[]
-    update?: RankedItemUpdateWithWhereUniqueWithoutRankingListInput | RankedItemUpdateWithWhereUniqueWithoutRankingListInput[]
-    updateMany?: RankedItemUpdateManyWithWhereWithoutRankingListInput | RankedItemUpdateManyWithWhereWithoutRankingListInput[]
-    deleteMany?: RankedItemScalarWhereInput | RankedItemScalarWhereInput[]
   }
 
   export type FeedItemUpdateManyWithoutRankingListNestedInput = {
@@ -23672,20 +23650,7 @@ export namespace Prisma {
     deleteMany?: LikeScalarWhereInput | LikeScalarWhereInput[]
   }
 
-  export type TagUpdateManyWithoutRankingListsNestedInput = {
-    create?: XOR<TagCreateWithoutRankingListsInput, TagUncheckedCreateWithoutRankingListsInput> | TagCreateWithoutRankingListsInput[] | TagUncheckedCreateWithoutRankingListsInput[]
-    connectOrCreate?: TagCreateOrConnectWithoutRankingListsInput | TagCreateOrConnectWithoutRankingListsInput[]
-    upsert?: TagUpsertWithWhereUniqueWithoutRankingListsInput | TagUpsertWithWhereUniqueWithoutRankingListsInput[]
-    set?: TagWhereUniqueInput | TagWhereUniqueInput[]
-    disconnect?: TagWhereUniqueInput | TagWhereUniqueInput[]
-    delete?: TagWhereUniqueInput | TagWhereUniqueInput[]
-    connect?: TagWhereUniqueInput | TagWhereUniqueInput[]
-    update?: TagUpdateWithWhereUniqueWithoutRankingListsInput | TagUpdateWithWhereUniqueWithoutRankingListsInput[]
-    updateMany?: TagUpdateManyWithWhereWithoutRankingListsInput | TagUpdateManyWithWhereWithoutRankingListsInput[]
-    deleteMany?: TagScalarWhereInput | TagScalarWhereInput[]
-  }
-
-  export type RankedItemUncheckedUpdateManyWithoutRankingListNestedInput = {
+  export type RankedItemUpdateManyWithoutRankingListNestedInput = {
     create?: XOR<RankedItemCreateWithoutRankingListInput, RankedItemUncheckedCreateWithoutRankingListInput> | RankedItemCreateWithoutRankingListInput[] | RankedItemUncheckedCreateWithoutRankingListInput[]
     connectOrCreate?: RankedItemCreateOrConnectWithoutRankingListInput | RankedItemCreateOrConnectWithoutRankingListInput[]
     upsert?: RankedItemUpsertWithWhereUniqueWithoutRankingListInput | RankedItemUpsertWithWhereUniqueWithoutRankingListInput[]
@@ -23697,6 +23662,27 @@ export namespace Prisma {
     update?: RankedItemUpdateWithWhereUniqueWithoutRankingListInput | RankedItemUpdateWithWhereUniqueWithoutRankingListInput[]
     updateMany?: RankedItemUpdateManyWithWhereWithoutRankingListInput | RankedItemUpdateManyWithWhereWithoutRankingListInput[]
     deleteMany?: RankedItemScalarWhereInput | RankedItemScalarWhereInput[]
+  }
+
+  export type UserUpdateOneRequiredWithoutRankingListsNestedInput = {
+    create?: XOR<UserCreateWithoutRankingListsInput, UserUncheckedCreateWithoutRankingListsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutRankingListsInput
+    upsert?: UserUpsertWithoutRankingListsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutRankingListsInput, UserUpdateWithoutRankingListsInput>, UserUncheckedUpdateWithoutRankingListsInput>
+  }
+
+  export type TagUpdateManyWithoutRankingListsNestedInput = {
+    create?: XOR<TagCreateWithoutRankingListsInput, TagUncheckedCreateWithoutRankingListsInput> | TagCreateWithoutRankingListsInput[] | TagUncheckedCreateWithoutRankingListsInput[]
+    connectOrCreate?: TagCreateOrConnectWithoutRankingListsInput | TagCreateOrConnectWithoutRankingListsInput[]
+    upsert?: TagUpsertWithWhereUniqueWithoutRankingListsInput | TagUpsertWithWhereUniqueWithoutRankingListsInput[]
+    set?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    disconnect?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    delete?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    connect?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    update?: TagUpdateWithWhereUniqueWithoutRankingListsInput | TagUpdateWithWhereUniqueWithoutRankingListsInput[]
+    updateMany?: TagUpdateManyWithWhereWithoutRankingListsInput | TagUpdateManyWithWhereWithoutRankingListsInput[]
+    deleteMany?: TagScalarWhereInput | TagScalarWhereInput[]
   }
 
   export type FeedItemUncheckedUpdateManyWithoutRankingListNestedInput = {
@@ -23725,6 +23711,20 @@ export namespace Prisma {
     update?: LikeUpdateWithWhereUniqueWithoutRankingListInput | LikeUpdateWithWhereUniqueWithoutRankingListInput[]
     updateMany?: LikeUpdateManyWithWhereWithoutRankingListInput | LikeUpdateManyWithWhereWithoutRankingListInput[]
     deleteMany?: LikeScalarWhereInput | LikeScalarWhereInput[]
+  }
+
+  export type RankedItemUncheckedUpdateManyWithoutRankingListNestedInput = {
+    create?: XOR<RankedItemCreateWithoutRankingListInput, RankedItemUncheckedCreateWithoutRankingListInput> | RankedItemCreateWithoutRankingListInput[] | RankedItemUncheckedCreateWithoutRankingListInput[]
+    connectOrCreate?: RankedItemCreateOrConnectWithoutRankingListInput | RankedItemCreateOrConnectWithoutRankingListInput[]
+    upsert?: RankedItemUpsertWithWhereUniqueWithoutRankingListInput | RankedItemUpsertWithWhereUniqueWithoutRankingListInput[]
+    createMany?: RankedItemCreateManyRankingListInputEnvelope
+    set?: RankedItemWhereUniqueInput | RankedItemWhereUniqueInput[]
+    disconnect?: RankedItemWhereUniqueInput | RankedItemWhereUniqueInput[]
+    delete?: RankedItemWhereUniqueInput | RankedItemWhereUniqueInput[]
+    connect?: RankedItemWhereUniqueInput | RankedItemWhereUniqueInput[]
+    update?: RankedItemUpdateWithWhereUniqueWithoutRankingListInput | RankedItemUpdateWithWhereUniqueWithoutRankingListInput[]
+    updateMany?: RankedItemUpdateManyWithWhereWithoutRankingListInput | RankedItemUpdateManyWithWhereWithoutRankingListInput[]
+    deleteMany?: RankedItemScalarWhereInput | RankedItemScalarWhereInput[]
   }
 
   export type TagUncheckedUpdateManyWithoutRankingListsNestedInput = {
@@ -23780,19 +23780,6 @@ export namespace Prisma {
     divide?: number
   }
 
-  export type UserCreateNestedOneWithoutPostsInput = {
-    create?: XOR<UserCreateWithoutPostsInput, UserUncheckedCreateWithoutPostsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutPostsInput
-    connect?: UserWhereUniqueInput
-  }
-
-  export type ReplyCreateNestedManyWithoutPostInput = {
-    create?: XOR<ReplyCreateWithoutPostInput, ReplyUncheckedCreateWithoutPostInput> | ReplyCreateWithoutPostInput[] | ReplyUncheckedCreateWithoutPostInput[]
-    connectOrCreate?: ReplyCreateOrConnectWithoutPostInput | ReplyCreateOrConnectWithoutPostInput[]
-    createMany?: ReplyCreateManyPostInputEnvelope
-    connect?: ReplyWhereUniqueInput | ReplyWhereUniqueInput[]
-  }
-
   export type FeedItemCreateNestedManyWithoutPostInput = {
     create?: XOR<FeedItemCreateWithoutPostInput, FeedItemUncheckedCreateWithoutPostInput> | FeedItemCreateWithoutPostInput[] | FeedItemUncheckedCreateWithoutPostInput[]
     connectOrCreate?: FeedItemCreateOrConnectWithoutPostInput | FeedItemCreateOrConnectWithoutPostInput[]
@@ -23807,7 +23794,13 @@ export namespace Prisma {
     connect?: LikeWhereUniqueInput | LikeWhereUniqueInput[]
   }
 
-  export type ReplyUncheckedCreateNestedManyWithoutPostInput = {
+  export type UserCreateNestedOneWithoutPostsInput = {
+    create?: XOR<UserCreateWithoutPostsInput, UserUncheckedCreateWithoutPostsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutPostsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type ReplyCreateNestedManyWithoutPostInput = {
     create?: XOR<ReplyCreateWithoutPostInput, ReplyUncheckedCreateWithoutPostInput> | ReplyCreateWithoutPostInput[] | ReplyUncheckedCreateWithoutPostInput[]
     connectOrCreate?: ReplyCreateOrConnectWithoutPostInput | ReplyCreateOrConnectWithoutPostInput[]
     createMany?: ReplyCreateManyPostInputEnvelope
@@ -23828,26 +23821,11 @@ export namespace Prisma {
     connect?: LikeWhereUniqueInput | LikeWhereUniqueInput[]
   }
 
-  export type UserUpdateOneRequiredWithoutPostsNestedInput = {
-    create?: XOR<UserCreateWithoutPostsInput, UserUncheckedCreateWithoutPostsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutPostsInput
-    upsert?: UserUpsertWithoutPostsInput
-    connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutPostsInput, UserUpdateWithoutPostsInput>, UserUncheckedUpdateWithoutPostsInput>
-  }
-
-  export type ReplyUpdateManyWithoutPostNestedInput = {
+  export type ReplyUncheckedCreateNestedManyWithoutPostInput = {
     create?: XOR<ReplyCreateWithoutPostInput, ReplyUncheckedCreateWithoutPostInput> | ReplyCreateWithoutPostInput[] | ReplyUncheckedCreateWithoutPostInput[]
     connectOrCreate?: ReplyCreateOrConnectWithoutPostInput | ReplyCreateOrConnectWithoutPostInput[]
-    upsert?: ReplyUpsertWithWhereUniqueWithoutPostInput | ReplyUpsertWithWhereUniqueWithoutPostInput[]
     createMany?: ReplyCreateManyPostInputEnvelope
-    set?: ReplyWhereUniqueInput | ReplyWhereUniqueInput[]
-    disconnect?: ReplyWhereUniqueInput | ReplyWhereUniqueInput[]
-    delete?: ReplyWhereUniqueInput | ReplyWhereUniqueInput[]
     connect?: ReplyWhereUniqueInput | ReplyWhereUniqueInput[]
-    update?: ReplyUpdateWithWhereUniqueWithoutPostInput | ReplyUpdateWithWhereUniqueWithoutPostInput[]
-    updateMany?: ReplyUpdateManyWithWhereWithoutPostInput | ReplyUpdateManyWithWhereWithoutPostInput[]
-    deleteMany?: ReplyScalarWhereInput | ReplyScalarWhereInput[]
   }
 
   export type FeedItemUpdateManyWithoutPostNestedInput = {
@@ -23878,7 +23856,15 @@ export namespace Prisma {
     deleteMany?: LikeScalarWhereInput | LikeScalarWhereInput[]
   }
 
-  export type ReplyUncheckedUpdateManyWithoutPostNestedInput = {
+  export type UserUpdateOneRequiredWithoutPostsNestedInput = {
+    create?: XOR<UserCreateWithoutPostsInput, UserUncheckedCreateWithoutPostsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutPostsInput
+    upsert?: UserUpsertWithoutPostsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutPostsInput, UserUpdateWithoutPostsInput>, UserUncheckedUpdateWithoutPostsInput>
+  }
+
+  export type ReplyUpdateManyWithoutPostNestedInput = {
     create?: XOR<ReplyCreateWithoutPostInput, ReplyUncheckedCreateWithoutPostInput> | ReplyCreateWithoutPostInput[] | ReplyUncheckedCreateWithoutPostInput[]
     connectOrCreate?: ReplyCreateOrConnectWithoutPostInput | ReplyCreateOrConnectWithoutPostInput[]
     upsert?: ReplyUpsertWithWhereUniqueWithoutPostInput | ReplyUpsertWithWhereUniqueWithoutPostInput[]
@@ -23920,10 +23906,18 @@ export namespace Prisma {
     deleteMany?: LikeScalarWhereInput | LikeScalarWhereInput[]
   }
 
-  export type UserCreateNestedOneWithoutRetweetsInput = {
-    create?: XOR<UserCreateWithoutRetweetsInput, UserUncheckedCreateWithoutRetweetsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutRetweetsInput
-    connect?: UserWhereUniqueInput
+  export type ReplyUncheckedUpdateManyWithoutPostNestedInput = {
+    create?: XOR<ReplyCreateWithoutPostInput, ReplyUncheckedCreateWithoutPostInput> | ReplyCreateWithoutPostInput[] | ReplyUncheckedCreateWithoutPostInput[]
+    connectOrCreate?: ReplyCreateOrConnectWithoutPostInput | ReplyCreateOrConnectWithoutPostInput[]
+    upsert?: ReplyUpsertWithWhereUniqueWithoutPostInput | ReplyUpsertWithWhereUniqueWithoutPostInput[]
+    createMany?: ReplyCreateManyPostInputEnvelope
+    set?: ReplyWhereUniqueInput | ReplyWhereUniqueInput[]
+    disconnect?: ReplyWhereUniqueInput | ReplyWhereUniqueInput[]
+    delete?: ReplyWhereUniqueInput | ReplyWhereUniqueInput[]
+    connect?: ReplyWhereUniqueInput | ReplyWhereUniqueInput[]
+    update?: ReplyUpdateWithWhereUniqueWithoutPostInput | ReplyUpdateWithWhereUniqueWithoutPostInput[]
+    updateMany?: ReplyUpdateManyWithWhereWithoutPostInput | ReplyUpdateManyWithWhereWithoutPostInput[]
+    deleteMany?: ReplyScalarWhereInput | ReplyScalarWhereInput[]
   }
 
   export type FeedItemCreateNestedOneWithoutRetweetsInput = {
@@ -23932,12 +23926,10 @@ export namespace Prisma {
     connect?: FeedItemWhereUniqueInput
   }
 
-  export type UserUpdateOneRequiredWithoutRetweetsNestedInput = {
+  export type UserCreateNestedOneWithoutRetweetsInput = {
     create?: XOR<UserCreateWithoutRetweetsInput, UserUncheckedCreateWithoutRetweetsInput>
     connectOrCreate?: UserCreateOrConnectWithoutRetweetsInput
-    upsert?: UserUpsertWithoutRetweetsInput
     connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutRetweetsInput, UserUpdateWithoutRetweetsInput>, UserUncheckedUpdateWithoutRetweetsInput>
   }
 
   export type FeedItemUpdateOneRequiredWithoutRetweetsNestedInput = {
@@ -23948,10 +23940,12 @@ export namespace Prisma {
     update?: XOR<XOR<FeedItemUpdateToOneWithWhereWithoutRetweetsInput, FeedItemUpdateWithoutRetweetsInput>, FeedItemUncheckedUpdateWithoutRetweetsInput>
   }
 
-  export type UserCreateNestedOneWithoutFeedItemsInput = {
-    create?: XOR<UserCreateWithoutFeedItemsInput, UserUncheckedCreateWithoutFeedItemsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutFeedItemsInput
+  export type UserUpdateOneRequiredWithoutRetweetsNestedInput = {
+    create?: XOR<UserCreateWithoutRetweetsInput, UserUncheckedCreateWithoutRetweetsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutRetweetsInput
+    upsert?: UserUpsertWithoutRetweetsInput
     connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutRetweetsInput, UserUpdateWithoutRetweetsInput>, UserUncheckedUpdateWithoutRetweetsInput>
   }
 
   export type PostCreateNestedOneWithoutFeedItemsInput = {
@@ -23964,6 +23958,25 @@ export namespace Prisma {
     create?: XOR<RankingListCreateWithoutFeedItemsInput, RankingListUncheckedCreateWithoutFeedItemsInput>
     connectOrCreate?: RankingListCreateOrConnectWithoutFeedItemsInput
     connect?: RankingListWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutFeedItemsInput = {
+    create?: XOR<UserCreateWithoutFeedItemsInput, UserUncheckedCreateWithoutFeedItemsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutFeedItemsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type FeedItemCreateNestedOneWithoutQuotedByItemsInput = {
+    create?: XOR<FeedItemCreateWithoutQuotedByItemsInput, FeedItemUncheckedCreateWithoutQuotedByItemsInput>
+    connectOrCreate?: FeedItemCreateOrConnectWithoutQuotedByItemsInput
+    connect?: FeedItemWhereUniqueInput
+  }
+
+  export type FeedItemCreateNestedManyWithoutQuotedFeedItemInput = {
+    create?: XOR<FeedItemCreateWithoutQuotedFeedItemInput, FeedItemUncheckedCreateWithoutQuotedFeedItemInput> | FeedItemCreateWithoutQuotedFeedItemInput[] | FeedItemUncheckedCreateWithoutQuotedFeedItemInput[]
+    connectOrCreate?: FeedItemCreateOrConnectWithoutQuotedFeedItemInput | FeedItemCreateOrConnectWithoutQuotedFeedItemInput[]
+    createMany?: FeedItemCreateManyQuotedFeedItemInputEnvelope
+    connect?: FeedItemWhereUniqueInput | FeedItemWhereUniqueInput[]
   }
 
   export type FeedItemCreateNestedOneWithoutRetweetedByItemsInput = {
@@ -23986,13 +23999,7 @@ export namespace Prisma {
     connect?: RetweetWhereUniqueInput | RetweetWhereUniqueInput[]
   }
 
-  export type FeedItemCreateNestedOneWithoutQuotedByItemsInput = {
-    create?: XOR<FeedItemCreateWithoutQuotedByItemsInput, FeedItemUncheckedCreateWithoutQuotedByItemsInput>
-    connectOrCreate?: FeedItemCreateOrConnectWithoutQuotedByItemsInput
-    connect?: FeedItemWhereUniqueInput
-  }
-
-  export type FeedItemCreateNestedManyWithoutQuotedFeedItemInput = {
+  export type FeedItemUncheckedCreateNestedManyWithoutQuotedFeedItemInput = {
     create?: XOR<FeedItemCreateWithoutQuotedFeedItemInput, FeedItemUncheckedCreateWithoutQuotedFeedItemInput> | FeedItemCreateWithoutQuotedFeedItemInput[] | FeedItemUncheckedCreateWithoutQuotedFeedItemInput[]
     connectOrCreate?: FeedItemCreateOrConnectWithoutQuotedFeedItemInput | FeedItemCreateOrConnectWithoutQuotedFeedItemInput[]
     createMany?: FeedItemCreateManyQuotedFeedItemInputEnvelope
@@ -24013,23 +24020,8 @@ export namespace Prisma {
     connect?: RetweetWhereUniqueInput | RetweetWhereUniqueInput[]
   }
 
-  export type FeedItemUncheckedCreateNestedManyWithoutQuotedFeedItemInput = {
-    create?: XOR<FeedItemCreateWithoutQuotedFeedItemInput, FeedItemUncheckedCreateWithoutQuotedFeedItemInput> | FeedItemCreateWithoutQuotedFeedItemInput[] | FeedItemUncheckedCreateWithoutQuotedFeedItemInput[]
-    connectOrCreate?: FeedItemCreateOrConnectWithoutQuotedFeedItemInput | FeedItemCreateOrConnectWithoutQuotedFeedItemInput[]
-    createMany?: FeedItemCreateManyQuotedFeedItemInputEnvelope
-    connect?: FeedItemWhereUniqueInput | FeedItemWhereUniqueInput[]
-  }
-
   export type EnumFeedTypeFieldUpdateOperationsInput = {
     set?: $Enums.FeedType
-  }
-
-  export type UserUpdateOneRequiredWithoutFeedItemsNestedInput = {
-    create?: XOR<UserCreateWithoutFeedItemsInput, UserUncheckedCreateWithoutFeedItemsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutFeedItemsInput
-    upsert?: UserUpsertWithoutFeedItemsInput
-    connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutFeedItemsInput, UserUpdateWithoutFeedItemsInput>, UserUncheckedUpdateWithoutFeedItemsInput>
   }
 
   export type PostUpdateOneWithoutFeedItemsNestedInput = {
@@ -24050,6 +24042,38 @@ export namespace Prisma {
     delete?: RankingListWhereInput | boolean
     connect?: RankingListWhereUniqueInput
     update?: XOR<XOR<RankingListUpdateToOneWithWhereWithoutFeedItemsInput, RankingListUpdateWithoutFeedItemsInput>, RankingListUncheckedUpdateWithoutFeedItemsInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutFeedItemsNestedInput = {
+    create?: XOR<UserCreateWithoutFeedItemsInput, UserUncheckedCreateWithoutFeedItemsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutFeedItemsInput
+    upsert?: UserUpsertWithoutFeedItemsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutFeedItemsInput, UserUpdateWithoutFeedItemsInput>, UserUncheckedUpdateWithoutFeedItemsInput>
+  }
+
+  export type FeedItemUpdateOneWithoutQuotedByItemsNestedInput = {
+    create?: XOR<FeedItemCreateWithoutQuotedByItemsInput, FeedItemUncheckedCreateWithoutQuotedByItemsInput>
+    connectOrCreate?: FeedItemCreateOrConnectWithoutQuotedByItemsInput
+    upsert?: FeedItemUpsertWithoutQuotedByItemsInput
+    disconnect?: FeedItemWhereInput | boolean
+    delete?: FeedItemWhereInput | boolean
+    connect?: FeedItemWhereUniqueInput
+    update?: XOR<XOR<FeedItemUpdateToOneWithWhereWithoutQuotedByItemsInput, FeedItemUpdateWithoutQuotedByItemsInput>, FeedItemUncheckedUpdateWithoutQuotedByItemsInput>
+  }
+
+  export type FeedItemUpdateManyWithoutQuotedFeedItemNestedInput = {
+    create?: XOR<FeedItemCreateWithoutQuotedFeedItemInput, FeedItemUncheckedCreateWithoutQuotedFeedItemInput> | FeedItemCreateWithoutQuotedFeedItemInput[] | FeedItemUncheckedCreateWithoutQuotedFeedItemInput[]
+    connectOrCreate?: FeedItemCreateOrConnectWithoutQuotedFeedItemInput | FeedItemCreateOrConnectWithoutQuotedFeedItemInput[]
+    upsert?: FeedItemUpsertWithWhereUniqueWithoutQuotedFeedItemInput | FeedItemUpsertWithWhereUniqueWithoutQuotedFeedItemInput[]
+    createMany?: FeedItemCreateManyQuotedFeedItemInputEnvelope
+    set?: FeedItemWhereUniqueInput | FeedItemWhereUniqueInput[]
+    disconnect?: FeedItemWhereUniqueInput | FeedItemWhereUniqueInput[]
+    delete?: FeedItemWhereUniqueInput | FeedItemWhereUniqueInput[]
+    connect?: FeedItemWhereUniqueInput | FeedItemWhereUniqueInput[]
+    update?: FeedItemUpdateWithWhereUniqueWithoutQuotedFeedItemInput | FeedItemUpdateWithWhereUniqueWithoutQuotedFeedItemInput[]
+    updateMany?: FeedItemUpdateManyWithWhereWithoutQuotedFeedItemInput | FeedItemUpdateManyWithWhereWithoutQuotedFeedItemInput[]
+    deleteMany?: FeedItemScalarWhereInput | FeedItemScalarWhereInput[]
   }
 
   export type FeedItemUpdateOneWithoutRetweetedByItemsNestedInput = {
@@ -24090,17 +24114,7 @@ export namespace Prisma {
     deleteMany?: RetweetScalarWhereInput | RetweetScalarWhereInput[]
   }
 
-  export type FeedItemUpdateOneWithoutQuotedByItemsNestedInput = {
-    create?: XOR<FeedItemCreateWithoutQuotedByItemsInput, FeedItemUncheckedCreateWithoutQuotedByItemsInput>
-    connectOrCreate?: FeedItemCreateOrConnectWithoutQuotedByItemsInput
-    upsert?: FeedItemUpsertWithoutQuotedByItemsInput
-    disconnect?: FeedItemWhereInput | boolean
-    delete?: FeedItemWhereInput | boolean
-    connect?: FeedItemWhereUniqueInput
-    update?: XOR<XOR<FeedItemUpdateToOneWithWhereWithoutQuotedByItemsInput, FeedItemUpdateWithoutQuotedByItemsInput>, FeedItemUncheckedUpdateWithoutQuotedByItemsInput>
-  }
-
-  export type FeedItemUpdateManyWithoutQuotedFeedItemNestedInput = {
+  export type FeedItemUncheckedUpdateManyWithoutQuotedFeedItemNestedInput = {
     create?: XOR<FeedItemCreateWithoutQuotedFeedItemInput, FeedItemUncheckedCreateWithoutQuotedFeedItemInput> | FeedItemCreateWithoutQuotedFeedItemInput[] | FeedItemUncheckedCreateWithoutQuotedFeedItemInput[]
     connectOrCreate?: FeedItemCreateOrConnectWithoutQuotedFeedItemInput | FeedItemCreateOrConnectWithoutQuotedFeedItemInput[]
     upsert?: FeedItemUpsertWithWhereUniqueWithoutQuotedFeedItemInput | FeedItemUpsertWithWhereUniqueWithoutQuotedFeedItemInput[]
@@ -24142,26 +24156,6 @@ export namespace Prisma {
     deleteMany?: RetweetScalarWhereInput | RetweetScalarWhereInput[]
   }
 
-  export type FeedItemUncheckedUpdateManyWithoutQuotedFeedItemNestedInput = {
-    create?: XOR<FeedItemCreateWithoutQuotedFeedItemInput, FeedItemUncheckedCreateWithoutQuotedFeedItemInput> | FeedItemCreateWithoutQuotedFeedItemInput[] | FeedItemUncheckedCreateWithoutQuotedFeedItemInput[]
-    connectOrCreate?: FeedItemCreateOrConnectWithoutQuotedFeedItemInput | FeedItemCreateOrConnectWithoutQuotedFeedItemInput[]
-    upsert?: FeedItemUpsertWithWhereUniqueWithoutQuotedFeedItemInput | FeedItemUpsertWithWhereUniqueWithoutQuotedFeedItemInput[]
-    createMany?: FeedItemCreateManyQuotedFeedItemInputEnvelope
-    set?: FeedItemWhereUniqueInput | FeedItemWhereUniqueInput[]
-    disconnect?: FeedItemWhereUniqueInput | FeedItemWhereUniqueInput[]
-    delete?: FeedItemWhereUniqueInput | FeedItemWhereUniqueInput[]
-    connect?: FeedItemWhereUniqueInput | FeedItemWhereUniqueInput[]
-    update?: FeedItemUpdateWithWhereUniqueWithoutQuotedFeedItemInput | FeedItemUpdateWithWhereUniqueWithoutQuotedFeedItemInput[]
-    updateMany?: FeedItemUpdateManyWithWhereWithoutQuotedFeedItemInput | FeedItemUpdateManyWithWhereWithoutQuotedFeedItemInput[]
-    deleteMany?: FeedItemScalarWhereInput | FeedItemScalarWhereInput[]
-  }
-
-  export type UserCreateNestedOneWithoutLikesInput = {
-    create?: XOR<UserCreateWithoutLikesInput, UserUncheckedCreateWithoutLikesInput>
-    connectOrCreate?: UserCreateOrConnectWithoutLikesInput
-    connect?: UserWhereUniqueInput
-  }
-
   export type PostCreateNestedOneWithoutLikesInput = {
     create?: XOR<PostCreateWithoutLikesInput, PostUncheckedCreateWithoutLikesInput>
     connectOrCreate?: PostCreateOrConnectWithoutLikesInput
@@ -24174,12 +24168,10 @@ export namespace Prisma {
     connect?: RankingListWhereUniqueInput
   }
 
-  export type UserUpdateOneRequiredWithoutLikesNestedInput = {
+  export type UserCreateNestedOneWithoutLikesInput = {
     create?: XOR<UserCreateWithoutLikesInput, UserUncheckedCreateWithoutLikesInput>
     connectOrCreate?: UserCreateOrConnectWithoutLikesInput
-    upsert?: UserUpsertWithoutLikesInput
     connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutLikesInput, UserUpdateWithoutLikesInput>, UserUncheckedUpdateWithoutLikesInput>
   }
 
   export type PostUpdateOneWithoutLikesNestedInput = {
@@ -24202,10 +24194,12 @@ export namespace Prisma {
     update?: XOR<XOR<RankingListUpdateToOneWithWhereWithoutLikesInput, RankingListUpdateWithoutLikesInput>, RankingListUncheckedUpdateWithoutLikesInput>
   }
 
-  export type UserCreateNestedOneWithoutRepliesInput = {
-    create?: XOR<UserCreateWithoutRepliesInput, UserUncheckedCreateWithoutRepliesInput>
-    connectOrCreate?: UserCreateOrConnectWithoutRepliesInput
+  export type UserUpdateOneRequiredWithoutLikesNestedInput = {
+    create?: XOR<UserCreateWithoutLikesInput, UserUncheckedCreateWithoutLikesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutLikesInput
+    upsert?: UserUpsertWithoutLikesInput
     connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutLikesInput, UserUpdateWithoutLikesInput>, UserUncheckedUpdateWithoutLikesInput>
   }
 
   export type PostCreateNestedOneWithoutRepliesInput = {
@@ -24214,12 +24208,10 @@ export namespace Prisma {
     connect?: PostWhereUniqueInput
   }
 
-  export type UserUpdateOneRequiredWithoutRepliesNestedInput = {
+  export type UserCreateNestedOneWithoutRepliesInput = {
     create?: XOR<UserCreateWithoutRepliesInput, UserUncheckedCreateWithoutRepliesInput>
     connectOrCreate?: UserCreateOrConnectWithoutRepliesInput
-    upsert?: UserUpsertWithoutRepliesInput
     connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutRepliesInput, UserUpdateWithoutRepliesInput>, UserUncheckedUpdateWithoutRepliesInput>
   }
 
   export type PostUpdateOneRequiredWithoutRepliesNestedInput = {
@@ -24230,10 +24222,12 @@ export namespace Prisma {
     update?: XOR<XOR<PostUpdateToOneWithWhereWithoutRepliesInput, PostUpdateWithoutRepliesInput>, PostUncheckedUpdateWithoutRepliesInput>
   }
 
-  export type UserCreateNestedOneWithoutSentFollowRequestsInput = {
-    create?: XOR<UserCreateWithoutSentFollowRequestsInput, UserUncheckedCreateWithoutSentFollowRequestsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutSentFollowRequestsInput
+  export type UserUpdateOneRequiredWithoutRepliesNestedInput = {
+    create?: XOR<UserCreateWithoutRepliesInput, UserUncheckedCreateWithoutRepliesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutRepliesInput
+    upsert?: UserUpsertWithoutRepliesInput
     connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutRepliesInput, UserUpdateWithoutRepliesInput>, UserUncheckedUpdateWithoutRepliesInput>
   }
 
   export type UserCreateNestedOneWithoutReceivedFollowRequestsInput = {
@@ -24242,16 +24236,14 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
-  export type EnumFollowRequestStatusFieldUpdateOperationsInput = {
-    set?: $Enums.FollowRequestStatus
-  }
-
-  export type UserUpdateOneRequiredWithoutSentFollowRequestsNestedInput = {
+  export type UserCreateNestedOneWithoutSentFollowRequestsInput = {
     create?: XOR<UserCreateWithoutSentFollowRequestsInput, UserUncheckedCreateWithoutSentFollowRequestsInput>
     connectOrCreate?: UserCreateOrConnectWithoutSentFollowRequestsInput
-    upsert?: UserUpsertWithoutSentFollowRequestsInput
     connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutSentFollowRequestsInput, UserUpdateWithoutSentFollowRequestsInput>, UserUncheckedUpdateWithoutSentFollowRequestsInput>
+  }
+
+  export type EnumFollowRequestStatusFieldUpdateOperationsInput = {
+    set?: $Enums.FollowRequestStatus
   }
 
   export type UserUpdateOneRequiredWithoutReceivedFollowRequestsNestedInput = {
@@ -24260,6 +24252,14 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutReceivedFollowRequestsInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutReceivedFollowRequestsInput, UserUpdateWithoutReceivedFollowRequestsInput>, UserUncheckedUpdateWithoutReceivedFollowRequestsInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutSentFollowRequestsNestedInput = {
+    create?: XOR<UserCreateWithoutSentFollowRequestsInput, UserUncheckedCreateWithoutSentFollowRequestsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutSentFollowRequestsInput
+    upsert?: UserUpsertWithoutSentFollowRequestsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutSentFollowRequestsInput, UserUpdateWithoutSentFollowRequestsInput>, UserUncheckedUpdateWithoutSentFollowRequestsInput>
   }
 
   export type UserCreateNestedOneWithoutFollowingInput = {
@@ -24598,43 +24598,6 @@ export namespace Prisma {
     _max?: NestedEnumFollowRequestStatusFilter<$PrismaModel>
   }
 
-  export type RankingListCreateWithoutTagsInput = {
-    id?: string
-    subject: string
-    description?: string | null
-    status?: $Enums.ListStatus
-    listImageUrl?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    displayOrder?: number | null
-    likeCount?: number
-    author: UserCreateNestedOneWithoutRankingListsInput
-    items?: RankedItemCreateNestedManyWithoutRankingListInput
-    feedItems?: FeedItemCreateNestedManyWithoutRankingListInput
-    likes?: LikeCreateNestedManyWithoutRankingListInput
-  }
-
-  export type RankingListUncheckedCreateWithoutTagsInput = {
-    id?: string
-    subject: string
-    description?: string | null
-    status?: $Enums.ListStatus
-    listImageUrl?: string | null
-    authorId: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    displayOrder?: number | null
-    likeCount?: number
-    items?: RankedItemUncheckedCreateNestedManyWithoutRankingListInput
-    feedItems?: FeedItemUncheckedCreateNestedManyWithoutRankingListInput
-    likes?: LikeUncheckedCreateNestedManyWithoutRankingListInput
-  }
-
-  export type RankingListCreateOrConnectWithoutTagsInput = {
-    where: RankingListWhereUniqueInput
-    create: XOR<RankingListCreateWithoutTagsInput, RankingListUncheckedCreateWithoutTagsInput>
-  }
-
   export type TrendingTagCreateWithoutTagInput = {
     id?: string
     tagName: string
@@ -24659,6 +24622,71 @@ export namespace Prisma {
   export type TrendingTagCreateManyTagInputEnvelope = {
     data: TrendingTagCreateManyTagInput | TrendingTagCreateManyTagInput[]
     skipDuplicates?: boolean
+  }
+
+  export type RankingListCreateWithoutTagsInput = {
+    id?: string
+    subject: string
+    description?: string | null
+    status?: $Enums.ListStatus
+    listImageUrl?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    displayOrder?: number | null
+    likeCount?: number
+    feedItems?: FeedItemCreateNestedManyWithoutRankingListInput
+    likes?: LikeCreateNestedManyWithoutRankingListInput
+    items?: RankedItemCreateNestedManyWithoutRankingListInput
+    author: UserCreateNestedOneWithoutRankingListsInput
+  }
+
+  export type RankingListUncheckedCreateWithoutTagsInput = {
+    id?: string
+    subject: string
+    description?: string | null
+    status?: $Enums.ListStatus
+    listImageUrl?: string | null
+    authorId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    displayOrder?: number | null
+    likeCount?: number
+    feedItems?: FeedItemUncheckedCreateNestedManyWithoutRankingListInput
+    likes?: LikeUncheckedCreateNestedManyWithoutRankingListInput
+    items?: RankedItemUncheckedCreateNestedManyWithoutRankingListInput
+  }
+
+  export type RankingListCreateOrConnectWithoutTagsInput = {
+    where: RankingListWhereUniqueInput
+    create: XOR<RankingListCreateWithoutTagsInput, RankingListUncheckedCreateWithoutTagsInput>
+  }
+
+  export type TrendingTagUpsertWithWhereUniqueWithoutTagInput = {
+    where: TrendingTagWhereUniqueInput
+    update: XOR<TrendingTagUpdateWithoutTagInput, TrendingTagUncheckedUpdateWithoutTagInput>
+    create: XOR<TrendingTagCreateWithoutTagInput, TrendingTagUncheckedCreateWithoutTagInput>
+  }
+
+  export type TrendingTagUpdateWithWhereUniqueWithoutTagInput = {
+    where: TrendingTagWhereUniqueInput
+    data: XOR<TrendingTagUpdateWithoutTagInput, TrendingTagUncheckedUpdateWithoutTagInput>
+  }
+
+  export type TrendingTagUpdateManyWithWhereWithoutTagInput = {
+    where: TrendingTagScalarWhereInput
+    data: XOR<TrendingTagUpdateManyMutationInput, TrendingTagUncheckedUpdateManyWithoutTagInput>
+  }
+
+  export type TrendingTagScalarWhereInput = {
+    AND?: TrendingTagScalarWhereInput | TrendingTagScalarWhereInput[]
+    OR?: TrendingTagScalarWhereInput[]
+    NOT?: TrendingTagScalarWhereInput | TrendingTagScalarWhereInput[]
+    id?: StringFilter<"TrendingTag"> | string
+    tagId?: StringFilter<"TrendingTag"> | string
+    tagName?: StringFilter<"TrendingTag"> | string
+    count?: IntFilter<"TrendingTag"> | number
+    period?: EnumTrendPeriodFilter<"TrendingTag"> | $Enums.TrendPeriod
+    calculationDate?: DateTimeFilter<"TrendingTag"> | Date | string
   }
 
   export type RankingListUpsertWithWhereUniqueWithoutTagsInput = {
@@ -24693,137 +24721,43 @@ export namespace Prisma {
     likeCount?: IntFilter<"RankingList"> | number
   }
 
-  export type TrendingTagUpsertWithWhereUniqueWithoutTagInput = {
-    where: TrendingTagWhereUniqueInput
-    update: XOR<TrendingTagUpdateWithoutTagInput, TrendingTagUncheckedUpdateWithoutTagInput>
-    create: XOR<TrendingTagCreateWithoutTagInput, TrendingTagUncheckedCreateWithoutTagInput>
-  }
-
-  export type TrendingTagUpdateWithWhereUniqueWithoutTagInput = {
-    where: TrendingTagWhereUniqueInput
-    data: XOR<TrendingTagUpdateWithoutTagInput, TrendingTagUncheckedUpdateWithoutTagInput>
-  }
-
-  export type TrendingTagUpdateManyWithWhereWithoutTagInput = {
-    where: TrendingTagScalarWhereInput
-    data: XOR<TrendingTagUpdateManyMutationInput, TrendingTagUncheckedUpdateManyWithoutTagInput>
-  }
-
-  export type TrendingTagScalarWhereInput = {
-    AND?: TrendingTagScalarWhereInput | TrendingTagScalarWhereInput[]
-    OR?: TrendingTagScalarWhereInput[]
-    NOT?: TrendingTagScalarWhereInput | TrendingTagScalarWhereInput[]
-    id?: StringFilter<"TrendingTag"> | string
-    tagId?: StringFilter<"TrendingTag"> | string
-    tagName?: StringFilter<"TrendingTag"> | string
-    count?: IntFilter<"TrendingTag"> | number
-    period?: EnumTrendPeriodFilter<"TrendingTag"> | $Enums.TrendPeriod
-    calculationDate?: DateTimeFilter<"TrendingTag"> | Date | string
-  }
-
-  export type PostCreateWithoutAuthorInput = {
+  export type FeedItemCreateWithoutUserInput = {
     id?: string
-    content: string
-    imageUrl?: string | null
+    type: $Enums.FeedType
     createdAt?: Date | string
     updatedAt?: Date | string
-    likeCount?: number
-    replies?: ReplyCreateNestedManyWithoutPostInput
-    feedItems?: FeedItemCreateNestedManyWithoutPostInput
-    likes?: LikeCreateNestedManyWithoutPostInput
+    quoteRetweetCount?: number
+    post?: PostCreateNestedOneWithoutFeedItemsInput
+    rankingList?: RankingListCreateNestedOneWithoutFeedItemsInput
+    quotedFeedItem?: FeedItemCreateNestedOneWithoutQuotedByItemsInput
+    quotedByItems?: FeedItemCreateNestedManyWithoutQuotedFeedItemInput
+    retweetOfFeedItem?: FeedItemCreateNestedOneWithoutRetweetedByItemsInput
+    retweetedByItems?: FeedItemCreateNestedManyWithoutRetweetOfFeedItemInput
+    retweets?: RetweetCreateNestedManyWithoutFeedItemInput
   }
 
-  export type PostUncheckedCreateWithoutAuthorInput = {
+  export type FeedItemUncheckedCreateWithoutUserInput = {
     id?: string
-    content: string
-    imageUrl?: string | null
+    type: $Enums.FeedType
     createdAt?: Date | string
     updatedAt?: Date | string
-    likeCount?: number
-    replies?: ReplyUncheckedCreateNestedManyWithoutPostInput
-    feedItems?: FeedItemUncheckedCreateNestedManyWithoutPostInput
-    likes?: LikeUncheckedCreateNestedManyWithoutPostInput
-  }
-
-  export type PostCreateOrConnectWithoutAuthorInput = {
-    where: PostWhereUniqueInput
-    create: XOR<PostCreateWithoutAuthorInput, PostUncheckedCreateWithoutAuthorInput>
-  }
-
-  export type PostCreateManyAuthorInputEnvelope = {
-    data: PostCreateManyAuthorInput | PostCreateManyAuthorInput[]
-    skipDuplicates?: boolean
-  }
-
-  export type LikeCreateWithoutUserInput = {
-    id?: string
-    createdAt?: Date | string
-    post?: PostCreateNestedOneWithoutLikesInput
-    rankingList?: RankingListCreateNestedOneWithoutLikesInput
-  }
-
-  export type LikeUncheckedCreateWithoutUserInput = {
-    id?: string
-    createdAt?: Date | string
     postId?: string | null
     rankingListId?: string | null
+    retweetOfFeedItemId?: string | null
+    quotedFeedItemId?: string | null
+    quoteRetweetCount?: number
+    quotedByItems?: FeedItemUncheckedCreateNestedManyWithoutQuotedFeedItemInput
+    retweetedByItems?: FeedItemUncheckedCreateNestedManyWithoutRetweetOfFeedItemInput
+    retweets?: RetweetUncheckedCreateNestedManyWithoutFeedItemInput
   }
 
-  export type LikeCreateOrConnectWithoutUserInput = {
-    where: LikeWhereUniqueInput
-    create: XOR<LikeCreateWithoutUserInput, LikeUncheckedCreateWithoutUserInput>
+  export type FeedItemCreateOrConnectWithoutUserInput = {
+    where: FeedItemWhereUniqueInput
+    create: XOR<FeedItemCreateWithoutUserInput, FeedItemUncheckedCreateWithoutUserInput>
   }
 
-  export type LikeCreateManyUserInputEnvelope = {
-    data: LikeCreateManyUserInput | LikeCreateManyUserInput[]
-    skipDuplicates?: boolean
-  }
-
-  export type ReplyCreateWithoutUserInput = {
-    id?: string
-    content: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    post: PostCreateNestedOneWithoutRepliesInput
-  }
-
-  export type ReplyUncheckedCreateWithoutUserInput = {
-    id?: string
-    content: string
-    postId: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type ReplyCreateOrConnectWithoutUserInput = {
-    where: ReplyWhereUniqueInput
-    create: XOR<ReplyCreateWithoutUserInput, ReplyUncheckedCreateWithoutUserInput>
-  }
-
-  export type ReplyCreateManyUserInputEnvelope = {
-    data: ReplyCreateManyUserInput | ReplyCreateManyUserInput[]
-    skipDuplicates?: boolean
-  }
-
-  export type FollowCreateWithoutFollowingInput = {
-    id?: string
-    createdAt?: Date | string
-    follower: UserCreateNestedOneWithoutFollowingInput
-  }
-
-  export type FollowUncheckedCreateWithoutFollowingInput = {
-    id?: string
-    followerId: string
-    createdAt?: Date | string
-  }
-
-  export type FollowCreateOrConnectWithoutFollowingInput = {
-    where: FollowWhereUniqueInput
-    create: XOR<FollowCreateWithoutFollowingInput, FollowUncheckedCreateWithoutFollowingInput>
-  }
-
-  export type FollowCreateManyFollowingInputEnvelope = {
-    data: FollowCreateManyFollowingInput | FollowCreateManyFollowingInput[]
+  export type FeedItemCreateManyUserInputEnvelope = {
+    data: FeedItemCreateManyUserInput | FeedItemCreateManyUserInput[]
     skipDuplicates?: boolean
   }
 
@@ -24849,71 +24783,25 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type RankingListCreateWithoutAuthorInput = {
+  export type FollowCreateWithoutFollowingInput = {
     id?: string
-    subject: string
-    description?: string | null
-    status?: $Enums.ListStatus
-    listImageUrl?: string | null
     createdAt?: Date | string
-    updatedAt?: Date | string
-    displayOrder?: number | null
-    likeCount?: number
-    items?: RankedItemCreateNestedManyWithoutRankingListInput
-    feedItems?: FeedItemCreateNestedManyWithoutRankingListInput
-    likes?: LikeCreateNestedManyWithoutRankingListInput
-    tags?: TagCreateNestedManyWithoutRankingListsInput
+    follower: UserCreateNestedOneWithoutFollowingInput
   }
 
-  export type RankingListUncheckedCreateWithoutAuthorInput = {
+  export type FollowUncheckedCreateWithoutFollowingInput = {
     id?: string
-    subject: string
-    description?: string | null
-    status?: $Enums.ListStatus
-    listImageUrl?: string | null
+    followerId: string
     createdAt?: Date | string
-    updatedAt?: Date | string
-    displayOrder?: number | null
-    likeCount?: number
-    items?: RankedItemUncheckedCreateNestedManyWithoutRankingListInput
-    feedItems?: FeedItemUncheckedCreateNestedManyWithoutRankingListInput
-    likes?: LikeUncheckedCreateNestedManyWithoutRankingListInput
-    tags?: TagUncheckedCreateNestedManyWithoutRankingListsInput
   }
 
-  export type RankingListCreateOrConnectWithoutAuthorInput = {
-    where: RankingListWhereUniqueInput
-    create: XOR<RankingListCreateWithoutAuthorInput, RankingListUncheckedCreateWithoutAuthorInput>
+  export type FollowCreateOrConnectWithoutFollowingInput = {
+    where: FollowWhereUniqueInput
+    create: XOR<FollowCreateWithoutFollowingInput, FollowUncheckedCreateWithoutFollowingInput>
   }
 
-  export type RankingListCreateManyAuthorInputEnvelope = {
-    data: RankingListCreateManyAuthorInput | RankingListCreateManyAuthorInput[]
-    skipDuplicates?: boolean
-  }
-
-  export type FollowRequestCreateWithoutRequesterInput = {
-    id?: string
-    status?: $Enums.FollowRequestStatus
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    requested: UserCreateNestedOneWithoutReceivedFollowRequestsInput
-  }
-
-  export type FollowRequestUncheckedCreateWithoutRequesterInput = {
-    id?: string
-    status?: $Enums.FollowRequestStatus
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    requestedId: string
-  }
-
-  export type FollowRequestCreateOrConnectWithoutRequesterInput = {
-    where: FollowRequestWhereUniqueInput
-    create: XOR<FollowRequestCreateWithoutRequesterInput, FollowRequestUncheckedCreateWithoutRequesterInput>
-  }
-
-  export type FollowRequestCreateManyRequesterInputEnvelope = {
-    data: FollowRequestCreateManyRequesterInput | FollowRequestCreateManyRequesterInput[]
+  export type FollowCreateManyFollowingInputEnvelope = {
+    data: FollowCreateManyFollowingInput | FollowCreateManyFollowingInput[]
     skipDuplicates?: boolean
   }
 
@@ -24943,43 +24831,155 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type FeedItemCreateWithoutUserInput = {
+  export type FollowRequestCreateWithoutRequesterInput = {
     id?: string
-    type: $Enums.FeedType
+    status?: $Enums.FollowRequestStatus
     createdAt?: Date | string
     updatedAt?: Date | string
-    quoteRetweetCount?: number
-    post?: PostCreateNestedOneWithoutFeedItemsInput
-    rankingList?: RankingListCreateNestedOneWithoutFeedItemsInput
-    retweetOfFeedItem?: FeedItemCreateNestedOneWithoutRetweetedByItemsInput
-    retweetedByItems?: FeedItemCreateNestedManyWithoutRetweetOfFeedItemInput
-    retweets?: RetweetCreateNestedManyWithoutFeedItemInput
-    quotedFeedItem?: FeedItemCreateNestedOneWithoutQuotedByItemsInput
-    quotedByItems?: FeedItemCreateNestedManyWithoutQuotedFeedItemInput
+    requested: UserCreateNestedOneWithoutReceivedFollowRequestsInput
   }
 
-  export type FeedItemUncheckedCreateWithoutUserInput = {
+  export type FollowRequestUncheckedCreateWithoutRequesterInput = {
     id?: string
-    type: $Enums.FeedType
+    status?: $Enums.FollowRequestStatus
     createdAt?: Date | string
     updatedAt?: Date | string
+    requestedId: string
+  }
+
+  export type FollowRequestCreateOrConnectWithoutRequesterInput = {
+    where: FollowRequestWhereUniqueInput
+    create: XOR<FollowRequestCreateWithoutRequesterInput, FollowRequestUncheckedCreateWithoutRequesterInput>
+  }
+
+  export type FollowRequestCreateManyRequesterInputEnvelope = {
+    data: FollowRequestCreateManyRequesterInput | FollowRequestCreateManyRequesterInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type LikeCreateWithoutUserInput = {
+    id?: string
+    createdAt?: Date | string
+    post?: PostCreateNestedOneWithoutLikesInput
+    rankingList?: RankingListCreateNestedOneWithoutLikesInput
+  }
+
+  export type LikeUncheckedCreateWithoutUserInput = {
+    id?: string
+    createdAt?: Date | string
     postId?: string | null
     rankingListId?: string | null
-    retweetOfFeedItemId?: string | null
-    quotedFeedItemId?: string | null
-    quoteRetweetCount?: number
-    retweetedByItems?: FeedItemUncheckedCreateNestedManyWithoutRetweetOfFeedItemInput
-    retweets?: RetweetUncheckedCreateNestedManyWithoutFeedItemInput
-    quotedByItems?: FeedItemUncheckedCreateNestedManyWithoutQuotedFeedItemInput
   }
 
-  export type FeedItemCreateOrConnectWithoutUserInput = {
-    where: FeedItemWhereUniqueInput
-    create: XOR<FeedItemCreateWithoutUserInput, FeedItemUncheckedCreateWithoutUserInput>
+  export type LikeCreateOrConnectWithoutUserInput = {
+    where: LikeWhereUniqueInput
+    create: XOR<LikeCreateWithoutUserInput, LikeUncheckedCreateWithoutUserInput>
   }
 
-  export type FeedItemCreateManyUserInputEnvelope = {
-    data: FeedItemCreateManyUserInput | FeedItemCreateManyUserInput[]
+  export type LikeCreateManyUserInputEnvelope = {
+    data: LikeCreateManyUserInput | LikeCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type PostCreateWithoutAuthorInput = {
+    id?: string
+    content: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    likeCount?: number
+    imageUrl?: string | null
+    feedItems?: FeedItemCreateNestedManyWithoutPostInput
+    likes?: LikeCreateNestedManyWithoutPostInput
+    replies?: ReplyCreateNestedManyWithoutPostInput
+  }
+
+  export type PostUncheckedCreateWithoutAuthorInput = {
+    id?: string
+    content: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    likeCount?: number
+    imageUrl?: string | null
+    feedItems?: FeedItemUncheckedCreateNestedManyWithoutPostInput
+    likes?: LikeUncheckedCreateNestedManyWithoutPostInput
+    replies?: ReplyUncheckedCreateNestedManyWithoutPostInput
+  }
+
+  export type PostCreateOrConnectWithoutAuthorInput = {
+    where: PostWhereUniqueInput
+    create: XOR<PostCreateWithoutAuthorInput, PostUncheckedCreateWithoutAuthorInput>
+  }
+
+  export type PostCreateManyAuthorInputEnvelope = {
+    data: PostCreateManyAuthorInput | PostCreateManyAuthorInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type RankingListCreateWithoutAuthorInput = {
+    id?: string
+    subject: string
+    description?: string | null
+    status?: $Enums.ListStatus
+    listImageUrl?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    displayOrder?: number | null
+    likeCount?: number
+    feedItems?: FeedItemCreateNestedManyWithoutRankingListInput
+    likes?: LikeCreateNestedManyWithoutRankingListInput
+    items?: RankedItemCreateNestedManyWithoutRankingListInput
+    tags?: TagCreateNestedManyWithoutRankingListsInput
+  }
+
+  export type RankingListUncheckedCreateWithoutAuthorInput = {
+    id?: string
+    subject: string
+    description?: string | null
+    status?: $Enums.ListStatus
+    listImageUrl?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    displayOrder?: number | null
+    likeCount?: number
+    feedItems?: FeedItemUncheckedCreateNestedManyWithoutRankingListInput
+    likes?: LikeUncheckedCreateNestedManyWithoutRankingListInput
+    items?: RankedItemUncheckedCreateNestedManyWithoutRankingListInput
+    tags?: TagUncheckedCreateNestedManyWithoutRankingListsInput
+  }
+
+  export type RankingListCreateOrConnectWithoutAuthorInput = {
+    where: RankingListWhereUniqueInput
+    create: XOR<RankingListCreateWithoutAuthorInput, RankingListUncheckedCreateWithoutAuthorInput>
+  }
+
+  export type RankingListCreateManyAuthorInputEnvelope = {
+    data: RankingListCreateManyAuthorInput | RankingListCreateManyAuthorInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ReplyCreateWithoutUserInput = {
+    id?: string
+    content: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    post: PostCreateNestedOneWithoutRepliesInput
+  }
+
+  export type ReplyUncheckedCreateWithoutUserInput = {
+    id?: string
+    content: string
+    postId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ReplyCreateOrConnectWithoutUserInput = {
+    where: ReplyWhereUniqueInput
+    create: XOR<ReplyCreateWithoutUserInput, ReplyUncheckedCreateWithoutUserInput>
+  }
+
+  export type ReplyCreateManyUserInputEnvelope = {
+    data: ReplyCreateManyUserInput | ReplyCreateManyUserInput[]
     skipDuplicates?: boolean
   }
 
@@ -25003,192 +25003,6 @@ export namespace Prisma {
   export type RetweetCreateManyUserInputEnvelope = {
     data: RetweetCreateManyUserInput | RetweetCreateManyUserInput[]
     skipDuplicates?: boolean
-  }
-
-  export type PostUpsertWithWhereUniqueWithoutAuthorInput = {
-    where: PostWhereUniqueInput
-    update: XOR<PostUpdateWithoutAuthorInput, PostUncheckedUpdateWithoutAuthorInput>
-    create: XOR<PostCreateWithoutAuthorInput, PostUncheckedCreateWithoutAuthorInput>
-  }
-
-  export type PostUpdateWithWhereUniqueWithoutAuthorInput = {
-    where: PostWhereUniqueInput
-    data: XOR<PostUpdateWithoutAuthorInput, PostUncheckedUpdateWithoutAuthorInput>
-  }
-
-  export type PostUpdateManyWithWhereWithoutAuthorInput = {
-    where: PostScalarWhereInput
-    data: XOR<PostUpdateManyMutationInput, PostUncheckedUpdateManyWithoutAuthorInput>
-  }
-
-  export type PostScalarWhereInput = {
-    AND?: PostScalarWhereInput | PostScalarWhereInput[]
-    OR?: PostScalarWhereInput[]
-    NOT?: PostScalarWhereInput | PostScalarWhereInput[]
-    id?: StringFilter<"Post"> | string
-    content?: StringFilter<"Post"> | string
-    imageUrl?: StringNullableFilter<"Post"> | string | null
-    authorId?: StringFilter<"Post"> | string
-    createdAt?: DateTimeFilter<"Post"> | Date | string
-    updatedAt?: DateTimeFilter<"Post"> | Date | string
-    likeCount?: IntFilter<"Post"> | number
-  }
-
-  export type LikeUpsertWithWhereUniqueWithoutUserInput = {
-    where: LikeWhereUniqueInput
-    update: XOR<LikeUpdateWithoutUserInput, LikeUncheckedUpdateWithoutUserInput>
-    create: XOR<LikeCreateWithoutUserInput, LikeUncheckedCreateWithoutUserInput>
-  }
-
-  export type LikeUpdateWithWhereUniqueWithoutUserInput = {
-    where: LikeWhereUniqueInput
-    data: XOR<LikeUpdateWithoutUserInput, LikeUncheckedUpdateWithoutUserInput>
-  }
-
-  export type LikeUpdateManyWithWhereWithoutUserInput = {
-    where: LikeScalarWhereInput
-    data: XOR<LikeUpdateManyMutationInput, LikeUncheckedUpdateManyWithoutUserInput>
-  }
-
-  export type LikeScalarWhereInput = {
-    AND?: LikeScalarWhereInput | LikeScalarWhereInput[]
-    OR?: LikeScalarWhereInput[]
-    NOT?: LikeScalarWhereInput | LikeScalarWhereInput[]
-    id?: StringFilter<"Like"> | string
-    userId?: StringFilter<"Like"> | string
-    createdAt?: DateTimeFilter<"Like"> | Date | string
-    postId?: StringNullableFilter<"Like"> | string | null
-    rankingListId?: StringNullableFilter<"Like"> | string | null
-  }
-
-  export type ReplyUpsertWithWhereUniqueWithoutUserInput = {
-    where: ReplyWhereUniqueInput
-    update: XOR<ReplyUpdateWithoutUserInput, ReplyUncheckedUpdateWithoutUserInput>
-    create: XOR<ReplyCreateWithoutUserInput, ReplyUncheckedCreateWithoutUserInput>
-  }
-
-  export type ReplyUpdateWithWhereUniqueWithoutUserInput = {
-    where: ReplyWhereUniqueInput
-    data: XOR<ReplyUpdateWithoutUserInput, ReplyUncheckedUpdateWithoutUserInput>
-  }
-
-  export type ReplyUpdateManyWithWhereWithoutUserInput = {
-    where: ReplyScalarWhereInput
-    data: XOR<ReplyUpdateManyMutationInput, ReplyUncheckedUpdateManyWithoutUserInput>
-  }
-
-  export type ReplyScalarWhereInput = {
-    AND?: ReplyScalarWhereInput | ReplyScalarWhereInput[]
-    OR?: ReplyScalarWhereInput[]
-    NOT?: ReplyScalarWhereInput | ReplyScalarWhereInput[]
-    id?: StringFilter<"Reply"> | string
-    content?: StringFilter<"Reply"> | string
-    userId?: StringFilter<"Reply"> | string
-    postId?: StringFilter<"Reply"> | string
-    createdAt?: DateTimeFilter<"Reply"> | Date | string
-    updatedAt?: DateTimeFilter<"Reply"> | Date | string
-  }
-
-  export type FollowUpsertWithWhereUniqueWithoutFollowingInput = {
-    where: FollowWhereUniqueInput
-    update: XOR<FollowUpdateWithoutFollowingInput, FollowUncheckedUpdateWithoutFollowingInput>
-    create: XOR<FollowCreateWithoutFollowingInput, FollowUncheckedCreateWithoutFollowingInput>
-  }
-
-  export type FollowUpdateWithWhereUniqueWithoutFollowingInput = {
-    where: FollowWhereUniqueInput
-    data: XOR<FollowUpdateWithoutFollowingInput, FollowUncheckedUpdateWithoutFollowingInput>
-  }
-
-  export type FollowUpdateManyWithWhereWithoutFollowingInput = {
-    where: FollowScalarWhereInput
-    data: XOR<FollowUpdateManyMutationInput, FollowUncheckedUpdateManyWithoutFollowingInput>
-  }
-
-  export type FollowScalarWhereInput = {
-    AND?: FollowScalarWhereInput | FollowScalarWhereInput[]
-    OR?: FollowScalarWhereInput[]
-    NOT?: FollowScalarWhereInput | FollowScalarWhereInput[]
-    id?: StringFilter<"Follow"> | string
-    followerId?: StringFilter<"Follow"> | string
-    followingId?: StringFilter<"Follow"> | string
-    createdAt?: DateTimeFilter<"Follow"> | Date | string
-  }
-
-  export type FollowUpsertWithWhereUniqueWithoutFollowerInput = {
-    where: FollowWhereUniqueInput
-    update: XOR<FollowUpdateWithoutFollowerInput, FollowUncheckedUpdateWithoutFollowerInput>
-    create: XOR<FollowCreateWithoutFollowerInput, FollowUncheckedCreateWithoutFollowerInput>
-  }
-
-  export type FollowUpdateWithWhereUniqueWithoutFollowerInput = {
-    where: FollowWhereUniqueInput
-    data: XOR<FollowUpdateWithoutFollowerInput, FollowUncheckedUpdateWithoutFollowerInput>
-  }
-
-  export type FollowUpdateManyWithWhereWithoutFollowerInput = {
-    where: FollowScalarWhereInput
-    data: XOR<FollowUpdateManyMutationInput, FollowUncheckedUpdateManyWithoutFollowerInput>
-  }
-
-  export type RankingListUpsertWithWhereUniqueWithoutAuthorInput = {
-    where: RankingListWhereUniqueInput
-    update: XOR<RankingListUpdateWithoutAuthorInput, RankingListUncheckedUpdateWithoutAuthorInput>
-    create: XOR<RankingListCreateWithoutAuthorInput, RankingListUncheckedCreateWithoutAuthorInput>
-  }
-
-  export type RankingListUpdateWithWhereUniqueWithoutAuthorInput = {
-    where: RankingListWhereUniqueInput
-    data: XOR<RankingListUpdateWithoutAuthorInput, RankingListUncheckedUpdateWithoutAuthorInput>
-  }
-
-  export type RankingListUpdateManyWithWhereWithoutAuthorInput = {
-    where: RankingListScalarWhereInput
-    data: XOR<RankingListUpdateManyMutationInput, RankingListUncheckedUpdateManyWithoutAuthorInput>
-  }
-
-  export type FollowRequestUpsertWithWhereUniqueWithoutRequesterInput = {
-    where: FollowRequestWhereUniqueInput
-    update: XOR<FollowRequestUpdateWithoutRequesterInput, FollowRequestUncheckedUpdateWithoutRequesterInput>
-    create: XOR<FollowRequestCreateWithoutRequesterInput, FollowRequestUncheckedCreateWithoutRequesterInput>
-  }
-
-  export type FollowRequestUpdateWithWhereUniqueWithoutRequesterInput = {
-    where: FollowRequestWhereUniqueInput
-    data: XOR<FollowRequestUpdateWithoutRequesterInput, FollowRequestUncheckedUpdateWithoutRequesterInput>
-  }
-
-  export type FollowRequestUpdateManyWithWhereWithoutRequesterInput = {
-    where: FollowRequestScalarWhereInput
-    data: XOR<FollowRequestUpdateManyMutationInput, FollowRequestUncheckedUpdateManyWithoutRequesterInput>
-  }
-
-  export type FollowRequestScalarWhereInput = {
-    AND?: FollowRequestScalarWhereInput | FollowRequestScalarWhereInput[]
-    OR?: FollowRequestScalarWhereInput[]
-    NOT?: FollowRequestScalarWhereInput | FollowRequestScalarWhereInput[]
-    id?: StringFilter<"FollowRequest"> | string
-    status?: EnumFollowRequestStatusFilter<"FollowRequest"> | $Enums.FollowRequestStatus
-    createdAt?: DateTimeFilter<"FollowRequest"> | Date | string
-    updatedAt?: DateTimeFilter<"FollowRequest"> | Date | string
-    requesterId?: StringFilter<"FollowRequest"> | string
-    requestedId?: StringFilter<"FollowRequest"> | string
-  }
-
-  export type FollowRequestUpsertWithWhereUniqueWithoutRequestedInput = {
-    where: FollowRequestWhereUniqueInput
-    update: XOR<FollowRequestUpdateWithoutRequestedInput, FollowRequestUncheckedUpdateWithoutRequestedInput>
-    create: XOR<FollowRequestCreateWithoutRequestedInput, FollowRequestUncheckedCreateWithoutRequestedInput>
-  }
-
-  export type FollowRequestUpdateWithWhereUniqueWithoutRequestedInput = {
-    where: FollowRequestWhereUniqueInput
-    data: XOR<FollowRequestUpdateWithoutRequestedInput, FollowRequestUncheckedUpdateWithoutRequestedInput>
-  }
-
-  export type FollowRequestUpdateManyWithWhereWithoutRequestedInput = {
-    where: FollowRequestScalarWhereInput
-    data: XOR<FollowRequestUpdateManyMutationInput, FollowRequestUncheckedUpdateManyWithoutRequestedInput>
   }
 
   export type FeedItemUpsertWithWhereUniqueWithoutUserInput = {
@@ -25223,6 +25037,192 @@ export namespace Prisma {
     quoteRetweetCount?: IntFilter<"FeedItem"> | number
   }
 
+  export type FollowUpsertWithWhereUniqueWithoutFollowerInput = {
+    where: FollowWhereUniqueInput
+    update: XOR<FollowUpdateWithoutFollowerInput, FollowUncheckedUpdateWithoutFollowerInput>
+    create: XOR<FollowCreateWithoutFollowerInput, FollowUncheckedCreateWithoutFollowerInput>
+  }
+
+  export type FollowUpdateWithWhereUniqueWithoutFollowerInput = {
+    where: FollowWhereUniqueInput
+    data: XOR<FollowUpdateWithoutFollowerInput, FollowUncheckedUpdateWithoutFollowerInput>
+  }
+
+  export type FollowUpdateManyWithWhereWithoutFollowerInput = {
+    where: FollowScalarWhereInput
+    data: XOR<FollowUpdateManyMutationInput, FollowUncheckedUpdateManyWithoutFollowerInput>
+  }
+
+  export type FollowScalarWhereInput = {
+    AND?: FollowScalarWhereInput | FollowScalarWhereInput[]
+    OR?: FollowScalarWhereInput[]
+    NOT?: FollowScalarWhereInput | FollowScalarWhereInput[]
+    id?: StringFilter<"Follow"> | string
+    followerId?: StringFilter<"Follow"> | string
+    followingId?: StringFilter<"Follow"> | string
+    createdAt?: DateTimeFilter<"Follow"> | Date | string
+  }
+
+  export type FollowUpsertWithWhereUniqueWithoutFollowingInput = {
+    where: FollowWhereUniqueInput
+    update: XOR<FollowUpdateWithoutFollowingInput, FollowUncheckedUpdateWithoutFollowingInput>
+    create: XOR<FollowCreateWithoutFollowingInput, FollowUncheckedCreateWithoutFollowingInput>
+  }
+
+  export type FollowUpdateWithWhereUniqueWithoutFollowingInput = {
+    where: FollowWhereUniqueInput
+    data: XOR<FollowUpdateWithoutFollowingInput, FollowUncheckedUpdateWithoutFollowingInput>
+  }
+
+  export type FollowUpdateManyWithWhereWithoutFollowingInput = {
+    where: FollowScalarWhereInput
+    data: XOR<FollowUpdateManyMutationInput, FollowUncheckedUpdateManyWithoutFollowingInput>
+  }
+
+  export type FollowRequestUpsertWithWhereUniqueWithoutRequestedInput = {
+    where: FollowRequestWhereUniqueInput
+    update: XOR<FollowRequestUpdateWithoutRequestedInput, FollowRequestUncheckedUpdateWithoutRequestedInput>
+    create: XOR<FollowRequestCreateWithoutRequestedInput, FollowRequestUncheckedCreateWithoutRequestedInput>
+  }
+
+  export type FollowRequestUpdateWithWhereUniqueWithoutRequestedInput = {
+    where: FollowRequestWhereUniqueInput
+    data: XOR<FollowRequestUpdateWithoutRequestedInput, FollowRequestUncheckedUpdateWithoutRequestedInput>
+  }
+
+  export type FollowRequestUpdateManyWithWhereWithoutRequestedInput = {
+    where: FollowRequestScalarWhereInput
+    data: XOR<FollowRequestUpdateManyMutationInput, FollowRequestUncheckedUpdateManyWithoutRequestedInput>
+  }
+
+  export type FollowRequestScalarWhereInput = {
+    AND?: FollowRequestScalarWhereInput | FollowRequestScalarWhereInput[]
+    OR?: FollowRequestScalarWhereInput[]
+    NOT?: FollowRequestScalarWhereInput | FollowRequestScalarWhereInput[]
+    id?: StringFilter<"FollowRequest"> | string
+    status?: EnumFollowRequestStatusFilter<"FollowRequest"> | $Enums.FollowRequestStatus
+    createdAt?: DateTimeFilter<"FollowRequest"> | Date | string
+    updatedAt?: DateTimeFilter<"FollowRequest"> | Date | string
+    requesterId?: StringFilter<"FollowRequest"> | string
+    requestedId?: StringFilter<"FollowRequest"> | string
+  }
+
+  export type FollowRequestUpsertWithWhereUniqueWithoutRequesterInput = {
+    where: FollowRequestWhereUniqueInput
+    update: XOR<FollowRequestUpdateWithoutRequesterInput, FollowRequestUncheckedUpdateWithoutRequesterInput>
+    create: XOR<FollowRequestCreateWithoutRequesterInput, FollowRequestUncheckedCreateWithoutRequesterInput>
+  }
+
+  export type FollowRequestUpdateWithWhereUniqueWithoutRequesterInput = {
+    where: FollowRequestWhereUniqueInput
+    data: XOR<FollowRequestUpdateWithoutRequesterInput, FollowRequestUncheckedUpdateWithoutRequesterInput>
+  }
+
+  export type FollowRequestUpdateManyWithWhereWithoutRequesterInput = {
+    where: FollowRequestScalarWhereInput
+    data: XOR<FollowRequestUpdateManyMutationInput, FollowRequestUncheckedUpdateManyWithoutRequesterInput>
+  }
+
+  export type LikeUpsertWithWhereUniqueWithoutUserInput = {
+    where: LikeWhereUniqueInput
+    update: XOR<LikeUpdateWithoutUserInput, LikeUncheckedUpdateWithoutUserInput>
+    create: XOR<LikeCreateWithoutUserInput, LikeUncheckedCreateWithoutUserInput>
+  }
+
+  export type LikeUpdateWithWhereUniqueWithoutUserInput = {
+    where: LikeWhereUniqueInput
+    data: XOR<LikeUpdateWithoutUserInput, LikeUncheckedUpdateWithoutUserInput>
+  }
+
+  export type LikeUpdateManyWithWhereWithoutUserInput = {
+    where: LikeScalarWhereInput
+    data: XOR<LikeUpdateManyMutationInput, LikeUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type LikeScalarWhereInput = {
+    AND?: LikeScalarWhereInput | LikeScalarWhereInput[]
+    OR?: LikeScalarWhereInput[]
+    NOT?: LikeScalarWhereInput | LikeScalarWhereInput[]
+    id?: StringFilter<"Like"> | string
+    userId?: StringFilter<"Like"> | string
+    createdAt?: DateTimeFilter<"Like"> | Date | string
+    postId?: StringNullableFilter<"Like"> | string | null
+    rankingListId?: StringNullableFilter<"Like"> | string | null
+  }
+
+  export type PostUpsertWithWhereUniqueWithoutAuthorInput = {
+    where: PostWhereUniqueInput
+    update: XOR<PostUpdateWithoutAuthorInput, PostUncheckedUpdateWithoutAuthorInput>
+    create: XOR<PostCreateWithoutAuthorInput, PostUncheckedCreateWithoutAuthorInput>
+  }
+
+  export type PostUpdateWithWhereUniqueWithoutAuthorInput = {
+    where: PostWhereUniqueInput
+    data: XOR<PostUpdateWithoutAuthorInput, PostUncheckedUpdateWithoutAuthorInput>
+  }
+
+  export type PostUpdateManyWithWhereWithoutAuthorInput = {
+    where: PostScalarWhereInput
+    data: XOR<PostUpdateManyMutationInput, PostUncheckedUpdateManyWithoutAuthorInput>
+  }
+
+  export type PostScalarWhereInput = {
+    AND?: PostScalarWhereInput | PostScalarWhereInput[]
+    OR?: PostScalarWhereInput[]
+    NOT?: PostScalarWhereInput | PostScalarWhereInput[]
+    id?: StringFilter<"Post"> | string
+    content?: StringFilter<"Post"> | string
+    authorId?: StringFilter<"Post"> | string
+    createdAt?: DateTimeFilter<"Post"> | Date | string
+    updatedAt?: DateTimeFilter<"Post"> | Date | string
+    likeCount?: IntFilter<"Post"> | number
+    imageUrl?: StringNullableFilter<"Post"> | string | null
+  }
+
+  export type RankingListUpsertWithWhereUniqueWithoutAuthorInput = {
+    where: RankingListWhereUniqueInput
+    update: XOR<RankingListUpdateWithoutAuthorInput, RankingListUncheckedUpdateWithoutAuthorInput>
+    create: XOR<RankingListCreateWithoutAuthorInput, RankingListUncheckedCreateWithoutAuthorInput>
+  }
+
+  export type RankingListUpdateWithWhereUniqueWithoutAuthorInput = {
+    where: RankingListWhereUniqueInput
+    data: XOR<RankingListUpdateWithoutAuthorInput, RankingListUncheckedUpdateWithoutAuthorInput>
+  }
+
+  export type RankingListUpdateManyWithWhereWithoutAuthorInput = {
+    where: RankingListScalarWhereInput
+    data: XOR<RankingListUpdateManyMutationInput, RankingListUncheckedUpdateManyWithoutAuthorInput>
+  }
+
+  export type ReplyUpsertWithWhereUniqueWithoutUserInput = {
+    where: ReplyWhereUniqueInput
+    update: XOR<ReplyUpdateWithoutUserInput, ReplyUncheckedUpdateWithoutUserInput>
+    create: XOR<ReplyCreateWithoutUserInput, ReplyUncheckedCreateWithoutUserInput>
+  }
+
+  export type ReplyUpdateWithWhereUniqueWithoutUserInput = {
+    where: ReplyWhereUniqueInput
+    data: XOR<ReplyUpdateWithoutUserInput, ReplyUncheckedUpdateWithoutUserInput>
+  }
+
+  export type ReplyUpdateManyWithWhereWithoutUserInput = {
+    where: ReplyScalarWhereInput
+    data: XOR<ReplyUpdateManyMutationInput, ReplyUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type ReplyScalarWhereInput = {
+    AND?: ReplyScalarWhereInput | ReplyScalarWhereInput[]
+    OR?: ReplyScalarWhereInput[]
+    NOT?: ReplyScalarWhereInput | ReplyScalarWhereInput[]
+    id?: StringFilter<"Reply"> | string
+    content?: StringFilter<"Reply"> | string
+    userId?: StringFilter<"Reply"> | string
+    postId?: StringFilter<"Reply"> | string
+    createdAt?: DateTimeFilter<"Reply"> | Date | string
+    updatedAt?: DateTimeFilter<"Reply"> | Date | string
+  }
+
   export type RetweetUpsertWithWhereUniqueWithoutUserInput = {
     where: RetweetWhereUniqueInput
     update: XOR<RetweetUpdateWithoutUserInput, RetweetUncheckedUpdateWithoutUserInput>
@@ -25249,59 +25249,68 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Retweet"> | Date | string
   }
 
-  export type UserCreateWithoutRankingListsInput = {
+  export type FeedItemCreateWithoutRankingListInput = {
     id?: string
-    clerkId: string
-    username: string
-    name?: string | null
-    bio?: string | null
-    image?: string | null
-    coverImageUrl?: string | null
-    socialLinks?: NullableJsonNullValueInput | InputJsonValue
+    type: $Enums.FeedType
     createdAt?: Date | string
     updatedAt?: Date | string
-    isPrivate?: boolean
-    location?: string | null
-    birthday?: Date | string | null
-    posts?: PostCreateNestedManyWithoutAuthorInput
-    likes?: LikeCreateNestedManyWithoutUserInput
-    replies?: ReplyCreateNestedManyWithoutUserInput
-    followedBy?: FollowCreateNestedManyWithoutFollowingInput
-    following?: FollowCreateNestedManyWithoutFollowerInput
-    sentFollowRequests?: FollowRequestCreateNestedManyWithoutRequesterInput
-    receivedFollowRequests?: FollowRequestCreateNestedManyWithoutRequestedInput
-    feedItems?: FeedItemCreateNestedManyWithoutUserInput
-    retweets?: RetweetCreateNestedManyWithoutUserInput
+    quoteRetweetCount?: number
+    post?: PostCreateNestedOneWithoutFeedItemsInput
+    user: UserCreateNestedOneWithoutFeedItemsInput
+    quotedFeedItem?: FeedItemCreateNestedOneWithoutQuotedByItemsInput
+    quotedByItems?: FeedItemCreateNestedManyWithoutQuotedFeedItemInput
+    retweetOfFeedItem?: FeedItemCreateNestedOneWithoutRetweetedByItemsInput
+    retweetedByItems?: FeedItemCreateNestedManyWithoutRetweetOfFeedItemInput
+    retweets?: RetweetCreateNestedManyWithoutFeedItemInput
   }
 
-  export type UserUncheckedCreateWithoutRankingListsInput = {
+  export type FeedItemUncheckedCreateWithoutRankingListInput = {
     id?: string
-    clerkId: string
-    username: string
-    name?: string | null
-    bio?: string | null
-    image?: string | null
-    coverImageUrl?: string | null
-    socialLinks?: NullableJsonNullValueInput | InputJsonValue
+    type: $Enums.FeedType
     createdAt?: Date | string
     updatedAt?: Date | string
-    isPrivate?: boolean
-    location?: string | null
-    birthday?: Date | string | null
-    posts?: PostUncheckedCreateNestedManyWithoutAuthorInput
-    likes?: LikeUncheckedCreateNestedManyWithoutUserInput
-    replies?: ReplyUncheckedCreateNestedManyWithoutUserInput
-    followedBy?: FollowUncheckedCreateNestedManyWithoutFollowingInput
-    following?: FollowUncheckedCreateNestedManyWithoutFollowerInput
-    sentFollowRequests?: FollowRequestUncheckedCreateNestedManyWithoutRequesterInput
-    receivedFollowRequests?: FollowRequestUncheckedCreateNestedManyWithoutRequestedInput
-    feedItems?: FeedItemUncheckedCreateNestedManyWithoutUserInput
-    retweets?: RetweetUncheckedCreateNestedManyWithoutUserInput
+    userId: string
+    postId?: string | null
+    retweetOfFeedItemId?: string | null
+    quotedFeedItemId?: string | null
+    quoteRetweetCount?: number
+    quotedByItems?: FeedItemUncheckedCreateNestedManyWithoutQuotedFeedItemInput
+    retweetedByItems?: FeedItemUncheckedCreateNestedManyWithoutRetweetOfFeedItemInput
+    retweets?: RetweetUncheckedCreateNestedManyWithoutFeedItemInput
   }
 
-  export type UserCreateOrConnectWithoutRankingListsInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutRankingListsInput, UserUncheckedCreateWithoutRankingListsInput>
+  export type FeedItemCreateOrConnectWithoutRankingListInput = {
+    where: FeedItemWhereUniqueInput
+    create: XOR<FeedItemCreateWithoutRankingListInput, FeedItemUncheckedCreateWithoutRankingListInput>
+  }
+
+  export type FeedItemCreateManyRankingListInputEnvelope = {
+    data: FeedItemCreateManyRankingListInput | FeedItemCreateManyRankingListInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type LikeCreateWithoutRankingListInput = {
+    id?: string
+    createdAt?: Date | string
+    post?: PostCreateNestedOneWithoutLikesInput
+    user: UserCreateNestedOneWithoutLikesInput
+  }
+
+  export type LikeUncheckedCreateWithoutRankingListInput = {
+    id?: string
+    userId: string
+    createdAt?: Date | string
+    postId?: string | null
+  }
+
+  export type LikeCreateOrConnectWithoutRankingListInput = {
+    where: LikeWhereUniqueInput
+    create: XOR<LikeCreateWithoutRankingListInput, LikeUncheckedCreateWithoutRankingListInput>
+  }
+
+  export type LikeCreateManyRankingListInputEnvelope = {
+    data: LikeCreateManyRankingListInput | LikeCreateManyRankingListInput[]
+    skipDuplicates?: boolean
   }
 
   export type RankedItemCreateWithoutRankingListInput = {
@@ -25332,68 +25341,59 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type FeedItemCreateWithoutRankingListInput = {
+  export type UserCreateWithoutRankingListsInput = {
     id?: string
-    type: $Enums.FeedType
+    clerkId: string
+    username: string
+    name?: string | null
+    bio?: string | null
+    image?: string | null
+    coverImageUrl?: string | null
+    socialLinks?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
-    quoteRetweetCount?: number
-    user: UserCreateNestedOneWithoutFeedItemsInput
-    post?: PostCreateNestedOneWithoutFeedItemsInput
-    retweetOfFeedItem?: FeedItemCreateNestedOneWithoutRetweetedByItemsInput
-    retweetedByItems?: FeedItemCreateNestedManyWithoutRetweetOfFeedItemInput
-    retweets?: RetweetCreateNestedManyWithoutFeedItemInput
-    quotedFeedItem?: FeedItemCreateNestedOneWithoutQuotedByItemsInput
-    quotedByItems?: FeedItemCreateNestedManyWithoutQuotedFeedItemInput
+    isPrivate?: boolean
+    birthday?: Date | string | null
+    location?: string | null
+    feedItems?: FeedItemCreateNestedManyWithoutUserInput
+    following?: FollowCreateNestedManyWithoutFollowerInput
+    followedBy?: FollowCreateNestedManyWithoutFollowingInput
+    receivedFollowRequests?: FollowRequestCreateNestedManyWithoutRequestedInput
+    sentFollowRequests?: FollowRequestCreateNestedManyWithoutRequesterInput
+    likes?: LikeCreateNestedManyWithoutUserInput
+    posts?: PostCreateNestedManyWithoutAuthorInput
+    replies?: ReplyCreateNestedManyWithoutUserInput
+    retweets?: RetweetCreateNestedManyWithoutUserInput
   }
 
-  export type FeedItemUncheckedCreateWithoutRankingListInput = {
+  export type UserUncheckedCreateWithoutRankingListsInput = {
     id?: string
-    type: $Enums.FeedType
+    clerkId: string
+    username: string
+    name?: string | null
+    bio?: string | null
+    image?: string | null
+    coverImageUrl?: string | null
+    socialLinks?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
-    userId: string
-    postId?: string | null
-    retweetOfFeedItemId?: string | null
-    quotedFeedItemId?: string | null
-    quoteRetweetCount?: number
-    retweetedByItems?: FeedItemUncheckedCreateNestedManyWithoutRetweetOfFeedItemInput
-    retweets?: RetweetUncheckedCreateNestedManyWithoutFeedItemInput
-    quotedByItems?: FeedItemUncheckedCreateNestedManyWithoutQuotedFeedItemInput
+    isPrivate?: boolean
+    birthday?: Date | string | null
+    location?: string | null
+    feedItems?: FeedItemUncheckedCreateNestedManyWithoutUserInput
+    following?: FollowUncheckedCreateNestedManyWithoutFollowerInput
+    followedBy?: FollowUncheckedCreateNestedManyWithoutFollowingInput
+    receivedFollowRequests?: FollowRequestUncheckedCreateNestedManyWithoutRequestedInput
+    sentFollowRequests?: FollowRequestUncheckedCreateNestedManyWithoutRequesterInput
+    likes?: LikeUncheckedCreateNestedManyWithoutUserInput
+    posts?: PostUncheckedCreateNestedManyWithoutAuthorInput
+    replies?: ReplyUncheckedCreateNestedManyWithoutUserInput
+    retweets?: RetweetUncheckedCreateNestedManyWithoutUserInput
   }
 
-  export type FeedItemCreateOrConnectWithoutRankingListInput = {
-    where: FeedItemWhereUniqueInput
-    create: XOR<FeedItemCreateWithoutRankingListInput, FeedItemUncheckedCreateWithoutRankingListInput>
-  }
-
-  export type FeedItemCreateManyRankingListInputEnvelope = {
-    data: FeedItemCreateManyRankingListInput | FeedItemCreateManyRankingListInput[]
-    skipDuplicates?: boolean
-  }
-
-  export type LikeCreateWithoutRankingListInput = {
-    id?: string
-    createdAt?: Date | string
-    user: UserCreateNestedOneWithoutLikesInput
-    post?: PostCreateNestedOneWithoutLikesInput
-  }
-
-  export type LikeUncheckedCreateWithoutRankingListInput = {
-    id?: string
-    userId: string
-    createdAt?: Date | string
-    postId?: string | null
-  }
-
-  export type LikeCreateOrConnectWithoutRankingListInput = {
-    where: LikeWhereUniqueInput
-    create: XOR<LikeCreateWithoutRankingListInput, LikeUncheckedCreateWithoutRankingListInput>
-  }
-
-  export type LikeCreateManyRankingListInputEnvelope = {
-    data: LikeCreateManyRankingListInput | LikeCreateManyRankingListInput[]
-    skipDuplicates?: boolean
+  export type UserCreateOrConnectWithoutRankingListsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutRankingListsInput, UserUncheckedCreateWithoutRankingListsInput>
   }
 
   export type TagCreateWithoutRankingListsInput = {
@@ -25413,96 +25413,6 @@ export namespace Prisma {
   export type TagCreateOrConnectWithoutRankingListsInput = {
     where: TagWhereUniqueInput
     create: XOR<TagCreateWithoutRankingListsInput, TagUncheckedCreateWithoutRankingListsInput>
-  }
-
-  export type UserUpsertWithoutRankingListsInput = {
-    update: XOR<UserUpdateWithoutRankingListsInput, UserUncheckedUpdateWithoutRankingListsInput>
-    create: XOR<UserCreateWithoutRankingListsInput, UserUncheckedCreateWithoutRankingListsInput>
-    where?: UserWhereInput
-  }
-
-  export type UserUpdateToOneWithWhereWithoutRankingListsInput = {
-    where?: UserWhereInput
-    data: XOR<UserUpdateWithoutRankingListsInput, UserUncheckedUpdateWithoutRankingListsInput>
-  }
-
-  export type UserUpdateWithoutRankingListsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    clerkId?: StringFieldUpdateOperationsInput | string
-    username?: StringFieldUpdateOperationsInput | string
-    name?: NullableStringFieldUpdateOperationsInput | string | null
-    bio?: NullableStringFieldUpdateOperationsInput | string | null
-    image?: NullableStringFieldUpdateOperationsInput | string | null
-    coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    socialLinks?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    isPrivate?: BoolFieldUpdateOperationsInput | boolean
-    location?: NullableStringFieldUpdateOperationsInput | string | null
-    birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    posts?: PostUpdateManyWithoutAuthorNestedInput
-    likes?: LikeUpdateManyWithoutUserNestedInput
-    replies?: ReplyUpdateManyWithoutUserNestedInput
-    followedBy?: FollowUpdateManyWithoutFollowingNestedInput
-    following?: FollowUpdateManyWithoutFollowerNestedInput
-    sentFollowRequests?: FollowRequestUpdateManyWithoutRequesterNestedInput
-    receivedFollowRequests?: FollowRequestUpdateManyWithoutRequestedNestedInput
-    feedItems?: FeedItemUpdateManyWithoutUserNestedInput
-    retweets?: RetweetUpdateManyWithoutUserNestedInput
-  }
-
-  export type UserUncheckedUpdateWithoutRankingListsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    clerkId?: StringFieldUpdateOperationsInput | string
-    username?: StringFieldUpdateOperationsInput | string
-    name?: NullableStringFieldUpdateOperationsInput | string | null
-    bio?: NullableStringFieldUpdateOperationsInput | string | null
-    image?: NullableStringFieldUpdateOperationsInput | string | null
-    coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    socialLinks?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    isPrivate?: BoolFieldUpdateOperationsInput | boolean
-    location?: NullableStringFieldUpdateOperationsInput | string | null
-    birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    posts?: PostUncheckedUpdateManyWithoutAuthorNestedInput
-    likes?: LikeUncheckedUpdateManyWithoutUserNestedInput
-    replies?: ReplyUncheckedUpdateManyWithoutUserNestedInput
-    followedBy?: FollowUncheckedUpdateManyWithoutFollowingNestedInput
-    following?: FollowUncheckedUpdateManyWithoutFollowerNestedInput
-    sentFollowRequests?: FollowRequestUncheckedUpdateManyWithoutRequesterNestedInput
-    receivedFollowRequests?: FollowRequestUncheckedUpdateManyWithoutRequestedNestedInput
-    feedItems?: FeedItemUncheckedUpdateManyWithoutUserNestedInput
-    retweets?: RetweetUncheckedUpdateManyWithoutUserNestedInput
-  }
-
-  export type RankedItemUpsertWithWhereUniqueWithoutRankingListInput = {
-    where: RankedItemWhereUniqueInput
-    update: XOR<RankedItemUpdateWithoutRankingListInput, RankedItemUncheckedUpdateWithoutRankingListInput>
-    create: XOR<RankedItemCreateWithoutRankingListInput, RankedItemUncheckedCreateWithoutRankingListInput>
-  }
-
-  export type RankedItemUpdateWithWhereUniqueWithoutRankingListInput = {
-    where: RankedItemWhereUniqueInput
-    data: XOR<RankedItemUpdateWithoutRankingListInput, RankedItemUncheckedUpdateWithoutRankingListInput>
-  }
-
-  export type RankedItemUpdateManyWithWhereWithoutRankingListInput = {
-    where: RankedItemScalarWhereInput
-    data: XOR<RankedItemUpdateManyMutationInput, RankedItemUncheckedUpdateManyWithoutRankingListInput>
-  }
-
-  export type RankedItemScalarWhereInput = {
-    AND?: RankedItemScalarWhereInput | RankedItemScalarWhereInput[]
-    OR?: RankedItemScalarWhereInput[]
-    NOT?: RankedItemScalarWhereInput | RankedItemScalarWhereInput[]
-    id?: StringFilter<"RankedItem"> | string
-    itemName?: StringFilter<"RankedItem"> | string
-    rank?: IntFilter<"RankedItem"> | number
-    imageUrl?: StringNullableFilter<"RankedItem"> | string | null
-    itemDescription?: StringNullableFilter<"RankedItem"> | string | null
-    listId?: StringFilter<"RankedItem"> | string
-    createdAt?: DateTimeFilter<"RankedItem"> | Date | string
   }
 
   export type FeedItemUpsertWithWhereUniqueWithoutRankingListInput = {
@@ -25535,6 +25445,96 @@ export namespace Prisma {
   export type LikeUpdateManyWithWhereWithoutRankingListInput = {
     where: LikeScalarWhereInput
     data: XOR<LikeUpdateManyMutationInput, LikeUncheckedUpdateManyWithoutRankingListInput>
+  }
+
+  export type RankedItemUpsertWithWhereUniqueWithoutRankingListInput = {
+    where: RankedItemWhereUniqueInput
+    update: XOR<RankedItemUpdateWithoutRankingListInput, RankedItemUncheckedUpdateWithoutRankingListInput>
+    create: XOR<RankedItemCreateWithoutRankingListInput, RankedItemUncheckedCreateWithoutRankingListInput>
+  }
+
+  export type RankedItemUpdateWithWhereUniqueWithoutRankingListInput = {
+    where: RankedItemWhereUniqueInput
+    data: XOR<RankedItemUpdateWithoutRankingListInput, RankedItemUncheckedUpdateWithoutRankingListInput>
+  }
+
+  export type RankedItemUpdateManyWithWhereWithoutRankingListInput = {
+    where: RankedItemScalarWhereInput
+    data: XOR<RankedItemUpdateManyMutationInput, RankedItemUncheckedUpdateManyWithoutRankingListInput>
+  }
+
+  export type RankedItemScalarWhereInput = {
+    AND?: RankedItemScalarWhereInput | RankedItemScalarWhereInput[]
+    OR?: RankedItemScalarWhereInput[]
+    NOT?: RankedItemScalarWhereInput | RankedItemScalarWhereInput[]
+    id?: StringFilter<"RankedItem"> | string
+    itemName?: StringFilter<"RankedItem"> | string
+    rank?: IntFilter<"RankedItem"> | number
+    imageUrl?: StringNullableFilter<"RankedItem"> | string | null
+    itemDescription?: StringNullableFilter<"RankedItem"> | string | null
+    listId?: StringFilter<"RankedItem"> | string
+    createdAt?: DateTimeFilter<"RankedItem"> | Date | string
+  }
+
+  export type UserUpsertWithoutRankingListsInput = {
+    update: XOR<UserUpdateWithoutRankingListsInput, UserUncheckedUpdateWithoutRankingListsInput>
+    create: XOR<UserCreateWithoutRankingListsInput, UserUncheckedCreateWithoutRankingListsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutRankingListsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutRankingListsInput, UserUncheckedUpdateWithoutRankingListsInput>
+  }
+
+  export type UserUpdateWithoutRankingListsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    clerkId?: StringFieldUpdateOperationsInput | string
+    username?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    socialLinks?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isPrivate?: BoolFieldUpdateOperationsInput | boolean
+    birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    feedItems?: FeedItemUpdateManyWithoutUserNestedInput
+    following?: FollowUpdateManyWithoutFollowerNestedInput
+    followedBy?: FollowUpdateManyWithoutFollowingNestedInput
+    receivedFollowRequests?: FollowRequestUpdateManyWithoutRequestedNestedInput
+    sentFollowRequests?: FollowRequestUpdateManyWithoutRequesterNestedInput
+    likes?: LikeUpdateManyWithoutUserNestedInput
+    posts?: PostUpdateManyWithoutAuthorNestedInput
+    replies?: ReplyUpdateManyWithoutUserNestedInput
+    retweets?: RetweetUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutRankingListsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    clerkId?: StringFieldUpdateOperationsInput | string
+    username?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    socialLinks?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isPrivate?: BoolFieldUpdateOperationsInput | boolean
+    birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    feedItems?: FeedItemUncheckedUpdateManyWithoutUserNestedInput
+    following?: FollowUncheckedUpdateManyWithoutFollowerNestedInput
+    followedBy?: FollowUncheckedUpdateManyWithoutFollowingNestedInput
+    receivedFollowRequests?: FollowRequestUncheckedUpdateManyWithoutRequestedNestedInput
+    sentFollowRequests?: FollowRequestUncheckedUpdateManyWithoutRequesterNestedInput
+    likes?: LikeUncheckedUpdateManyWithoutUserNestedInput
+    posts?: PostUncheckedUpdateManyWithoutAuthorNestedInput
+    replies?: ReplyUncheckedUpdateManyWithoutUserNestedInput
+    retweets?: RetweetUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type TagUpsertWithWhereUniqueWithoutRankingListsInput = {
@@ -25572,9 +25572,9 @@ export namespace Prisma {
     updatedAt?: Date | string
     displayOrder?: number | null
     likeCount?: number
-    author: UserCreateNestedOneWithoutRankingListsInput
     feedItems?: FeedItemCreateNestedManyWithoutRankingListInput
     likes?: LikeCreateNestedManyWithoutRankingListInput
+    author: UserCreateNestedOneWithoutRankingListsInput
     tags?: TagCreateNestedManyWithoutRankingListsInput
   }
 
@@ -25620,9 +25620,9 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     displayOrder?: NullableIntFieldUpdateOperationsInput | number | null
     likeCount?: IntFieldUpdateOperationsInput | number
-    author?: UserUpdateOneRequiredWithoutRankingListsNestedInput
     feedItems?: FeedItemUpdateManyWithoutRankingListNestedInput
     likes?: LikeUpdateManyWithoutRankingListNestedInput
+    author?: UserUpdateOneRequiredWithoutRankingListsNestedInput
     tags?: TagUpdateManyWithoutRankingListsNestedInput
   }
 
@@ -25686,6 +25686,70 @@ export namespace Prisma {
     rankingLists?: RankingListUncheckedUpdateManyWithoutTagsNestedInput
   }
 
+  export type FeedItemCreateWithoutPostInput = {
+    id?: string
+    type: $Enums.FeedType
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    quoteRetweetCount?: number
+    rankingList?: RankingListCreateNestedOneWithoutFeedItemsInput
+    user: UserCreateNestedOneWithoutFeedItemsInput
+    quotedFeedItem?: FeedItemCreateNestedOneWithoutQuotedByItemsInput
+    quotedByItems?: FeedItemCreateNestedManyWithoutQuotedFeedItemInput
+    retweetOfFeedItem?: FeedItemCreateNestedOneWithoutRetweetedByItemsInput
+    retweetedByItems?: FeedItemCreateNestedManyWithoutRetweetOfFeedItemInput
+    retweets?: RetweetCreateNestedManyWithoutFeedItemInput
+  }
+
+  export type FeedItemUncheckedCreateWithoutPostInput = {
+    id?: string
+    type: $Enums.FeedType
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    userId: string
+    rankingListId?: string | null
+    retweetOfFeedItemId?: string | null
+    quotedFeedItemId?: string | null
+    quoteRetweetCount?: number
+    quotedByItems?: FeedItemUncheckedCreateNestedManyWithoutQuotedFeedItemInput
+    retweetedByItems?: FeedItemUncheckedCreateNestedManyWithoutRetweetOfFeedItemInput
+    retweets?: RetweetUncheckedCreateNestedManyWithoutFeedItemInput
+  }
+
+  export type FeedItemCreateOrConnectWithoutPostInput = {
+    where: FeedItemWhereUniqueInput
+    create: XOR<FeedItemCreateWithoutPostInput, FeedItemUncheckedCreateWithoutPostInput>
+  }
+
+  export type FeedItemCreateManyPostInputEnvelope = {
+    data: FeedItemCreateManyPostInput | FeedItemCreateManyPostInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type LikeCreateWithoutPostInput = {
+    id?: string
+    createdAt?: Date | string
+    rankingList?: RankingListCreateNestedOneWithoutLikesInput
+    user: UserCreateNestedOneWithoutLikesInput
+  }
+
+  export type LikeUncheckedCreateWithoutPostInput = {
+    id?: string
+    userId: string
+    createdAt?: Date | string
+    rankingListId?: string | null
+  }
+
+  export type LikeCreateOrConnectWithoutPostInput = {
+    where: LikeWhereUniqueInput
+    create: XOR<LikeCreateWithoutPostInput, LikeUncheckedCreateWithoutPostInput>
+  }
+
+  export type LikeCreateManyPostInputEnvelope = {
+    data: LikeCreateManyPostInput | LikeCreateManyPostInput[]
+    skipDuplicates?: boolean
+  }
+
   export type UserCreateWithoutPostsInput = {
     id?: string
     clerkId: string
@@ -25698,16 +25762,16 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isPrivate?: boolean
-    location?: string | null
     birthday?: Date | string | null
-    likes?: LikeCreateNestedManyWithoutUserInput
-    replies?: ReplyCreateNestedManyWithoutUserInput
-    followedBy?: FollowCreateNestedManyWithoutFollowingInput
-    following?: FollowCreateNestedManyWithoutFollowerInput
-    rankingLists?: RankingListCreateNestedManyWithoutAuthorInput
-    sentFollowRequests?: FollowRequestCreateNestedManyWithoutRequesterInput
-    receivedFollowRequests?: FollowRequestCreateNestedManyWithoutRequestedInput
+    location?: string | null
     feedItems?: FeedItemCreateNestedManyWithoutUserInput
+    following?: FollowCreateNestedManyWithoutFollowerInput
+    followedBy?: FollowCreateNestedManyWithoutFollowingInput
+    receivedFollowRequests?: FollowRequestCreateNestedManyWithoutRequestedInput
+    sentFollowRequests?: FollowRequestCreateNestedManyWithoutRequesterInput
+    likes?: LikeCreateNestedManyWithoutUserInput
+    rankingLists?: RankingListCreateNestedManyWithoutAuthorInput
+    replies?: ReplyCreateNestedManyWithoutUserInput
     retweets?: RetweetCreateNestedManyWithoutUserInput
   }
 
@@ -25723,16 +25787,16 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isPrivate?: boolean
-    location?: string | null
     birthday?: Date | string | null
-    likes?: LikeUncheckedCreateNestedManyWithoutUserInput
-    replies?: ReplyUncheckedCreateNestedManyWithoutUserInput
-    followedBy?: FollowUncheckedCreateNestedManyWithoutFollowingInput
-    following?: FollowUncheckedCreateNestedManyWithoutFollowerInput
-    rankingLists?: RankingListUncheckedCreateNestedManyWithoutAuthorInput
-    sentFollowRequests?: FollowRequestUncheckedCreateNestedManyWithoutRequesterInput
-    receivedFollowRequests?: FollowRequestUncheckedCreateNestedManyWithoutRequestedInput
+    location?: string | null
     feedItems?: FeedItemUncheckedCreateNestedManyWithoutUserInput
+    following?: FollowUncheckedCreateNestedManyWithoutFollowerInput
+    followedBy?: FollowUncheckedCreateNestedManyWithoutFollowingInput
+    receivedFollowRequests?: FollowRequestUncheckedCreateNestedManyWithoutRequestedInput
+    sentFollowRequests?: FollowRequestUncheckedCreateNestedManyWithoutRequesterInput
+    likes?: LikeUncheckedCreateNestedManyWithoutUserInput
+    rankingLists?: RankingListUncheckedCreateNestedManyWithoutAuthorInput
+    replies?: ReplyUncheckedCreateNestedManyWithoutUserInput
     retweets?: RetweetUncheckedCreateNestedManyWithoutUserInput
   }
 
@@ -25767,147 +25831,6 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type FeedItemCreateWithoutPostInput = {
-    id?: string
-    type: $Enums.FeedType
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    quoteRetweetCount?: number
-    user: UserCreateNestedOneWithoutFeedItemsInput
-    rankingList?: RankingListCreateNestedOneWithoutFeedItemsInput
-    retweetOfFeedItem?: FeedItemCreateNestedOneWithoutRetweetedByItemsInput
-    retweetedByItems?: FeedItemCreateNestedManyWithoutRetweetOfFeedItemInput
-    retweets?: RetweetCreateNestedManyWithoutFeedItemInput
-    quotedFeedItem?: FeedItemCreateNestedOneWithoutQuotedByItemsInput
-    quotedByItems?: FeedItemCreateNestedManyWithoutQuotedFeedItemInput
-  }
-
-  export type FeedItemUncheckedCreateWithoutPostInput = {
-    id?: string
-    type: $Enums.FeedType
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    userId: string
-    rankingListId?: string | null
-    retweetOfFeedItemId?: string | null
-    quotedFeedItemId?: string | null
-    quoteRetweetCount?: number
-    retweetedByItems?: FeedItemUncheckedCreateNestedManyWithoutRetweetOfFeedItemInput
-    retweets?: RetweetUncheckedCreateNestedManyWithoutFeedItemInput
-    quotedByItems?: FeedItemUncheckedCreateNestedManyWithoutQuotedFeedItemInput
-  }
-
-  export type FeedItemCreateOrConnectWithoutPostInput = {
-    where: FeedItemWhereUniqueInput
-    create: XOR<FeedItemCreateWithoutPostInput, FeedItemUncheckedCreateWithoutPostInput>
-  }
-
-  export type FeedItemCreateManyPostInputEnvelope = {
-    data: FeedItemCreateManyPostInput | FeedItemCreateManyPostInput[]
-    skipDuplicates?: boolean
-  }
-
-  export type LikeCreateWithoutPostInput = {
-    id?: string
-    createdAt?: Date | string
-    user: UserCreateNestedOneWithoutLikesInput
-    rankingList?: RankingListCreateNestedOneWithoutLikesInput
-  }
-
-  export type LikeUncheckedCreateWithoutPostInput = {
-    id?: string
-    userId: string
-    createdAt?: Date | string
-    rankingListId?: string | null
-  }
-
-  export type LikeCreateOrConnectWithoutPostInput = {
-    where: LikeWhereUniqueInput
-    create: XOR<LikeCreateWithoutPostInput, LikeUncheckedCreateWithoutPostInput>
-  }
-
-  export type LikeCreateManyPostInputEnvelope = {
-    data: LikeCreateManyPostInput | LikeCreateManyPostInput[]
-    skipDuplicates?: boolean
-  }
-
-  export type UserUpsertWithoutPostsInput = {
-    update: XOR<UserUpdateWithoutPostsInput, UserUncheckedUpdateWithoutPostsInput>
-    create: XOR<UserCreateWithoutPostsInput, UserUncheckedCreateWithoutPostsInput>
-    where?: UserWhereInput
-  }
-
-  export type UserUpdateToOneWithWhereWithoutPostsInput = {
-    where?: UserWhereInput
-    data: XOR<UserUpdateWithoutPostsInput, UserUncheckedUpdateWithoutPostsInput>
-  }
-
-  export type UserUpdateWithoutPostsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    clerkId?: StringFieldUpdateOperationsInput | string
-    username?: StringFieldUpdateOperationsInput | string
-    name?: NullableStringFieldUpdateOperationsInput | string | null
-    bio?: NullableStringFieldUpdateOperationsInput | string | null
-    image?: NullableStringFieldUpdateOperationsInput | string | null
-    coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    socialLinks?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    isPrivate?: BoolFieldUpdateOperationsInput | boolean
-    location?: NullableStringFieldUpdateOperationsInput | string | null
-    birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    likes?: LikeUpdateManyWithoutUserNestedInput
-    replies?: ReplyUpdateManyWithoutUserNestedInput
-    followedBy?: FollowUpdateManyWithoutFollowingNestedInput
-    following?: FollowUpdateManyWithoutFollowerNestedInput
-    rankingLists?: RankingListUpdateManyWithoutAuthorNestedInput
-    sentFollowRequests?: FollowRequestUpdateManyWithoutRequesterNestedInput
-    receivedFollowRequests?: FollowRequestUpdateManyWithoutRequestedNestedInput
-    feedItems?: FeedItemUpdateManyWithoutUserNestedInput
-    retweets?: RetweetUpdateManyWithoutUserNestedInput
-  }
-
-  export type UserUncheckedUpdateWithoutPostsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    clerkId?: StringFieldUpdateOperationsInput | string
-    username?: StringFieldUpdateOperationsInput | string
-    name?: NullableStringFieldUpdateOperationsInput | string | null
-    bio?: NullableStringFieldUpdateOperationsInput | string | null
-    image?: NullableStringFieldUpdateOperationsInput | string | null
-    coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    socialLinks?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    isPrivate?: BoolFieldUpdateOperationsInput | boolean
-    location?: NullableStringFieldUpdateOperationsInput | string | null
-    birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    likes?: LikeUncheckedUpdateManyWithoutUserNestedInput
-    replies?: ReplyUncheckedUpdateManyWithoutUserNestedInput
-    followedBy?: FollowUncheckedUpdateManyWithoutFollowingNestedInput
-    following?: FollowUncheckedUpdateManyWithoutFollowerNestedInput
-    rankingLists?: RankingListUncheckedUpdateManyWithoutAuthorNestedInput
-    sentFollowRequests?: FollowRequestUncheckedUpdateManyWithoutRequesterNestedInput
-    receivedFollowRequests?: FollowRequestUncheckedUpdateManyWithoutRequestedNestedInput
-    feedItems?: FeedItemUncheckedUpdateManyWithoutUserNestedInput
-    retweets?: RetweetUncheckedUpdateManyWithoutUserNestedInput
-  }
-
-  export type ReplyUpsertWithWhereUniqueWithoutPostInput = {
-    where: ReplyWhereUniqueInput
-    update: XOR<ReplyUpdateWithoutPostInput, ReplyUncheckedUpdateWithoutPostInput>
-    create: XOR<ReplyCreateWithoutPostInput, ReplyUncheckedCreateWithoutPostInput>
-  }
-
-  export type ReplyUpdateWithWhereUniqueWithoutPostInput = {
-    where: ReplyWhereUniqueInput
-    data: XOR<ReplyUpdateWithoutPostInput, ReplyUncheckedUpdateWithoutPostInput>
-  }
-
-  export type ReplyUpdateManyWithWhereWithoutPostInput = {
-    where: ReplyScalarWhereInput
-    data: XOR<ReplyUpdateManyMutationInput, ReplyUncheckedUpdateManyWithoutPostInput>
-  }
-
   export type FeedItemUpsertWithWhereUniqueWithoutPostInput = {
     where: FeedItemWhereUniqueInput
     update: XOR<FeedItemUpdateWithoutPostInput, FeedItemUncheckedUpdateWithoutPostInput>
@@ -25940,6 +25863,118 @@ export namespace Prisma {
     data: XOR<LikeUpdateManyMutationInput, LikeUncheckedUpdateManyWithoutPostInput>
   }
 
+  export type UserUpsertWithoutPostsInput = {
+    update: XOR<UserUpdateWithoutPostsInput, UserUncheckedUpdateWithoutPostsInput>
+    create: XOR<UserCreateWithoutPostsInput, UserUncheckedCreateWithoutPostsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutPostsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutPostsInput, UserUncheckedUpdateWithoutPostsInput>
+  }
+
+  export type UserUpdateWithoutPostsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    clerkId?: StringFieldUpdateOperationsInput | string
+    username?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    socialLinks?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isPrivate?: BoolFieldUpdateOperationsInput | boolean
+    birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    feedItems?: FeedItemUpdateManyWithoutUserNestedInput
+    following?: FollowUpdateManyWithoutFollowerNestedInput
+    followedBy?: FollowUpdateManyWithoutFollowingNestedInput
+    receivedFollowRequests?: FollowRequestUpdateManyWithoutRequestedNestedInput
+    sentFollowRequests?: FollowRequestUpdateManyWithoutRequesterNestedInput
+    likes?: LikeUpdateManyWithoutUserNestedInput
+    rankingLists?: RankingListUpdateManyWithoutAuthorNestedInput
+    replies?: ReplyUpdateManyWithoutUserNestedInput
+    retweets?: RetweetUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutPostsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    clerkId?: StringFieldUpdateOperationsInput | string
+    username?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    socialLinks?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isPrivate?: BoolFieldUpdateOperationsInput | boolean
+    birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    feedItems?: FeedItemUncheckedUpdateManyWithoutUserNestedInput
+    following?: FollowUncheckedUpdateManyWithoutFollowerNestedInput
+    followedBy?: FollowUncheckedUpdateManyWithoutFollowingNestedInput
+    receivedFollowRequests?: FollowRequestUncheckedUpdateManyWithoutRequestedNestedInput
+    sentFollowRequests?: FollowRequestUncheckedUpdateManyWithoutRequesterNestedInput
+    likes?: LikeUncheckedUpdateManyWithoutUserNestedInput
+    rankingLists?: RankingListUncheckedUpdateManyWithoutAuthorNestedInput
+    replies?: ReplyUncheckedUpdateManyWithoutUserNestedInput
+    retweets?: RetweetUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type ReplyUpsertWithWhereUniqueWithoutPostInput = {
+    where: ReplyWhereUniqueInput
+    update: XOR<ReplyUpdateWithoutPostInput, ReplyUncheckedUpdateWithoutPostInput>
+    create: XOR<ReplyCreateWithoutPostInput, ReplyUncheckedCreateWithoutPostInput>
+  }
+
+  export type ReplyUpdateWithWhereUniqueWithoutPostInput = {
+    where: ReplyWhereUniqueInput
+    data: XOR<ReplyUpdateWithoutPostInput, ReplyUncheckedUpdateWithoutPostInput>
+  }
+
+  export type ReplyUpdateManyWithWhereWithoutPostInput = {
+    where: ReplyScalarWhereInput
+    data: XOR<ReplyUpdateManyMutationInput, ReplyUncheckedUpdateManyWithoutPostInput>
+  }
+
+  export type FeedItemCreateWithoutRetweetsInput = {
+    id?: string
+    type: $Enums.FeedType
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    quoteRetweetCount?: number
+    post?: PostCreateNestedOneWithoutFeedItemsInput
+    rankingList?: RankingListCreateNestedOneWithoutFeedItemsInput
+    user: UserCreateNestedOneWithoutFeedItemsInput
+    quotedFeedItem?: FeedItemCreateNestedOneWithoutQuotedByItemsInput
+    quotedByItems?: FeedItemCreateNestedManyWithoutQuotedFeedItemInput
+    retweetOfFeedItem?: FeedItemCreateNestedOneWithoutRetweetedByItemsInput
+    retweetedByItems?: FeedItemCreateNestedManyWithoutRetweetOfFeedItemInput
+  }
+
+  export type FeedItemUncheckedCreateWithoutRetweetsInput = {
+    id?: string
+    type: $Enums.FeedType
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    userId: string
+    postId?: string | null
+    rankingListId?: string | null
+    retweetOfFeedItemId?: string | null
+    quotedFeedItemId?: string | null
+    quoteRetweetCount?: number
+    quotedByItems?: FeedItemUncheckedCreateNestedManyWithoutQuotedFeedItemInput
+    retweetedByItems?: FeedItemUncheckedCreateNestedManyWithoutRetweetOfFeedItemInput
+  }
+
+  export type FeedItemCreateOrConnectWithoutRetweetsInput = {
+    where: FeedItemWhereUniqueInput
+    create: XOR<FeedItemCreateWithoutRetweetsInput, FeedItemUncheckedCreateWithoutRetweetsInput>
+  }
+
   export type UserCreateWithoutRetweetsInput = {
     id?: string
     clerkId: string
@@ -25952,17 +25987,17 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isPrivate?: boolean
-    location?: string | null
     birthday?: Date | string | null
-    posts?: PostCreateNestedManyWithoutAuthorInput
-    likes?: LikeCreateNestedManyWithoutUserInput
-    replies?: ReplyCreateNestedManyWithoutUserInput
-    followedBy?: FollowCreateNestedManyWithoutFollowingInput
-    following?: FollowCreateNestedManyWithoutFollowerInput
-    rankingLists?: RankingListCreateNestedManyWithoutAuthorInput
-    sentFollowRequests?: FollowRequestCreateNestedManyWithoutRequesterInput
-    receivedFollowRequests?: FollowRequestCreateNestedManyWithoutRequestedInput
+    location?: string | null
     feedItems?: FeedItemCreateNestedManyWithoutUserInput
+    following?: FollowCreateNestedManyWithoutFollowerInput
+    followedBy?: FollowCreateNestedManyWithoutFollowingInput
+    receivedFollowRequests?: FollowRequestCreateNestedManyWithoutRequestedInput
+    sentFollowRequests?: FollowRequestCreateNestedManyWithoutRequesterInput
+    likes?: LikeCreateNestedManyWithoutUserInput
+    posts?: PostCreateNestedManyWithoutAuthorInput
+    rankingLists?: RankingListCreateNestedManyWithoutAuthorInput
+    replies?: ReplyCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutRetweetsInput = {
@@ -25977,17 +26012,17 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isPrivate?: boolean
-    location?: string | null
     birthday?: Date | string | null
-    posts?: PostUncheckedCreateNestedManyWithoutAuthorInput
-    likes?: LikeUncheckedCreateNestedManyWithoutUserInput
-    replies?: ReplyUncheckedCreateNestedManyWithoutUserInput
-    followedBy?: FollowUncheckedCreateNestedManyWithoutFollowingInput
-    following?: FollowUncheckedCreateNestedManyWithoutFollowerInput
-    rankingLists?: RankingListUncheckedCreateNestedManyWithoutAuthorInput
-    sentFollowRequests?: FollowRequestUncheckedCreateNestedManyWithoutRequesterInput
-    receivedFollowRequests?: FollowRequestUncheckedCreateNestedManyWithoutRequestedInput
+    location?: string | null
     feedItems?: FeedItemUncheckedCreateNestedManyWithoutUserInput
+    following?: FollowUncheckedCreateNestedManyWithoutFollowerInput
+    followedBy?: FollowUncheckedCreateNestedManyWithoutFollowingInput
+    receivedFollowRequests?: FollowRequestUncheckedCreateNestedManyWithoutRequestedInput
+    sentFollowRequests?: FollowRequestUncheckedCreateNestedManyWithoutRequesterInput
+    likes?: LikeUncheckedCreateNestedManyWithoutUserInput
+    posts?: PostUncheckedCreateNestedManyWithoutAuthorInput
+    rankingLists?: RankingListUncheckedCreateNestedManyWithoutAuthorInput
+    replies?: ReplyUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutRetweetsInput = {
@@ -25995,39 +26030,45 @@ export namespace Prisma {
     create: XOR<UserCreateWithoutRetweetsInput, UserUncheckedCreateWithoutRetweetsInput>
   }
 
-  export type FeedItemCreateWithoutRetweetsInput = {
-    id?: string
-    type: $Enums.FeedType
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    quoteRetweetCount?: number
-    user: UserCreateNestedOneWithoutFeedItemsInput
-    post?: PostCreateNestedOneWithoutFeedItemsInput
-    rankingList?: RankingListCreateNestedOneWithoutFeedItemsInput
-    retweetOfFeedItem?: FeedItemCreateNestedOneWithoutRetweetedByItemsInput
-    retweetedByItems?: FeedItemCreateNestedManyWithoutRetweetOfFeedItemInput
-    quotedFeedItem?: FeedItemCreateNestedOneWithoutQuotedByItemsInput
-    quotedByItems?: FeedItemCreateNestedManyWithoutQuotedFeedItemInput
-  }
-
-  export type FeedItemUncheckedCreateWithoutRetweetsInput = {
-    id?: string
-    type: $Enums.FeedType
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    userId: string
-    postId?: string | null
-    rankingListId?: string | null
-    retweetOfFeedItemId?: string | null
-    quotedFeedItemId?: string | null
-    quoteRetweetCount?: number
-    retweetedByItems?: FeedItemUncheckedCreateNestedManyWithoutRetweetOfFeedItemInput
-    quotedByItems?: FeedItemUncheckedCreateNestedManyWithoutQuotedFeedItemInput
-  }
-
-  export type FeedItemCreateOrConnectWithoutRetweetsInput = {
-    where: FeedItemWhereUniqueInput
+  export type FeedItemUpsertWithoutRetweetsInput = {
+    update: XOR<FeedItemUpdateWithoutRetweetsInput, FeedItemUncheckedUpdateWithoutRetweetsInput>
     create: XOR<FeedItemCreateWithoutRetweetsInput, FeedItemUncheckedCreateWithoutRetweetsInput>
+    where?: FeedItemWhereInput
+  }
+
+  export type FeedItemUpdateToOneWithWhereWithoutRetweetsInput = {
+    where?: FeedItemWhereInput
+    data: XOR<FeedItemUpdateWithoutRetweetsInput, FeedItemUncheckedUpdateWithoutRetweetsInput>
+  }
+
+  export type FeedItemUpdateWithoutRetweetsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumFeedTypeFieldUpdateOperationsInput | $Enums.FeedType
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    quoteRetweetCount?: IntFieldUpdateOperationsInput | number
+    post?: PostUpdateOneWithoutFeedItemsNestedInput
+    rankingList?: RankingListUpdateOneWithoutFeedItemsNestedInput
+    user?: UserUpdateOneRequiredWithoutFeedItemsNestedInput
+    quotedFeedItem?: FeedItemUpdateOneWithoutQuotedByItemsNestedInput
+    quotedByItems?: FeedItemUpdateManyWithoutQuotedFeedItemNestedInput
+    retweetOfFeedItem?: FeedItemUpdateOneWithoutRetweetedByItemsNestedInput
+    retweetedByItems?: FeedItemUpdateManyWithoutRetweetOfFeedItemNestedInput
+  }
+
+  export type FeedItemUncheckedUpdateWithoutRetweetsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumFeedTypeFieldUpdateOperationsInput | $Enums.FeedType
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userId?: StringFieldUpdateOperationsInput | string
+    postId?: NullableStringFieldUpdateOperationsInput | string | null
+    rankingListId?: NullableStringFieldUpdateOperationsInput | string | null
+    retweetOfFeedItemId?: NullableStringFieldUpdateOperationsInput | string | null
+    quotedFeedItemId?: NullableStringFieldUpdateOperationsInput | string | null
+    quoteRetweetCount?: IntFieldUpdateOperationsInput | number
+    quotedByItems?: FeedItemUncheckedUpdateManyWithoutQuotedFeedItemNestedInput
+    retweetedByItems?: FeedItemUncheckedUpdateManyWithoutRetweetOfFeedItemNestedInput
   }
 
   export type UserUpsertWithoutRetweetsInput = {
@@ -26053,17 +26094,17 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
-    location?: NullableStringFieldUpdateOperationsInput | string | null
     birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    posts?: PostUpdateManyWithoutAuthorNestedInput
-    likes?: LikeUpdateManyWithoutUserNestedInput
-    replies?: ReplyUpdateManyWithoutUserNestedInput
-    followedBy?: FollowUpdateManyWithoutFollowingNestedInput
-    following?: FollowUpdateManyWithoutFollowerNestedInput
-    rankingLists?: RankingListUpdateManyWithoutAuthorNestedInput
-    sentFollowRequests?: FollowRequestUpdateManyWithoutRequesterNestedInput
-    receivedFollowRequests?: FollowRequestUpdateManyWithoutRequestedNestedInput
+    location?: NullableStringFieldUpdateOperationsInput | string | null
     feedItems?: FeedItemUpdateManyWithoutUserNestedInput
+    following?: FollowUpdateManyWithoutFollowerNestedInput
+    followedBy?: FollowUpdateManyWithoutFollowingNestedInput
+    receivedFollowRequests?: FollowRequestUpdateManyWithoutRequestedNestedInput
+    sentFollowRequests?: FollowRequestUpdateManyWithoutRequesterNestedInput
+    likes?: LikeUpdateManyWithoutUserNestedInput
+    posts?: PostUpdateManyWithoutAuthorNestedInput
+    rankingLists?: RankingListUpdateManyWithoutAuthorNestedInput
+    replies?: ReplyUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutRetweetsInput = {
@@ -26078,137 +26119,41 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
-    location?: NullableStringFieldUpdateOperationsInput | string | null
     birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    posts?: PostUncheckedUpdateManyWithoutAuthorNestedInput
-    likes?: LikeUncheckedUpdateManyWithoutUserNestedInput
-    replies?: ReplyUncheckedUpdateManyWithoutUserNestedInput
-    followedBy?: FollowUncheckedUpdateManyWithoutFollowingNestedInput
-    following?: FollowUncheckedUpdateManyWithoutFollowerNestedInput
-    rankingLists?: RankingListUncheckedUpdateManyWithoutAuthorNestedInput
-    sentFollowRequests?: FollowRequestUncheckedUpdateManyWithoutRequesterNestedInput
-    receivedFollowRequests?: FollowRequestUncheckedUpdateManyWithoutRequestedNestedInput
+    location?: NullableStringFieldUpdateOperationsInput | string | null
     feedItems?: FeedItemUncheckedUpdateManyWithoutUserNestedInput
-  }
-
-  export type FeedItemUpsertWithoutRetweetsInput = {
-    update: XOR<FeedItemUpdateWithoutRetweetsInput, FeedItemUncheckedUpdateWithoutRetweetsInput>
-    create: XOR<FeedItemCreateWithoutRetweetsInput, FeedItemUncheckedCreateWithoutRetweetsInput>
-    where?: FeedItemWhereInput
-  }
-
-  export type FeedItemUpdateToOneWithWhereWithoutRetweetsInput = {
-    where?: FeedItemWhereInput
-    data: XOR<FeedItemUpdateWithoutRetweetsInput, FeedItemUncheckedUpdateWithoutRetweetsInput>
-  }
-
-  export type FeedItemUpdateWithoutRetweetsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    type?: EnumFeedTypeFieldUpdateOperationsInput | $Enums.FeedType
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    quoteRetweetCount?: IntFieldUpdateOperationsInput | number
-    user?: UserUpdateOneRequiredWithoutFeedItemsNestedInput
-    post?: PostUpdateOneWithoutFeedItemsNestedInput
-    rankingList?: RankingListUpdateOneWithoutFeedItemsNestedInput
-    retweetOfFeedItem?: FeedItemUpdateOneWithoutRetweetedByItemsNestedInput
-    retweetedByItems?: FeedItemUpdateManyWithoutRetweetOfFeedItemNestedInput
-    quotedFeedItem?: FeedItemUpdateOneWithoutQuotedByItemsNestedInput
-    quotedByItems?: FeedItemUpdateManyWithoutQuotedFeedItemNestedInput
-  }
-
-  export type FeedItemUncheckedUpdateWithoutRetweetsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    type?: EnumFeedTypeFieldUpdateOperationsInput | $Enums.FeedType
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    userId?: StringFieldUpdateOperationsInput | string
-    postId?: NullableStringFieldUpdateOperationsInput | string | null
-    rankingListId?: NullableStringFieldUpdateOperationsInput | string | null
-    retweetOfFeedItemId?: NullableStringFieldUpdateOperationsInput | string | null
-    quotedFeedItemId?: NullableStringFieldUpdateOperationsInput | string | null
-    quoteRetweetCount?: IntFieldUpdateOperationsInput | number
-    retweetedByItems?: FeedItemUncheckedUpdateManyWithoutRetweetOfFeedItemNestedInput
-    quotedByItems?: FeedItemUncheckedUpdateManyWithoutQuotedFeedItemNestedInput
-  }
-
-  export type UserCreateWithoutFeedItemsInput = {
-    id?: string
-    clerkId: string
-    username: string
-    name?: string | null
-    bio?: string | null
-    image?: string | null
-    coverImageUrl?: string | null
-    socialLinks?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    isPrivate?: boolean
-    location?: string | null
-    birthday?: Date | string | null
-    posts?: PostCreateNestedManyWithoutAuthorInput
-    likes?: LikeCreateNestedManyWithoutUserInput
-    replies?: ReplyCreateNestedManyWithoutUserInput
-    followedBy?: FollowCreateNestedManyWithoutFollowingInput
-    following?: FollowCreateNestedManyWithoutFollowerInput
-    rankingLists?: RankingListCreateNestedManyWithoutAuthorInput
-    sentFollowRequests?: FollowRequestCreateNestedManyWithoutRequesterInput
-    receivedFollowRequests?: FollowRequestCreateNestedManyWithoutRequestedInput
-    retweets?: RetweetCreateNestedManyWithoutUserInput
-  }
-
-  export type UserUncheckedCreateWithoutFeedItemsInput = {
-    id?: string
-    clerkId: string
-    username: string
-    name?: string | null
-    bio?: string | null
-    image?: string | null
-    coverImageUrl?: string | null
-    socialLinks?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    isPrivate?: boolean
-    location?: string | null
-    birthday?: Date | string | null
-    posts?: PostUncheckedCreateNestedManyWithoutAuthorInput
-    likes?: LikeUncheckedCreateNestedManyWithoutUserInput
-    replies?: ReplyUncheckedCreateNestedManyWithoutUserInput
-    followedBy?: FollowUncheckedCreateNestedManyWithoutFollowingInput
-    following?: FollowUncheckedCreateNestedManyWithoutFollowerInput
-    rankingLists?: RankingListUncheckedCreateNestedManyWithoutAuthorInput
-    sentFollowRequests?: FollowRequestUncheckedCreateNestedManyWithoutRequesterInput
-    receivedFollowRequests?: FollowRequestUncheckedCreateNestedManyWithoutRequestedInput
-    retweets?: RetweetUncheckedCreateNestedManyWithoutUserInput
-  }
-
-  export type UserCreateOrConnectWithoutFeedItemsInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutFeedItemsInput, UserUncheckedCreateWithoutFeedItemsInput>
+    following?: FollowUncheckedUpdateManyWithoutFollowerNestedInput
+    followedBy?: FollowUncheckedUpdateManyWithoutFollowingNestedInput
+    receivedFollowRequests?: FollowRequestUncheckedUpdateManyWithoutRequestedNestedInput
+    sentFollowRequests?: FollowRequestUncheckedUpdateManyWithoutRequesterNestedInput
+    likes?: LikeUncheckedUpdateManyWithoutUserNestedInput
+    posts?: PostUncheckedUpdateManyWithoutAuthorNestedInput
+    rankingLists?: RankingListUncheckedUpdateManyWithoutAuthorNestedInput
+    replies?: ReplyUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type PostCreateWithoutFeedItemsInput = {
     id?: string
     content: string
-    imageUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     likeCount?: number
+    imageUrl?: string | null
+    likes?: LikeCreateNestedManyWithoutPostInput
     author: UserCreateNestedOneWithoutPostsInput
     replies?: ReplyCreateNestedManyWithoutPostInput
-    likes?: LikeCreateNestedManyWithoutPostInput
   }
 
   export type PostUncheckedCreateWithoutFeedItemsInput = {
     id?: string
     content: string
-    imageUrl?: string | null
     authorId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     likeCount?: number
-    replies?: ReplyUncheckedCreateNestedManyWithoutPostInput
+    imageUrl?: string | null
     likes?: LikeUncheckedCreateNestedManyWithoutPostInput
+    replies?: ReplyUncheckedCreateNestedManyWithoutPostInput
   }
 
   export type PostCreateOrConnectWithoutFeedItemsInput = {
@@ -26226,9 +26171,9 @@ export namespace Prisma {
     updatedAt?: Date | string
     displayOrder?: number | null
     likeCount?: number
-    author: UserCreateNestedOneWithoutRankingListsInput
-    items?: RankedItemCreateNestedManyWithoutRankingListInput
     likes?: LikeCreateNestedManyWithoutRankingListInput
+    items?: RankedItemCreateNestedManyWithoutRankingListInput
+    author: UserCreateNestedOneWithoutRankingListsInput
     tags?: TagCreateNestedManyWithoutRankingListsInput
   }
 
@@ -26243,8 +26188,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     displayOrder?: number | null
     likeCount?: number
-    items?: RankedItemUncheckedCreateNestedManyWithoutRankingListInput
     likes?: LikeUncheckedCreateNestedManyWithoutRankingListInput
+    items?: RankedItemUncheckedCreateNestedManyWithoutRankingListInput
     tags?: TagUncheckedCreateNestedManyWithoutRankingListsInput
   }
 
@@ -26253,19 +26198,149 @@ export namespace Prisma {
     create: XOR<RankingListCreateWithoutFeedItemsInput, RankingListUncheckedCreateWithoutFeedItemsInput>
   }
 
+  export type UserCreateWithoutFeedItemsInput = {
+    id?: string
+    clerkId: string
+    username: string
+    name?: string | null
+    bio?: string | null
+    image?: string | null
+    coverImageUrl?: string | null
+    socialLinks?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isPrivate?: boolean
+    birthday?: Date | string | null
+    location?: string | null
+    following?: FollowCreateNestedManyWithoutFollowerInput
+    followedBy?: FollowCreateNestedManyWithoutFollowingInput
+    receivedFollowRequests?: FollowRequestCreateNestedManyWithoutRequestedInput
+    sentFollowRequests?: FollowRequestCreateNestedManyWithoutRequesterInput
+    likes?: LikeCreateNestedManyWithoutUserInput
+    posts?: PostCreateNestedManyWithoutAuthorInput
+    rankingLists?: RankingListCreateNestedManyWithoutAuthorInput
+    replies?: ReplyCreateNestedManyWithoutUserInput
+    retweets?: RetweetCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutFeedItemsInput = {
+    id?: string
+    clerkId: string
+    username: string
+    name?: string | null
+    bio?: string | null
+    image?: string | null
+    coverImageUrl?: string | null
+    socialLinks?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isPrivate?: boolean
+    birthday?: Date | string | null
+    location?: string | null
+    following?: FollowUncheckedCreateNestedManyWithoutFollowerInput
+    followedBy?: FollowUncheckedCreateNestedManyWithoutFollowingInput
+    receivedFollowRequests?: FollowRequestUncheckedCreateNestedManyWithoutRequestedInput
+    sentFollowRequests?: FollowRequestUncheckedCreateNestedManyWithoutRequesterInput
+    likes?: LikeUncheckedCreateNestedManyWithoutUserInput
+    posts?: PostUncheckedCreateNestedManyWithoutAuthorInput
+    rankingLists?: RankingListUncheckedCreateNestedManyWithoutAuthorInput
+    replies?: ReplyUncheckedCreateNestedManyWithoutUserInput
+    retweets?: RetweetUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutFeedItemsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutFeedItemsInput, UserUncheckedCreateWithoutFeedItemsInput>
+  }
+
+  export type FeedItemCreateWithoutQuotedByItemsInput = {
+    id?: string
+    type: $Enums.FeedType
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    quoteRetweetCount?: number
+    post?: PostCreateNestedOneWithoutFeedItemsInput
+    rankingList?: RankingListCreateNestedOneWithoutFeedItemsInput
+    user: UserCreateNestedOneWithoutFeedItemsInput
+    quotedFeedItem?: FeedItemCreateNestedOneWithoutQuotedByItemsInput
+    retweetOfFeedItem?: FeedItemCreateNestedOneWithoutRetweetedByItemsInput
+    retweetedByItems?: FeedItemCreateNestedManyWithoutRetweetOfFeedItemInput
+    retweets?: RetweetCreateNestedManyWithoutFeedItemInput
+  }
+
+  export type FeedItemUncheckedCreateWithoutQuotedByItemsInput = {
+    id?: string
+    type: $Enums.FeedType
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    userId: string
+    postId?: string | null
+    rankingListId?: string | null
+    retweetOfFeedItemId?: string | null
+    quotedFeedItemId?: string | null
+    quoteRetweetCount?: number
+    retweetedByItems?: FeedItemUncheckedCreateNestedManyWithoutRetweetOfFeedItemInput
+    retweets?: RetweetUncheckedCreateNestedManyWithoutFeedItemInput
+  }
+
+  export type FeedItemCreateOrConnectWithoutQuotedByItemsInput = {
+    where: FeedItemWhereUniqueInput
+    create: XOR<FeedItemCreateWithoutQuotedByItemsInput, FeedItemUncheckedCreateWithoutQuotedByItemsInput>
+  }
+
+  export type FeedItemCreateWithoutQuotedFeedItemInput = {
+    id?: string
+    type: $Enums.FeedType
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    quoteRetweetCount?: number
+    post?: PostCreateNestedOneWithoutFeedItemsInput
+    rankingList?: RankingListCreateNestedOneWithoutFeedItemsInput
+    user: UserCreateNestedOneWithoutFeedItemsInput
+    quotedByItems?: FeedItemCreateNestedManyWithoutQuotedFeedItemInput
+    retweetOfFeedItem?: FeedItemCreateNestedOneWithoutRetweetedByItemsInput
+    retweetedByItems?: FeedItemCreateNestedManyWithoutRetweetOfFeedItemInput
+    retweets?: RetweetCreateNestedManyWithoutFeedItemInput
+  }
+
+  export type FeedItemUncheckedCreateWithoutQuotedFeedItemInput = {
+    id?: string
+    type: $Enums.FeedType
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    userId: string
+    postId?: string | null
+    rankingListId?: string | null
+    retweetOfFeedItemId?: string | null
+    quoteRetweetCount?: number
+    quotedByItems?: FeedItemUncheckedCreateNestedManyWithoutQuotedFeedItemInput
+    retweetedByItems?: FeedItemUncheckedCreateNestedManyWithoutRetweetOfFeedItemInput
+    retweets?: RetweetUncheckedCreateNestedManyWithoutFeedItemInput
+  }
+
+  export type FeedItemCreateOrConnectWithoutQuotedFeedItemInput = {
+    where: FeedItemWhereUniqueInput
+    create: XOR<FeedItemCreateWithoutQuotedFeedItemInput, FeedItemUncheckedCreateWithoutQuotedFeedItemInput>
+  }
+
+  export type FeedItemCreateManyQuotedFeedItemInputEnvelope = {
+    data: FeedItemCreateManyQuotedFeedItemInput | FeedItemCreateManyQuotedFeedItemInput[]
+    skipDuplicates?: boolean
+  }
+
   export type FeedItemCreateWithoutRetweetedByItemsInput = {
     id?: string
     type: $Enums.FeedType
     createdAt?: Date | string
     updatedAt?: Date | string
     quoteRetweetCount?: number
-    user: UserCreateNestedOneWithoutFeedItemsInput
     post?: PostCreateNestedOneWithoutFeedItemsInput
     rankingList?: RankingListCreateNestedOneWithoutFeedItemsInput
-    retweetOfFeedItem?: FeedItemCreateNestedOneWithoutRetweetedByItemsInput
-    retweets?: RetweetCreateNestedManyWithoutFeedItemInput
+    user: UserCreateNestedOneWithoutFeedItemsInput
     quotedFeedItem?: FeedItemCreateNestedOneWithoutQuotedByItemsInput
     quotedByItems?: FeedItemCreateNestedManyWithoutQuotedFeedItemInput
+    retweetOfFeedItem?: FeedItemCreateNestedOneWithoutRetweetedByItemsInput
+    retweets?: RetweetCreateNestedManyWithoutFeedItemInput
   }
 
   export type FeedItemUncheckedCreateWithoutRetweetedByItemsInput = {
@@ -26279,8 +26354,8 @@ export namespace Prisma {
     retweetOfFeedItemId?: string | null
     quotedFeedItemId?: string | null
     quoteRetweetCount?: number
-    retweets?: RetweetUncheckedCreateNestedManyWithoutFeedItemInput
     quotedByItems?: FeedItemUncheckedCreateNestedManyWithoutQuotedFeedItemInput
+    retweets?: RetweetUncheckedCreateNestedManyWithoutFeedItemInput
   }
 
   export type FeedItemCreateOrConnectWithoutRetweetedByItemsInput = {
@@ -26294,13 +26369,13 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     quoteRetweetCount?: number
-    user: UserCreateNestedOneWithoutFeedItemsInput
     post?: PostCreateNestedOneWithoutFeedItemsInput
     rankingList?: RankingListCreateNestedOneWithoutFeedItemsInput
-    retweetedByItems?: FeedItemCreateNestedManyWithoutRetweetOfFeedItemInput
-    retweets?: RetweetCreateNestedManyWithoutFeedItemInput
+    user: UserCreateNestedOneWithoutFeedItemsInput
     quotedFeedItem?: FeedItemCreateNestedOneWithoutQuotedByItemsInput
     quotedByItems?: FeedItemCreateNestedManyWithoutQuotedFeedItemInput
+    retweetedByItems?: FeedItemCreateNestedManyWithoutRetweetOfFeedItemInput
+    retweets?: RetweetCreateNestedManyWithoutFeedItemInput
   }
 
   export type FeedItemUncheckedCreateWithoutRetweetOfFeedItemInput = {
@@ -26313,9 +26388,9 @@ export namespace Prisma {
     rankingListId?: string | null
     quotedFeedItemId?: string | null
     quoteRetweetCount?: number
+    quotedByItems?: FeedItemUncheckedCreateNestedManyWithoutQuotedFeedItemInput
     retweetedByItems?: FeedItemUncheckedCreateNestedManyWithoutRetweetOfFeedItemInput
     retweets?: RetweetUncheckedCreateNestedManyWithoutFeedItemInput
-    quotedByItems?: FeedItemUncheckedCreateNestedManyWithoutQuotedFeedItemInput
   }
 
   export type FeedItemCreateOrConnectWithoutRetweetOfFeedItemInput = {
@@ -26350,79 +26425,82 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type FeedItemCreateWithoutQuotedByItemsInput = {
-    id?: string
-    type: $Enums.FeedType
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    quoteRetweetCount?: number
-    user: UserCreateNestedOneWithoutFeedItemsInput
-    post?: PostCreateNestedOneWithoutFeedItemsInput
-    rankingList?: RankingListCreateNestedOneWithoutFeedItemsInput
-    retweetOfFeedItem?: FeedItemCreateNestedOneWithoutRetweetedByItemsInput
-    retweetedByItems?: FeedItemCreateNestedManyWithoutRetweetOfFeedItemInput
-    retweets?: RetweetCreateNestedManyWithoutFeedItemInput
-    quotedFeedItem?: FeedItemCreateNestedOneWithoutQuotedByItemsInput
+  export type PostUpsertWithoutFeedItemsInput = {
+    update: XOR<PostUpdateWithoutFeedItemsInput, PostUncheckedUpdateWithoutFeedItemsInput>
+    create: XOR<PostCreateWithoutFeedItemsInput, PostUncheckedCreateWithoutFeedItemsInput>
+    where?: PostWhereInput
   }
 
-  export type FeedItemUncheckedCreateWithoutQuotedByItemsInput = {
-    id?: string
-    type: $Enums.FeedType
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    userId: string
-    postId?: string | null
-    rankingListId?: string | null
-    retweetOfFeedItemId?: string | null
-    quotedFeedItemId?: string | null
-    quoteRetweetCount?: number
-    retweetedByItems?: FeedItemUncheckedCreateNestedManyWithoutRetweetOfFeedItemInput
-    retweets?: RetweetUncheckedCreateNestedManyWithoutFeedItemInput
+  export type PostUpdateToOneWithWhereWithoutFeedItemsInput = {
+    where?: PostWhereInput
+    data: XOR<PostUpdateWithoutFeedItemsInput, PostUncheckedUpdateWithoutFeedItemsInput>
   }
 
-  export type FeedItemCreateOrConnectWithoutQuotedByItemsInput = {
-    where: FeedItemWhereUniqueInput
-    create: XOR<FeedItemCreateWithoutQuotedByItemsInput, FeedItemUncheckedCreateWithoutQuotedByItemsInput>
+  export type PostUpdateWithoutFeedItemsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    likeCount?: IntFieldUpdateOperationsInput | number
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    likes?: LikeUpdateManyWithoutPostNestedInput
+    author?: UserUpdateOneRequiredWithoutPostsNestedInput
+    replies?: ReplyUpdateManyWithoutPostNestedInput
   }
 
-  export type FeedItemCreateWithoutQuotedFeedItemInput = {
-    id?: string
-    type: $Enums.FeedType
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    quoteRetweetCount?: number
-    user: UserCreateNestedOneWithoutFeedItemsInput
-    post?: PostCreateNestedOneWithoutFeedItemsInput
-    rankingList?: RankingListCreateNestedOneWithoutFeedItemsInput
-    retweetOfFeedItem?: FeedItemCreateNestedOneWithoutRetweetedByItemsInput
-    retweetedByItems?: FeedItemCreateNestedManyWithoutRetweetOfFeedItemInput
-    retweets?: RetweetCreateNestedManyWithoutFeedItemInput
-    quotedByItems?: FeedItemCreateNestedManyWithoutQuotedFeedItemInput
+  export type PostUncheckedUpdateWithoutFeedItemsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    authorId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    likeCount?: IntFieldUpdateOperationsInput | number
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    likes?: LikeUncheckedUpdateManyWithoutPostNestedInput
+    replies?: ReplyUncheckedUpdateManyWithoutPostNestedInput
   }
 
-  export type FeedItemUncheckedCreateWithoutQuotedFeedItemInput = {
-    id?: string
-    type: $Enums.FeedType
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    userId: string
-    postId?: string | null
-    rankingListId?: string | null
-    retweetOfFeedItemId?: string | null
-    quoteRetweetCount?: number
-    retweetedByItems?: FeedItemUncheckedCreateNestedManyWithoutRetweetOfFeedItemInput
-    retweets?: RetweetUncheckedCreateNestedManyWithoutFeedItemInput
-    quotedByItems?: FeedItemUncheckedCreateNestedManyWithoutQuotedFeedItemInput
+  export type RankingListUpsertWithoutFeedItemsInput = {
+    update: XOR<RankingListUpdateWithoutFeedItemsInput, RankingListUncheckedUpdateWithoutFeedItemsInput>
+    create: XOR<RankingListCreateWithoutFeedItemsInput, RankingListUncheckedCreateWithoutFeedItemsInput>
+    where?: RankingListWhereInput
   }
 
-  export type FeedItemCreateOrConnectWithoutQuotedFeedItemInput = {
-    where: FeedItemWhereUniqueInput
-    create: XOR<FeedItemCreateWithoutQuotedFeedItemInput, FeedItemUncheckedCreateWithoutQuotedFeedItemInput>
+  export type RankingListUpdateToOneWithWhereWithoutFeedItemsInput = {
+    where?: RankingListWhereInput
+    data: XOR<RankingListUpdateWithoutFeedItemsInput, RankingListUncheckedUpdateWithoutFeedItemsInput>
   }
 
-  export type FeedItemCreateManyQuotedFeedItemInputEnvelope = {
-    data: FeedItemCreateManyQuotedFeedItemInput | FeedItemCreateManyQuotedFeedItemInput[]
-    skipDuplicates?: boolean
+  export type RankingListUpdateWithoutFeedItemsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    subject?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumListStatusFieldUpdateOperationsInput | $Enums.ListStatus
+    listImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    displayOrder?: NullableIntFieldUpdateOperationsInput | number | null
+    likeCount?: IntFieldUpdateOperationsInput | number
+    likes?: LikeUpdateManyWithoutRankingListNestedInput
+    items?: RankedItemUpdateManyWithoutRankingListNestedInput
+    author?: UserUpdateOneRequiredWithoutRankingListsNestedInput
+    tags?: TagUpdateManyWithoutRankingListsNestedInput
+  }
+
+  export type RankingListUncheckedUpdateWithoutFeedItemsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    subject?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumListStatusFieldUpdateOperationsInput | $Enums.ListStatus
+    listImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    authorId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    displayOrder?: NullableIntFieldUpdateOperationsInput | number | null
+    likeCount?: IntFieldUpdateOperationsInput | number
+    likes?: LikeUncheckedUpdateManyWithoutRankingListNestedInput
+    items?: RankedItemUncheckedUpdateManyWithoutRankingListNestedInput
+    tags?: TagUncheckedUpdateManyWithoutRankingListsNestedInput
   }
 
   export type UserUpsertWithoutFeedItemsInput = {
@@ -26448,16 +26526,16 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
-    location?: NullableStringFieldUpdateOperationsInput | string | null
     birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    posts?: PostUpdateManyWithoutAuthorNestedInput
-    likes?: LikeUpdateManyWithoutUserNestedInput
-    replies?: ReplyUpdateManyWithoutUserNestedInput
-    followedBy?: FollowUpdateManyWithoutFollowingNestedInput
+    location?: NullableStringFieldUpdateOperationsInput | string | null
     following?: FollowUpdateManyWithoutFollowerNestedInput
-    rankingLists?: RankingListUpdateManyWithoutAuthorNestedInput
-    sentFollowRequests?: FollowRequestUpdateManyWithoutRequesterNestedInput
+    followedBy?: FollowUpdateManyWithoutFollowingNestedInput
     receivedFollowRequests?: FollowRequestUpdateManyWithoutRequestedNestedInput
+    sentFollowRequests?: FollowRequestUpdateManyWithoutRequesterNestedInput
+    likes?: LikeUpdateManyWithoutUserNestedInput
+    posts?: PostUpdateManyWithoutAuthorNestedInput
+    rankingLists?: RankingListUpdateManyWithoutAuthorNestedInput
+    replies?: ReplyUpdateManyWithoutUserNestedInput
     retweets?: RetweetUpdateManyWithoutUserNestedInput
   }
 
@@ -26473,95 +26551,74 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
-    location?: NullableStringFieldUpdateOperationsInput | string | null
     birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    posts?: PostUncheckedUpdateManyWithoutAuthorNestedInput
-    likes?: LikeUncheckedUpdateManyWithoutUserNestedInput
-    replies?: ReplyUncheckedUpdateManyWithoutUserNestedInput
-    followedBy?: FollowUncheckedUpdateManyWithoutFollowingNestedInput
+    location?: NullableStringFieldUpdateOperationsInput | string | null
     following?: FollowUncheckedUpdateManyWithoutFollowerNestedInput
-    rankingLists?: RankingListUncheckedUpdateManyWithoutAuthorNestedInput
-    sentFollowRequests?: FollowRequestUncheckedUpdateManyWithoutRequesterNestedInput
+    followedBy?: FollowUncheckedUpdateManyWithoutFollowingNestedInput
     receivedFollowRequests?: FollowRequestUncheckedUpdateManyWithoutRequestedNestedInput
+    sentFollowRequests?: FollowRequestUncheckedUpdateManyWithoutRequesterNestedInput
+    likes?: LikeUncheckedUpdateManyWithoutUserNestedInput
+    posts?: PostUncheckedUpdateManyWithoutAuthorNestedInput
+    rankingLists?: RankingListUncheckedUpdateManyWithoutAuthorNestedInput
+    replies?: ReplyUncheckedUpdateManyWithoutUserNestedInput
     retweets?: RetweetUncheckedUpdateManyWithoutUserNestedInput
   }
 
-  export type PostUpsertWithoutFeedItemsInput = {
-    update: XOR<PostUpdateWithoutFeedItemsInput, PostUncheckedUpdateWithoutFeedItemsInput>
-    create: XOR<PostCreateWithoutFeedItemsInput, PostUncheckedCreateWithoutFeedItemsInput>
-    where?: PostWhereInput
+  export type FeedItemUpsertWithoutQuotedByItemsInput = {
+    update: XOR<FeedItemUpdateWithoutQuotedByItemsInput, FeedItemUncheckedUpdateWithoutQuotedByItemsInput>
+    create: XOR<FeedItemCreateWithoutQuotedByItemsInput, FeedItemUncheckedCreateWithoutQuotedByItemsInput>
+    where?: FeedItemWhereInput
   }
 
-  export type PostUpdateToOneWithWhereWithoutFeedItemsInput = {
-    where?: PostWhereInput
-    data: XOR<PostUpdateWithoutFeedItemsInput, PostUncheckedUpdateWithoutFeedItemsInput>
+  export type FeedItemUpdateToOneWithWhereWithoutQuotedByItemsInput = {
+    where?: FeedItemWhereInput
+    data: XOR<FeedItemUpdateWithoutQuotedByItemsInput, FeedItemUncheckedUpdateWithoutQuotedByItemsInput>
   }
 
-  export type PostUpdateWithoutFeedItemsInput = {
+  export type FeedItemUpdateWithoutQuotedByItemsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    content?: StringFieldUpdateOperationsInput | string
-    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: EnumFeedTypeFieldUpdateOperationsInput | $Enums.FeedType
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    likeCount?: IntFieldUpdateOperationsInput | number
-    author?: UserUpdateOneRequiredWithoutPostsNestedInput
-    replies?: ReplyUpdateManyWithoutPostNestedInput
-    likes?: LikeUpdateManyWithoutPostNestedInput
+    quoteRetweetCount?: IntFieldUpdateOperationsInput | number
+    post?: PostUpdateOneWithoutFeedItemsNestedInput
+    rankingList?: RankingListUpdateOneWithoutFeedItemsNestedInput
+    user?: UserUpdateOneRequiredWithoutFeedItemsNestedInput
+    quotedFeedItem?: FeedItemUpdateOneWithoutQuotedByItemsNestedInput
+    retweetOfFeedItem?: FeedItemUpdateOneWithoutRetweetedByItemsNestedInput
+    retweetedByItems?: FeedItemUpdateManyWithoutRetweetOfFeedItemNestedInput
+    retweets?: RetweetUpdateManyWithoutFeedItemNestedInput
   }
 
-  export type PostUncheckedUpdateWithoutFeedItemsInput = {
+  export type FeedItemUncheckedUpdateWithoutQuotedByItemsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    content?: StringFieldUpdateOperationsInput | string
-    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    authorId?: StringFieldUpdateOperationsInput | string
+    type?: EnumFeedTypeFieldUpdateOperationsInput | $Enums.FeedType
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    likeCount?: IntFieldUpdateOperationsInput | number
-    replies?: ReplyUncheckedUpdateManyWithoutPostNestedInput
-    likes?: LikeUncheckedUpdateManyWithoutPostNestedInput
+    userId?: StringFieldUpdateOperationsInput | string
+    postId?: NullableStringFieldUpdateOperationsInput | string | null
+    rankingListId?: NullableStringFieldUpdateOperationsInput | string | null
+    retweetOfFeedItemId?: NullableStringFieldUpdateOperationsInput | string | null
+    quotedFeedItemId?: NullableStringFieldUpdateOperationsInput | string | null
+    quoteRetweetCount?: IntFieldUpdateOperationsInput | number
+    retweetedByItems?: FeedItemUncheckedUpdateManyWithoutRetweetOfFeedItemNestedInput
+    retweets?: RetweetUncheckedUpdateManyWithoutFeedItemNestedInput
   }
 
-  export type RankingListUpsertWithoutFeedItemsInput = {
-    update: XOR<RankingListUpdateWithoutFeedItemsInput, RankingListUncheckedUpdateWithoutFeedItemsInput>
-    create: XOR<RankingListCreateWithoutFeedItemsInput, RankingListUncheckedCreateWithoutFeedItemsInput>
-    where?: RankingListWhereInput
+  export type FeedItemUpsertWithWhereUniqueWithoutQuotedFeedItemInput = {
+    where: FeedItemWhereUniqueInput
+    update: XOR<FeedItemUpdateWithoutQuotedFeedItemInput, FeedItemUncheckedUpdateWithoutQuotedFeedItemInput>
+    create: XOR<FeedItemCreateWithoutQuotedFeedItemInput, FeedItemUncheckedCreateWithoutQuotedFeedItemInput>
   }
 
-  export type RankingListUpdateToOneWithWhereWithoutFeedItemsInput = {
-    where?: RankingListWhereInput
-    data: XOR<RankingListUpdateWithoutFeedItemsInput, RankingListUncheckedUpdateWithoutFeedItemsInput>
+  export type FeedItemUpdateWithWhereUniqueWithoutQuotedFeedItemInput = {
+    where: FeedItemWhereUniqueInput
+    data: XOR<FeedItemUpdateWithoutQuotedFeedItemInput, FeedItemUncheckedUpdateWithoutQuotedFeedItemInput>
   }
 
-  export type RankingListUpdateWithoutFeedItemsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    subject?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: EnumListStatusFieldUpdateOperationsInput | $Enums.ListStatus
-    listImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    displayOrder?: NullableIntFieldUpdateOperationsInput | number | null
-    likeCount?: IntFieldUpdateOperationsInput | number
-    author?: UserUpdateOneRequiredWithoutRankingListsNestedInput
-    items?: RankedItemUpdateManyWithoutRankingListNestedInput
-    likes?: LikeUpdateManyWithoutRankingListNestedInput
-    tags?: TagUpdateManyWithoutRankingListsNestedInput
-  }
-
-  export type RankingListUncheckedUpdateWithoutFeedItemsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    subject?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: EnumListStatusFieldUpdateOperationsInput | $Enums.ListStatus
-    listImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    authorId?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    displayOrder?: NullableIntFieldUpdateOperationsInput | number | null
-    likeCount?: IntFieldUpdateOperationsInput | number
-    items?: RankedItemUncheckedUpdateManyWithoutRankingListNestedInput
-    likes?: LikeUncheckedUpdateManyWithoutRankingListNestedInput
-    tags?: TagUncheckedUpdateManyWithoutRankingListsNestedInput
+  export type FeedItemUpdateManyWithWhereWithoutQuotedFeedItemInput = {
+    where: FeedItemScalarWhereInput
+    data: XOR<FeedItemUpdateManyMutationInput, FeedItemUncheckedUpdateManyWithoutQuotedFeedItemInput>
   }
 
   export type FeedItemUpsertWithoutRetweetedByItemsInput = {
@@ -26581,13 +26638,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     quoteRetweetCount?: IntFieldUpdateOperationsInput | number
-    user?: UserUpdateOneRequiredWithoutFeedItemsNestedInput
     post?: PostUpdateOneWithoutFeedItemsNestedInput
     rankingList?: RankingListUpdateOneWithoutFeedItemsNestedInput
-    retweetOfFeedItem?: FeedItemUpdateOneWithoutRetweetedByItemsNestedInput
-    retweets?: RetweetUpdateManyWithoutFeedItemNestedInput
+    user?: UserUpdateOneRequiredWithoutFeedItemsNestedInput
     quotedFeedItem?: FeedItemUpdateOneWithoutQuotedByItemsNestedInput
     quotedByItems?: FeedItemUpdateManyWithoutQuotedFeedItemNestedInput
+    retweetOfFeedItem?: FeedItemUpdateOneWithoutRetweetedByItemsNestedInput
+    retweets?: RetweetUpdateManyWithoutFeedItemNestedInput
   }
 
   export type FeedItemUncheckedUpdateWithoutRetweetedByItemsInput = {
@@ -26601,8 +26658,8 @@ export namespace Prisma {
     retweetOfFeedItemId?: NullableStringFieldUpdateOperationsInput | string | null
     quotedFeedItemId?: NullableStringFieldUpdateOperationsInput | string | null
     quoteRetweetCount?: IntFieldUpdateOperationsInput | number
-    retweets?: RetweetUncheckedUpdateManyWithoutFeedItemNestedInput
     quotedByItems?: FeedItemUncheckedUpdateManyWithoutQuotedFeedItemNestedInput
+    retweets?: RetweetUncheckedUpdateManyWithoutFeedItemNestedInput
   }
 
   export type FeedItemUpsertWithWhereUniqueWithoutRetweetOfFeedItemInput = {
@@ -26637,140 +26694,28 @@ export namespace Prisma {
     data: XOR<RetweetUpdateManyMutationInput, RetweetUncheckedUpdateManyWithoutFeedItemInput>
   }
 
-  export type FeedItemUpsertWithoutQuotedByItemsInput = {
-    update: XOR<FeedItemUpdateWithoutQuotedByItemsInput, FeedItemUncheckedUpdateWithoutQuotedByItemsInput>
-    create: XOR<FeedItemCreateWithoutQuotedByItemsInput, FeedItemUncheckedCreateWithoutQuotedByItemsInput>
-    where?: FeedItemWhereInput
-  }
-
-  export type FeedItemUpdateToOneWithWhereWithoutQuotedByItemsInput = {
-    where?: FeedItemWhereInput
-    data: XOR<FeedItemUpdateWithoutQuotedByItemsInput, FeedItemUncheckedUpdateWithoutQuotedByItemsInput>
-  }
-
-  export type FeedItemUpdateWithoutQuotedByItemsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    type?: EnumFeedTypeFieldUpdateOperationsInput | $Enums.FeedType
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    quoteRetweetCount?: IntFieldUpdateOperationsInput | number
-    user?: UserUpdateOneRequiredWithoutFeedItemsNestedInput
-    post?: PostUpdateOneWithoutFeedItemsNestedInput
-    rankingList?: RankingListUpdateOneWithoutFeedItemsNestedInput
-    retweetOfFeedItem?: FeedItemUpdateOneWithoutRetweetedByItemsNestedInput
-    retweetedByItems?: FeedItemUpdateManyWithoutRetweetOfFeedItemNestedInput
-    retweets?: RetweetUpdateManyWithoutFeedItemNestedInput
-    quotedFeedItem?: FeedItemUpdateOneWithoutQuotedByItemsNestedInput
-  }
-
-  export type FeedItemUncheckedUpdateWithoutQuotedByItemsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    type?: EnumFeedTypeFieldUpdateOperationsInput | $Enums.FeedType
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    userId?: StringFieldUpdateOperationsInput | string
-    postId?: NullableStringFieldUpdateOperationsInput | string | null
-    rankingListId?: NullableStringFieldUpdateOperationsInput | string | null
-    retweetOfFeedItemId?: NullableStringFieldUpdateOperationsInput | string | null
-    quotedFeedItemId?: NullableStringFieldUpdateOperationsInput | string | null
-    quoteRetweetCount?: IntFieldUpdateOperationsInput | number
-    retweetedByItems?: FeedItemUncheckedUpdateManyWithoutRetweetOfFeedItemNestedInput
-    retweets?: RetweetUncheckedUpdateManyWithoutFeedItemNestedInput
-  }
-
-  export type FeedItemUpsertWithWhereUniqueWithoutQuotedFeedItemInput = {
-    where: FeedItemWhereUniqueInput
-    update: XOR<FeedItemUpdateWithoutQuotedFeedItemInput, FeedItemUncheckedUpdateWithoutQuotedFeedItemInput>
-    create: XOR<FeedItemCreateWithoutQuotedFeedItemInput, FeedItemUncheckedCreateWithoutQuotedFeedItemInput>
-  }
-
-  export type FeedItemUpdateWithWhereUniqueWithoutQuotedFeedItemInput = {
-    where: FeedItemWhereUniqueInput
-    data: XOR<FeedItemUpdateWithoutQuotedFeedItemInput, FeedItemUncheckedUpdateWithoutQuotedFeedItemInput>
-  }
-
-  export type FeedItemUpdateManyWithWhereWithoutQuotedFeedItemInput = {
-    where: FeedItemScalarWhereInput
-    data: XOR<FeedItemUpdateManyMutationInput, FeedItemUncheckedUpdateManyWithoutQuotedFeedItemInput>
-  }
-
-  export type UserCreateWithoutLikesInput = {
-    id?: string
-    clerkId: string
-    username: string
-    name?: string | null
-    bio?: string | null
-    image?: string | null
-    coverImageUrl?: string | null
-    socialLinks?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    isPrivate?: boolean
-    location?: string | null
-    birthday?: Date | string | null
-    posts?: PostCreateNestedManyWithoutAuthorInput
-    replies?: ReplyCreateNestedManyWithoutUserInput
-    followedBy?: FollowCreateNestedManyWithoutFollowingInput
-    following?: FollowCreateNestedManyWithoutFollowerInput
-    rankingLists?: RankingListCreateNestedManyWithoutAuthorInput
-    sentFollowRequests?: FollowRequestCreateNestedManyWithoutRequesterInput
-    receivedFollowRequests?: FollowRequestCreateNestedManyWithoutRequestedInput
-    feedItems?: FeedItemCreateNestedManyWithoutUserInput
-    retweets?: RetweetCreateNestedManyWithoutUserInput
-  }
-
-  export type UserUncheckedCreateWithoutLikesInput = {
-    id?: string
-    clerkId: string
-    username: string
-    name?: string | null
-    bio?: string | null
-    image?: string | null
-    coverImageUrl?: string | null
-    socialLinks?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    isPrivate?: boolean
-    location?: string | null
-    birthday?: Date | string | null
-    posts?: PostUncheckedCreateNestedManyWithoutAuthorInput
-    replies?: ReplyUncheckedCreateNestedManyWithoutUserInput
-    followedBy?: FollowUncheckedCreateNestedManyWithoutFollowingInput
-    following?: FollowUncheckedCreateNestedManyWithoutFollowerInput
-    rankingLists?: RankingListUncheckedCreateNestedManyWithoutAuthorInput
-    sentFollowRequests?: FollowRequestUncheckedCreateNestedManyWithoutRequesterInput
-    receivedFollowRequests?: FollowRequestUncheckedCreateNestedManyWithoutRequestedInput
-    feedItems?: FeedItemUncheckedCreateNestedManyWithoutUserInput
-    retweets?: RetweetUncheckedCreateNestedManyWithoutUserInput
-  }
-
-  export type UserCreateOrConnectWithoutLikesInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutLikesInput, UserUncheckedCreateWithoutLikesInput>
-  }
-
   export type PostCreateWithoutLikesInput = {
     id?: string
     content: string
-    imageUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     likeCount?: number
+    imageUrl?: string | null
+    feedItems?: FeedItemCreateNestedManyWithoutPostInput
     author: UserCreateNestedOneWithoutPostsInput
     replies?: ReplyCreateNestedManyWithoutPostInput
-    feedItems?: FeedItemCreateNestedManyWithoutPostInput
   }
 
   export type PostUncheckedCreateWithoutLikesInput = {
     id?: string
     content: string
-    imageUrl?: string | null
     authorId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     likeCount?: number
-    replies?: ReplyUncheckedCreateNestedManyWithoutPostInput
+    imageUrl?: string | null
     feedItems?: FeedItemUncheckedCreateNestedManyWithoutPostInput
+    replies?: ReplyUncheckedCreateNestedManyWithoutPostInput
   }
 
   export type PostCreateOrConnectWithoutLikesInput = {
@@ -26788,9 +26733,9 @@ export namespace Prisma {
     updatedAt?: Date | string
     displayOrder?: number | null
     likeCount?: number
-    author: UserCreateNestedOneWithoutRankingListsInput
-    items?: RankedItemCreateNestedManyWithoutRankingListInput
     feedItems?: FeedItemCreateNestedManyWithoutRankingListInput
+    items?: RankedItemCreateNestedManyWithoutRankingListInput
+    author: UserCreateNestedOneWithoutRankingListsInput
     tags?: TagCreateNestedManyWithoutRankingListsInput
   }
 
@@ -26805,14 +26750,147 @@ export namespace Prisma {
     updatedAt?: Date | string
     displayOrder?: number | null
     likeCount?: number
-    items?: RankedItemUncheckedCreateNestedManyWithoutRankingListInput
     feedItems?: FeedItemUncheckedCreateNestedManyWithoutRankingListInput
+    items?: RankedItemUncheckedCreateNestedManyWithoutRankingListInput
     tags?: TagUncheckedCreateNestedManyWithoutRankingListsInput
   }
 
   export type RankingListCreateOrConnectWithoutLikesInput = {
     where: RankingListWhereUniqueInput
     create: XOR<RankingListCreateWithoutLikesInput, RankingListUncheckedCreateWithoutLikesInput>
+  }
+
+  export type UserCreateWithoutLikesInput = {
+    id?: string
+    clerkId: string
+    username: string
+    name?: string | null
+    bio?: string | null
+    image?: string | null
+    coverImageUrl?: string | null
+    socialLinks?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isPrivate?: boolean
+    birthday?: Date | string | null
+    location?: string | null
+    feedItems?: FeedItemCreateNestedManyWithoutUserInput
+    following?: FollowCreateNestedManyWithoutFollowerInput
+    followedBy?: FollowCreateNestedManyWithoutFollowingInput
+    receivedFollowRequests?: FollowRequestCreateNestedManyWithoutRequestedInput
+    sentFollowRequests?: FollowRequestCreateNestedManyWithoutRequesterInput
+    posts?: PostCreateNestedManyWithoutAuthorInput
+    rankingLists?: RankingListCreateNestedManyWithoutAuthorInput
+    replies?: ReplyCreateNestedManyWithoutUserInput
+    retweets?: RetweetCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutLikesInput = {
+    id?: string
+    clerkId: string
+    username: string
+    name?: string | null
+    bio?: string | null
+    image?: string | null
+    coverImageUrl?: string | null
+    socialLinks?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isPrivate?: boolean
+    birthday?: Date | string | null
+    location?: string | null
+    feedItems?: FeedItemUncheckedCreateNestedManyWithoutUserInput
+    following?: FollowUncheckedCreateNestedManyWithoutFollowerInput
+    followedBy?: FollowUncheckedCreateNestedManyWithoutFollowingInput
+    receivedFollowRequests?: FollowRequestUncheckedCreateNestedManyWithoutRequestedInput
+    sentFollowRequests?: FollowRequestUncheckedCreateNestedManyWithoutRequesterInput
+    posts?: PostUncheckedCreateNestedManyWithoutAuthorInput
+    rankingLists?: RankingListUncheckedCreateNestedManyWithoutAuthorInput
+    replies?: ReplyUncheckedCreateNestedManyWithoutUserInput
+    retweets?: RetweetUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutLikesInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutLikesInput, UserUncheckedCreateWithoutLikesInput>
+  }
+
+  export type PostUpsertWithoutLikesInput = {
+    update: XOR<PostUpdateWithoutLikesInput, PostUncheckedUpdateWithoutLikesInput>
+    create: XOR<PostCreateWithoutLikesInput, PostUncheckedCreateWithoutLikesInput>
+    where?: PostWhereInput
+  }
+
+  export type PostUpdateToOneWithWhereWithoutLikesInput = {
+    where?: PostWhereInput
+    data: XOR<PostUpdateWithoutLikesInput, PostUncheckedUpdateWithoutLikesInput>
+  }
+
+  export type PostUpdateWithoutLikesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    likeCount?: IntFieldUpdateOperationsInput | number
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    feedItems?: FeedItemUpdateManyWithoutPostNestedInput
+    author?: UserUpdateOneRequiredWithoutPostsNestedInput
+    replies?: ReplyUpdateManyWithoutPostNestedInput
+  }
+
+  export type PostUncheckedUpdateWithoutLikesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    authorId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    likeCount?: IntFieldUpdateOperationsInput | number
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    feedItems?: FeedItemUncheckedUpdateManyWithoutPostNestedInput
+    replies?: ReplyUncheckedUpdateManyWithoutPostNestedInput
+  }
+
+  export type RankingListUpsertWithoutLikesInput = {
+    update: XOR<RankingListUpdateWithoutLikesInput, RankingListUncheckedUpdateWithoutLikesInput>
+    create: XOR<RankingListCreateWithoutLikesInput, RankingListUncheckedCreateWithoutLikesInput>
+    where?: RankingListWhereInput
+  }
+
+  export type RankingListUpdateToOneWithWhereWithoutLikesInput = {
+    where?: RankingListWhereInput
+    data: XOR<RankingListUpdateWithoutLikesInput, RankingListUncheckedUpdateWithoutLikesInput>
+  }
+
+  export type RankingListUpdateWithoutLikesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    subject?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumListStatusFieldUpdateOperationsInput | $Enums.ListStatus
+    listImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    displayOrder?: NullableIntFieldUpdateOperationsInput | number | null
+    likeCount?: IntFieldUpdateOperationsInput | number
+    feedItems?: FeedItemUpdateManyWithoutRankingListNestedInput
+    items?: RankedItemUpdateManyWithoutRankingListNestedInput
+    author?: UserUpdateOneRequiredWithoutRankingListsNestedInput
+    tags?: TagUpdateManyWithoutRankingListsNestedInput
+  }
+
+  export type RankingListUncheckedUpdateWithoutLikesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    subject?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumListStatusFieldUpdateOperationsInput | $Enums.ListStatus
+    listImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    authorId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    displayOrder?: NullableIntFieldUpdateOperationsInput | number | null
+    likeCount?: IntFieldUpdateOperationsInput | number
+    feedItems?: FeedItemUncheckedUpdateManyWithoutRankingListNestedInput
+    items?: RankedItemUncheckedUpdateManyWithoutRankingListNestedInput
+    tags?: TagUncheckedUpdateManyWithoutRankingListsNestedInput
   }
 
   export type UserUpsertWithoutLikesInput = {
@@ -26838,16 +26916,16 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
-    location?: NullableStringFieldUpdateOperationsInput | string | null
     birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    posts?: PostUpdateManyWithoutAuthorNestedInput
-    replies?: ReplyUpdateManyWithoutUserNestedInput
-    followedBy?: FollowUpdateManyWithoutFollowingNestedInput
-    following?: FollowUpdateManyWithoutFollowerNestedInput
-    rankingLists?: RankingListUpdateManyWithoutAuthorNestedInput
-    sentFollowRequests?: FollowRequestUpdateManyWithoutRequesterNestedInput
-    receivedFollowRequests?: FollowRequestUpdateManyWithoutRequestedNestedInput
+    location?: NullableStringFieldUpdateOperationsInput | string | null
     feedItems?: FeedItemUpdateManyWithoutUserNestedInput
+    following?: FollowUpdateManyWithoutFollowerNestedInput
+    followedBy?: FollowUpdateManyWithoutFollowingNestedInput
+    receivedFollowRequests?: FollowRequestUpdateManyWithoutRequestedNestedInput
+    sentFollowRequests?: FollowRequestUpdateManyWithoutRequesterNestedInput
+    posts?: PostUpdateManyWithoutAuthorNestedInput
+    rankingLists?: RankingListUpdateManyWithoutAuthorNestedInput
+    replies?: ReplyUpdateManyWithoutUserNestedInput
     retweets?: RetweetUpdateManyWithoutUserNestedInput
   }
 
@@ -26863,95 +26941,46 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
-    location?: NullableStringFieldUpdateOperationsInput | string | null
     birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    posts?: PostUncheckedUpdateManyWithoutAuthorNestedInput
-    replies?: ReplyUncheckedUpdateManyWithoutUserNestedInput
-    followedBy?: FollowUncheckedUpdateManyWithoutFollowingNestedInput
-    following?: FollowUncheckedUpdateManyWithoutFollowerNestedInput
-    rankingLists?: RankingListUncheckedUpdateManyWithoutAuthorNestedInput
-    sentFollowRequests?: FollowRequestUncheckedUpdateManyWithoutRequesterNestedInput
-    receivedFollowRequests?: FollowRequestUncheckedUpdateManyWithoutRequestedNestedInput
+    location?: NullableStringFieldUpdateOperationsInput | string | null
     feedItems?: FeedItemUncheckedUpdateManyWithoutUserNestedInput
+    following?: FollowUncheckedUpdateManyWithoutFollowerNestedInput
+    followedBy?: FollowUncheckedUpdateManyWithoutFollowingNestedInput
+    receivedFollowRequests?: FollowRequestUncheckedUpdateManyWithoutRequestedNestedInput
+    sentFollowRequests?: FollowRequestUncheckedUpdateManyWithoutRequesterNestedInput
+    posts?: PostUncheckedUpdateManyWithoutAuthorNestedInput
+    rankingLists?: RankingListUncheckedUpdateManyWithoutAuthorNestedInput
+    replies?: ReplyUncheckedUpdateManyWithoutUserNestedInput
     retweets?: RetweetUncheckedUpdateManyWithoutUserNestedInput
   }
 
-  export type PostUpsertWithoutLikesInput = {
-    update: XOR<PostUpdateWithoutLikesInput, PostUncheckedUpdateWithoutLikesInput>
-    create: XOR<PostCreateWithoutLikesInput, PostUncheckedCreateWithoutLikesInput>
-    where?: PostWhereInput
+  export type PostCreateWithoutRepliesInput = {
+    id?: string
+    content: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    likeCount?: number
+    imageUrl?: string | null
+    feedItems?: FeedItemCreateNestedManyWithoutPostInput
+    likes?: LikeCreateNestedManyWithoutPostInput
+    author: UserCreateNestedOneWithoutPostsInput
   }
 
-  export type PostUpdateToOneWithWhereWithoutLikesInput = {
-    where?: PostWhereInput
-    data: XOR<PostUpdateWithoutLikesInput, PostUncheckedUpdateWithoutLikesInput>
+  export type PostUncheckedCreateWithoutRepliesInput = {
+    id?: string
+    content: string
+    authorId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    likeCount?: number
+    imageUrl?: string | null
+    feedItems?: FeedItemUncheckedCreateNestedManyWithoutPostInput
+    likes?: LikeUncheckedCreateNestedManyWithoutPostInput
   }
 
-  export type PostUpdateWithoutLikesInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    content?: StringFieldUpdateOperationsInput | string
-    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    likeCount?: IntFieldUpdateOperationsInput | number
-    author?: UserUpdateOneRequiredWithoutPostsNestedInput
-    replies?: ReplyUpdateManyWithoutPostNestedInput
-    feedItems?: FeedItemUpdateManyWithoutPostNestedInput
-  }
-
-  export type PostUncheckedUpdateWithoutLikesInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    content?: StringFieldUpdateOperationsInput | string
-    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    authorId?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    likeCount?: IntFieldUpdateOperationsInput | number
-    replies?: ReplyUncheckedUpdateManyWithoutPostNestedInput
-    feedItems?: FeedItemUncheckedUpdateManyWithoutPostNestedInput
-  }
-
-  export type RankingListUpsertWithoutLikesInput = {
-    update: XOR<RankingListUpdateWithoutLikesInput, RankingListUncheckedUpdateWithoutLikesInput>
-    create: XOR<RankingListCreateWithoutLikesInput, RankingListUncheckedCreateWithoutLikesInput>
-    where?: RankingListWhereInput
-  }
-
-  export type RankingListUpdateToOneWithWhereWithoutLikesInput = {
-    where?: RankingListWhereInput
-    data: XOR<RankingListUpdateWithoutLikesInput, RankingListUncheckedUpdateWithoutLikesInput>
-  }
-
-  export type RankingListUpdateWithoutLikesInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    subject?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: EnumListStatusFieldUpdateOperationsInput | $Enums.ListStatus
-    listImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    displayOrder?: NullableIntFieldUpdateOperationsInput | number | null
-    likeCount?: IntFieldUpdateOperationsInput | number
-    author?: UserUpdateOneRequiredWithoutRankingListsNestedInput
-    items?: RankedItemUpdateManyWithoutRankingListNestedInput
-    feedItems?: FeedItemUpdateManyWithoutRankingListNestedInput
-    tags?: TagUpdateManyWithoutRankingListsNestedInput
-  }
-
-  export type RankingListUncheckedUpdateWithoutLikesInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    subject?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: EnumListStatusFieldUpdateOperationsInput | $Enums.ListStatus
-    listImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    authorId?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    displayOrder?: NullableIntFieldUpdateOperationsInput | number | null
-    likeCount?: IntFieldUpdateOperationsInput | number
-    items?: RankedItemUncheckedUpdateManyWithoutRankingListNestedInput
-    feedItems?: FeedItemUncheckedUpdateManyWithoutRankingListNestedInput
-    tags?: TagUncheckedUpdateManyWithoutRankingListsNestedInput
+  export type PostCreateOrConnectWithoutRepliesInput = {
+    where: PostWhereUniqueInput
+    create: XOR<PostCreateWithoutRepliesInput, PostUncheckedCreateWithoutRepliesInput>
   }
 
   export type UserCreateWithoutRepliesInput = {
@@ -26966,16 +26995,16 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isPrivate?: boolean
-    location?: string | null
     birthday?: Date | string | null
-    posts?: PostCreateNestedManyWithoutAuthorInput
-    likes?: LikeCreateNestedManyWithoutUserInput
-    followedBy?: FollowCreateNestedManyWithoutFollowingInput
-    following?: FollowCreateNestedManyWithoutFollowerInput
-    rankingLists?: RankingListCreateNestedManyWithoutAuthorInput
-    sentFollowRequests?: FollowRequestCreateNestedManyWithoutRequesterInput
-    receivedFollowRequests?: FollowRequestCreateNestedManyWithoutRequestedInput
+    location?: string | null
     feedItems?: FeedItemCreateNestedManyWithoutUserInput
+    following?: FollowCreateNestedManyWithoutFollowerInput
+    followedBy?: FollowCreateNestedManyWithoutFollowingInput
+    receivedFollowRequests?: FollowRequestCreateNestedManyWithoutRequestedInput
+    sentFollowRequests?: FollowRequestCreateNestedManyWithoutRequesterInput
+    likes?: LikeCreateNestedManyWithoutUserInput
+    posts?: PostCreateNestedManyWithoutAuthorInput
+    rankingLists?: RankingListCreateNestedManyWithoutAuthorInput
     retweets?: RetweetCreateNestedManyWithoutUserInput
   }
 
@@ -26991,16 +27020,16 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isPrivate?: boolean
-    location?: string | null
     birthday?: Date | string | null
-    posts?: PostUncheckedCreateNestedManyWithoutAuthorInput
-    likes?: LikeUncheckedCreateNestedManyWithoutUserInput
-    followedBy?: FollowUncheckedCreateNestedManyWithoutFollowingInput
-    following?: FollowUncheckedCreateNestedManyWithoutFollowerInput
-    rankingLists?: RankingListUncheckedCreateNestedManyWithoutAuthorInput
-    sentFollowRequests?: FollowRequestUncheckedCreateNestedManyWithoutRequesterInput
-    receivedFollowRequests?: FollowRequestUncheckedCreateNestedManyWithoutRequestedInput
+    location?: string | null
     feedItems?: FeedItemUncheckedCreateNestedManyWithoutUserInput
+    following?: FollowUncheckedCreateNestedManyWithoutFollowerInput
+    followedBy?: FollowUncheckedCreateNestedManyWithoutFollowingInput
+    receivedFollowRequests?: FollowRequestUncheckedCreateNestedManyWithoutRequestedInput
+    sentFollowRequests?: FollowRequestUncheckedCreateNestedManyWithoutRequesterInput
+    likes?: LikeUncheckedCreateNestedManyWithoutUserInput
+    posts?: PostUncheckedCreateNestedManyWithoutAuthorInput
+    rankingLists?: RankingListUncheckedCreateNestedManyWithoutAuthorInput
     retweets?: RetweetUncheckedCreateNestedManyWithoutUserInput
   }
 
@@ -27009,33 +27038,39 @@ export namespace Prisma {
     create: XOR<UserCreateWithoutRepliesInput, UserUncheckedCreateWithoutRepliesInput>
   }
 
-  export type PostCreateWithoutRepliesInput = {
-    id?: string
-    content: string
-    imageUrl?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    likeCount?: number
-    author: UserCreateNestedOneWithoutPostsInput
-    feedItems?: FeedItemCreateNestedManyWithoutPostInput
-    likes?: LikeCreateNestedManyWithoutPostInput
-  }
-
-  export type PostUncheckedCreateWithoutRepliesInput = {
-    id?: string
-    content: string
-    imageUrl?: string | null
-    authorId: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    likeCount?: number
-    feedItems?: FeedItemUncheckedCreateNestedManyWithoutPostInput
-    likes?: LikeUncheckedCreateNestedManyWithoutPostInput
-  }
-
-  export type PostCreateOrConnectWithoutRepliesInput = {
-    where: PostWhereUniqueInput
+  export type PostUpsertWithoutRepliesInput = {
+    update: XOR<PostUpdateWithoutRepliesInput, PostUncheckedUpdateWithoutRepliesInput>
     create: XOR<PostCreateWithoutRepliesInput, PostUncheckedCreateWithoutRepliesInput>
+    where?: PostWhereInput
+  }
+
+  export type PostUpdateToOneWithWhereWithoutRepliesInput = {
+    where?: PostWhereInput
+    data: XOR<PostUpdateWithoutRepliesInput, PostUncheckedUpdateWithoutRepliesInput>
+  }
+
+  export type PostUpdateWithoutRepliesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    likeCount?: IntFieldUpdateOperationsInput | number
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    feedItems?: FeedItemUpdateManyWithoutPostNestedInput
+    likes?: LikeUpdateManyWithoutPostNestedInput
+    author?: UserUpdateOneRequiredWithoutPostsNestedInput
+  }
+
+  export type PostUncheckedUpdateWithoutRepliesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    authorId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    likeCount?: IntFieldUpdateOperationsInput | number
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    feedItems?: FeedItemUncheckedUpdateManyWithoutPostNestedInput
+    likes?: LikeUncheckedUpdateManyWithoutPostNestedInput
   }
 
   export type UserUpsertWithoutRepliesInput = {
@@ -27061,16 +27096,16 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
-    location?: NullableStringFieldUpdateOperationsInput | string | null
     birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    posts?: PostUpdateManyWithoutAuthorNestedInput
-    likes?: LikeUpdateManyWithoutUserNestedInput
-    followedBy?: FollowUpdateManyWithoutFollowingNestedInput
-    following?: FollowUpdateManyWithoutFollowerNestedInput
-    rankingLists?: RankingListUpdateManyWithoutAuthorNestedInput
-    sentFollowRequests?: FollowRequestUpdateManyWithoutRequesterNestedInput
-    receivedFollowRequests?: FollowRequestUpdateManyWithoutRequestedNestedInput
+    location?: NullableStringFieldUpdateOperationsInput | string | null
     feedItems?: FeedItemUpdateManyWithoutUserNestedInput
+    following?: FollowUpdateManyWithoutFollowerNestedInput
+    followedBy?: FollowUpdateManyWithoutFollowingNestedInput
+    receivedFollowRequests?: FollowRequestUpdateManyWithoutRequestedNestedInput
+    sentFollowRequests?: FollowRequestUpdateManyWithoutRequesterNestedInput
+    likes?: LikeUpdateManyWithoutUserNestedInput
+    posts?: PostUpdateManyWithoutAuthorNestedInput
+    rankingLists?: RankingListUpdateManyWithoutAuthorNestedInput
     retweets?: RetweetUpdateManyWithoutUserNestedInput
   }
 
@@ -27086,107 +27121,17 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
-    location?: NullableStringFieldUpdateOperationsInput | string | null
     birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    posts?: PostUncheckedUpdateManyWithoutAuthorNestedInput
-    likes?: LikeUncheckedUpdateManyWithoutUserNestedInput
-    followedBy?: FollowUncheckedUpdateManyWithoutFollowingNestedInput
-    following?: FollowUncheckedUpdateManyWithoutFollowerNestedInput
-    rankingLists?: RankingListUncheckedUpdateManyWithoutAuthorNestedInput
-    sentFollowRequests?: FollowRequestUncheckedUpdateManyWithoutRequesterNestedInput
-    receivedFollowRequests?: FollowRequestUncheckedUpdateManyWithoutRequestedNestedInput
+    location?: NullableStringFieldUpdateOperationsInput | string | null
     feedItems?: FeedItemUncheckedUpdateManyWithoutUserNestedInput
+    following?: FollowUncheckedUpdateManyWithoutFollowerNestedInput
+    followedBy?: FollowUncheckedUpdateManyWithoutFollowingNestedInput
+    receivedFollowRequests?: FollowRequestUncheckedUpdateManyWithoutRequestedNestedInput
+    sentFollowRequests?: FollowRequestUncheckedUpdateManyWithoutRequesterNestedInput
+    likes?: LikeUncheckedUpdateManyWithoutUserNestedInput
+    posts?: PostUncheckedUpdateManyWithoutAuthorNestedInput
+    rankingLists?: RankingListUncheckedUpdateManyWithoutAuthorNestedInput
     retweets?: RetweetUncheckedUpdateManyWithoutUserNestedInput
-  }
-
-  export type PostUpsertWithoutRepliesInput = {
-    update: XOR<PostUpdateWithoutRepliesInput, PostUncheckedUpdateWithoutRepliesInput>
-    create: XOR<PostCreateWithoutRepliesInput, PostUncheckedCreateWithoutRepliesInput>
-    where?: PostWhereInput
-  }
-
-  export type PostUpdateToOneWithWhereWithoutRepliesInput = {
-    where?: PostWhereInput
-    data: XOR<PostUpdateWithoutRepliesInput, PostUncheckedUpdateWithoutRepliesInput>
-  }
-
-  export type PostUpdateWithoutRepliesInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    content?: StringFieldUpdateOperationsInput | string
-    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    likeCount?: IntFieldUpdateOperationsInput | number
-    author?: UserUpdateOneRequiredWithoutPostsNestedInput
-    feedItems?: FeedItemUpdateManyWithoutPostNestedInput
-    likes?: LikeUpdateManyWithoutPostNestedInput
-  }
-
-  export type PostUncheckedUpdateWithoutRepliesInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    content?: StringFieldUpdateOperationsInput | string
-    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    authorId?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    likeCount?: IntFieldUpdateOperationsInput | number
-    feedItems?: FeedItemUncheckedUpdateManyWithoutPostNestedInput
-    likes?: LikeUncheckedUpdateManyWithoutPostNestedInput
-  }
-
-  export type UserCreateWithoutSentFollowRequestsInput = {
-    id?: string
-    clerkId: string
-    username: string
-    name?: string | null
-    bio?: string | null
-    image?: string | null
-    coverImageUrl?: string | null
-    socialLinks?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    isPrivate?: boolean
-    location?: string | null
-    birthday?: Date | string | null
-    posts?: PostCreateNestedManyWithoutAuthorInput
-    likes?: LikeCreateNestedManyWithoutUserInput
-    replies?: ReplyCreateNestedManyWithoutUserInput
-    followedBy?: FollowCreateNestedManyWithoutFollowingInput
-    following?: FollowCreateNestedManyWithoutFollowerInput
-    rankingLists?: RankingListCreateNestedManyWithoutAuthorInput
-    receivedFollowRequests?: FollowRequestCreateNestedManyWithoutRequestedInput
-    feedItems?: FeedItemCreateNestedManyWithoutUserInput
-    retweets?: RetweetCreateNestedManyWithoutUserInput
-  }
-
-  export type UserUncheckedCreateWithoutSentFollowRequestsInput = {
-    id?: string
-    clerkId: string
-    username: string
-    name?: string | null
-    bio?: string | null
-    image?: string | null
-    coverImageUrl?: string | null
-    socialLinks?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    isPrivate?: boolean
-    location?: string | null
-    birthday?: Date | string | null
-    posts?: PostUncheckedCreateNestedManyWithoutAuthorInput
-    likes?: LikeUncheckedCreateNestedManyWithoutUserInput
-    replies?: ReplyUncheckedCreateNestedManyWithoutUserInput
-    followedBy?: FollowUncheckedCreateNestedManyWithoutFollowingInput
-    following?: FollowUncheckedCreateNestedManyWithoutFollowerInput
-    rankingLists?: RankingListUncheckedCreateNestedManyWithoutAuthorInput
-    receivedFollowRequests?: FollowRequestUncheckedCreateNestedManyWithoutRequestedInput
-    feedItems?: FeedItemUncheckedCreateNestedManyWithoutUserInput
-    retweets?: RetweetUncheckedCreateNestedManyWithoutUserInput
-  }
-
-  export type UserCreateOrConnectWithoutSentFollowRequestsInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutSentFollowRequestsInput, UserUncheckedCreateWithoutSentFollowRequestsInput>
   }
 
   export type UserCreateWithoutReceivedFollowRequestsInput = {
@@ -27201,16 +27146,16 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isPrivate?: boolean
-    location?: string | null
     birthday?: Date | string | null
-    posts?: PostCreateNestedManyWithoutAuthorInput
-    likes?: LikeCreateNestedManyWithoutUserInput
-    replies?: ReplyCreateNestedManyWithoutUserInput
-    followedBy?: FollowCreateNestedManyWithoutFollowingInput
-    following?: FollowCreateNestedManyWithoutFollowerInput
-    rankingLists?: RankingListCreateNestedManyWithoutAuthorInput
-    sentFollowRequests?: FollowRequestCreateNestedManyWithoutRequesterInput
+    location?: string | null
     feedItems?: FeedItemCreateNestedManyWithoutUserInput
+    following?: FollowCreateNestedManyWithoutFollowerInput
+    followedBy?: FollowCreateNestedManyWithoutFollowingInput
+    sentFollowRequests?: FollowRequestCreateNestedManyWithoutRequesterInput
+    likes?: LikeCreateNestedManyWithoutUserInput
+    posts?: PostCreateNestedManyWithoutAuthorInput
+    rankingLists?: RankingListCreateNestedManyWithoutAuthorInput
+    replies?: ReplyCreateNestedManyWithoutUserInput
     retweets?: RetweetCreateNestedManyWithoutUserInput
   }
 
@@ -27226,16 +27171,16 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isPrivate?: boolean
-    location?: string | null
     birthday?: Date | string | null
-    posts?: PostUncheckedCreateNestedManyWithoutAuthorInput
-    likes?: LikeUncheckedCreateNestedManyWithoutUserInput
-    replies?: ReplyUncheckedCreateNestedManyWithoutUserInput
-    followedBy?: FollowUncheckedCreateNestedManyWithoutFollowingInput
-    following?: FollowUncheckedCreateNestedManyWithoutFollowerInput
-    rankingLists?: RankingListUncheckedCreateNestedManyWithoutAuthorInput
-    sentFollowRequests?: FollowRequestUncheckedCreateNestedManyWithoutRequesterInput
+    location?: string | null
     feedItems?: FeedItemUncheckedCreateNestedManyWithoutUserInput
+    following?: FollowUncheckedCreateNestedManyWithoutFollowerInput
+    followedBy?: FollowUncheckedCreateNestedManyWithoutFollowingInput
+    sentFollowRequests?: FollowRequestUncheckedCreateNestedManyWithoutRequesterInput
+    likes?: LikeUncheckedCreateNestedManyWithoutUserInput
+    posts?: PostUncheckedCreateNestedManyWithoutAuthorInput
+    rankingLists?: RankingListUncheckedCreateNestedManyWithoutAuthorInput
+    replies?: ReplyUncheckedCreateNestedManyWithoutUserInput
     retweets?: RetweetUncheckedCreateNestedManyWithoutUserInput
   }
 
@@ -27244,65 +27189,59 @@ export namespace Prisma {
     create: XOR<UserCreateWithoutReceivedFollowRequestsInput, UserUncheckedCreateWithoutReceivedFollowRequestsInput>
   }
 
-  export type UserUpsertWithoutSentFollowRequestsInput = {
-    update: XOR<UserUpdateWithoutSentFollowRequestsInput, UserUncheckedUpdateWithoutSentFollowRequestsInput>
+  export type UserCreateWithoutSentFollowRequestsInput = {
+    id?: string
+    clerkId: string
+    username: string
+    name?: string | null
+    bio?: string | null
+    image?: string | null
+    coverImageUrl?: string | null
+    socialLinks?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isPrivate?: boolean
+    birthday?: Date | string | null
+    location?: string | null
+    feedItems?: FeedItemCreateNestedManyWithoutUserInput
+    following?: FollowCreateNestedManyWithoutFollowerInput
+    followedBy?: FollowCreateNestedManyWithoutFollowingInput
+    receivedFollowRequests?: FollowRequestCreateNestedManyWithoutRequestedInput
+    likes?: LikeCreateNestedManyWithoutUserInput
+    posts?: PostCreateNestedManyWithoutAuthorInput
+    rankingLists?: RankingListCreateNestedManyWithoutAuthorInput
+    replies?: ReplyCreateNestedManyWithoutUserInput
+    retweets?: RetweetCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutSentFollowRequestsInput = {
+    id?: string
+    clerkId: string
+    username: string
+    name?: string | null
+    bio?: string | null
+    image?: string | null
+    coverImageUrl?: string | null
+    socialLinks?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isPrivate?: boolean
+    birthday?: Date | string | null
+    location?: string | null
+    feedItems?: FeedItemUncheckedCreateNestedManyWithoutUserInput
+    following?: FollowUncheckedCreateNestedManyWithoutFollowerInput
+    followedBy?: FollowUncheckedCreateNestedManyWithoutFollowingInput
+    receivedFollowRequests?: FollowRequestUncheckedCreateNestedManyWithoutRequestedInput
+    likes?: LikeUncheckedCreateNestedManyWithoutUserInput
+    posts?: PostUncheckedCreateNestedManyWithoutAuthorInput
+    rankingLists?: RankingListUncheckedCreateNestedManyWithoutAuthorInput
+    replies?: ReplyUncheckedCreateNestedManyWithoutUserInput
+    retweets?: RetweetUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutSentFollowRequestsInput = {
+    where: UserWhereUniqueInput
     create: XOR<UserCreateWithoutSentFollowRequestsInput, UserUncheckedCreateWithoutSentFollowRequestsInput>
-    where?: UserWhereInput
-  }
-
-  export type UserUpdateToOneWithWhereWithoutSentFollowRequestsInput = {
-    where?: UserWhereInput
-    data: XOR<UserUpdateWithoutSentFollowRequestsInput, UserUncheckedUpdateWithoutSentFollowRequestsInput>
-  }
-
-  export type UserUpdateWithoutSentFollowRequestsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    clerkId?: StringFieldUpdateOperationsInput | string
-    username?: StringFieldUpdateOperationsInput | string
-    name?: NullableStringFieldUpdateOperationsInput | string | null
-    bio?: NullableStringFieldUpdateOperationsInput | string | null
-    image?: NullableStringFieldUpdateOperationsInput | string | null
-    coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    socialLinks?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    isPrivate?: BoolFieldUpdateOperationsInput | boolean
-    location?: NullableStringFieldUpdateOperationsInput | string | null
-    birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    posts?: PostUpdateManyWithoutAuthorNestedInput
-    likes?: LikeUpdateManyWithoutUserNestedInput
-    replies?: ReplyUpdateManyWithoutUserNestedInput
-    followedBy?: FollowUpdateManyWithoutFollowingNestedInput
-    following?: FollowUpdateManyWithoutFollowerNestedInput
-    rankingLists?: RankingListUpdateManyWithoutAuthorNestedInput
-    receivedFollowRequests?: FollowRequestUpdateManyWithoutRequestedNestedInput
-    feedItems?: FeedItemUpdateManyWithoutUserNestedInput
-    retweets?: RetweetUpdateManyWithoutUserNestedInput
-  }
-
-  export type UserUncheckedUpdateWithoutSentFollowRequestsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    clerkId?: StringFieldUpdateOperationsInput | string
-    username?: StringFieldUpdateOperationsInput | string
-    name?: NullableStringFieldUpdateOperationsInput | string | null
-    bio?: NullableStringFieldUpdateOperationsInput | string | null
-    image?: NullableStringFieldUpdateOperationsInput | string | null
-    coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    socialLinks?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    isPrivate?: BoolFieldUpdateOperationsInput | boolean
-    location?: NullableStringFieldUpdateOperationsInput | string | null
-    birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    posts?: PostUncheckedUpdateManyWithoutAuthorNestedInput
-    likes?: LikeUncheckedUpdateManyWithoutUserNestedInput
-    replies?: ReplyUncheckedUpdateManyWithoutUserNestedInput
-    followedBy?: FollowUncheckedUpdateManyWithoutFollowingNestedInput
-    following?: FollowUncheckedUpdateManyWithoutFollowerNestedInput
-    rankingLists?: RankingListUncheckedUpdateManyWithoutAuthorNestedInput
-    receivedFollowRequests?: FollowRequestUncheckedUpdateManyWithoutRequestedNestedInput
-    feedItems?: FeedItemUncheckedUpdateManyWithoutUserNestedInput
-    retweets?: RetweetUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUpsertWithoutReceivedFollowRequestsInput = {
@@ -27328,16 +27267,16 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
-    location?: NullableStringFieldUpdateOperationsInput | string | null
     birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    posts?: PostUpdateManyWithoutAuthorNestedInput
-    likes?: LikeUpdateManyWithoutUserNestedInput
-    replies?: ReplyUpdateManyWithoutUserNestedInput
-    followedBy?: FollowUpdateManyWithoutFollowingNestedInput
-    following?: FollowUpdateManyWithoutFollowerNestedInput
-    rankingLists?: RankingListUpdateManyWithoutAuthorNestedInput
-    sentFollowRequests?: FollowRequestUpdateManyWithoutRequesterNestedInput
+    location?: NullableStringFieldUpdateOperationsInput | string | null
     feedItems?: FeedItemUpdateManyWithoutUserNestedInput
+    following?: FollowUpdateManyWithoutFollowerNestedInput
+    followedBy?: FollowUpdateManyWithoutFollowingNestedInput
+    sentFollowRequests?: FollowRequestUpdateManyWithoutRequesterNestedInput
+    likes?: LikeUpdateManyWithoutUserNestedInput
+    posts?: PostUpdateManyWithoutAuthorNestedInput
+    rankingLists?: RankingListUpdateManyWithoutAuthorNestedInput
+    replies?: ReplyUpdateManyWithoutUserNestedInput
     retweets?: RetweetUpdateManyWithoutUserNestedInput
   }
 
@@ -27353,16 +27292,77 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
-    location?: NullableStringFieldUpdateOperationsInput | string | null
     birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    posts?: PostUncheckedUpdateManyWithoutAuthorNestedInput
-    likes?: LikeUncheckedUpdateManyWithoutUserNestedInput
-    replies?: ReplyUncheckedUpdateManyWithoutUserNestedInput
-    followedBy?: FollowUncheckedUpdateManyWithoutFollowingNestedInput
-    following?: FollowUncheckedUpdateManyWithoutFollowerNestedInput
-    rankingLists?: RankingListUncheckedUpdateManyWithoutAuthorNestedInput
-    sentFollowRequests?: FollowRequestUncheckedUpdateManyWithoutRequesterNestedInput
+    location?: NullableStringFieldUpdateOperationsInput | string | null
     feedItems?: FeedItemUncheckedUpdateManyWithoutUserNestedInput
+    following?: FollowUncheckedUpdateManyWithoutFollowerNestedInput
+    followedBy?: FollowUncheckedUpdateManyWithoutFollowingNestedInput
+    sentFollowRequests?: FollowRequestUncheckedUpdateManyWithoutRequesterNestedInput
+    likes?: LikeUncheckedUpdateManyWithoutUserNestedInput
+    posts?: PostUncheckedUpdateManyWithoutAuthorNestedInput
+    rankingLists?: RankingListUncheckedUpdateManyWithoutAuthorNestedInput
+    replies?: ReplyUncheckedUpdateManyWithoutUserNestedInput
+    retweets?: RetweetUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUpsertWithoutSentFollowRequestsInput = {
+    update: XOR<UserUpdateWithoutSentFollowRequestsInput, UserUncheckedUpdateWithoutSentFollowRequestsInput>
+    create: XOR<UserCreateWithoutSentFollowRequestsInput, UserUncheckedCreateWithoutSentFollowRequestsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutSentFollowRequestsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutSentFollowRequestsInput, UserUncheckedUpdateWithoutSentFollowRequestsInput>
+  }
+
+  export type UserUpdateWithoutSentFollowRequestsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    clerkId?: StringFieldUpdateOperationsInput | string
+    username?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    socialLinks?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isPrivate?: BoolFieldUpdateOperationsInput | boolean
+    birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    feedItems?: FeedItemUpdateManyWithoutUserNestedInput
+    following?: FollowUpdateManyWithoutFollowerNestedInput
+    followedBy?: FollowUpdateManyWithoutFollowingNestedInput
+    receivedFollowRequests?: FollowRequestUpdateManyWithoutRequestedNestedInput
+    likes?: LikeUpdateManyWithoutUserNestedInput
+    posts?: PostUpdateManyWithoutAuthorNestedInput
+    rankingLists?: RankingListUpdateManyWithoutAuthorNestedInput
+    replies?: ReplyUpdateManyWithoutUserNestedInput
+    retweets?: RetweetUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutSentFollowRequestsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    clerkId?: StringFieldUpdateOperationsInput | string
+    username?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    socialLinks?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isPrivate?: BoolFieldUpdateOperationsInput | boolean
+    birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    feedItems?: FeedItemUncheckedUpdateManyWithoutUserNestedInput
+    following?: FollowUncheckedUpdateManyWithoutFollowerNestedInput
+    followedBy?: FollowUncheckedUpdateManyWithoutFollowingNestedInput
+    receivedFollowRequests?: FollowRequestUncheckedUpdateManyWithoutRequestedNestedInput
+    likes?: LikeUncheckedUpdateManyWithoutUserNestedInput
+    posts?: PostUncheckedUpdateManyWithoutAuthorNestedInput
+    rankingLists?: RankingListUncheckedUpdateManyWithoutAuthorNestedInput
+    replies?: ReplyUncheckedUpdateManyWithoutUserNestedInput
     retweets?: RetweetUncheckedUpdateManyWithoutUserNestedInput
   }
 
@@ -27378,16 +27378,16 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isPrivate?: boolean
-    location?: string | null
     birthday?: Date | string | null
-    posts?: PostCreateNestedManyWithoutAuthorInput
-    likes?: LikeCreateNestedManyWithoutUserInput
-    replies?: ReplyCreateNestedManyWithoutUserInput
-    followedBy?: FollowCreateNestedManyWithoutFollowingInput
-    rankingLists?: RankingListCreateNestedManyWithoutAuthorInput
-    sentFollowRequests?: FollowRequestCreateNestedManyWithoutRequesterInput
-    receivedFollowRequests?: FollowRequestCreateNestedManyWithoutRequestedInput
+    location?: string | null
     feedItems?: FeedItemCreateNestedManyWithoutUserInput
+    followedBy?: FollowCreateNestedManyWithoutFollowingInput
+    receivedFollowRequests?: FollowRequestCreateNestedManyWithoutRequestedInput
+    sentFollowRequests?: FollowRequestCreateNestedManyWithoutRequesterInput
+    likes?: LikeCreateNestedManyWithoutUserInput
+    posts?: PostCreateNestedManyWithoutAuthorInput
+    rankingLists?: RankingListCreateNestedManyWithoutAuthorInput
+    replies?: ReplyCreateNestedManyWithoutUserInput
     retweets?: RetweetCreateNestedManyWithoutUserInput
   }
 
@@ -27403,16 +27403,16 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isPrivate?: boolean
-    location?: string | null
     birthday?: Date | string | null
-    posts?: PostUncheckedCreateNestedManyWithoutAuthorInput
-    likes?: LikeUncheckedCreateNestedManyWithoutUserInput
-    replies?: ReplyUncheckedCreateNestedManyWithoutUserInput
-    followedBy?: FollowUncheckedCreateNestedManyWithoutFollowingInput
-    rankingLists?: RankingListUncheckedCreateNestedManyWithoutAuthorInput
-    sentFollowRequests?: FollowRequestUncheckedCreateNestedManyWithoutRequesterInput
-    receivedFollowRequests?: FollowRequestUncheckedCreateNestedManyWithoutRequestedInput
+    location?: string | null
     feedItems?: FeedItemUncheckedCreateNestedManyWithoutUserInput
+    followedBy?: FollowUncheckedCreateNestedManyWithoutFollowingInput
+    receivedFollowRequests?: FollowRequestUncheckedCreateNestedManyWithoutRequestedInput
+    sentFollowRequests?: FollowRequestUncheckedCreateNestedManyWithoutRequesterInput
+    likes?: LikeUncheckedCreateNestedManyWithoutUserInput
+    posts?: PostUncheckedCreateNestedManyWithoutAuthorInput
+    rankingLists?: RankingListUncheckedCreateNestedManyWithoutAuthorInput
+    replies?: ReplyUncheckedCreateNestedManyWithoutUserInput
     retweets?: RetweetUncheckedCreateNestedManyWithoutUserInput
   }
 
@@ -27433,16 +27433,16 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isPrivate?: boolean
-    location?: string | null
     birthday?: Date | string | null
-    posts?: PostCreateNestedManyWithoutAuthorInput
-    likes?: LikeCreateNestedManyWithoutUserInput
-    replies?: ReplyCreateNestedManyWithoutUserInput
-    following?: FollowCreateNestedManyWithoutFollowerInput
-    rankingLists?: RankingListCreateNestedManyWithoutAuthorInput
-    sentFollowRequests?: FollowRequestCreateNestedManyWithoutRequesterInput
-    receivedFollowRequests?: FollowRequestCreateNestedManyWithoutRequestedInput
+    location?: string | null
     feedItems?: FeedItemCreateNestedManyWithoutUserInput
+    following?: FollowCreateNestedManyWithoutFollowerInput
+    receivedFollowRequests?: FollowRequestCreateNestedManyWithoutRequestedInput
+    sentFollowRequests?: FollowRequestCreateNestedManyWithoutRequesterInput
+    likes?: LikeCreateNestedManyWithoutUserInput
+    posts?: PostCreateNestedManyWithoutAuthorInput
+    rankingLists?: RankingListCreateNestedManyWithoutAuthorInput
+    replies?: ReplyCreateNestedManyWithoutUserInput
     retweets?: RetweetCreateNestedManyWithoutUserInput
   }
 
@@ -27458,16 +27458,16 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isPrivate?: boolean
-    location?: string | null
     birthday?: Date | string | null
-    posts?: PostUncheckedCreateNestedManyWithoutAuthorInput
-    likes?: LikeUncheckedCreateNestedManyWithoutUserInput
-    replies?: ReplyUncheckedCreateNestedManyWithoutUserInput
-    following?: FollowUncheckedCreateNestedManyWithoutFollowerInput
-    rankingLists?: RankingListUncheckedCreateNestedManyWithoutAuthorInput
-    sentFollowRequests?: FollowRequestUncheckedCreateNestedManyWithoutRequesterInput
-    receivedFollowRequests?: FollowRequestUncheckedCreateNestedManyWithoutRequestedInput
+    location?: string | null
     feedItems?: FeedItemUncheckedCreateNestedManyWithoutUserInput
+    following?: FollowUncheckedCreateNestedManyWithoutFollowerInput
+    receivedFollowRequests?: FollowRequestUncheckedCreateNestedManyWithoutRequestedInput
+    sentFollowRequests?: FollowRequestUncheckedCreateNestedManyWithoutRequesterInput
+    likes?: LikeUncheckedCreateNestedManyWithoutUserInput
+    posts?: PostUncheckedCreateNestedManyWithoutAuthorInput
+    rankingLists?: RankingListUncheckedCreateNestedManyWithoutAuthorInput
+    replies?: ReplyUncheckedCreateNestedManyWithoutUserInput
     retweets?: RetweetUncheckedCreateNestedManyWithoutUserInput
   }
 
@@ -27499,16 +27499,16 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
-    location?: NullableStringFieldUpdateOperationsInput | string | null
     birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    posts?: PostUpdateManyWithoutAuthorNestedInput
-    likes?: LikeUpdateManyWithoutUserNestedInput
-    replies?: ReplyUpdateManyWithoutUserNestedInput
-    followedBy?: FollowUpdateManyWithoutFollowingNestedInput
-    rankingLists?: RankingListUpdateManyWithoutAuthorNestedInput
-    sentFollowRequests?: FollowRequestUpdateManyWithoutRequesterNestedInput
-    receivedFollowRequests?: FollowRequestUpdateManyWithoutRequestedNestedInput
+    location?: NullableStringFieldUpdateOperationsInput | string | null
     feedItems?: FeedItemUpdateManyWithoutUserNestedInput
+    followedBy?: FollowUpdateManyWithoutFollowingNestedInput
+    receivedFollowRequests?: FollowRequestUpdateManyWithoutRequestedNestedInput
+    sentFollowRequests?: FollowRequestUpdateManyWithoutRequesterNestedInput
+    likes?: LikeUpdateManyWithoutUserNestedInput
+    posts?: PostUpdateManyWithoutAuthorNestedInput
+    rankingLists?: RankingListUpdateManyWithoutAuthorNestedInput
+    replies?: ReplyUpdateManyWithoutUserNestedInput
     retweets?: RetweetUpdateManyWithoutUserNestedInput
   }
 
@@ -27524,16 +27524,16 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
-    location?: NullableStringFieldUpdateOperationsInput | string | null
     birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    posts?: PostUncheckedUpdateManyWithoutAuthorNestedInput
-    likes?: LikeUncheckedUpdateManyWithoutUserNestedInput
-    replies?: ReplyUncheckedUpdateManyWithoutUserNestedInput
-    followedBy?: FollowUncheckedUpdateManyWithoutFollowingNestedInput
-    rankingLists?: RankingListUncheckedUpdateManyWithoutAuthorNestedInput
-    sentFollowRequests?: FollowRequestUncheckedUpdateManyWithoutRequesterNestedInput
-    receivedFollowRequests?: FollowRequestUncheckedUpdateManyWithoutRequestedNestedInput
+    location?: NullableStringFieldUpdateOperationsInput | string | null
     feedItems?: FeedItemUncheckedUpdateManyWithoutUserNestedInput
+    followedBy?: FollowUncheckedUpdateManyWithoutFollowingNestedInput
+    receivedFollowRequests?: FollowRequestUncheckedUpdateManyWithoutRequestedNestedInput
+    sentFollowRequests?: FollowRequestUncheckedUpdateManyWithoutRequesterNestedInput
+    likes?: LikeUncheckedUpdateManyWithoutUserNestedInput
+    posts?: PostUncheckedUpdateManyWithoutAuthorNestedInput
+    rankingLists?: RankingListUncheckedUpdateManyWithoutAuthorNestedInput
+    replies?: ReplyUncheckedUpdateManyWithoutUserNestedInput
     retweets?: RetweetUncheckedUpdateManyWithoutUserNestedInput
   }
 
@@ -27560,16 +27560,16 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
-    location?: NullableStringFieldUpdateOperationsInput | string | null
     birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    posts?: PostUpdateManyWithoutAuthorNestedInput
-    likes?: LikeUpdateManyWithoutUserNestedInput
-    replies?: ReplyUpdateManyWithoutUserNestedInput
-    following?: FollowUpdateManyWithoutFollowerNestedInput
-    rankingLists?: RankingListUpdateManyWithoutAuthorNestedInput
-    sentFollowRequests?: FollowRequestUpdateManyWithoutRequesterNestedInput
-    receivedFollowRequests?: FollowRequestUpdateManyWithoutRequestedNestedInput
+    location?: NullableStringFieldUpdateOperationsInput | string | null
     feedItems?: FeedItemUpdateManyWithoutUserNestedInput
+    following?: FollowUpdateManyWithoutFollowerNestedInput
+    receivedFollowRequests?: FollowRequestUpdateManyWithoutRequestedNestedInput
+    sentFollowRequests?: FollowRequestUpdateManyWithoutRequesterNestedInput
+    likes?: LikeUpdateManyWithoutUserNestedInput
+    posts?: PostUpdateManyWithoutAuthorNestedInput
+    rankingLists?: RankingListUpdateManyWithoutAuthorNestedInput
+    replies?: ReplyUpdateManyWithoutUserNestedInput
     retweets?: RetweetUpdateManyWithoutUserNestedInput
   }
 
@@ -27585,16 +27585,16 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
-    location?: NullableStringFieldUpdateOperationsInput | string | null
     birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    posts?: PostUncheckedUpdateManyWithoutAuthorNestedInput
-    likes?: LikeUncheckedUpdateManyWithoutUserNestedInput
-    replies?: ReplyUncheckedUpdateManyWithoutUserNestedInput
-    following?: FollowUncheckedUpdateManyWithoutFollowerNestedInput
-    rankingLists?: RankingListUncheckedUpdateManyWithoutAuthorNestedInput
-    sentFollowRequests?: FollowRequestUncheckedUpdateManyWithoutRequesterNestedInput
-    receivedFollowRequests?: FollowRequestUncheckedUpdateManyWithoutRequestedNestedInput
+    location?: NullableStringFieldUpdateOperationsInput | string | null
     feedItems?: FeedItemUncheckedUpdateManyWithoutUserNestedInput
+    following?: FollowUncheckedUpdateManyWithoutFollowerNestedInput
+    receivedFollowRequests?: FollowRequestUncheckedUpdateManyWithoutRequestedNestedInput
+    sentFollowRequests?: FollowRequestUncheckedUpdateManyWithoutRequesterNestedInput
+    likes?: LikeUncheckedUpdateManyWithoutUserNestedInput
+    posts?: PostUncheckedUpdateManyWithoutAuthorNestedInput
+    rankingLists?: RankingListUncheckedUpdateManyWithoutAuthorNestedInput
+    replies?: ReplyUncheckedUpdateManyWithoutUserNestedInput
     retweets?: RetweetUncheckedUpdateManyWithoutUserNestedInput
   }
 
@@ -27604,51 +27604,6 @@ export namespace Prisma {
     count: number
     period: $Enums.TrendPeriod
     calculationDate: Date | string
-  }
-
-  export type RankingListUpdateWithoutTagsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    subject?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: EnumListStatusFieldUpdateOperationsInput | $Enums.ListStatus
-    listImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    displayOrder?: NullableIntFieldUpdateOperationsInput | number | null
-    likeCount?: IntFieldUpdateOperationsInput | number
-    author?: UserUpdateOneRequiredWithoutRankingListsNestedInput
-    items?: RankedItemUpdateManyWithoutRankingListNestedInput
-    feedItems?: FeedItemUpdateManyWithoutRankingListNestedInput
-    likes?: LikeUpdateManyWithoutRankingListNestedInput
-  }
-
-  export type RankingListUncheckedUpdateWithoutTagsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    subject?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: EnumListStatusFieldUpdateOperationsInput | $Enums.ListStatus
-    listImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    authorId?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    displayOrder?: NullableIntFieldUpdateOperationsInput | number | null
-    likeCount?: IntFieldUpdateOperationsInput | number
-    items?: RankedItemUncheckedUpdateManyWithoutRankingListNestedInput
-    feedItems?: FeedItemUncheckedUpdateManyWithoutRankingListNestedInput
-    likes?: LikeUncheckedUpdateManyWithoutRankingListNestedInput
-  }
-
-  export type RankingListUncheckedUpdateManyWithoutTagsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    subject?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: EnumListStatusFieldUpdateOperationsInput | $Enums.ListStatus
-    listImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    authorId?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    displayOrder?: NullableIntFieldUpdateOperationsInput | number | null
-    likeCount?: IntFieldUpdateOperationsInput | number
   }
 
   export type TrendingTagUpdateWithoutTagInput = {
@@ -27675,68 +27630,49 @@ export namespace Prisma {
     calculationDate?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type PostCreateManyAuthorInput = {
-    id?: string
-    content: string
-    imageUrl?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    likeCount?: number
+  export type RankingListUpdateWithoutTagsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    subject?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumListStatusFieldUpdateOperationsInput | $Enums.ListStatus
+    listImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    displayOrder?: NullableIntFieldUpdateOperationsInput | number | null
+    likeCount?: IntFieldUpdateOperationsInput | number
+    feedItems?: FeedItemUpdateManyWithoutRankingListNestedInput
+    likes?: LikeUpdateManyWithoutRankingListNestedInput
+    items?: RankedItemUpdateManyWithoutRankingListNestedInput
+    author?: UserUpdateOneRequiredWithoutRankingListsNestedInput
   }
 
-  export type LikeCreateManyUserInput = {
-    id?: string
-    createdAt?: Date | string
-    postId?: string | null
-    rankingListId?: string | null
+  export type RankingListUncheckedUpdateWithoutTagsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    subject?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumListStatusFieldUpdateOperationsInput | $Enums.ListStatus
+    listImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    authorId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    displayOrder?: NullableIntFieldUpdateOperationsInput | number | null
+    likeCount?: IntFieldUpdateOperationsInput | number
+    feedItems?: FeedItemUncheckedUpdateManyWithoutRankingListNestedInput
+    likes?: LikeUncheckedUpdateManyWithoutRankingListNestedInput
+    items?: RankedItemUncheckedUpdateManyWithoutRankingListNestedInput
   }
 
-  export type ReplyCreateManyUserInput = {
-    id?: string
-    content: string
-    postId: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type FollowCreateManyFollowingInput = {
-    id?: string
-    followerId: string
-    createdAt?: Date | string
-  }
-
-  export type FollowCreateManyFollowerInput = {
-    id?: string
-    followingId: string
-    createdAt?: Date | string
-  }
-
-  export type RankingListCreateManyAuthorInput = {
-    id?: string
-    subject: string
-    description?: string | null
-    status?: $Enums.ListStatus
-    listImageUrl?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    displayOrder?: number | null
-    likeCount?: number
-  }
-
-  export type FollowRequestCreateManyRequesterInput = {
-    id?: string
-    status?: $Enums.FollowRequestStatus
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    requestedId: string
-  }
-
-  export type FollowRequestCreateManyRequestedInput = {
-    id?: string
-    status?: $Enums.FollowRequestStatus
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    requesterId: string
+  export type RankingListUncheckedUpdateManyWithoutTagsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    subject?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumListStatusFieldUpdateOperationsInput | $Enums.ListStatus
+    listImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    authorId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    displayOrder?: NullableIntFieldUpdateOperationsInput | number | null
+    likeCount?: IntFieldUpdateOperationsInput | number
   }
 
   export type FeedItemCreateManyUserInput = {
@@ -27751,106 +27687,116 @@ export namespace Prisma {
     quoteRetweetCount?: number
   }
 
+  export type FollowCreateManyFollowerInput = {
+    id?: string
+    followingId: string
+    createdAt?: Date | string
+  }
+
+  export type FollowCreateManyFollowingInput = {
+    id?: string
+    followerId: string
+    createdAt?: Date | string
+  }
+
+  export type FollowRequestCreateManyRequestedInput = {
+    id?: string
+    status?: $Enums.FollowRequestStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    requesterId: string
+  }
+
+  export type FollowRequestCreateManyRequesterInput = {
+    id?: string
+    status?: $Enums.FollowRequestStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    requestedId: string
+  }
+
+  export type LikeCreateManyUserInput = {
+    id?: string
+    createdAt?: Date | string
+    postId?: string | null
+    rankingListId?: string | null
+  }
+
+  export type PostCreateManyAuthorInput = {
+    id?: string
+    content: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    likeCount?: number
+    imageUrl?: string | null
+  }
+
+  export type RankingListCreateManyAuthorInput = {
+    id?: string
+    subject: string
+    description?: string | null
+    status?: $Enums.ListStatus
+    listImageUrl?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    displayOrder?: number | null
+    likeCount?: number
+  }
+
+  export type ReplyCreateManyUserInput = {
+    id?: string
+    content: string
+    postId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type RetweetCreateManyUserInput = {
     id?: string
     feedItemId: string
     createdAt?: Date | string
   }
 
-  export type PostUpdateWithoutAuthorInput = {
+  export type FeedItemUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
-    content?: StringFieldUpdateOperationsInput | string
-    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: EnumFeedTypeFieldUpdateOperationsInput | $Enums.FeedType
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    likeCount?: IntFieldUpdateOperationsInput | number
-    replies?: ReplyUpdateManyWithoutPostNestedInput
-    feedItems?: FeedItemUpdateManyWithoutPostNestedInput
-    likes?: LikeUpdateManyWithoutPostNestedInput
+    quoteRetweetCount?: IntFieldUpdateOperationsInput | number
+    post?: PostUpdateOneWithoutFeedItemsNestedInput
+    rankingList?: RankingListUpdateOneWithoutFeedItemsNestedInput
+    quotedFeedItem?: FeedItemUpdateOneWithoutQuotedByItemsNestedInput
+    quotedByItems?: FeedItemUpdateManyWithoutQuotedFeedItemNestedInput
+    retweetOfFeedItem?: FeedItemUpdateOneWithoutRetweetedByItemsNestedInput
+    retweetedByItems?: FeedItemUpdateManyWithoutRetweetOfFeedItemNestedInput
+    retweets?: RetweetUpdateManyWithoutFeedItemNestedInput
   }
 
-  export type PostUncheckedUpdateWithoutAuthorInput = {
+  export type FeedItemUncheckedUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
-    content?: StringFieldUpdateOperationsInput | string
-    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: EnumFeedTypeFieldUpdateOperationsInput | $Enums.FeedType
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    likeCount?: IntFieldUpdateOperationsInput | number
-    replies?: ReplyUncheckedUpdateManyWithoutPostNestedInput
-    feedItems?: FeedItemUncheckedUpdateManyWithoutPostNestedInput
-    likes?: LikeUncheckedUpdateManyWithoutPostNestedInput
-  }
-
-  export type PostUncheckedUpdateManyWithoutAuthorInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    content?: StringFieldUpdateOperationsInput | string
-    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    likeCount?: IntFieldUpdateOperationsInput | number
-  }
-
-  export type LikeUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    post?: PostUpdateOneWithoutLikesNestedInput
-    rankingList?: RankingListUpdateOneWithoutLikesNestedInput
-  }
-
-  export type LikeUncheckedUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     postId?: NullableStringFieldUpdateOperationsInput | string | null
     rankingListId?: NullableStringFieldUpdateOperationsInput | string | null
+    retweetOfFeedItemId?: NullableStringFieldUpdateOperationsInput | string | null
+    quotedFeedItemId?: NullableStringFieldUpdateOperationsInput | string | null
+    quoteRetweetCount?: IntFieldUpdateOperationsInput | number
+    quotedByItems?: FeedItemUncheckedUpdateManyWithoutQuotedFeedItemNestedInput
+    retweetedByItems?: FeedItemUncheckedUpdateManyWithoutRetweetOfFeedItemNestedInput
+    retweets?: RetweetUncheckedUpdateManyWithoutFeedItemNestedInput
   }
 
-  export type LikeUncheckedUpdateManyWithoutUserInput = {
+  export type FeedItemUncheckedUpdateManyWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
+    type?: EnumFeedTypeFieldUpdateOperationsInput | $Enums.FeedType
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     postId?: NullableStringFieldUpdateOperationsInput | string | null
     rankingListId?: NullableStringFieldUpdateOperationsInput | string | null
-  }
-
-  export type ReplyUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    content?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    post?: PostUpdateOneRequiredWithoutRepliesNestedInput
-  }
-
-  export type ReplyUncheckedUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    content?: StringFieldUpdateOperationsInput | string
-    postId?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type ReplyUncheckedUpdateManyWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    content?: StringFieldUpdateOperationsInput | string
-    postId?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type FollowUpdateWithoutFollowingInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    follower?: UserUpdateOneRequiredWithoutFollowingNestedInput
-  }
-
-  export type FollowUncheckedUpdateWithoutFollowingInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    followerId?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type FollowUncheckedUpdateManyWithoutFollowingInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    followerId?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    retweetOfFeedItemId?: NullableStringFieldUpdateOperationsInput | string | null
+    quotedFeedItemId?: NullableStringFieldUpdateOperationsInput | string | null
+    quoteRetweetCount?: IntFieldUpdateOperationsInput | number
   }
 
   export type FollowUpdateWithoutFollowerInput = {
@@ -27871,72 +27817,22 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type RankingListUpdateWithoutAuthorInput = {
+  export type FollowUpdateWithoutFollowingInput = {
     id?: StringFieldUpdateOperationsInput | string
-    subject?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: EnumListStatusFieldUpdateOperationsInput | $Enums.ListStatus
-    listImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    displayOrder?: NullableIntFieldUpdateOperationsInput | number | null
-    likeCount?: IntFieldUpdateOperationsInput | number
-    items?: RankedItemUpdateManyWithoutRankingListNestedInput
-    feedItems?: FeedItemUpdateManyWithoutRankingListNestedInput
-    likes?: LikeUpdateManyWithoutRankingListNestedInput
-    tags?: TagUpdateManyWithoutRankingListsNestedInput
+    follower?: UserUpdateOneRequiredWithoutFollowingNestedInput
   }
 
-  export type RankingListUncheckedUpdateWithoutAuthorInput = {
+  export type FollowUncheckedUpdateWithoutFollowingInput = {
     id?: StringFieldUpdateOperationsInput | string
-    subject?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: EnumListStatusFieldUpdateOperationsInput | $Enums.ListStatus
-    listImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    followerId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    displayOrder?: NullableIntFieldUpdateOperationsInput | number | null
-    likeCount?: IntFieldUpdateOperationsInput | number
-    items?: RankedItemUncheckedUpdateManyWithoutRankingListNestedInput
-    feedItems?: FeedItemUncheckedUpdateManyWithoutRankingListNestedInput
-    likes?: LikeUncheckedUpdateManyWithoutRankingListNestedInput
-    tags?: TagUncheckedUpdateManyWithoutRankingListsNestedInput
   }
 
-  export type RankingListUncheckedUpdateManyWithoutAuthorInput = {
+  export type FollowUncheckedUpdateManyWithoutFollowingInput = {
     id?: StringFieldUpdateOperationsInput | string
-    subject?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: EnumListStatusFieldUpdateOperationsInput | $Enums.ListStatus
-    listImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    followerId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    displayOrder?: NullableIntFieldUpdateOperationsInput | number | null
-    likeCount?: IntFieldUpdateOperationsInput | number
-  }
-
-  export type FollowRequestUpdateWithoutRequesterInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    status?: EnumFollowRequestStatusFieldUpdateOperationsInput | $Enums.FollowRequestStatus
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    requested?: UserUpdateOneRequiredWithoutReceivedFollowRequestsNestedInput
-  }
-
-  export type FollowRequestUncheckedUpdateWithoutRequesterInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    status?: EnumFollowRequestStatusFieldUpdateOperationsInput | $Enums.FollowRequestStatus
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    requestedId?: StringFieldUpdateOperationsInput | string
-  }
-
-  export type FollowRequestUncheckedUpdateManyWithoutRequesterInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    status?: EnumFollowRequestStatusFieldUpdateOperationsInput | $Enums.FollowRequestStatus
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    requestedId?: StringFieldUpdateOperationsInput | string
   }
 
   export type FollowRequestUpdateWithoutRequestedInput = {
@@ -27963,46 +27859,150 @@ export namespace Prisma {
     requesterId?: StringFieldUpdateOperationsInput | string
   }
 
-  export type FeedItemUpdateWithoutUserInput = {
+  export type FollowRequestUpdateWithoutRequesterInput = {
     id?: StringFieldUpdateOperationsInput | string
-    type?: EnumFeedTypeFieldUpdateOperationsInput | $Enums.FeedType
+    status?: EnumFollowRequestStatusFieldUpdateOperationsInput | $Enums.FollowRequestStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    quoteRetweetCount?: IntFieldUpdateOperationsInput | number
-    post?: PostUpdateOneWithoutFeedItemsNestedInput
-    rankingList?: RankingListUpdateOneWithoutFeedItemsNestedInput
-    retweetOfFeedItem?: FeedItemUpdateOneWithoutRetweetedByItemsNestedInput
-    retweetedByItems?: FeedItemUpdateManyWithoutRetweetOfFeedItemNestedInput
-    retweets?: RetweetUpdateManyWithoutFeedItemNestedInput
-    quotedFeedItem?: FeedItemUpdateOneWithoutQuotedByItemsNestedInput
-    quotedByItems?: FeedItemUpdateManyWithoutQuotedFeedItemNestedInput
+    requested?: UserUpdateOneRequiredWithoutReceivedFollowRequestsNestedInput
   }
 
-  export type FeedItemUncheckedUpdateWithoutUserInput = {
+  export type FollowRequestUncheckedUpdateWithoutRequesterInput = {
     id?: StringFieldUpdateOperationsInput | string
-    type?: EnumFeedTypeFieldUpdateOperationsInput | $Enums.FeedType
+    status?: EnumFollowRequestStatusFieldUpdateOperationsInput | $Enums.FollowRequestStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    postId?: NullableStringFieldUpdateOperationsInput | string | null
-    rankingListId?: NullableStringFieldUpdateOperationsInput | string | null
-    retweetOfFeedItemId?: NullableStringFieldUpdateOperationsInput | string | null
-    quotedFeedItemId?: NullableStringFieldUpdateOperationsInput | string | null
-    quoteRetweetCount?: IntFieldUpdateOperationsInput | number
-    retweetedByItems?: FeedItemUncheckedUpdateManyWithoutRetweetOfFeedItemNestedInput
-    retweets?: RetweetUncheckedUpdateManyWithoutFeedItemNestedInput
-    quotedByItems?: FeedItemUncheckedUpdateManyWithoutQuotedFeedItemNestedInput
+    requestedId?: StringFieldUpdateOperationsInput | string
   }
 
-  export type FeedItemUncheckedUpdateManyWithoutUserInput = {
+  export type FollowRequestUncheckedUpdateManyWithoutRequesterInput = {
     id?: StringFieldUpdateOperationsInput | string
-    type?: EnumFeedTypeFieldUpdateOperationsInput | $Enums.FeedType
+    status?: EnumFollowRequestStatusFieldUpdateOperationsInput | $Enums.FollowRequestStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    requestedId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type LikeUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    post?: PostUpdateOneWithoutLikesNestedInput
+    rankingList?: RankingListUpdateOneWithoutLikesNestedInput
+  }
+
+  export type LikeUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     postId?: NullableStringFieldUpdateOperationsInput | string | null
     rankingListId?: NullableStringFieldUpdateOperationsInput | string | null
-    retweetOfFeedItemId?: NullableStringFieldUpdateOperationsInput | string | null
-    quotedFeedItemId?: NullableStringFieldUpdateOperationsInput | string | null
-    quoteRetweetCount?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type LikeUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    postId?: NullableStringFieldUpdateOperationsInput | string | null
+    rankingListId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type PostUpdateWithoutAuthorInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    likeCount?: IntFieldUpdateOperationsInput | number
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    feedItems?: FeedItemUpdateManyWithoutPostNestedInput
+    likes?: LikeUpdateManyWithoutPostNestedInput
+    replies?: ReplyUpdateManyWithoutPostNestedInput
+  }
+
+  export type PostUncheckedUpdateWithoutAuthorInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    likeCount?: IntFieldUpdateOperationsInput | number
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    feedItems?: FeedItemUncheckedUpdateManyWithoutPostNestedInput
+    likes?: LikeUncheckedUpdateManyWithoutPostNestedInput
+    replies?: ReplyUncheckedUpdateManyWithoutPostNestedInput
+  }
+
+  export type PostUncheckedUpdateManyWithoutAuthorInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    likeCount?: IntFieldUpdateOperationsInput | number
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type RankingListUpdateWithoutAuthorInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    subject?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumListStatusFieldUpdateOperationsInput | $Enums.ListStatus
+    listImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    displayOrder?: NullableIntFieldUpdateOperationsInput | number | null
+    likeCount?: IntFieldUpdateOperationsInput | number
+    feedItems?: FeedItemUpdateManyWithoutRankingListNestedInput
+    likes?: LikeUpdateManyWithoutRankingListNestedInput
+    items?: RankedItemUpdateManyWithoutRankingListNestedInput
+    tags?: TagUpdateManyWithoutRankingListsNestedInput
+  }
+
+  export type RankingListUncheckedUpdateWithoutAuthorInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    subject?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumListStatusFieldUpdateOperationsInput | $Enums.ListStatus
+    listImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    displayOrder?: NullableIntFieldUpdateOperationsInput | number | null
+    likeCount?: IntFieldUpdateOperationsInput | number
+    feedItems?: FeedItemUncheckedUpdateManyWithoutRankingListNestedInput
+    likes?: LikeUncheckedUpdateManyWithoutRankingListNestedInput
+    items?: RankedItemUncheckedUpdateManyWithoutRankingListNestedInput
+    tags?: TagUncheckedUpdateManyWithoutRankingListsNestedInput
+  }
+
+  export type RankingListUncheckedUpdateManyWithoutAuthorInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    subject?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumListStatusFieldUpdateOperationsInput | $Enums.ListStatus
+    listImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    displayOrder?: NullableIntFieldUpdateOperationsInput | number | null
+    likeCount?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type ReplyUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    post?: PostUpdateOneRequiredWithoutRepliesNestedInput
+  }
+
+  export type ReplyUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    postId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ReplyUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    postId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type RetweetUpdateWithoutUserInput = {
@@ -28023,15 +28023,6 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type RankedItemCreateManyRankingListInput = {
-    id?: string
-    itemName: string
-    rank: number
-    imageUrl?: string | null
-    itemDescription?: string | null
-    createdAt?: Date | string
-  }
-
   export type FeedItemCreateManyRankingListInput = {
     id?: string
     type: $Enums.FeedType
@@ -28049,6 +28040,78 @@ export namespace Prisma {
     userId: string
     createdAt?: Date | string
     postId?: string | null
+  }
+
+  export type RankedItemCreateManyRankingListInput = {
+    id?: string
+    itemName: string
+    rank: number
+    imageUrl?: string | null
+    itemDescription?: string | null
+    createdAt?: Date | string
+  }
+
+  export type FeedItemUpdateWithoutRankingListInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumFeedTypeFieldUpdateOperationsInput | $Enums.FeedType
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    quoteRetweetCount?: IntFieldUpdateOperationsInput | number
+    post?: PostUpdateOneWithoutFeedItemsNestedInput
+    user?: UserUpdateOneRequiredWithoutFeedItemsNestedInput
+    quotedFeedItem?: FeedItemUpdateOneWithoutQuotedByItemsNestedInput
+    quotedByItems?: FeedItemUpdateManyWithoutQuotedFeedItemNestedInput
+    retweetOfFeedItem?: FeedItemUpdateOneWithoutRetweetedByItemsNestedInput
+    retweetedByItems?: FeedItemUpdateManyWithoutRetweetOfFeedItemNestedInput
+    retweets?: RetweetUpdateManyWithoutFeedItemNestedInput
+  }
+
+  export type FeedItemUncheckedUpdateWithoutRankingListInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumFeedTypeFieldUpdateOperationsInput | $Enums.FeedType
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userId?: StringFieldUpdateOperationsInput | string
+    postId?: NullableStringFieldUpdateOperationsInput | string | null
+    retweetOfFeedItemId?: NullableStringFieldUpdateOperationsInput | string | null
+    quotedFeedItemId?: NullableStringFieldUpdateOperationsInput | string | null
+    quoteRetweetCount?: IntFieldUpdateOperationsInput | number
+    quotedByItems?: FeedItemUncheckedUpdateManyWithoutQuotedFeedItemNestedInput
+    retweetedByItems?: FeedItemUncheckedUpdateManyWithoutRetweetOfFeedItemNestedInput
+    retweets?: RetweetUncheckedUpdateManyWithoutFeedItemNestedInput
+  }
+
+  export type FeedItemUncheckedUpdateManyWithoutRankingListInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumFeedTypeFieldUpdateOperationsInput | $Enums.FeedType
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userId?: StringFieldUpdateOperationsInput | string
+    postId?: NullableStringFieldUpdateOperationsInput | string | null
+    retweetOfFeedItemId?: NullableStringFieldUpdateOperationsInput | string | null
+    quotedFeedItemId?: NullableStringFieldUpdateOperationsInput | string | null
+    quoteRetweetCount?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type LikeUpdateWithoutRankingListInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    post?: PostUpdateOneWithoutLikesNestedInput
+    user?: UserUpdateOneRequiredWithoutLikesNestedInput
+  }
+
+  export type LikeUncheckedUpdateWithoutRankingListInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    postId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type LikeUncheckedUpdateManyWithoutRankingListInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    postId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type RankedItemUpdateWithoutRankingListInput = {
@@ -28078,69 +28141,6 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type FeedItemUpdateWithoutRankingListInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    type?: EnumFeedTypeFieldUpdateOperationsInput | $Enums.FeedType
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    quoteRetweetCount?: IntFieldUpdateOperationsInput | number
-    user?: UserUpdateOneRequiredWithoutFeedItemsNestedInput
-    post?: PostUpdateOneWithoutFeedItemsNestedInput
-    retweetOfFeedItem?: FeedItemUpdateOneWithoutRetweetedByItemsNestedInput
-    retweetedByItems?: FeedItemUpdateManyWithoutRetweetOfFeedItemNestedInput
-    retweets?: RetweetUpdateManyWithoutFeedItemNestedInput
-    quotedFeedItem?: FeedItemUpdateOneWithoutQuotedByItemsNestedInput
-    quotedByItems?: FeedItemUpdateManyWithoutQuotedFeedItemNestedInput
-  }
-
-  export type FeedItemUncheckedUpdateWithoutRankingListInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    type?: EnumFeedTypeFieldUpdateOperationsInput | $Enums.FeedType
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    userId?: StringFieldUpdateOperationsInput | string
-    postId?: NullableStringFieldUpdateOperationsInput | string | null
-    retweetOfFeedItemId?: NullableStringFieldUpdateOperationsInput | string | null
-    quotedFeedItemId?: NullableStringFieldUpdateOperationsInput | string | null
-    quoteRetweetCount?: IntFieldUpdateOperationsInput | number
-    retweetedByItems?: FeedItemUncheckedUpdateManyWithoutRetweetOfFeedItemNestedInput
-    retweets?: RetweetUncheckedUpdateManyWithoutFeedItemNestedInput
-    quotedByItems?: FeedItemUncheckedUpdateManyWithoutQuotedFeedItemNestedInput
-  }
-
-  export type FeedItemUncheckedUpdateManyWithoutRankingListInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    type?: EnumFeedTypeFieldUpdateOperationsInput | $Enums.FeedType
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    userId?: StringFieldUpdateOperationsInput | string
-    postId?: NullableStringFieldUpdateOperationsInput | string | null
-    retweetOfFeedItemId?: NullableStringFieldUpdateOperationsInput | string | null
-    quotedFeedItemId?: NullableStringFieldUpdateOperationsInput | string | null
-    quoteRetweetCount?: IntFieldUpdateOperationsInput | number
-  }
-
-  export type LikeUpdateWithoutRankingListInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    user?: UserUpdateOneRequiredWithoutLikesNestedInput
-    post?: PostUpdateOneWithoutLikesNestedInput
-  }
-
-  export type LikeUncheckedUpdateWithoutRankingListInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    postId?: NullableStringFieldUpdateOperationsInput | string | null
-  }
-
-  export type LikeUncheckedUpdateManyWithoutRankingListInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    postId?: NullableStringFieldUpdateOperationsInput | string | null
-  }
-
   export type TagUpdateWithoutRankingListsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
@@ -28161,14 +28161,6 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type ReplyCreateManyPostInput = {
-    id?: string
-    content: string
-    userId: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
   export type FeedItemCreateManyPostInput = {
     id?: string
     type: $Enums.FeedType
@@ -28186,6 +28178,77 @@ export namespace Prisma {
     userId: string
     createdAt?: Date | string
     rankingListId?: string | null
+  }
+
+  export type ReplyCreateManyPostInput = {
+    id?: string
+    content: string
+    userId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type FeedItemUpdateWithoutPostInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumFeedTypeFieldUpdateOperationsInput | $Enums.FeedType
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    quoteRetweetCount?: IntFieldUpdateOperationsInput | number
+    rankingList?: RankingListUpdateOneWithoutFeedItemsNestedInput
+    user?: UserUpdateOneRequiredWithoutFeedItemsNestedInput
+    quotedFeedItem?: FeedItemUpdateOneWithoutQuotedByItemsNestedInput
+    quotedByItems?: FeedItemUpdateManyWithoutQuotedFeedItemNestedInput
+    retweetOfFeedItem?: FeedItemUpdateOneWithoutRetweetedByItemsNestedInput
+    retweetedByItems?: FeedItemUpdateManyWithoutRetweetOfFeedItemNestedInput
+    retweets?: RetweetUpdateManyWithoutFeedItemNestedInput
+  }
+
+  export type FeedItemUncheckedUpdateWithoutPostInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumFeedTypeFieldUpdateOperationsInput | $Enums.FeedType
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userId?: StringFieldUpdateOperationsInput | string
+    rankingListId?: NullableStringFieldUpdateOperationsInput | string | null
+    retweetOfFeedItemId?: NullableStringFieldUpdateOperationsInput | string | null
+    quotedFeedItemId?: NullableStringFieldUpdateOperationsInput | string | null
+    quoteRetweetCount?: IntFieldUpdateOperationsInput | number
+    quotedByItems?: FeedItemUncheckedUpdateManyWithoutQuotedFeedItemNestedInput
+    retweetedByItems?: FeedItemUncheckedUpdateManyWithoutRetweetOfFeedItemNestedInput
+    retweets?: RetweetUncheckedUpdateManyWithoutFeedItemNestedInput
+  }
+
+  export type FeedItemUncheckedUpdateManyWithoutPostInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumFeedTypeFieldUpdateOperationsInput | $Enums.FeedType
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userId?: StringFieldUpdateOperationsInput | string
+    rankingListId?: NullableStringFieldUpdateOperationsInput | string | null
+    retweetOfFeedItemId?: NullableStringFieldUpdateOperationsInput | string | null
+    quotedFeedItemId?: NullableStringFieldUpdateOperationsInput | string | null
+    quoteRetweetCount?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type LikeUpdateWithoutPostInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    rankingList?: RankingListUpdateOneWithoutLikesNestedInput
+    user?: UserUpdateOneRequiredWithoutLikesNestedInput
+  }
+
+  export type LikeUncheckedUpdateWithoutPostInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    rankingListId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type LikeUncheckedUpdateManyWithoutPostInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    rankingListId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ReplyUpdateWithoutPostInput = {
@@ -28212,67 +28275,16 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type FeedItemUpdateWithoutPostInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    type?: EnumFeedTypeFieldUpdateOperationsInput | $Enums.FeedType
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    quoteRetweetCount?: IntFieldUpdateOperationsInput | number
-    user?: UserUpdateOneRequiredWithoutFeedItemsNestedInput
-    rankingList?: RankingListUpdateOneWithoutFeedItemsNestedInput
-    retweetOfFeedItem?: FeedItemUpdateOneWithoutRetweetedByItemsNestedInput
-    retweetedByItems?: FeedItemUpdateManyWithoutRetweetOfFeedItemNestedInput
-    retweets?: RetweetUpdateManyWithoutFeedItemNestedInput
-    quotedFeedItem?: FeedItemUpdateOneWithoutQuotedByItemsNestedInput
-    quotedByItems?: FeedItemUpdateManyWithoutQuotedFeedItemNestedInput
-  }
-
-  export type FeedItemUncheckedUpdateWithoutPostInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    type?: EnumFeedTypeFieldUpdateOperationsInput | $Enums.FeedType
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    userId?: StringFieldUpdateOperationsInput | string
-    rankingListId?: NullableStringFieldUpdateOperationsInput | string | null
-    retweetOfFeedItemId?: NullableStringFieldUpdateOperationsInput | string | null
-    quotedFeedItemId?: NullableStringFieldUpdateOperationsInput | string | null
-    quoteRetweetCount?: IntFieldUpdateOperationsInput | number
-    retweetedByItems?: FeedItemUncheckedUpdateManyWithoutRetweetOfFeedItemNestedInput
-    retweets?: RetweetUncheckedUpdateManyWithoutFeedItemNestedInput
-    quotedByItems?: FeedItemUncheckedUpdateManyWithoutQuotedFeedItemNestedInput
-  }
-
-  export type FeedItemUncheckedUpdateManyWithoutPostInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    type?: EnumFeedTypeFieldUpdateOperationsInput | $Enums.FeedType
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    userId?: StringFieldUpdateOperationsInput | string
-    rankingListId?: NullableStringFieldUpdateOperationsInput | string | null
-    retweetOfFeedItemId?: NullableStringFieldUpdateOperationsInput | string | null
-    quotedFeedItemId?: NullableStringFieldUpdateOperationsInput | string | null
-    quoteRetweetCount?: IntFieldUpdateOperationsInput | number
-  }
-
-  export type LikeUpdateWithoutPostInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    user?: UserUpdateOneRequiredWithoutLikesNestedInput
-    rankingList?: RankingListUpdateOneWithoutLikesNestedInput
-  }
-
-  export type LikeUncheckedUpdateWithoutPostInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    rankingListId?: NullableStringFieldUpdateOperationsInput | string | null
-  }
-
-  export type LikeUncheckedUpdateManyWithoutPostInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    rankingListId?: NullableStringFieldUpdateOperationsInput | string | null
+  export type FeedItemCreateManyQuotedFeedItemInput = {
+    id?: string
+    type: $Enums.FeedType
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    userId: string
+    postId?: string | null
+    rankingListId?: string | null
+    retweetOfFeedItemId?: string | null
+    quoteRetweetCount?: number
   }
 
   export type FeedItemCreateManyRetweetOfFeedItemInput = {
@@ -28293,16 +28305,46 @@ export namespace Prisma {
     createdAt?: Date | string
   }
 
-  export type FeedItemCreateManyQuotedFeedItemInput = {
-    id?: string
-    type: $Enums.FeedType
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    userId: string
-    postId?: string | null
-    rankingListId?: string | null
-    retweetOfFeedItemId?: string | null
-    quoteRetweetCount?: number
+  export type FeedItemUpdateWithoutQuotedFeedItemInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumFeedTypeFieldUpdateOperationsInput | $Enums.FeedType
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    quoteRetweetCount?: IntFieldUpdateOperationsInput | number
+    post?: PostUpdateOneWithoutFeedItemsNestedInput
+    rankingList?: RankingListUpdateOneWithoutFeedItemsNestedInput
+    user?: UserUpdateOneRequiredWithoutFeedItemsNestedInput
+    quotedByItems?: FeedItemUpdateManyWithoutQuotedFeedItemNestedInput
+    retweetOfFeedItem?: FeedItemUpdateOneWithoutRetweetedByItemsNestedInput
+    retweetedByItems?: FeedItemUpdateManyWithoutRetweetOfFeedItemNestedInput
+    retweets?: RetweetUpdateManyWithoutFeedItemNestedInput
+  }
+
+  export type FeedItemUncheckedUpdateWithoutQuotedFeedItemInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumFeedTypeFieldUpdateOperationsInput | $Enums.FeedType
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userId?: StringFieldUpdateOperationsInput | string
+    postId?: NullableStringFieldUpdateOperationsInput | string | null
+    rankingListId?: NullableStringFieldUpdateOperationsInput | string | null
+    retweetOfFeedItemId?: NullableStringFieldUpdateOperationsInput | string | null
+    quoteRetweetCount?: IntFieldUpdateOperationsInput | number
+    quotedByItems?: FeedItemUncheckedUpdateManyWithoutQuotedFeedItemNestedInput
+    retweetedByItems?: FeedItemUncheckedUpdateManyWithoutRetweetOfFeedItemNestedInput
+    retweets?: RetweetUncheckedUpdateManyWithoutFeedItemNestedInput
+  }
+
+  export type FeedItemUncheckedUpdateManyWithoutQuotedFeedItemInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumFeedTypeFieldUpdateOperationsInput | $Enums.FeedType
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userId?: StringFieldUpdateOperationsInput | string
+    postId?: NullableStringFieldUpdateOperationsInput | string | null
+    rankingListId?: NullableStringFieldUpdateOperationsInput | string | null
+    retweetOfFeedItemId?: NullableStringFieldUpdateOperationsInput | string | null
+    quoteRetweetCount?: IntFieldUpdateOperationsInput | number
   }
 
   export type FeedItemUpdateWithoutRetweetOfFeedItemInput = {
@@ -28311,13 +28353,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     quoteRetweetCount?: IntFieldUpdateOperationsInput | number
-    user?: UserUpdateOneRequiredWithoutFeedItemsNestedInput
     post?: PostUpdateOneWithoutFeedItemsNestedInput
     rankingList?: RankingListUpdateOneWithoutFeedItemsNestedInput
-    retweetedByItems?: FeedItemUpdateManyWithoutRetweetOfFeedItemNestedInput
-    retweets?: RetweetUpdateManyWithoutFeedItemNestedInput
+    user?: UserUpdateOneRequiredWithoutFeedItemsNestedInput
     quotedFeedItem?: FeedItemUpdateOneWithoutQuotedByItemsNestedInput
     quotedByItems?: FeedItemUpdateManyWithoutQuotedFeedItemNestedInput
+    retweetedByItems?: FeedItemUpdateManyWithoutRetweetOfFeedItemNestedInput
+    retweets?: RetweetUpdateManyWithoutFeedItemNestedInput
   }
 
   export type FeedItemUncheckedUpdateWithoutRetweetOfFeedItemInput = {
@@ -28330,9 +28372,9 @@ export namespace Prisma {
     rankingListId?: NullableStringFieldUpdateOperationsInput | string | null
     quotedFeedItemId?: NullableStringFieldUpdateOperationsInput | string | null
     quoteRetweetCount?: IntFieldUpdateOperationsInput | number
+    quotedByItems?: FeedItemUncheckedUpdateManyWithoutQuotedFeedItemNestedInput
     retweetedByItems?: FeedItemUncheckedUpdateManyWithoutRetweetOfFeedItemNestedInput
     retweets?: RetweetUncheckedUpdateManyWithoutFeedItemNestedInput
-    quotedByItems?: FeedItemUncheckedUpdateManyWithoutQuotedFeedItemNestedInput
   }
 
   export type FeedItemUncheckedUpdateManyWithoutRetweetOfFeedItemInput = {
@@ -28363,48 +28405,6 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type FeedItemUpdateWithoutQuotedFeedItemInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    type?: EnumFeedTypeFieldUpdateOperationsInput | $Enums.FeedType
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    quoteRetweetCount?: IntFieldUpdateOperationsInput | number
-    user?: UserUpdateOneRequiredWithoutFeedItemsNestedInput
-    post?: PostUpdateOneWithoutFeedItemsNestedInput
-    rankingList?: RankingListUpdateOneWithoutFeedItemsNestedInput
-    retweetOfFeedItem?: FeedItemUpdateOneWithoutRetweetedByItemsNestedInput
-    retweetedByItems?: FeedItemUpdateManyWithoutRetweetOfFeedItemNestedInput
-    retweets?: RetweetUpdateManyWithoutFeedItemNestedInput
-    quotedByItems?: FeedItemUpdateManyWithoutQuotedFeedItemNestedInput
-  }
-
-  export type FeedItemUncheckedUpdateWithoutQuotedFeedItemInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    type?: EnumFeedTypeFieldUpdateOperationsInput | $Enums.FeedType
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    userId?: StringFieldUpdateOperationsInput | string
-    postId?: NullableStringFieldUpdateOperationsInput | string | null
-    rankingListId?: NullableStringFieldUpdateOperationsInput | string | null
-    retweetOfFeedItemId?: NullableStringFieldUpdateOperationsInput | string | null
-    quoteRetweetCount?: IntFieldUpdateOperationsInput | number
-    retweetedByItems?: FeedItemUncheckedUpdateManyWithoutRetweetOfFeedItemNestedInput
-    retweets?: RetweetUncheckedUpdateManyWithoutFeedItemNestedInput
-    quotedByItems?: FeedItemUncheckedUpdateManyWithoutQuotedFeedItemNestedInput
-  }
-
-  export type FeedItemUncheckedUpdateManyWithoutQuotedFeedItemInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    type?: EnumFeedTypeFieldUpdateOperationsInput | $Enums.FeedType
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    userId?: StringFieldUpdateOperationsInput | string
-    postId?: NullableStringFieldUpdateOperationsInput | string | null
-    rankingListId?: NullableStringFieldUpdateOperationsInput | string | null
-    retweetOfFeedItemId?: NullableStringFieldUpdateOperationsInput | string | null
-    quoteRetweetCount?: IntFieldUpdateOperationsInput | number
   }
 
 
