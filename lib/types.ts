@@ -145,10 +145,10 @@ export interface FeedItemWithRelations {
   createdAt: Date;
   updatedAt: Date;
   user: UserSnippet;
-  post?: PostWithData;
-  rankingList?: RankingListSnippet;
-  retweetOfFeedItem?: FeedItemWithRelations;
-  quotedFeedItem?: FeedItemWithRelations;
+  post?: PostWithData | null;
+  rankingList?: RankingListSnippet | null;
+  retweetOfFeedItem?: FeedItemWithRelations | null;
+  quotedFeedItem?: FeedItemWithRelations | null;
   quoteRetweetCount: number;
   _count: { retweets: number };
 }

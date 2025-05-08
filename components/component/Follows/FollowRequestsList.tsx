@@ -12,8 +12,8 @@ import { getPaginatedReceivedFollowRequests } from "@/lib/actions/followActions"
 import {
   acceptFollowRequestAction,
   rejectFollowRequestAction,
-  type FollowRequestWithRequester,
 } from "@/lib/actions/followActions";
+import type { FollowRequestWithRequester } from "@/lib/types"; // 型定義をインポート
 import { useToast } from "@/components/hooks/use-toast"; // トースト通知
 
 interface FollowRequestsListProps {

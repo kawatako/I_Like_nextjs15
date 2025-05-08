@@ -41,7 +41,7 @@ export default function RetweetCard({
 
   const retweeter = item.user; // リツイートしたユーザー
   const originalItem = item.retweetOfFeedItem; // リツイート元の FeedItem データ
-  const isOwner = loggedInUserDbId === item.userId; // このリツイートをしたのが自分か
+  const isOwner = loggedInUserDbId === item.user.id; // このリツイートをしたのが自分か
 
   // リツイート取り消しハンドラ
   const handleUndoRetweet = useCallback(() => {

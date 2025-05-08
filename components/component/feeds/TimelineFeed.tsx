@@ -85,7 +85,7 @@ export default function TimelineFeed({
       {/* ★ feedItems が null/undefined でないことを確認してから map ★ */}
       {feedItems && feedItems.length > 0 && feedItems.map((item: FeedItemWithRelations) => { // 型注釈を追加
         // 自分のリツイート除外フィルター (必要なら)
-        if (item.type === FeedType.RETWEET && item.userId === loggedInUserDbId) {
+        if (item.type === FeedType.RETWEET && item.user.id === loggedInUserDbId) {
           return null;
         }
         // カード表示の switch 文

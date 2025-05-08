@@ -7,6 +7,7 @@ import { getUserDbIdByClerkId } from "@/lib/data/userQueries";
 import { revalidatePath } from "next/cache";
 import type { ActionResult, PostWithData, FeedType } from "@/lib/types";
 import { Prisma } from "@prisma/client";
+import { postPayload } from "@/lib/prisma/payloads"; // User スニペット
 
 interface CreatePostData {
   content: string;
@@ -47,12 +48,16 @@ export async function createPostAction(
       await tx.feedItem.create({
         data: {
           userId: userDbId,
-          // Prisma7 では enum 型が取れないので文字列リテラルで
-          type: "POST" as FeedType,
+          type: "POST" as const,
           postId: post.id,
         },
       });
-      return post;
+      //できあがった Post を PostWithData の形で取り直す
+      const fullPost = await tx.post.findUnique({
+        where: { id: post.id },
+        select: postPayload.select,
+      });
+      return fullPost!;
     });
 
     // キャッシュ再検証
