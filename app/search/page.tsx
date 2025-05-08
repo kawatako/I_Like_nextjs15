@@ -6,7 +6,7 @@ import type { Metadata } from "next";
 import type { PaginatedResponse, RankingListSnippet } from "@/lib/types";
 
 export const metadata: Metadata = {
-  title: "検索 – I Like",
+  title: "検索 - TopMe",
 };
 
 interface SearchPageProps {

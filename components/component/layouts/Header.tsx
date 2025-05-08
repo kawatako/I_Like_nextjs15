@@ -12,7 +12,7 @@ export default function Header() {
       {/* ロゴ (左端) */}
       <Link href="/" className="flex items-center gap-2 flex-shrink-0" prefetch={false}>
         <LogInIcon className="h-6 w-6 text-primary" />
-        <span className="text-lg font-bold text-primary hidden sm:inline">I Like</span>
+        <span className="text-lg font-bold text-primary hidden sm:inline">TopMe</span>
       </Link>
 
       {/* 検索フォーム (中央) */}
