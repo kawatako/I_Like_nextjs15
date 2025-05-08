@@ -125,12 +125,12 @@ export function useCardInteraction(
       if (!likeTargetType) return null;
       if (likeTargetType === "Post")
         return (
-          post?.id ?? (type === FeedType.RETWEET ? originalItem?.postId : null)
+          post?.id ?? (type === FeedType.RETWEET ? originalItem?.post?.id : null)
         );
       if (likeTargetType === "RankingList")
         return (
           rankingList?.id ??
-          (type === FeedType.RETWEET ? originalItem?.rankingListId : null)
+          (type === FeedType.RETWEET ? originalItem?.rankingList?.id : null)
         );
       return null;
     }, [likeTargetType, post, rankingList, originalItem, type]) ?? null;
@@ -182,7 +182,7 @@ export function useCardInteraction(
   const retweetCount = useMemo(() => feedCounts?.retweets ?? 0, [feedCounts]);
   const isOwner = useMemo(
     () =>
-      !!(loggedInUserDbId && itemProp && loggedInUserDbId === itemProp.userId),
+      !!(loggedInUserDbId && itemProp && loggedInUserDbId === itemProp.user.id),
     [loggedInUserDbId, itemProp]
   );
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback,useMemo } from "react";
 import type { RankingListSnippet, PaginatedResponse, ActionResult } from "@/lib/types";
 import { loadMoreProfileRankingsAction, updateRankingListOrderAction } from "@/lib/actions/rankingActions";
 import { useToast } from "@/components/hooks/use-toast";
@@ -58,7 +58,7 @@ export function ProfileRankingLists({
   });
 
   // data が undefined のときは空配列に
-  const lists: RankingListSnippet[] = data ?? [];
+  const lists: RankingListSnippet[] = useMemo(() => data ?? [], [data]);
 
   const sensors = useSensors(
     useSensor(PointerSensor),

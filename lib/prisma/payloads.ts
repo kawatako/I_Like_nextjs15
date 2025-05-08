@@ -8,19 +8,6 @@ export const userSnippetSelect = {
   image: true,
 } as const
 
-// — Post ペイロード —
-export const postPayload = {
-  select: {
-    id: true,
-    content: true,
-    imageUrl: true,
-    createdAt: true,
-    author: { select: userSnippetSelect },
-    _count: { select: { replies: true } },
-    likes: { select: { userId: true } },
-    likeCount: true,
-  },
-} as const
 
 // — RankingList スニペット —
 export const rankingListSnippetSelect = {
@@ -78,6 +65,20 @@ export const rankingListViewSelect = {
   },
   tags: { select: { id: true, name: true } },
   _count: { select: { items: true } },
+} as const
+
+// — Post ペイロード —
+export const postPayload = {
+  select: {
+    id: true,
+    content: true,
+    imageUrl: true,
+    createdAt: true,
+    author: { select: userSnippetSelect },
+    _count: { select: { replies: true } },
+    likes: { select: { userId: true } },
+    likeCount: true,
+  },
 } as const
 
 // — ネストされた FeedItem 用セレクト —

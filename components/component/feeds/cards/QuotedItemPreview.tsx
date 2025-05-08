@@ -34,22 +34,20 @@ export function QuotedItemPreview({ originalItem }: QuotedItemPreviewProps) {
   }
 
   const originalUser = originalItem.user;
-  // ★ post や rankingList が null の可能性を考慮 (型アサーションより安全) ★
   const originalPost = originalItem.post ?? null;
   const originalRankingList = originalItem.rankingList ?? null;
 
   // リンク先決定ロジック
   let originalLink = "#";
-  if (originalItem.type === FeedType.POST && originalItem.id) {
-    originalLink = `/feeds/${originalItem.id}`;
+  if (originalItem.type === FeedType.POST && originalItem.post?.id) {
+    originalLink = `/status/${originalItem.post.id}`;
   } else if (
     originalItem.type === FeedType.RANKING_UPDATE &&
-    originalItem.rankingListId
+    originalItem.rankingList?.id
   ) {
-    originalLink = `/rankings/${originalItem.rankingListId}`;
-  } else if (originalItem.id) {
-    // 他のタイプは FeedItem 詳細へ (仮)
-    originalLink = `/feeds/${originalItem.id}`;
+    originalLink = `/rankings/${originalItem.rankingList.id}`;
+  } else {
+    originalLink = `/feed/${originalItem.id}`;
   }
 
   return (

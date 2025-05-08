@@ -279,6 +279,9 @@ export async function deleteRankingListAction(
   formData: FormData
 ): Promise<ActionResult> {
   const { userId: clerkId } = await auth();
+  if (!clerkId) {
+    return { success: false, error: "ログインしてください。" };
+  }
   const listId = formData.get("listId") as string;
   const userRec = await prisma.user.findUnique({
     where: { clerkId },
@@ -304,6 +307,9 @@ export async function updateRankingListOrderAction(
   orderedListIds: string[]
 ): Promise<ActionResult> {
   const { userId: clerkId } = await auth();
+  if (!clerkId) {
+    return { success: false, error: "ログインしてください。" };
+  }
   const userRec = await prisma.user.findUnique({
     where: { clerkId },
     select: { id: true, username: true },
