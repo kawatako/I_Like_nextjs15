@@ -8,12 +8,11 @@ export default clerkMiddleware({
 
 export const config = {
   matcher: [
-    // 1) _next と静的ファイル（拡張子付きファイル）を除外
-    // 2) サインイン／サインアップを除外
-    // 3) webhooks/clerk も除外
-    // 4) それ以外のすべてのページルートを保護
-    '/((?!_next/|favicon\\.ico|api/webhooks/clerk|sign-in|sign-up|.*\\..*).*)',
-    // API／trpc ルートも常にミドルウェアを通す
+    // 1) Next.js の内部静的アセットはスキップ
+    // 2) Clerk の Webhook（API）だけはスキップ
+    // 3) サインイン／サインアップは自前で描画させる
+    '/((?!_next/static|_next/image|favicon\\.ico|api/webhooks/clerk|sign-in|sign-up).*)',
+    // 4) trpc やその他 API ルートは別途キャッチ
     '/api/:path*',
     '/trpc/:path*',
   ],
