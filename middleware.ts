@@ -5,17 +5,18 @@ export default clerkMiddleware();
 
 export const config = {
   matcher: [
-    // まずログイン／サインアップはスキップ
+    // まず Webhook はスキップ
+    "/api/webhooks/clerk",
+    // API 全体（他は保護）
+    "/api/:path*",
+    // ログイン／サインアップはスキップ
     "/sign-in(.*)",
     "/sign-up(.*)",
-    // Next.js の内部や静的アセット
+    // 静的アセットはスキップ
     "/_next/static(.*)",
     "/_next/image(.*)",
     "/favicon.ico",
-    // Clerk の Webhook だけは公開
-    "/api/webhooks/clerk(.*)",
-
-    // それ以外—拡張子なしの全ページルートを保護
+    // それ以外—拡張子なしのページルートを保護
     "/((?!.*\\..*).*)",
   ],
 };
