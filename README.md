@@ -247,8 +247,6 @@ searchRankingListsAction を fetcher として呼び出し、nextCursor があ�
 
 返却型：Promise<PaginatedResponse<RankingListSnippet>>
 
-ts
-コピーする
 編集する
 type PaginatedResponse<T> = {
   items: T[];         // 取得データ（最大 limit 件）
