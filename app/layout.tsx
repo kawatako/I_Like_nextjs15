@@ -7,9 +7,9 @@ import Header from "@/components/component/layouts/Header";
 import LeftSidebar from "@/components/component/layouts/LeftSidebar";
 import BottomNavbar from "@/components/component/layouts/BottomNavbar";
 import { auth } from "@clerk/nextjs/server";
-import { Providers } from "@/components/Providers";
-import { getCurrentLoginUserData } from "@/lib/data/userQueries";
+import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "@/components/ui/toaster";
+import { getCurrentLoginUserData } from "@/lib/data/userQueries";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -30,10 +30,13 @@ export default async function RootLayout({
 
   return (
     <html lang="ja" className="h-full">
-      <body
-        className={`${inter.className} flex flex-col h-full bg-gray-100 dark:bg-gray-900`}
-      >
-        <Providers>
+      {/* これがないと head 内にスクリプトが挿入されません */}
+      <head />
+      <body className={`${inter.className} flex flex-col h-full bg-gray-100 dark:bg-gray-900`}>
+        {/* ここで publishableKey を必ず渡す */}
+        <ClerkProvider
+          publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY!}
+        >
           <Header />
           <div className="flex-1 grid grid-cols-1 md:grid-cols-[auto_1fr] lg:grid-cols-[auto_1fr_auto] w-full max-w-7xl mx-auto">
             <aside className="hidden md:block md:w-[240px] lg:w-[260px] p-4 md:p-6 sticky top-16 self-start">
@@ -45,7 +48,7 @@ export default async function RootLayout({
           </div>
           <BottomNavbar currentLoginUserData={currentLoginUserData} />
           <Toaster />
-        </Providers>
+        </ClerkProvider>
       </body>
     </html>
   );
