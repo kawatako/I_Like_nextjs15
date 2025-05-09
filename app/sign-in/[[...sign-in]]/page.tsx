@@ -1,8 +1,15 @@
-//app/sign-up/[[...sign-up]]/page.tsx
+// app/sign-in/[[...sign-in]]/page.tsx
 "use client";
-import { SignIn } from "@clerk/nextjs";
+// @ts-ignore
+const PK = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
-export default function Page() {
+import { SignIn } from "@clerk/nextjs";
+import { useEffect } from "react";
+
+export default function SignInPage() {
+  useEffect(() => {
+    console.log("👀 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:", PK);
+  }, []);
   return (
     <div className="h-[calc(100vh-96px)] flex items-center justify-center">
       <SignIn />
