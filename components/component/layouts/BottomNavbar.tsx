@@ -47,7 +47,7 @@ export default function BottomNavbar({
     { href: "/", icon: HomeIcon, label: "Home" },
     { href: "/trends", icon: SearchIcon, label: "Trends" },
     { href: "/rankings/create", icon: CrownIcon, label: "Create Ranking" },
-    { href: "/notifications", icon: BellIcon, label: "Notifications" },
+    { href: "#", icon: BellIcon, label: "Notifications" },
     { href: followsHref, icon: UsersIcon, label: "Follows", isFollows: true },
     { href: profileHref, icon: UserIcon, label: "Profile", isProfile: true },
   ];

@@ -41,7 +41,7 @@ const navItems = [
   { icon: SearchIcon, label: "Trends", href: "/trends" },
   { icon: PlusIcon, label: "Create Post", href: "/posts/new" },
   { icon: HeartIcon, label: "Likes", href: "/likes" },
-  { icon: BellIcon, label: "Notifications", href: "/notifications" }, 
+  { icon: BellIcon, label: "Notifications", href: "#" }, 
 ];
 
 export default function LeftSidebar({
@@ -93,9 +93,8 @@ export default function LeftSidebar({
         </ul>
       </nav>
 
-      {/* 設定リンク部分は変更なし */}
       <div className="mt-auto pt-4 border-t">
-        <Link href="/settings" className="block">
+        <Link href="/#" className="block">
           <div className="flex items-center gap-3 px-3 py-2.5 rounded-md text-foreground/80 hover:bg-muted hover:text-foreground transition-colors">
             <SettingsIcon className="h-5 w-5" />
             <span className="font-medium">Settings</span>
