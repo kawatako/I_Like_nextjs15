@@ -1,4 +1,4 @@
-// hooks/useImageUploader.ts
+// components/hooks/useImageUploader.ts
 'use client'
 
 import { useState, useCallback } from 'react'
