@@ -1,34 +1,30 @@
 // components/component/profiles/ProfileEditForm.tsx
 "use client";
 
-import { useState, useCallback, useRef, useTransition, FormEvent } from "react";
+import { useState, useCallback, useTransition, FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import type { User } from "@prisma/client"; // Prisma の User 型を使う（または必要なフィールドだけの型）
-import type { ActionResult } from "@/lib/types";
-import { useImageUploader } from "@/components/hooks/useImageUploader"; // 画像アップロードフック
+import type { User } from "@prisma/client";
+import { useImageUploader } from "@/components/hooks/useImageUploader";
 import {
   updateProfileAction,
   type ProfileUpdateData,
 } from "@/lib/actions/userActons";
 import { useToast } from "@/components/hooks/use-toast";
-import ImageUploader from "../common/ImageUploader"; // 画像アップローダーUIコンポーネント
+import ImageUploader from "../common/ImageUploader"; // 
 import {
   Card,
   CardHeader,
   CardTitle,
-  CardDescription,
   CardContent,
-} from "@/components/ui/card"; // Card関連
+} from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "@/components/component/Icons";
-import { z } from "zod"; // バリデーション用
+import { z } from "zod"; // 
 
-// --- Props の型定義 ---
-// 編集に必要なユーザーデータの部分型を定義
-// (lib/types.ts に UserProfileEditableData のような型を定義してインポートするのが望ましい)
+// 編集に必要なユーザーデータの部分型
 type InitialProfileData = Pick<
   User,
   | "name"
