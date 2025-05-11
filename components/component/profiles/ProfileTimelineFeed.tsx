@@ -7,8 +7,8 @@ import PostCard from "@/components/component/feeds/cards/PostCard";
 import RankingUpdateCard from "@/components/component/feeds/cards/RankingUpdateCard";
 import RetweetCard from "@/components/component/feeds/cards/RetweetCard";
 import QuoteRetweetCard from "@/components/component/feeds/cards/QuoteRetweetCard";
-// ★ 汎用アクションと FeedKey 型をインポート ★
-import { getPaginatedFeedAction, type FeedKey } from '@/lib/actions/feedActions';
+import { getPaginatedFeedAction} from '@/lib/actions/feedActions';
+import { FeedKey } from '@/lib/types';
 import { FeedType } from "@prisma/client";
 import { Loader2 } from "@/components/component/Icons";
 // ★ カスタムフックのパスを修正 ★

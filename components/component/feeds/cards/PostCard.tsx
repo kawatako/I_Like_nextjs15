@@ -31,7 +31,6 @@ export default function PostCard({ item, loggedInUserDbId }: PostCardProps) {
     return null;
   }
 
-  // ★★★ フックから必要な値と関数を分割代入で受け取る ★★★
   const {
     user, // 投稿者情報
     post, // 投稿データ (いいね情報含む)
@@ -55,7 +54,6 @@ export default function PostCard({ item, loggedInUserDbId }: PostCardProps) {
     isDeleting, // 削除アクション実行中状態
     handleDelete, // 削除実行関数
   } = interactionProps;
-  // ★★★ ここまで ★★★
 
   // ★ useState, useTransition, useCallback, データ計算ロジックは削除 ★
 
