@@ -138,6 +138,11 @@ export interface UserProfileData {
   };
 }
 
+/** SWR の key 型: ホーム／プロフィール両フィード用 */
+export type FeedKey =
+  | ["homeFeed", string | null, string | null]
+  | ["profileFeed", string, string | null];
+
 /** FeedItem＋関連情報 */
 export interface FeedItemWithRelations {
   id: string;

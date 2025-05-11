@@ -9,7 +9,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
@@ -25,7 +24,6 @@ import Image from "next/image"; // 画像表示用
 interface QuoteCommentModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  // 引用対象の FeedItem データを受け取る
   quotedFeedItem: FeedItemWithRelations | null;
 }
 

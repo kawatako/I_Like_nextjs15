@@ -7,7 +7,8 @@ import PostCard from "./cards/PostCard";
 import RankingUpdateCard from "./cards/RankingUpdateCard";
 import RetweetCard from "./cards/RetweetCard";
 import QuoteRetweetCard from "./cards/QuoteRetweetCard";
-import { getPaginatedFeedAction, type FeedKey } from '@/lib/actions/feedActions';
+import { getPaginatedFeedAction } from '@/lib/actions/feedActions';
+import { FeedKey } from '@/lib/types'; // FeedKey をインポート
 import { FeedType } from "@prisma/client";
 import { Loader2 } from "@/components/component/Icons";
 import { useInfiniteScroll } from "@/components/hooks/useInfiniteScroll"; // パスを確認

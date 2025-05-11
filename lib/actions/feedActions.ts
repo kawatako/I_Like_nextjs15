@@ -4,26 +4,23 @@
 import { auth } from "@clerk/nextjs/server";
 import prisma from "@/lib/client";
 import { getUserDbIdByClerkId } from "@/lib/data/userQueries";
-import { getHomeFeed } from "@/lib/data/feedQueries";
+import { getHomeFeed, mapAndSignFeedItem } from "@/lib/data/feedQueries";
 import { feedItemPayload } from "@/lib/prisma/payloads";
 import type {
   FeedItemWithRelations,
   PaginatedResponse,
   ActionResult,
-  FeedType 
+  FeedKey,
+  FeedType,
 } from "@/lib/types";
 import { revalidatePath } from "next/cache";
 
-// 一度に読み込む件数
+// 一度に読み込むフィードアイテム上限＋１
 const TIMELINE_PAGE_LIMIT = 20;
 
-// SWR の key 型
-export type FeedKey =
-  | ["homeFeed", string | null, string | null]
-  | ["profileFeed", string, string | null];
-
 /**
- * フィードを取得するアクション
+ * 汎用フィード取得アクション
+ * key の内容に応じ、ホームまたはプロフィールのタイムラインをページネーション付きで返す
  */
 export async function getPaginatedFeedAction(
   key: FeedKey
@@ -31,52 +28,60 @@ export async function getPaginatedFeedAction(
   const [feedType, userIdOrNull, cursor] = key;
   const take = TIMELINE_PAGE_LIMIT + 1;
   const skip = cursor ? 1 : 0;
-  const cursorOptions = cursor ? { id: cursor } : undefined;
+
+  // cursor が string のときだけ { id: string } をセット
+  let cursorOption: { id: string } | undefined;
+  if (cursor) {
+    cursorOption = { id: cursor };
+  }
 
   // 認証チェック（homeFeed のみ必須）
   const { userId: clerkId } = await auth();
   const userDbId = clerkId ? await getUserDbIdByClerkId(clerkId) : null;
-
   if (feedType === "homeFeed" && !userDbId) {
-    console.warn("[getPaginatedFeed] home feed requires login");
+    console.warn("[getPaginatedFeedAction] home feed requires login");
     return { items: [], nextCursor: null };
   }
 
   let items: FeedItemWithRelations[] = [];
+  let nextCursor: string | null = null;
+
   try {
     if (feedType === "homeFeed") {
+      // ホームフィード：getHomeFeed から既に署名付きURL済みのデータを取得
       const res = await getHomeFeed({
         userId: userDbId!,
         limit: TIMELINE_PAGE_LIMIT,
-        cursor: cursor ?? undefined,
+        cursor:cursor ?? undefined,
       });
       items = res.items;
+      nextCursor = res.nextCursor;
     } else {
-      // profileFeed
-      items = (await prisma.feedItem.findMany({
+      // プロフィールフィード：生データをフェッチ後に署名付きURLに変換
+      const rawItems = await prisma.feedItem.findMany({
         where: { userId: userIdOrNull },
         select: feedItemPayload.select,
         orderBy: { createdAt: "desc" },
         take,
         skip,
-        cursor: cursorOptions,
-      })) as FeedItemWithRelations[];
+        cursor: cursorOption,
+      });
+      if (rawItems.length > TIMELINE_PAGE_LIMIT) {
+        const last = rawItems.pop();
+        nextCursor = last?.id ?? null;
+      }
+      items = await Promise.all(rawItems.map(mapAndSignFeedItem));
     }
 
-    let nextCursor: string | null = null;
-    if (items.length > TIMELINE_PAGE_LIMIT) {
-      const last = items.pop();
-      nextCursor = last?.id ?? null;
-    }
     return { items, nextCursor };
-  } catch (err: unknown) {
-    console.error("[getPaginatedFeed]", err);
+  } catch (error) {
+    console.error("[getPaginatedFeedAction]", error);
     return { items: [], nextCursor: null };
   }
 }
 
 /**
- * リツイートを作成
+ * 指定フィードアイテムをリツイートとして新規作成するアクション
  */
 export async function retweetAction(
   feedItemId: string
@@ -92,41 +97,37 @@ export async function retweetAction(
       select: { userId: true, user: { select: { isPrivate: true } } },
     });
     if (!original) throw new Error("投稿が見つかりません。");
-    if (original.user?.isPrivate)
+    if (original.user?.isPrivate) {
       throw new Error("非公開アカウントの投稿はリツイートできません。");
+    }
 
-    const result = await prisma.$transaction(async (tx: any) => {
+    const result = await prisma.$transaction(async (tx) => {
       const exists = await tx.retweet.findUnique({
         where: { userId_feedItemId: { userId: userDbId, feedItemId } },
-        select: { id: true },
       });
       if (exists) return { already: true };
 
       await tx.retweet.create({ data: { userId: userDbId, feedItemId } });
-      const newItem = await tx.feedItem.create({
+      await tx.feedItem.create({
         data: {
           userId: userDbId,
           type: "RETWEET" as FeedType,
           retweetOfFeedItemId: feedItemId,
         },
-        select: { id: true },
       });
-      return { already: false, newId: newItem.id };
+      return { already: false };
     });
 
     if (!result.already) revalidatePath("/");
     return { success: true };
-  } catch (err: unknown) {
-    console.error("[retweetAction]", err);
-    return {
-      success: false,
-      error: err instanceof Error ? err.message : "エラーが発生しました。",
-    };
+  } catch (error) {
+    console.error("[retweetAction]", error);
+    return { success: false, error: error instanceof Error ? error.message : "エラーが発生しました。" };
   }
 }
 
 /**
- * リツイートを取り消し
+ * 指定フィードアイテムのリツイートを取り消すアクション
  */
 export async function undoRetweetAction(
   feedItemId: string
@@ -137,10 +138,8 @@ export async function undoRetweetAction(
   if (!userDbId) return { success: false, error: "ユーザー情報が見つかりません。" };
 
   try {
-    await prisma.$transaction(async (tx: any) => {
-      await tx.retweet.deleteMany({
-        where: { userId: userDbId, feedItemId },
-      });
+    await prisma.$transaction(async (tx) => {
+      await tx.retweet.deleteMany({ where: { userId: userDbId, feedItemId } });
       await tx.feedItem.deleteMany({
         where: {
           userId: userDbId,
@@ -151,17 +150,14 @@ export async function undoRetweetAction(
     });
     revalidatePath("/");
     return { success: true };
-  } catch (err: unknown) {
-    console.error("[undoRetweetAction]", err);
-    return {
-      success: false,
-      error: err instanceof Error ? err.message : "エラーが発生しました。",
-    };
+  } catch (error) {
+    console.error("[undoRetweetAction]", error);
+    return { success: false, error: error instanceof Error ? error.message : "エラーが発生しました。" };
   }
 }
 
 /**
- * 引用リツイートを作成
+ * 指定フィードアイテムを引用リツイートとして新規作成するアクション
  */
 export async function quoteRetweetAction(
   quotedFeedItemId: string,
@@ -173,13 +169,15 @@ export async function quoteRetweetAction(
   if (!userDbId) return { success: false, error: "ユーザー情報が見つかりません。" };
 
   const text = data.commentContent.trim();
-  if (!text && !data.imageUrl)
+  if (!text && !data.imageUrl) {
     return { success: false, error: "コメントまたは画像を指定してください。" };
-  if (text.length > 280)
+  }
+  if (text.length > 280) {
     return { success: false, error: "コメントは280文字以内です。" };
+  }
 
   try {
-    const { newPost, newFeedItem } = await prisma.$transaction(async (tx: any) => {
+    const { newPost, newFeedItem } = await prisma.$transaction(async (tx) => {
       const post = await tx.post.create({
         data: { authorId: userDbId, content: text, imageUrl: data.imageUrl },
       });
@@ -199,17 +197,14 @@ export async function quoteRetweetAction(
     });
     revalidatePath("/");
     return { success: true, newPost, newFeedItem };
-  } catch (err: unknown) {
-    console.error("[quoteRetweetAction]", err);
-    return {
-      success: false,
-      error: err instanceof Error ? err.message : "エラーが発生しました。",
-    };
+  } catch (error) {
+    console.error("[quoteRetweetAction]", error);
+    return { success: false, error: error instanceof Error ? error.message : "エラーが発生しました。" };
   }
 }
 
 /**
- * 引用リツイートを削除
+ * 指定フィードアイテムの引用リツイートを削除するアクション
  */
 export async function deleteQuoteRetweetAction(
   feedItemId: string
@@ -224,25 +219,26 @@ export async function deleteQuoteRetweetAction(
       where: { id: feedItemId },
       select: { postId: true, quotedFeedItemId: true },
     });
-    if (!rec || !rec.postId) throw new Error("削除対象が不正です。");
+    if (!rec?.postId) throw new Error("削除対象が不正です。");
 
-    await prisma.$transaction(async (tx: any) => {
-      if (rec.quotedFeedItemId) {
-        await tx.feedItem.updateMany({
-          where: { id: rec.quotedFeedItemId, quoteRetweetCount: { gt: 0 } },
-          data: { quoteRetweetCount: { decrement: 1 } },
-        });
-      }
-      await tx.post.delete({ where: { id: rec.postId } });
+
+const postId = rec.postId;
+const quotedFeedItemId = rec.quotedFeedItemId;
+
+    await prisma.$transaction(async (tx) => {
+   if (quotedFeedItemId) {
+     await tx.feedItem.updateMany({
+       where: { id: quotedFeedItemId, quoteRetweetCount: { gt: 0 } },
+       data: { quoteRetweetCount: { decrement: 1 } },
+     });
+   }
+   await tx.post.delete({ where: { id: postId } });
       await tx.feedItem.delete({ where: { id: feedItemId } });
     });
     revalidatePath("/");
     return { success: true };
-  } catch (err: unknown) {
-    console.error("[deleteQuoteRetweetAction]", err);
-    return {
-      success: false,
-      error: err instanceof Error ? err.message : "エラーが発生しました。",
-    };
+  } catch (error) {
+    console.error("[deleteQuoteRetweetAction]", error);
+    return { success: false, error: error instanceof Error ? error.message : "エラーが発生しました。" };
   }
 }

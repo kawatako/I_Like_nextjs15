@@ -94,7 +94,6 @@ export function QuotedItemPreview({ originalItem }: QuotedItemPreviewProps) {
           [👑] {originalRankingList.subject}
         </p>
       )}
-      {/* TODO: 他のタイプ (RETWEET, QUOTE_RETWEET) のプレビュー表示 */}
     </Link>
   );
 }

@@ -15,7 +15,6 @@ interface RetweetQuoteDialogProps {
   onOpenChange: (open: boolean) => void;
   onRetweet: () => void; // リポスト選択時の処理
   onQuote: () => void; // 引用選択時の処理
-  // 必要ならリツイート対象の feedItemId なども渡す
 }
 
 export function RetweetQuoteDialog({
@@ -59,12 +58,6 @@ export function RetweetQuoteDialog({
             引用
           </Button>
         </div>
-        {/* フッターは不要なら削除してもOK */}
-        {/* <DialogFooter>
-           <DialogClose asChild>
-              <Button type="button" variant="secondary">キャンセル</Button>
-           </DialogClose>
-        </DialogFooter> */}
       </DialogContent>
     </Dialog>
   );

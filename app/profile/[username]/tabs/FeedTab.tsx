@@ -9,7 +9,7 @@ interface FeedTabProps {
 // RSC として定義
 export default function FeedTab({ targetUserId, loggedInUserDbId }: FeedTabProps) {
   return (
-    <ProfileTimelineFeed // ★ 呼び出すコンポーネント名を変更 ★
+    <ProfileTimelineFeed
       targetUserId={targetUserId}
       loggedInUserDbId={loggedInUserDbId}
     />

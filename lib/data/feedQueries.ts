@@ -1,28 +1,81 @@
 // lib/data/feedQueries.ts
+
 import prisma from "@/lib/client";
+import { createClient } from "@supabase/supabase-js";
 import type { PaginatedResponse, FeedItemWithRelations } from "@/lib/types";
-import { feedItemPayload } from "../prisma/payloads";
+import { feedItemPayload } from "@/lib/prisma/payloads";
+
+// Supabase 管理クライアント（プライベートバケットの署名付きURL生成用）
+const supabaseAdmin = createClient(
+  process.env.SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
 
 /**
- * Prisma から返ってくる FeedItem ペイロードを、
- * FeedItemWithRelations の型に合わせて再帰的にマッピングする
+ * 公開URLまたはblob: URLを受け取り、必要ならSupabaseの署名付きURLに変換して返す
  */
-function mapFeedItem(fi: any): FeedItemWithRelations {
+async function signUrl(publicUrl?: string | null): Promise<string | undefined> {
+  if (!publicUrl || publicUrl.startsWith("blob:")) return publicUrl ?? undefined;
+  try {
+    const url = new URL(publicUrl);
+    const prefix = "/storage/v1/object/public/i-like/";
+    if (!url.pathname.startsWith(prefix)) return publicUrl;
+    const key = url.pathname.slice(prefix.length);
+    const { data, error } = await supabaseAdmin.storage
+      .from("i-like")
+      .createSignedUrl(key, 60 * 60 * 24);
+    if (error) {
+      console.error("Signed URL生成失敗:", error);
+      return publicUrl;
+    }
+    return data.signedUrl;
+  } catch (e) {
+    console.error("signUrl error:", e);
+    return publicUrl;
+  }
+}
+
+/**
+ * フィードアイテムの生データを再帰的にFeedItemWithRelations型にマッピングし、画像URLは署名付きURLに変換して返す
+ */
+export async function mapAndSignFeedItem(fi: any): Promise<FeedItemWithRelations> {
+  // ユーザーアバター
+  const userImage = await signUrl(fi.user?.image);
+  // 投稿画像
+  const post = fi.post
+    ? { ...fi.post, imageUrl: await signUrl(fi.post.imageUrl) }
+    : undefined;
+  // ランキング更新アイテム画像
+  const rankingList = fi.rankingList
+    ? {
+        ...fi.rankingList,
+        items: await Promise.all(
+          fi.rankingList.items.map(async (item: any) => ({
+            ...item,
+            imageUrl: await signUrl(item.imageUrl),
+          }))
+        ),
+      }
+    : undefined;
+
   return {
-    // id, type, createdAt, updatedAt, userId, postId, etc...
     ...fi,
-    post: fi.post ?? undefined,
-    rankingList: fi.rankingList ?? undefined,
-    // 再帰的にマッピング
+    user: { ...fi.user, image: userImage },
+    post,
+    rankingList,
+    // 再帰的にリツイート元／引用元も同様にマッピング
     retweetOfFeedItem: fi.retweetOfFeedItem
-      ? mapFeedItem(fi.retweetOfFeedItem)
+      ? await mapAndSignFeedItem(fi.retweetOfFeedItem)
       : undefined,
     quotedFeedItem: fi.quotedFeedItem
-      ? mapFeedItem(fi.quotedFeedItem)
+      ? await mapAndSignFeedItem(fi.quotedFeedItem)
       : undefined,
   };
 }
 
+/**
+ * ホームフィードを取得し、画像URLを署名付きURLに変換して返す
+ */
 export async function getHomeFeed({
   userId,
   limit,
@@ -38,14 +91,15 @@ export async function getHomeFeed({
   }
 
   const take = limit + 1;
-
   try {
+    // フォロー中ユーザーIDを取得
     const following = await prisma.follow.findMany({
       where: { followerId: userId },
       select: { followingId: true },
     });
     const followingIds = following.map((f) => f.followingId);
 
+    // 生データ取得
     const rawItems = await prisma.feedItem.findMany({
       where: { userId: { in: followingIds } },
       select: feedItemPayload.select,
@@ -55,13 +109,15 @@ export async function getHomeFeed({
       cursor: cursor ? { id: cursor } : undefined,
     });
 
+    // 次カーソル計算
     let nextCursor: string | null = null;
     if (rawItems.length > limit) {
       const nxt = rawItems.pop();
       nextCursor = nxt?.id ?? null;
     }
 
-    const items = rawItems.map(mapFeedItem);
+    // FeedItemWithRelations にマッピング＆署名付きURL生成
+    const items = await Promise.all(rawItems.map(mapAndSignFeedItem));
 
     return { items, nextCursor };
   } catch (error) {
@@ -70,6 +126,9 @@ export async function getHomeFeed({
   }
 }
 
+/**
+ * 単一のフィードアイテム詳細を取得し、画像URLを署名付きURLに変換して返す
+ */
 export async function getFeedItemDetails(
   feedItemId: string
 ): Promise<FeedItemWithRelations | null> {
@@ -83,10 +142,10 @@ export async function getFeedItemDetails(
       where: { id: feedItemId },
       select: feedItemPayload.select,
     });
-    if (!fi) {
-      return null;
-    }
-    return mapFeedItem(fi);
+    if (!fi) return null;
+
+    // マッピング＆署名付きURL生成
+    return await mapAndSignFeedItem(fi);
   } catch (error) {
     console.error("[getFeedItemDetails] Error fetching details:", error);
     return null;
