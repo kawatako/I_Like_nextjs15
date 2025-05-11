@@ -9,13 +9,17 @@ export function useImageUploader() {
   const { user } = useUser()
   const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const uploadImage = useCallback(async (file: File): Promise<string | null> => {
     if (!user) {
-      toast({ title: '認証エラー', description: 'ユーザー情報が取得できません', variant: 'destructive' })
+      const message = '認証エラー: ユーザー情報が取得できません'
+      setError(message)
+      toast({ title: '認証エラー', description: message, variant: 'destructive' })
       return null
     }
 
+    setError(null)
     setIsLoading(true)
     try {
       const form = new FormData()
@@ -33,9 +37,11 @@ export function useImageUploader() {
 
       return json.publicUrl as string
     } catch (err) {
+      const message = err instanceof Error ? err.message : '不明なエラー'
+      setError(message)
       toast({
         title: 'アップロードエラー',
-        description: err instanceof Error ? err.message : '不明なエラー',
+        description: message,
         variant: 'destructive',
       })
       return null
@@ -44,5 +50,5 @@ export function useImageUploader() {
     }
   }, [user, toast])
 
-  return { uploadImage, isLoading }
+  return { uploadImage, isLoading, error }
 }
