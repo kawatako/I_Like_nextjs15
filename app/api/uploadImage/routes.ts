@@ -7,7 +7,6 @@ export const runtime = 'edge'
 
 export async function POST(request: Request) {
   try {
-    // Clerk で認証したユーザーを取得 (auth() は Promise を返すので await が必要)
     const { userId } = await auth()
     if (!userId) {
       return NextResponse.json({ error: '認証が必要です' }, { status: 401 })
