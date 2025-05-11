@@ -268,7 +268,7 @@ export function NewRankingForm() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Label htmlFor="subject">テーマ*</Label>
+              <Label htmlFor="subject">タイトル*</Label>
               <Input
                 id="subject"
                 value={subject}

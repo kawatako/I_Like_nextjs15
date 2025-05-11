@@ -7,7 +7,6 @@ import { useAverageItemRank } from "@/components/hooks/useTrends"
 
 export default function SubjectAveragePage() {
   const params = useParams()
-  // useParams().subject は string | string[] なので
   const subjectParam = Array.isArray(params.subject)
     ? params.subject[0]
     : params.subject

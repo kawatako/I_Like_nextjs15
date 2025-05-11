@@ -20,7 +20,7 @@ export default async function ProfilePage({ params, searchParams }: {
   // Service Role Key を使った Supabase 管理クライアントを関数内で初期化
   const supabaseAdmin = createClient(
     process.env.SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY! // ensure env var defined in deployment
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
   )
 
   // 認証ユーザーを取得
