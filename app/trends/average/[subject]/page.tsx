@@ -1,4 +1,5 @@
 // app/trends/average/[subject]/page.tsx
+//サーバー上で URL から「何のテーマ」のリクエストかをデコードして取得し、見出しと、テーマ名を渡した子コンポーネントを描画し、子コンポーネント側で初めてクライアント（ブラウザ）でデータを取りにいって表示
 import AverageItemRankList from "@/components/component/trends/AverageItemRankList";
 
 interface PageProps {
