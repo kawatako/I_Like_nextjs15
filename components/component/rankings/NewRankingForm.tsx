@@ -35,8 +35,9 @@ import {
 } from "@dnd-kit/sortable";
 import { EditableRankedItem, type EditableItem } from "./EditableRankedItem";
 import TagInput from "./TagInput";
+import { useImageUploader } from "@/components/hooks/useImageUploader";
 
-// --- Zodスキーマ ---
+// --- Zod schemas ---
 const subjectAllowedCharsRegex =
   /^[\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}a-zA-Z0-9 ]+$/u;
 const SubjectSchema = z
@@ -47,25 +48,20 @@ const SubjectSchema = z
   .regex(subjectAllowedCharsRegex, {
     message: "タイトルに使用できない文字です。",
   });
-const ItemNameSchema = z
-  .string()
-  .trim()
-  .min(1, "アイテム名は必須です。")
-  .max(100, "アイテム名は100字以内です。");
-const DescriptionSchema = z
-  .string()
-  .trim()
-  .max(500, "説明は500字以内です。")
-  .optional();
+const DescriptionSchema = z.string().trim().max(500, "説明は500字以内です。").optional();
 const TagNameSchema = z
   .string()
   .trim()
   .min(1, "タグ名は1文字以上入力してください。")
   .max(30, "タグ名は30文字以内です。");
 
+// EditableItem type comes from EditableRankedItem.tsx
+// export type EditableItem = { clientId: string; id?: string; itemName: string; itemDescription?: string | null; imageUrl?: string | null; imageFile?: File | null; previewUrl?: string | null; };
+
 export function NewRankingForm() {
   const router = useRouter();
   const { toast } = useToast();
+  const { uploadImage, isLoading: isUploading } = useImageUploader();
   const [subject, setSubject] = useState("");
   const [description, setDescription] = useState("");
   const [editableItems, setEditableItems] = useState<EditableItem[]>([]);
@@ -73,68 +69,44 @@ export function NewRankingForm() {
   const [isSubmitting, startSubmitTransition] = useTransition();
   const [formError, setFormError] = useState<string | null>(null);
 
-  // アイテム追加
+  // Add blank item slot
   const handleAddItemSlot = useCallback(() => {
-    if (editableItems.length < 10) {
-      const newClientId = `new-${Date.now()}-${Math.random()}`;
-      setEditableItems((prev) => [
-        ...prev,
-        {
-          clientId: newClientId,
-          itemName: "",
-          itemDescription: null,
-          imageUrl: null,
-          imageFile: null,
-          previewUrl: null,
-        },
-      ]);
-    } else {
+    if (editableItems.length >= 10) {
       toast({ title: "アイテムは10個までです。", variant: "destructive" });
+      return;
     }
+    const newClientId = `new-${Date.now()}-${Math.random()}`;
+    setEditableItems((prev) => [
+      ...prev,
+      { clientId: newClientId, itemName: "", itemDescription: null, imageUrl: null, imageFile: null, previewUrl: null },
+    ]);
   }, [editableItems.length, toast]);
 
-  // アイテム内容変更
+  // Field updates
   const handleItemChange = useCallback(
-    (
-      clientId: string,
-      field: keyof Omit<
-        EditableItem,
-        "clientId" | "id" | "imageFile" | "previewUrl" | "imageUrl"
-      >,
-      value: string | null
-    ) => {
+    (clientId: string, field: keyof Omit<EditableItem, "clientId" | "id" | "imageFile" | "previewUrl" | "imageUrl">, value: string | null) => {
       setEditableItems((items) =>
-        items.map((item) =>
-          item.clientId === clientId ? { ...item, [field]: value } : item
-        )
+        items.map((item) => (item.clientId === clientId ? { ...item, [field]: value } : item))
       );
     },
     []
   );
-
-  // アイテム削除
+  // Remove item
   const handleDeleteItem = useCallback(
     (clientId: string) => {
       const toDelete = editableItems.find((i) => i.clientId === clientId);
-      if (toDelete?.previewUrl?.startsWith("blob:")) {
-        URL.revokeObjectURL(toDelete.previewUrl);
-      }
-      setEditableItems((items) =>
-        items.filter((item) => item.clientId !== clientId)
-      );
+      if (toDelete?.previewUrl?.startsWith("blob:")) URL.revokeObjectURL(toDelete.previewUrl);
+      setEditableItems((items) => items.filter((item) => item.clientId !== clientId));
     },
     [editableItems]
   );
-
-  // アイテム画像変更
+  // Change image file & preview
   const handleItemImageChange = useCallback(
     (clientId: string, file: File | null) => {
       setEditableItems((items) =>
         items.map((item) => {
           if (item.clientId === clientId) {
-            if (item.previewUrl?.startsWith("blob:")) {
-              URL.revokeObjectURL(item.previewUrl);
-            }
+            if (item.previewUrl?.startsWith("blob:")) URL.revokeObjectURL(item.previewUrl);
             const previewUrl = file ? URL.createObjectURL(file) : null;
             return { ...item, imageFile: file, previewUrl };
           }
@@ -145,13 +117,11 @@ export function NewRankingForm() {
     []
   );
 
-  // DnD kit センサー設定
+  // DnD setup
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
-
-  // ドラッグ完了時に順序入れ替え
   const handleDragEnd = useCallback((event: DragEndEvent) => {
     const { active, over } = event;
     if (over && active.id !== over.id) {
@@ -163,108 +133,88 @@ export function NewRankingForm() {
     }
   }, []);
 
-  // 保存処理
-  const handleSave = async (status: ListStatus) => {
+  // Save handler
+  const handleSave = (status: ListStatus) => {
     startSubmitTransition(async () => {
       setFormError(null);
 
-      // バリデーション
+      // 1) Validate form-level
       try {
         SubjectSchema.parse(subject);
-      } catch (e) {
-        if (e instanceof z.ZodError) {
-          setFormError(e.errors[0].message);
-          return;
-        }
-      }
-      try {
         DescriptionSchema.parse(description);
-      } catch (e) {
-        if (e instanceof z.ZodError) {
-          setFormError(e.errors[0].message);
-          return;
+        if (status === "PUBLISHED" && editableItems.length === 0) {
+          throw new Error("公開にはアイテムを1つ以上登録してください。");
         }
-      }
-      if (status === "PUBLISHED" && editableItems.length === 0) {
-        setFormError("公開にはアイテムを1つ以上登録してください。");
-        return;
-      }
-      try {
         if (tags.length > 5) throw new Error("タグは5個までです。");
         tags.forEach((t) => TagNameSchema.parse(t));
       } catch (e) {
-        if (e instanceof z.ZodError) {
-          setFormError(`タグ: ${e.errors[0].message}`);
-        } else if (e instanceof Error) {
-          setFormError(e.message);
-        }
+        const msg = e instanceof z.ZodError ? e.errors[0].message : (e as Error).message;
+        setFormError(msg);
         return;
       }
-      // アイテム個別バリデーション
+
+      // 2) Validate each item
       for (let i = 0; i < editableItems.length; i++) {
         const item = editableItems[i];
-        try {
-          ItemNameSchema.parse(item.itemName);
-        } catch (e) {
-          if (e instanceof z.ZodError) {
-            setFormError(`${i + 1}番目: ${e.errors[0].message}`);
-            return;
-          }
+        if (!item.itemName.trim()) {
+          setFormError(`${i + 1}番目: アイテム名は必須です。`);
+          return;
         }
-        try {
-          DescriptionSchema.parse(item.itemDescription ?? "");
-        } catch (e) {
-          if (e instanceof z.ZodError) {
-            setFormError(`${i + 1}番目説明: ${e.errors[0].message}`);
-            return;
-          }
+        if ((item.itemDescription ?? "").length > 500) {
+          setFormError(`${i + 1}番目: 説明は500字以内です。`);
+          return;
         }
       }
 
-      // サーバーに渡すデータ
-      const rankingData = { subject, description, tags };
-      const itemsData = editableItems.map((item) => ({
-        itemName: item.itemName,
-        itemDescription: item.itemDescription,
-        imageUrl: item.previewUrl ?? null,
-      }));
-
-      const result = await createCompleteRankingAction(
-        rankingData,
-        itemsData,
-        status
-      );
-      if (result.success) {
+      // 3) Upload any new images
+      let itemsData: { itemName: string; itemDescription?: string | null; imageUrl?: string | null }[];
+      try {
+        itemsData = await Promise.all(
+          editableItems.map(async (item) => {
+            let finalUrl = item.imageUrl ?? null;
+            if (item.imageFile) {
+              const uploaded = await uploadImage(item.imageFile);
+              if (!uploaded) throw new Error("画像アップロードに失敗しました。");
+              finalUrl = uploaded;
+            }
+            return {
+              itemName: item.itemName.trim(),
+              itemDescription: item.itemDescription?.trim() || null,
+              imageUrl: finalUrl,
+            };
+          })
+        );
+      } catch (err) {
         toast({
-          title:
-            status === "DRAFT" ? "下書き保存しました。" : "作成・公開しました。",
-        });
-        router.push(`/rankings/${result.newListId}`);
-      } else {
-        setFormError(result.error || "保存中にエラーが発生しました。");
-        toast({
-          title: "保存エラー",
-          description: result.error,
+          title: "アップロードエラー",
+          description: err instanceof Error ? err.message : "不明なエラー",
           variant: "destructive",
         });
+        return;
+      }
+
+      // 4) Call server action
+      const rankingData = { subject, description, tags };
+      const result = await createCompleteRankingAction(rankingData, itemsData, status);
+      if (result.success && result.newListId) {
+        toast({ title: status === "DRAFT" ? "下書き保存しました。" : "作成・公開しました。" });
+        router.push(`/rankings/${result.newListId}`);
+      } else {
+        const errMsg = result.error || "保存中にエラーが発生しました。";
+        setFormError(errMsg);
+        toast({ title: "保存エラー", description: errMsg, variant: "destructive" });
       }
     });
   };
 
   return (
-    <DndContext
-      sensors={sensors}
-      collisionDetection={closestCenter}
-      onDragEnd={handleDragEnd}
-    >
+    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
       <div className="space-y-6">
-        {/* 基本情報 */}
+        {/* Basic Info */}
         <Card>
           <CardHeader>
             <CardTitle>ランキング基本情報</CardTitle>
-            <CardDescription>
-              テーマ、説明、タグを設定します。
-            </CardDescription>
+            <CardDescription>テーマ、説明、タグを設定します。</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
@@ -274,8 +224,7 @@ export function NewRankingForm() {
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
                 maxLength={50}
-                required
-                disabled={isSubmitting}
+                disabled={isSubmitting || isUploading}
               />
             </div>
             <div>
@@ -286,41 +235,27 @@ export function NewRankingForm() {
                 onChange={(e) => setDescription(e.target.value)}
                 maxLength={500}
                 rows={3}
-                disabled={isSubmitting}
+                disabled={isSubmitting || isUploading}
               />
             </div>
             <div>
               <Label htmlFor="tags">タグ（任意, 5個まで）</Label>
-              <TagInput
-                value={tags}
-                onChange={setTags}
-                placeholder="タグを追加"
-                maxTags={5}
-                maxLength={30}
-                disabled={isSubmitting}
-              />
+              <TagInput value={tags} onChange={setTags} placeholder="タグを追加" maxTags={5} maxLength={30} disabled={isSubmitting || isUploading} />
             </div>
           </CardContent>
         </Card>
 
-        {/* アイテム編集 */}
+        {/* Items */}
         <Card>
           <CardHeader>
             <CardTitle>ランキングアイテム</CardTitle>
-            <CardDescription>
-              アイテムを追加・編集・並び替えしてください。
-            </CardDescription>
+            <CardDescription>アイテムを追加・編集・並び替えしてください。</CardDescription>
           </CardHeader>
           <CardContent className="pt-0 space-y-3">
             {editableItems.length === 0 && (
-              <p className="text-muted-foreground px-3">
-                「＋」ボタンでアイテムを追加できます。
-              </p>
+              <p className="text-muted-foreground px-3">「＋」ボタンでアイテムを追加できます。</p>
             )}
-            <SortableContext
-              items={editableItems.map((i) => i.clientId)}
-              strategy={verticalListSortingStrategy}
-            >
+            <SortableContext items={editableItems.map((i) => i.clientId)} strategy={verticalListSortingStrategy}>
               <ul className="space-y-3">
                 {editableItems.map((item, idx) => (
                   <EditableRankedItem
@@ -331,51 +266,28 @@ export function NewRankingForm() {
                     handleItemChange={handleItemChange}
                     handleDeleteItem={handleDeleteItem}
                     handleItemImageChange={handleItemImageChange}
-                    isSaving={isSubmitting}
+                    isSaving={isSubmitting || isUploading}
                   />
                 ))}
               </ul>
             </SortableContext>
-            {editableItems.length < 10 && (
-              <div className="pt-3">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleAddItemSlot}
-                  disabled={isSubmitting}
-                >
-                  <PlusIcon className="h-4 w-4 mr-2" />
-                  アイテムを追加 ({editableItems.length + 1}位)
-                </Button>
-              </div>
-            )}
+            <div className="pt-3">
+              <Button variant="outline" size="sm" onClick={handleAddItemSlot} disabled={isSubmitting || isUploading}>
+                <PlusIcon className="h-4 w-4 mr-2" /> アイテムを追加 ({editableItems.length + 1}位)
+              </Button>
+            </div>
           </CardContent>
         </Card>
 
-        {formError && (
-          <p className="text-sm text-red-500 px-1">{formError}</p>
-        )}
+        {formError && <p className="text-sm text-red-500 px-1">{formError}</p>}
 
-        {/* 保存ボタン */}
+        {/* Save Buttons */}
         <div className="flex justify-end items-center space-x-2 pt-4 border-t">
-          <Button
-            variant="outline"
-            onClick={() => handleSave("DRAFT")}
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : null}
-            {isSubmitting ? "保存中…" : "下書き保存"}
+          <Button variant="outline" onClick={() => handleSave("DRAFT")} disabled={isSubmitting || isUploading}>
+            {(isSubmitting || isUploading) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} 下書き保存
           </Button>
-          <Button
-            onClick={() => handleSave("PUBLISHED")}
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : null}
-            {isSubmitting ? "公開中…" : "保存して公開"}
+          <Button onClick={() => handleSave("PUBLISHED")} disabled={isSubmitting || isUploading}>
+            {(isSubmitting || isUploading) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} 保存して公開
           </Button>
         </div>
       </div>
