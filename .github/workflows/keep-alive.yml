@@ -1,7 +1,11 @@
 # .github/workflows/keep-alive.yml
+# ───────────────────────────────────────────────────────────
+# Keep-Alive Ping Workflow
+#
 # 目的:
 #   Free プランの Vercel サーバレス環境でPostgreSQL プーラーの接続がアイドルで切断されてしまう問題を防ぐため、
-#   GitHub Actions から 5 分おきに自動で /api/keep-alive エンドポイントを叩き、PrismaClient のコネクションをウォームアップします。
+#   GitHub Actions から 5 分おきに自動で /api/keep-alive エンドポイントを叩き、
+#   PrismaClient のコネクションをウォームアップ(定期的なPingでDB接続をキープ)します。
 #
 # やっていること:
 #   1. schedule: '*/5 * * * *' で 5 分ごとにトリガー
@@ -19,7 +23,6 @@ on:
 jobs:
   ping:
     runs-on: ubuntu-latest
-    # ここで env として受け取る
     env:
       CRON_SECRET: ${{ secrets.CRON_SECRET }}
     steps:
