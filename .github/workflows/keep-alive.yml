@@ -1,0 +1,29 @@
+# .github/workflows/keep-alive.yml
+# 目的:
+#   Free プランの Vercel サーバレス環境でPostgreSQL プーラーの接続がアイドルで切断されてしまう問題を防ぐため、
+#   GitHub Actions から 5 分おきに自動で /api/keep-alive エンドポイントを叩き、PrismaClient のコネクションをウォームアップします。
+#
+# やっていること:
+#   1. schedule: '*/5 * * * *' で 5 分ごとにトリガー
+#   2. 環境変数 CRON_SECRET を使った認証ヘッダーを付与して安全にリクエスト
+#   3. curl で https://topme.jp/api/keep-alive を呼び出し
+#   4. 成功すれば “OK” レスポンス、失敗すればリトライ用ミドルウェアで再接続
+# ───────────────────────────────────────────────────────────
+name: Keep-Alive Ping
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    # ここで env として受け取る
+    env:
+      CRON_SECRET: ${{ secrets.CRON_SECRET }}
+    steps:
+      - name: Ping keep-alive endpoint
+        run: |
+          curl -H "Authorization: Bearer $CRON_SECRET" \
+               https://topme.jp/api/keep-alive
