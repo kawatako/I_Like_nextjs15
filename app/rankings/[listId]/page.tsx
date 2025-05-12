@@ -83,10 +83,6 @@ export default async function RankingDetailPage({
     }
   }
 
-  // 確認用ログ
-  console.log("▶️ HEADER imgURL:", profileImageUrl)
-  console.log("▶️ COVER  imgURL:", coverImageUrl)
-
   // ProfileHeader に渡す用にデータをマージ
   const headerUserData = {
     ...userProfileData,
