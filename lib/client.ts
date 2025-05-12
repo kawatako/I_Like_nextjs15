@@ -13,10 +13,17 @@ function getDatabaseUrl(): string {
   return url;
 }
 
-// PrismaClient のインスタンスを作成 or 再利用
-const prisma = global.prisma ?? new PrismaClient({
-  datasources: { db: { url: getDatabaseUrl() } },
-});
+// PrismaClient のインスタンスを作成 or グローバル再利用
+const prisma = global.prisma ?? new PrismaClient(
+  {
+    datasources: { db: { url: getDatabaseUrl() } },
+    __internal: {
+      engine: {
+        retry: { max: 2, backoff: 200 },
+      },
+    },
+  } as any, // ← ここで any キャスト
+);
 
 // 開発環境ではグローバルキャッシュ
 if (process.env.NODE_ENV !== "production") {
