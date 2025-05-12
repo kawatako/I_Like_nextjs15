@@ -1,16 +1,30 @@
+// lib/client.ts
 import { PrismaClient } from "@prisma/client";
 
-// globalThis に prisma プロパティがあるかチェックし、なければ undefined になるように型付け
-const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined;
-};
+declare global {
+  // Node.js のグローバルスコープにキャッシュ用の変数を追加
+  // (Next.js のサーバレス環境でインスタンスを再利用するため)
+  var prisma: PrismaClient | undefined;
+}
 
-// prisma インスタンスを生成。
-// もし globalThis.prisma が既に存在すればそれを使い、なければ新しい PrismaClient を作る。
-const prisma = globalForPrisma.prisma ?? new PrismaClient();
+function getDatabaseUrl(): string {
+  const url = process.env.SUPABASE_DB_URL;
+  if (!url) {
+    throw new Error("Missing SUPABASE_DB_URL environment variable");
+  }
+  // connection_limit を付与
+  const suffix = "&connection_limit=1";
+  return url.includes("connection_limit")
+    ? url
+    : `${url}${url.includes("?") ? "" : ""}${suffix}`;
+}
 
-export default prisma; // 生成した prisma インスタンスをエクスポート
+const prisma = global.prisma ?? new PrismaClient({
+  datasources: { db: { url: getDatabaseUrl() } },
+});
 
-// 開発環境 (NODE_ENV が 'production' でない) の場合のみ、
-// 作成した prisma インスタンスを globalThis に保存する。
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+if (process.env.NODE_ENV !== "production") {
+  global.prisma = prisma;
+}
+
+export default prisma;
