@@ -1,4 +1,5 @@
 // components/component/trends/AverageItemRankList.tsx
+//trends/average/[subject]/page.tsxから受け取ったデータを表示するだけの純粋コンポーネント
 "use client";
 
 import { useState } from "react";
@@ -19,46 +20,30 @@ export default function AverageItemRankList({
 }: Props) {
   const [tab, setTab] = useState<"ranking" | "comments">("ranking");
 
-  const dummyComments = [
-    { user: "ユーザーA", text: "この集計、とても参考になります！" },
-    { user: "ユーザーB", text: "Item X の順位が思ったより高い…" },
-    {
-      user: "ユーザーC",
-      text: "全期間での平均だけでなく、期間別も見たいです。",
-    },
-  ];
-
   if (isLoading) return <p>Loading…</p>;
-  if (isError) return <p>Error</p>;
+  if (isError)   return <p>Error</p>;
 
   return (
-    <div className='space-y-4'>
+    <div className="space-y-4">
+      {/* タブ */}
       <Tabs
         value={tab}
         onValueChange={(v) => setTab(v as "ranking" | "comments")}
-        className='w-full'
+        className="w-full"
       >
-        <TabsList className='w-full grid grid-cols-2 mb-4'>
-          <TabsTrigger value='ranking'>ランキング</TabsTrigger>
-          <TabsTrigger value='comments'>コメント</TabsTrigger>
+        <TabsList className="w-full grid grid-cols-2 mb-4">
+          <TabsTrigger value="ranking">ランキング</TabsTrigger>
+          <TabsTrigger value="comments">コメント</TabsTrigger>
         </TabsList>
-
-        {/* ランキングタブ */}
-        <TabsContent value='ranking' className='space-y-4'>
-          <div className='space-y-4'>
-            {averageRanks.map((item, idx) => (
-              <RankingItem key={idx} item={item} rank={idx + 1} />
-            ))}
-          </div>
-        </TabsContent>
-
-        {/* コメントタブ */}
-        <TabsContent value='comments' className='space-y-2 px-2'>
-          {dummyComments.map((c, idx) => (
-            <div key={idx} className='text-sm'>
-              <strong>{c.user}</strong>: {c.text}
-            </div>
+        {/* ランキング表示 */}
+        <TabsContent value="ranking" className="space-y-4">
+          {averageRanks.map((item, idx) => (
+            <RankingItem key={idx} item={item} rank={idx + 1} />
           ))}
+        </TabsContent>
+        {/* コメントダミー */}
+        <TabsContent value="comments" className="space-y-2 px-2">
+          <p>コメント機能は未実装です。</p>
         </TabsContent>
       </Tabs>
     </div>
