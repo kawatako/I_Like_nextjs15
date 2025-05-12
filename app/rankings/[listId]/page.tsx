@@ -13,28 +13,32 @@ import { Button } from "@/components/ui/button"
 // Edge Runtime かつ動的データを扱うので静的生成を無効化
 export const dynamic = 'force-dynamic'
 
-export default async function RankingDetailPage({ params }: { params: Promise<{ listId: string }> }) {
+export default async function RankingDetailPage({
+  params,
+}: {
+  params: Promise<{ listId: string }>
+}) {
   const { listId } = await params
 
-  // Service Role Key を使った Supabase 管理クライアントを関数内で初期化
+  // Supabase 管理クライアントを関数内で初期化
   const supabaseAdmin = createClient(
     process.env.SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY! // 環境変数がビルド・実行時に設定されていることを確認
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
   )
 
-  // 1) ランキング本体
+  // 1) ランキング本体取得
   const raw = await getRankingDetailsForView(listId)
   if (!raw) return notFound()
 
-  // 2) 投稿者プロフィール（ヘッダー用）
+  // 2) 投稿者プロフィール取得
   const userProfileData = await getUserProfileData(raw.author.username)
   if (!userProfileData) return notFound()
 
-  // 3) isOwner
+  // 3) isOwner 判定
   const { userId: clerkUserId } = await auth()
   const isOwner = clerkUserId === userProfileData.clerkId
 
-  // 4) フォロー状態
+  // 4) フォロー状態取得
   const followStatusInfo = await getFollowStatus(
     clerkUserId ? await getUserDbIdByClerkId(clerkUserId) : null,
     userProfileData.id
@@ -54,6 +58,42 @@ export default async function RankingDetailPage({ params }: { params: Promise<{ 
     }
   }
 
+  // ヘッダー／カバー画像の署名付きURLを生成
+  let profileImageUrl: string | null = null
+  if (userProfileData.image) {
+    const key = extractKey(userProfileData.image)
+    if (key) {
+      const { data, error } = await supabaseAdmin.storage
+        .from("i-like")
+        .createSignedUrl(key, 60 * 60 * 24)
+      if (error) console.error("Signed URL生成失敗 (header):", error)
+      else profileImageUrl = data.signedUrl
+    }
+  }
+
+  let coverImageUrl: string | null = null
+  if (userProfileData.coverImageUrl) {
+    const key = extractKey(userProfileData.coverImageUrl)
+    if (key) {
+      const { data, error } = await supabaseAdmin.storage
+        .from("i-like")
+        .createSignedUrl(key, 60 * 60 * 24)
+      if (error) console.error("Signed URL生成失敗 (cover):", error)
+      else coverImageUrl = data.signedUrl
+    }
+  }
+
+  // 確認用ログ
+  console.log("▶️ HEADER imgURL:", profileImageUrl)
+  console.log("▶️ COVER  imgURL:", coverImageUrl)
+
+  // ProfileHeader に渡す用にデータをマージ
+  const headerUserData = {
+    ...userProfileData,
+    image: profileImageUrl,
+    coverImageUrl: coverImageUrl,
+  }
+
   // アイテム画像に署名付きURLを生成
   const itemsWithSigned = await Promise.all(
     raw.items.map(async (item) => {
@@ -64,8 +104,8 @@ export default async function RankingDetailPage({ params }: { params: Promise<{ 
           const { data, error } = await supabaseAdmin.storage
             .from("i-like")
             .createSignedUrl(key, 60 * 60 * 24)
-          if (data) signedUrl = data.signedUrl
           if (error) console.error("Signed URL生成失敗 (item):", error)
+          else signedUrl = data.signedUrl
         }
       }
       return { ...item, imageUrl: signedUrl ?? item.imageUrl }
@@ -79,7 +119,7 @@ export default async function RankingDetailPage({ params }: { params: Promise<{ 
     <>
       {/* プロフィールヘッダー */}
       <ProfileHeader
-        userProfileData={userProfileData}
+        userProfileData={headerUserData}
         isCurrentUser={isOwner}
         initialFollowStatus={followStatusInfo}
       />
