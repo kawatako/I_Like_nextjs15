@@ -1,4 +1,4 @@
-// hooks/useTrends.ts
+// components/hooks/useTrends.ts
 import useSWR from 'swr';
 import { supabase } from '@/lib/supabaseClient';
 
