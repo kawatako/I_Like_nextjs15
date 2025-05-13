@@ -2,19 +2,52 @@
 "use server";
 
 import prisma from "@/lib/client";
-import { Prisma } from "@prisma/client";
+import { safeQuery } from "@/lib/db";
+import { auth } from "@clerk/nextjs/server";
 import { getUserDbIdByClerkId } from "@/lib/data/userQueries";
 import { revalidatePath } from "next/cache";
-import { auth } from "@clerk/nextjs/server";
-import { PaginatedResponse, FollowActionResult,UserSnippet,FollowRequestWithRequester } from "../types";
+import {
+  PaginatedResponse,
+  FollowActionResult,
+  UserSnippet,
+  FollowRequestWithRequester,
+  FollowStatusInfo,
+} from "@/lib/types";
 import { userSnippetSelect } from "@/lib/prisma/payloads";
 
-// フォローリクエストの型定義
+// --- ヘルパー関数 --- //
+
+/** 認証済みユーザーの DB-ID を取得、未認証時は例外を投げる */
+async function requireUserDbId(): Promise<string> {
+  const { userId: clerkId } = await auth();
+  if (!clerkId) throw new Error("ログインしてください。");
+  const dbId = await getUserDbIdByClerkId(clerkId);
+  if (!dbId) throw new Error("ユーザー情報が見つかりません。");
+  return dbId;
+}
+
+/**
+ * アクション実行をラップし、共通のレスポンス形式で返す
+ * fn は { status: ... } を返す関数
+ */
+async function wrapAction(
+  fn: () => Promise<Pick<FollowActionResult, "status">>
+): Promise<FollowActionResult> {
+  try {
+    const { status } = await fn();
+    return { success: true, status };
+  } catch (err: any) {
+    return { success: false, error: err.message, status: "error" };
+  }
+}
+
+// フォローリクエスト取得用 payload
 const followRequestWithRequesterPayload = {
-  include: { requester: { select: userSnippetSelect } }
+  include: { requester: { select: userSnippetSelect } },
 } as const;
 
-//[PAGINATED] 指定されたユーザーがフォローしているユーザー一覧 (カーソルベース)
+// --- ページネーション付きクエリ --- //
+
 export async function getPaginatedFollowing({
   targetUserId,
   limit,
@@ -26,36 +59,21 @@ export async function getPaginatedFollowing({
 }): Promise<PaginatedResponse<UserSnippet>> {
   if (!targetUserId) return { items: [], nextCursor: null };
   const take = limit + 1;
-
-  try {
-    const follows = await prisma.follow.findMany({
+  const follows = await safeQuery(() =>
+    prisma.follow.findMany({
       where: { followerId: targetUserId },
-      select: {
-        following: { select: userSnippetSelect }, // フォローされている人の情報
-        id: true, // ★ カーソル用に新しい単一 ID を選択 ★
-      },
-      orderBy: {
-        id: "asc", // ★ 単一 ID で並び替え (昇順/降順は一貫させればOK) ★
-      },
-      take: take,
-      cursor: cursor ? { id: cursor } : undefined, // ★ 単一 ID をカーソルとして使用 ★
+      select: { following: { select: userSnippetSelect }, id: true },
+      orderBy: { id: "asc" },
+      take,
       skip: cursor ? 1 : 0,
-    });
-
-    let nextCursor: string | null = null;
-    if (follows.length > limit) {
-      const nextItem = follows.pop();
-      nextCursor = nextItem?.id ?? null; // ★ 次のカーソルとして ID を使用 ★
-    }
-    type FollowRecord = { id: string; following: UserSnippet };
-    const items = follows.map((follow: FollowRecord) => follow.following); // ← エラーが解消されるはず
-    return { items, nextCursor };
-  } catch (error) {
-    /* ... エラーハンドリング ... */ return { items: [], nextCursor: null };
-  }
+      cursor: cursor ? { id: cursor } : undefined,
+    })
+  );
+  let nextCursor: string | null = null;
+  if (follows.length > limit) nextCursor = follows.pop()!.id;
+  return { items: follows.map((f) => f.following), nextCursor };
 }
 
-//[PAGINATED] 指定されたユーザーをフォローしているユーザー一覧 (カーソルベース)
 export async function getPaginatedFollowers({
   targetUserId,
   limit,
@@ -67,36 +85,21 @@ export async function getPaginatedFollowers({
 }): Promise<PaginatedResponse<UserSnippet>> {
   if (!targetUserId) return { items: [], nextCursor: null };
   const take = limit + 1;
-
-  try {
-    const follows = await prisma.follow.findMany({
+  const follows = await safeQuery(() =>
+    prisma.follow.findMany({
       where: { followingId: targetUserId },
-      select: {
-        follower: { select: userSnippetSelect }, // フォローしている人の情報
-        id: true, // ★ カーソル用に新しい単一 ID を選択 ★
-      },
-      orderBy: {
-        id: "asc", // ★ 単一 ID で並び替え ★
-      },
-      take: take,
-      cursor: cursor ? { id: cursor } : undefined, // ★ 単一 ID をカーソルとして使用 ★
+      select: { follower: { select: userSnippetSelect }, id: true },
+      orderBy: { id: "asc" },
+      take,
       skip: cursor ? 1 : 0,
-    });
-
-    let nextCursor: string | null = null;
-    if (follows.length > limit) {
-      const nextItem = follows.pop();
-      nextCursor = nextItem?.id ?? null; // ★ 次のカーソルとして ID を使用 ★
-    }
-    type FollowerRecord = { id: string; follower: UserSnippet };
-    const items = follows.map((follow: FollowerRecord) => follow.follower);
-    return { items, nextCursor };
-  } catch (error) {
-    /* ... エラーハンドリング ... */ return { items: [], nextCursor: null };
-  }
+      cursor: cursor ? { id: cursor } : undefined,
+    })
+  );
+  let nextCursor: string | null = null;
+  if (follows.length > limit) nextCursor = follows.pop()!.id;
+  return { items: follows.map((f) => f.follower), nextCursor };
 }
 
-//[PAGINATED] 指定されたユーザー宛の「申請中」フォローリクエスト一覧 (カーソルベース)
 export async function getPaginatedReceivedFollowRequests({
   targetUserId,
   limit,
@@ -108,595 +111,232 @@ export async function getPaginatedReceivedFollowRequests({
 }): Promise<PaginatedResponse<FollowRequestWithRequester>> {
   if (!targetUserId) return { items: [], nextCursor: null };
   const take = limit + 1;
-
-  try {
-    const requests = await prisma.followRequest.findMany({
-      where: {
-        requestedId: targetUserId,
-        status: "PENDING",
-      },
+  const requests = await safeQuery(() =>
+    prisma.followRequest.findMany({
+      where: { requestedId: targetUserId, status: "PENDING" },
       include: followRequestWithRequesterPayload.include,
-      orderBy: {
-        id: "asc", // FollowRequest の ID で並び替え
-      },
-      take: take,
-      cursor: cursor ? { id: cursor } : undefined, // FollowRequest の ID をカーソルに
+      orderBy: { id: "asc" },
+      take,
       skip: cursor ? 1 : 0,
-    });
-
-    let nextCursor: string | null = null;
-    if (requests.length > limit) {
-      const nextItem = requests.pop();
-      nextCursor = nextItem?.id ?? null;
-    }
-
-    return { items: requests, nextCursor };
-  } catch (error) {
-    /* ... エラーハンドリング ... */ return { items: [], nextCursor: null };
-  }
+      cursor: cursor ? { id: cursor } : undefined,
+    })
+  );
+  let nextCursor: string | null = null;
+  if (requests.length > limit) nextCursor = requests.pop()!.id;
+  return { items: requests, nextCursor };
 }
 
-/**
- * [ACTION] フォローリクエストを承認する
- * FollowRequest の status を ACCEPTED に更新し、Follow レコードを作成する。
- * @param requestId 承認する FollowRequest の ID
- * @returns FollowActionResult (成功/失敗)
- */
+// --- フォローリクエスト承認／拒否 --- //
+
 export async function acceptFollowRequestAction(
   requestId: string
 ): Promise<FollowActionResult> {
-  const { userId: loggedInClerkId } = await auth();
-  if (!loggedInClerkId) {
-    return { success: false, error: "ログインしてください。" };
-  }
-  const loggedInUserDbId = await getUserDbIdByClerkId(loggedInClerkId);
-  if (!loggedInUserDbId) {
-    return { success: false, error: "ユーザーが見つかりません。" };
-  }
-
-  console.log(
-    `[FollowActions/Accept] User ${loggedInUserDbId} attempting to accept request ${requestId}`
-  );
-
-  try {
-    // データベース操作をトランザクション内で実行し、整合性を保つ
-    const result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
-      // 1. 承認対象のリクエストを取得 (自分が申請先で、かつ PENDING のもの)
-      const request = await tx.followRequest.findUnique({
-        where: {
-          id: requestId,
-          requestedId: loggedInUserDbId, // 自分がリクエストされていることを確認
-          status: "PENDING", // 申請中であることを確認
-        },
-        select: {
-          // フォローレコード作成に必要なIDと、キャッシュ再検証用のユーザー名を取得
-          requesterId: true,
-          requestedId: true,
-          requester: { select: { username: true } },
-          requested: { select: { username: true } },
-        },
-      });
-
-      // リクエストが存在しない、または条件に合わない場合はエラー
-      if (!request) {
-        throw new Error(
-          "有効なフォローリクエストが見つからないか、承認権限がありません。"
-        );
-      }
-
-      // 2. FollowRequest の status を ACCEPTED に更新
-      await tx.followRequest.update({
-        where: {
-          id: requestId,
-          // requestedId: loggedInUserDbId, // where で指定済みだが念のため
-          // status: FollowRequestStatus.PENDING,
-        },
-        data: {
-          status: "ACCEPTED",
-          updatedAt: new Date(),
-        },
-      });
-
-      // 3. 新しい Follow レコードを作成
-      // 既にフォロー関係が存在する場合に備えて create ではなく upsert を使うか、
-      // create の前に存在チェックをしても良いが、リクエストがPENDINGなら通常存在しないはず。
-      // ここでは create を試みる。
-      await tx.follow.create({
-        data: {
-          followerId: request.requesterId, // リクエストを送った人がフォロワー
-          followingId: request.requestedId, // 承認した自分(ログインユーザー)がフォローされる側
-        },
-      });
-
-      // キャッシュ再検証に必要なユーザー名を返す
-      return {
-        requesterUsername: request.requester.username,
-        requestedUsername: request.requested.username,
-      };
-    });
-
-    console.log(`[FollowActions/Accept] Request ${requestId} accepted.`);
-
-    // --- キャッシュ再検証 ---
-    // フォロー関係が変わった双方のプロフィールページとフォローリストページを再検証
-    if (result.requesterUsername)
-      revalidatePath(`/profile/${result.requesterUsername}`);
-    if (result.requestedUsername)
-      revalidatePath(`/profile/${result.requestedUsername}`);
-    if (result.requestedUsername)
-      revalidatePath(`/follows/${result.requestedUsername}`);
-    if (result.requesterUsername)
-      revalidatePath(`/follows/${result.requesterUsername}`);
-
-    return { success: true };
-  } catch (error) {
-    console.error(
-      `[FollowActions/Accept] Error accepting request ${requestId}:`,
-      error
+  return wrapAction(async () => {
+    const userDbId = await requireUserDbId();
+    await safeQuery(() =>
+      prisma.$transaction(async (tx) => {
+        const req = await tx.followRequest.findUnique({
+          where: { id: requestId, requestedId: userDbId, status: "PENDING" },
+          select: {
+            requesterId: true,
+            requestedId: true,
+            requester: { select: { username: true } },
+            requested: { select: { username: true } },
+          },
+        });
+        if (!req) throw new Error("有効なリクエストがありません。");
+        await tx.followRequest.update({
+          where: { id: requestId },
+          data: { status: "ACCEPTED", updatedAt: new Date() },
+        });
+        await tx.follow.create({
+          data: { followerId: req.requesterId, followingId: req.requestedId },
+        });
+        revalidatePath(`/profile/${req.requester.username}`);
+        revalidatePath(`/profile/${req.requested.username}`);
+        revalidatePath(`/follows/${req.requester.username}`);
+        revalidatePath(`/follows/${req.requested.username}`);
+      })
     );
-    const message =
-      error instanceof Error
-        ? error.message
-        : "リクエストの承認中にエラーが発生しました。";
-    return { success: false, error: message };
-  }
+    return { status: "following" };
+  });
 }
 
-/**
- * [ACTION] フォローリクエストを拒否する
- * FollowRequest の status を REJECTED に更新する。
- * @param requestId 拒否する FollowRequest の ID
- * @returns FollowActionResult (成功/失敗)
- */
 export async function rejectFollowRequestAction(
   requestId: string
 ): Promise<FollowActionResult> {
-  const { userId: loggedInClerkId } = await auth();
-  if (!loggedInClerkId) {
-    return { success: false, error: "ログインしてください。" };
-  }
-  const loggedInUserDbId = await getUserDbIdByClerkId(loggedInClerkId);
-  if (!loggedInUserDbId) {
-    return { success: false, error: "ユーザーが見つかりません。" };
-  }
-
-  console.log(
-    `[FollowActions/Reject] User ${loggedInUserDbId} attempting to reject request ${requestId}`
-  );
-
-  try {
-    // 該当の PENDING リクエストを REJECTED に更新 (updateMany で対象がなくてもエラーにならない)
-    const updateResult = await prisma.followRequest.updateMany({
-      where: {
-        id: requestId,
-        requestedId: loggedInUserDbId, // 自分がリクエストされている
-        status: "PENDING", // 申請中である
-      },
-      data: {
-        status: "REJECTED",
-        updatedAt: new Date(),
-      },
-    });
-
-    // 実際に更新されたか確認 (更新されなくてもエラーではない場合もある)
-    if (updateResult.count === 0) {
-      console.warn(
-        `[FollowActions/Reject] Request ${requestId} not found, not pending, or permission denied for user ${loggedInUserDbId}. No records updated.`
-      );
-      // throw new Error("有効なフォローリクエストが見つからないか、拒否権限がありません。");
-      // ↑ エラーにするか、成功とみなすかは要件次第。ここでは成功として扱う。
-    }
-
-    console.log(
-      `[FollowActions/Reject] Request ${requestId} marked as rejected (or was already handled).`
+  return wrapAction(async () => {
+    const userDbId = await requireUserDbId();
+    await safeQuery(() =>
+      prisma.followRequest.updateMany({
+        where: { id: requestId, requestedId: userDbId, status: "PENDING" },
+        data: { status: "REJECTED", updatedAt: new Date() },
+      })
     );
-
-    // --- キャッシュ再検証 ---
-    // 自分のフォローリストページ（リクエストタブ）を再検証
-    const currentUser = await prisma.user.findUnique({
-      where: { id: loggedInUserDbId },
-      select: { username: true },
-    });
-    if (currentUser?.username) {
-      revalidatePath(`/follows/${currentUser.username}`);
-    }
-
-    return { success: true };
-  } catch (error) {
-    console.error(
-      `[FollowActions/Reject] Error rejecting request ${requestId}:`,
-      error
+    const me = await safeQuery(() =>
+      prisma.user.findUnique({
+        where: { id: userDbId },
+        select: { username: true },
+      })
     );
-    const message =
-      error instanceof Error
-        ? error.message
-        : "リクエストの拒否中にエラーが発生しました。";
-    return { success: false, error: message };
-  }
+    if (me?.username) revalidatePath(`/follows/${me.username}`);
+    return { status: "not_following" };
+  });
 }
 
-export type FollowStatus =
-  | "SELF" // 自分自身
-  | "NOT_FOLLOWING" // フォローしていない (公開アカウント)
-  | "FOLLOWING" // フォロー中
-  | "REQUEST_SENT" // フォローリクエスト送信済み (相手が非公開)
-  | "REQUEST_RECEIVED" // 相手からフォローリクエストが来ている (承認待ち)
-  | "BLOCKED" // 相手をブロックしている (将来的に実装する場合)
-  | "BLOCKED_BY" // 相手からブロックされている (将来的に実装する場合)
-  | "CANNOT_FOLLOW"; // フォローできないその他の理由 (例: ログインしていない)
+// --- フォロー状態取得 --- //
 
-// getFollowStatus が返す情報の型
-export type FollowStatusInfo = {
-  status: FollowStatus;
-  targetUserId: string; // 対象ユーザーのDB ID
-  targetUsername: string; // 対象ユーザーの username
-  targetIsPrivate: boolean; // 対象ユーザーが非公開か
-  // followRequestId?: string; // 送信済みリクエストのID (キャンセル用)
-};
-
-/**
- * [ACTION/QUERY] 2ユーザー間の詳細なフォロー状態を取得する
- * @param loggedInUserId ログイン中のユーザーの DB ID (未ログインなら null)
- * @param targetUserId プロフィール表示対象ユーザーの DB ID
- * @returns FollowStatusInfo | null フォロー状態、またはエラー/対象なし時に null
- */
 export async function getFollowStatus(
   loggedInUserId: string | null,
   targetUserId: string
 ): Promise<FollowStatusInfo | null> {
-  console.log(
-    `[FollowQueries] Checking follow status between viewer ${loggedInUserId} and target ${targetUserId}`
+  const target = await safeQuery(() =>
+    prisma.user.findUnique({
+      where: { id: targetUserId },
+      select: { id: true, username: true, isPrivate: true },
+    })
   );
+  if (!target) return null;
+  const base = {
+    targetUserId: target.id,
+    targetUsername: target.username,
+    targetIsPrivate: target.isPrivate,
+  };
+  if (loggedInUserId === target.id) return { ...base, status: "SELF" };
+  if (!loggedInUserId) return { ...base, status: "CANNOT_FOLLOW" };
 
-  // 対象ユーザーが存在するか、isPrivate かなどを取得
-  const targetUser = await prisma.user.findUnique({
-    where: { id: targetUserId },
-    select: { id: true, username: true, isPrivate: true },
-  });
-    // 対象ユーザーが見つからない場合は null
-  if (!targetUser) {
-    console.log(`[FollowQueries] Target user ${targetUserId} not found.`);
-    return null; // 対象ユーザーが見つからない
-  }
+  const follow = await safeQuery(() =>
+    prisma.follow.findUnique({
+      where: {
+        followerId_followingId: {
+          followerId: loggedInUserId,
+          followingId: target.id,
+        },
+      },
+    })
+  );
+  if (follow) return { ...base, status: "FOLLOWING" };
 
-    // 基本情報を準備
-    const baseInfo = {
-      targetUserId: targetUser.id,
-      targetUsername: targetUser.username,
-      targetIsPrivate: targetUser.isPrivate,
-    };
-    
-    // 2. 状態判定
-  // 自分自身のプロフィールの場合
-  if (loggedInUserId === targetUserId) {
-    return { ...baseInfo, status: "SELF" };
-  }
+  const sent = await safeQuery(() =>
+    prisma.followRequest.findFirst({
+      where: {
+        requesterId: loggedInUserId,
+        requestedId: target.id,
+        status: "PENDING",
+      },
+    })
+  );
+  if (sent) return { ...base, status: "REQUEST_SENT" };
 
-  // ログインしていない場合 (フォロー/リクエスト不可)
-  if (!loggedInUserId) {
-    return { ...baseInfo, status: "CANNOT_FOLLOW" }; // 未ログイン
-  }
+  const rec = await safeQuery(() =>
+    prisma.followRequest.findFirst({
+      where: {
+        requesterId: target.id,
+        requestedId: loggedInUserId,
+        status: "PENDING",
+      },
+    })
+  );
+  if (rec) return { ...base, status: "REQUEST_RECEIVED" };
 
-  // --- ログインしている場合のチェック ---
-  try {
-    // 3. 各状態をチェック
-    const follow = await prisma.follow.findUnique({ where: { followerId_followingId: { followerId: loggedInUserId, followingId: targetUserId } } });
-    if (follow) return { ...baseInfo, status: "FOLLOWING" };
-
-    const sentRequest = await prisma.followRequest.findFirst({ where: { requesterId: loggedInUserId, requestedId: targetUserId, status: "PENDING" } });
-    if (sentRequest) return { ...baseInfo, status: "REQUEST_SENT" };
-
-    const receivedRequest = await prisma.followRequest.findFirst({ where: { requesterId: targetUserId, requestedId: loggedInUserId, status: "PENDING" } });
-    if (receivedRequest) return { ...baseInfo, status: "REQUEST_RECEIVED" };
-
-    // TODO: 拒否された状態やブロック状態のチェックをここに追加する場合
-
-    // 上記いずれでもなければ「フォローしていない」
-    return { ...baseInfo, status: "NOT_FOLLOWING" };
-
-  } catch (error) {
-    console.error(`[FollowActions] Error fetching follow status between ${loggedInUserId} and ${targetUserId}:`, error);
-    return { ...baseInfo, status: "CANNOT_FOLLOW" }; // エラー時
-  }
+  return { ...base, status: "NOT_FOLLOWING" };
 }
 
-// --- ★★★ [ACTION] ユーザーをフォローする / フォローリクエストを送る ★★★ ---
+// --- フォロー／アンフォロー／キャンセル --- //
+
 export async function followUserAction(
   targetUserDbId: string
 ): Promise<FollowActionResult> {
-  const { userId: loggedInClerkId } = await auth();
-  if (!loggedInClerkId) {
-    return { success: false, error: "ログインしてください。", status: "error" };
-  }
-  const loggedInUserDbId = await getUserDbIdByClerkId(loggedInClerkId);
-  if (!loggedInUserDbId) {
-    return {
-      success: false,
-      error: "ユーザー情報が見つかりません。",
-      status: "error",
-    };
-  }
+  return wrapAction(async () => {
+    const userDbId = await requireUserDbId();
+    if (userDbId === targetUserDbId)
+      throw new Error("自分自身はフォローできません。");
 
-  // 自分自身はフォローできない
-  if (loggedInUserDbId === targetUserDbId) {
-    return {
-      success: false,
-      error: "自分自身をフォローすることはできません。",
-      status: "error",
-    };
-  }
-
-  console.log(
-    `[FollowActions/Follow] User ${loggedInUserDbId} attempting to follow/request ${targetUserDbId}`
-  );
-
-  try {
-    // 1. 対象ユーザーの存在とプライベート設定を確認
-    const targetUser = await prisma.user.findUnique({
-      where: { id: targetUserDbId },
-      select: { isPrivate: true, username: true }, // isPrivate と username を取得
-    });
-    if (!targetUser) {
-      throw new Error("フォロー対象のユーザーが見つかりません。");
-    }
-
-    // 2. 既にフォロー済みか確認
-    const existingFollow = await prisma.follow.findUnique({
-      where: {
-        followerId_followingId: {
-          followerId: loggedInUserDbId,
-          followingId: targetUserDbId,
-        },
-      },
-    });
-    if (existingFollow) {
-      console.log(
-        `[FollowActions/Follow] Already following ${targetUserDbId}.`
-      );
-      return { success: true, status: "following" }; // 既にフォローしているので成功扱い
-    }
-
-    // 3. 既にリクエスト送信済み (PENDING) か確認
-    const existingRequest = await prisma.followRequest.findUnique({
-      where: {
-        requesterId_requestedId: {
-          requesterId: loggedInUserDbId,
-          requestedId: targetUserDbId,
-        },
-        status: "PENDING",
-      },
-    });
-    if (existingRequest) {
-      console.log(
-        `[FollowActions/Follow] Request already sent to ${targetUserDbId}.`
-      );
-      return { success: true, status: "requested" }; // 既にリクエスト済みなので成功扱い
-    }
-
-    // 4. 過去に拒否されているか確認 (拒否後は再申請不可の仕様)
-    const rejectedRequest = await prisma.followRequest.findUnique({
-      where: {
-        requesterId_requestedId: {
-          requesterId: loggedInUserDbId,
-          requestedId: targetUserDbId,
-        },
-        status: "REJECTED",
-      },
-    });
-    if (rejectedRequest) {
-      console.log(
-        `[FollowActions/Follow] Request was previously rejected by ${targetUserDbId}.`
-      );
-      return {
-        success: false,
-        error:
-          "以前にフォローリクエストが拒否されたため、再度リクエストを送信できません。",
-        status: "error",
-      };
-    }
-
-    // 5. 相手が公開アカウントか非公開アカウントかで処理を分岐
-    if (!targetUser.isPrivate) {
-      // --- 公開アカウントの場合: 即時フォロー ---
-      await prisma.follow.create({
-        data: {
-          followerId: loggedInUserDbId,
-          followingId: targetUserDbId,
-        },
-      });
-      console.log(
-        `[FollowActions/Follow] User ${loggedInUserDbId} successfully followed (public) ${targetUserDbId}`
-      );
-      // TODO: フォローされたことの通知を targetUserDbId に作成 (任意)
-      // await createNotification(targetUserDbId, loggedInUserDbId, 'NEW_FOLLOWER', null);
-
-      // キャッシュ再検証
-      revalidatePath(`/profile/${targetUser.username}`); // 相手のプロフィール
-      const loggedInUser = await prisma.user.findUnique({
-        where: { id: loggedInUserDbId },
-        select: { username: true },
-      });
-      if (loggedInUser?.username)
-        revalidatePath(`/profile/${loggedInUser.username}`); // 自分のプロフィール
-      if (loggedInUser?.username)
-        revalidatePath(`/follows/${loggedInUser.username}`); // 自分のフォローリスト
-
-      return { success: true, status: "following" };
-    } else {
-      // --- 非公開アカウントの場合: フォローリクエストを作成 ---
-      // upsert を使うと、過去に ACCEPTED/REJECTED があっても PENDING に上書きできてしまうので create を使う
-      await prisma.followRequest.create({
-        data: {
-          requesterId: loggedInUserDbId,
-          requestedId: targetUserDbId,
-          status: "PENDING", // デフォルトだが明示
-        },
-      });
-      console.log(
-        `[FollowActions/Follow] User ${loggedInUserDbId} successfully sent follow request to (private) ${targetUserDbId}`
-      );
-      // TODO: フォローリクエストが来たことの通知を targetUserDbId に作成 (任意)
-      // await createNotification(targetUserDbId, loggedInUserDbId, 'FOLLOW_REQUEST', null);
-
-      // キャッシュ再検証 (相手のプロフィールだけで良いかも)
-      revalidatePath(`/profile/${targetUser.username}`);
-
-      return { success: true, status: "requested" };
-    }
-  } catch (error) {
-    console.error(
-      `[FollowActions/Follow] Error following/requesting user ${targetUserDbId}:`,
-      error
+    const target = await safeQuery(() =>
+      prisma.user.findUnique({
+        where: { id: targetUserDbId },
+        select: { isPrivate: true, username: true },
+      })
     );
-    const message =
-      error instanceof Error
-        ? error.message
-        : "フォロー処理中にエラーが発生しました。";
-    return { success: false, error: message, status: "error" };
-  }
+    if (!target) throw new Error("フォロー対象が見つかりません。");
+
+    const [existsFollow, existsRequest] = await Promise.all([
+      safeQuery(() =>
+        prisma.follow.findUnique({
+          where: {
+            followerId_followingId: {
+              followerId: userDbId,
+              followingId: targetUserDbId,
+            },
+          },
+        })
+      ),
+      safeQuery(() =>
+        prisma.followRequest.findUnique({
+          where: {
+            requesterId_requestedId: {
+              requesterId: userDbId,
+              requestedId: targetUserDbId,
+            },
+          },
+        })
+      ),
+    ]);
+    if (existsFollow) return { status: "following" };
+    if (existsRequest) return { status: "requested" };
+
+    if (!target.isPrivate) {
+      await safeQuery(() =>
+        prisma.follow.create({
+          data: { followerId: userDbId, followingId: targetUserDbId },
+        })
+      );
+      return { status: "following" };
+    } else {
+      await safeQuery(() =>
+        prisma.followRequest.create({
+          data: {
+            requesterId: userDbId,
+            requestedId: targetUserDbId,
+            status: "PENDING",
+          },
+        })
+      );
+      return { status: "requested" };
+    }
+  });
 }
 
-// --- ★★★ [ACTION] ユーザーのフォローを解除する ★★★ ---
 export async function unfollowUserAction(
   targetUserDbId: string
 ): Promise<FollowActionResult> {
-  const { userId: loggedInClerkId } = await auth();
-  if (!loggedInClerkId) {
-    return { success: false, error: "ログインしてください。", status: "error" };
-  }
-  const loggedInUserDbId = await getUserDbIdByClerkId(loggedInClerkId);
-  if (!loggedInUserDbId) {
-    return {
-      success: false,
-      error: "ユーザー情報が見つかりません。",
-      status: "error",
-    };
-  }
-
-  // 自分自身はアンフォローできない
-  if (loggedInUserDbId === targetUserDbId) {
-    return {
-      success: false,
-      error: "自分自身のフォローを解除することはできません。",
-      status: "error",
-    };
-  }
-
-  console.log(
-    `[FollowActions/Unfollow] User ${loggedInUserDbId} attempting to unfollow ${targetUserDbId}`
-  );
-
-  try {
-    // 該当する Follow レコードを削除
-    const deleteResult = await prisma.follow.deleteMany({
-      // deleteMany の方が where で指定しやすい
-      where: {
-        followerId: loggedInUserDbId,
-        followingId: targetUserDbId,
-      },
-    });
-
-    if (deleteResult.count > 0) {
-      console.log(
-        `[FollowActions/Unfollow] User ${loggedInUserDbId} successfully unfollowed ${targetUserDbId}`
-      );
-    } else {
-      // 既にフォローしていなかった場合も、エラーとはせず成功扱いにする（UI上はフォロー解除の状態になるため）
-      console.log(
-        `[FollowActions/Unfollow] User ${loggedInUserDbId} was not following ${targetUserDbId}, no record deleted.`
-      );
-    }
-
-    // キャッシュ再検証
-    const targetUser = await prisma.user.findUnique({
-      where: { id: targetUserDbId },
-      select: { username: true },
-    });
-    const loggedInUser = await prisma.user.findUnique({
-      where: { id: loggedInUserDbId },
-      select: { username: true },
-    });
-    if (targetUser?.username) revalidatePath(`/profile/${targetUser.username}`);
-    if (loggedInUser?.username)
-      revalidatePath(`/profile/${loggedInUser.username}`);
-    if (loggedInUser?.username)
-      revalidatePath(`/follows/${loggedInUser.username}`); // 自分のフォローリスト
-
-    return { success: true, status: "not_following" };
-  } catch (error) {
-    console.error(
-      `[FollowActions/Unfollow] Error unfollowing user ${targetUserDbId}:`,
-      error
+  return wrapAction(async () => {
+    const userDbId = await requireUserDbId();
+    if (userDbId === targetUserDbId)
+      throw new Error("自分自身のフォローを解除できません。");
+    await safeQuery(() =>
+      prisma.follow.deleteMany({
+        where: { followerId: userDbId, followingId: targetUserDbId },
+      })
     );
-    const message =
-      error instanceof Error
-        ? error.message
-        : "フォロー解除中にエラーが発生しました。";
-    return { success: false, error: message, status: "error" };
-  }
+    return { status: "not_following" };
+  });
 }
 
-// --- ★★★ [ACTION] 送信済みのフォローリクエストを取り消す ★★★ ---
 export async function cancelFollowRequestAction(
   targetUserDbId: string
 ): Promise<FollowActionResult> {
-  const { userId: loggedInClerkId } = await auth();
-  if (!loggedInClerkId) {
-    return { success: false, error: "ログインしてください。", status: "error" };
-  }
-  const loggedInUserDbId = await getUserDbIdByClerkId(loggedInClerkId);
-  if (!loggedInUserDbId) {
-    return {
-      success: false,
-      error: "ユーザー情報が見つかりません。",
-      status: "error",
-    };
-  }
-
-  console.log(
-    `[FollowActions/CancelRequest] User ${loggedInUserDbId} attempting to cancel request to ${targetUserDbId}`
-  );
-
-  try {
-    // 自分が申請者(requester)で、相手が申請先(requested)で、かつ PENDING のリクエストを削除
-    const deleteResult = await prisma.followRequest.deleteMany({
-      where: {
-        requesterId: loggedInUserDbId,
-        requestedId: targetUserDbId,
-        status: "PENDING",
-      },
-    });
-
-    if (deleteResult.count > 0) {
-      console.log(
-        `[FollowActions/CancelRequest] User ${loggedInUserDbId} successfully cancelled request to ${targetUserDbId}`
-      );
-    } else {
-      // リクエストが存在しなかった、または既に処理されていた場合もエラーとはしない
-      console.log(
-        `[FollowActions/CancelRequest] No pending request found from ${loggedInUserDbId} to ${targetUserDbId}.`
-      );
-    }
-
-    // キャッシュ再検証
-    const targetUser = await prisma.user.findUnique({
-      where: { id: targetUserDbId },
-      select: { username: true },
-    });
-    if (targetUser?.username) {
-      revalidatePath(`/profile/${targetUser.username}`); // 相手のプロフィールを再検証
-    }
-
-    return { success: true, status: "not_following" }; // 操作後の状態は未フォローになる
-  } catch (error) {
-    console.error(
-      `[FollowActions/CancelRequest] Error cancelling follow request to ${targetUserDbId}:`,
-      error
+  return wrapAction(async () => {
+    const userDbId = await requireUserDbId();
+    await safeQuery(() =>
+      prisma.followRequest.deleteMany({
+        where: {
+          requesterId: userDbId,
+          requestedId: targetUserDbId,
+          status: "PENDING",
+        },
+      })
     );
-    const message =
-      error instanceof Error
-        ? error.message
-        : "フォローリクエストの取り消し中にエラーが発生しました。";
-    return { success: false, error: message, status: "error" };
-  }
+    return { status: "not_following" };
+  });
 }

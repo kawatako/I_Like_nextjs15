@@ -1,29 +1,25 @@
 // components/component/likes/FeedLike.tsx
-//主な責任: 特定のコンテンツ（投稿 または ランキングリスト）に対するユーザーインタラクション（いいね、コメント数表示、将来的にはリツイートや共有も）の UI とその動作ロジック
+// 主な責任: 投稿またはランキングリストへの「いいね」UI とロジック
+
 "use client";
 
-import { useTransition, useOptimistic } from "react"; // useOptimistic をインポート
+import { useTransition, useOptimistic } from "react";
 import { useSWRConfig } from "swr";
 import { Button } from "@/components/ui/button";
-import { HeartIcon } from "@/components/component/Icons"; // パスを確認
-import {
-  likePostAction,
-  unlikePostAction,
-  likeRankingListAction,
-  unlikeRankingListAction,
-} from "@/lib/actions/likeActions"; // アクションのパスを確認
+import { HeartIcon } from "@/components/component/Icons";
+import { likePostAction, likeRankingListAction } from "@/lib/actions/likeActions";
 import { useToast } from "@/components/hooks/use-toast";
 import { useRouter } from "next/navigation";
 
 interface FeedLikeProps {
-  targetType: "Post" | "RankingList"; // ★ いいね対象のタイプ ★
-  targetId: string; // ★ 対象の ID (postId または rankingListId) ★
-  likeCount: number; // 初期いいね数
-  initialLiked: boolean; // 初期いいね状態
-  // commentCount: number; // コメント数
-  // ★ 将来の拡張用 ★
-  // retweetCount?: number;
-  // quoteCount?: number;
+  // 対象タイプ: 投稿 or ランキングリスト
+  targetType: "Post" | "RankingList";
+  // 対象の ID
+  targetId: string;
+  // 初期いいね数
+  likeCount: number;
+  // 初期いいね状態
+  initialLiked: boolean;
 }
 
 export function FeedLike({
@@ -31,14 +27,13 @@ export function FeedLike({
   targetId,
   likeCount,
   initialLiked,
-}: //commentCount,
-// retweetCount = 0, // 将来用
-// quoteCount = 0,  // 将来用
-FeedLikeProps) {
-  const { mutate } = useSWRConfig(); // SWR のキャッシュを更新するための関数
+}: FeedLikeProps) {
+  const { mutate } = useSWRConfig();
   const router = useRouter();
   const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
+
+  // Optimistic UI 用フラグとカウント
   const [optimisticLiked, setOptimisticLiked] = useOptimistic(
     initialLiked,
     (_, newState: boolean) => newState
@@ -48,69 +43,42 @@ FeedLikeProps) {
     (state, change: number) => state + change
   );
 
-  const handleLikeToggle = async () => {
+  const handleLikeToggle = () => {
     startTransition(async () => {
-      const newOptimisticLiked = !optimisticLiked;
-      const likeChange = newOptimisticLiked ? 1 : -1;
-      setOptimisticLiked(newOptimisticLiked);
-      setOptimisticLikeCount(likeChange);
+      // Optimistic update
+      const newState = !optimisticLiked;
+      setOptimisticLiked(newState);
+      setOptimisticLikeCount(newState ? 1 : -1);
 
       try {
-        let result;
-        if (targetType === "Post") {
-          const action = newOptimisticLiked ? likePostAction : unlikePostAction;
-          result = await action(targetId);
-        } else if (targetType === "RankingList") {
-          const action = newOptimisticLiked
-            ? likeRankingListAction
-            : unlikeRankingListAction;
-          result = await action(targetId);
-        } else {
-          throw new Error("Unsupported target type");
-        }
+        // 統一化されたアクション呼び出し
+        const action =
+          targetType === "Post" ? likePostAction : likeRankingListAction;
+        const result = await action(targetId);
 
-        if (!result?.success) {
-          toast({
-            title: "エラー",
-            description: result?.error || "いいね失敗",
-            variant: "destructive",
-          });
-          // useOptimistic がロールバックするはず
+        if (!result.success) {
+          // エラー時はロールバック and Toast
+          toast({ title: "エラー", description: result.error || "いいね失敗", variant: "destructive" });
         } else {
-          // ★★★ アクション成功後に mutate を実行！ ★★★
-          // キーが配列で、最初の要素が 'timelineFeed' であるキャッシュを再検証
+          // 成功時にキャッシュ再検証
           mutate(
             (key) => Array.isArray(key) && key[0] === "timelineFeed",
-            undefined, // 新しいデータを直接渡さず、再検証をトリガー
-            { revalidate: true } // 再検証を強制 (デフォルトで true の場合もある)
+            undefined,
+            { revalidate: true }
           );
-          // router.refresh(); // ← これはもう不要なはず
-          // 成功時の Toast (任意)
-          // toast({ title: newOptimisticLiked ? "いいねしました" : "いいねを取り消しました" });
         }
-      } catch (error) {
-        toast({
-          title: "エラー",
-          description:
-            error instanceof Error
-              ? error.message
-              : "いいね操作中に予期せぬエラーが発生しました。",
-          variant: "destructive",
-        });
-        // useOptimistic がロールバックするはず
+      } catch (error: any) {
+        toast({ title: "エラー", description: error.message || "予期せぬエラー", variant: "destructive" });
       }
     });
   };
 
-  // ★ いいねボタンとカウントのみを返す ★
   return (
     <Button
-      variant='ghost'
-      size='sm'
+      variant="ghost"
+      size="sm"
       className={`flex items-center space-x-1 ${
-        optimisticLiked
-          ? "text-red-500 hover:text-red-600"
-          : "hover:text-red-500"
+        optimisticLiked ? "text-red-500 hover:text-red-600" : "hover:text-red-500"
       }`}
       onClick={handleLikeToggle}
       disabled={isPending}
@@ -118,7 +86,7 @@ FeedLikeProps) {
       <HeartIcon
         className={`h-[18px] w-[18px] ${optimisticLiked ? "fill-current" : ""}`}
       />
-      <span className='text-xs'>{optimisticLikeCount}</span>
+      <span className="text-xs">{optimisticLikeCount}</span>
     </Button>
   );
 }

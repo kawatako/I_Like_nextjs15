@@ -2,6 +2,7 @@
 "use server";
 
 import prisma from "@/lib/client";
+import { safeQuery } from "@/lib/db";
 import { rankingListSnippetSelect } from "@/lib/prisma/payloads";
 import type { PaginatedResponse, RankingListSnippet, TrendPeriod } from "@/lib/types";
 
@@ -9,6 +10,8 @@ const DEFAULT_LIMIT = 10;
 
 /**
  * 検索結果を取得する Server Action
+ * - タイトル／アイテム名／タグでの検索
+ * - ソートは「月間トレンド数」「新着順」「いいね順」に対応
  */
 export async function searchRankingListsAction(
   query: string,
@@ -21,7 +24,7 @@ export async function searchRankingListsAction(
   const skip = cursor ? 1 : 0;
   const cursorOption = cursor ? { id: cursor } : undefined;
 
-  // 公開済みのみ
+  // 公開済みのみ対象
   const whereClause: any = { status: "PUBLISHED" };
   if (tab === "title") {
     whereClause.subject = { contains: query, mode: "insensitive" };
@@ -35,38 +38,41 @@ export async function searchRankingListsAction(
     };
   }
 
-  // 件数順
+  // 件数順ソート（MONTHLYトレンド件数）
   if (sort === "count") {
-    // Prisma の返す型を明示
+    // まずトレンドテーブルを取得
     type Trend = { subject: string; count: number };
-    const trends = await prisma.trendingSubject.findMany({
-      where: { period: "MONTHLY" as TrendPeriod },
-      select: { subject: true, count: true },
-    }) as Trend[];
+    const trends = await safeQuery(() =>
+      prisma.trendingSubject.findMany({
+        where: { period: "MONTHLY" as TrendPeriod },
+        select: { subject: true, count: true },
+      })
+    ) as Trend[];
 
     const countMap: Record<string, number> = Object.fromEntries(
-      trends.map((t: Trend): [string, number] => [t.subject, t.count])
+      trends.map((t) => [t.subject, t.count])
     );
 
-    const allLists = await prisma.rankingList.findMany({
-      where: whereClause,
-      select: rankingListSnippetSelect,
-      cursor: cursorOption,
-      skip,
-      take,
-    });
-    // 一時的に _monthlyCount を持つ型
-    type ListWithCount = RankingListSnippet & { _monthlyCount: number };
+    // 検索対象リストを取得
+    const allLists = await safeQuery(() =>
+      prisma.rankingList.findMany({
+        where: whereClause,
+        select: rankingListSnippetSelect,
+        cursor: cursorOption,
+        skip,
+        take,
+      })
+    ) as RankingListSnippet[];
 
-    const sorted = (allLists as RankingListSnippet[])
-      .map((l: RankingListSnippet): ListWithCount => ({
+    // _monthlyCount を付与してソートし、ページネーション
+    type ListWithCount = RankingListSnippet & { _monthlyCount: number };
+    const sorted = allLists
+      .map((l) => ({
         ...l,
         _monthlyCount: countMap[l.subject] ?? 0,
       }))
-      .sort((a: ListWithCount, b: ListWithCount): number =>
-        b._monthlyCount - a._monthlyCount
-      )
-      .slice(0, limit + 1);
+      .sort((a: ListWithCount, b: ListWithCount) => b._monthlyCount - a._monthlyCount)
+      .slice(0, take);
 
     const items = sorted.slice(0, limit) as RankingListSnippet[];
     const nextCursor = sorted.length > limit ? sorted[limit].id : null;
@@ -79,14 +85,17 @@ export async function searchRankingListsAction(
       ? { createdAt: "desc" as const }
       : { likeCount: "desc" as const };
 
-  const results = await prisma.rankingList.findMany({
-    where: whereClause,
-    select: rankingListSnippetSelect,
-    orderBy,
-    cursor: cursorOption,
-    skip,
-    take,
-  });
+  // ソート適用後の取得
+  const results = await safeQuery(() =>
+    prisma.rankingList.findMany({
+      where: whereClause,
+      select: rankingListSnippetSelect,
+      orderBy,
+      cursor: cursorOption,
+      skip,
+      take,
+    })
+  ) as RankingListSnippet[];
 
   let nextCursor: string | null = null;
   if (results.length > limit) {
