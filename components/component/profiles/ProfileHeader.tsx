@@ -6,7 +6,7 @@ import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { FollowButton } from "@/components/component/follows/FollowButton";
-import type { FollowStatusInfo } from "@/lib/actions/followActions";
+import type { FollowStatusInfo } from "@/lib/types";
 import type { UserProfileData as UserProfileDataType } from "@/lib/types";
 import { MapPinIcon, CakeIcon } from "../Icons"
 import { SocialLinks } from "./SocialLinks";

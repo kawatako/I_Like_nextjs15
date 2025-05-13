@@ -1,9 +1,9 @@
 // components/component/profile/FollowButton.tsx
 "use client";
 
-import { useState, useTransition, useEffect } from 'react'; // useEffect を追加
+import { useState, useTransition, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Loader2 } from "@/components/component/Icons"; // Loader2 アイコンをインポート
+import { Loader2 } from "@/components/component/Icons";
 import { useToast } from "@/components/hooks/use-toast";
 // ★ 関連するサーバーアクションをインポート
 import {
@@ -11,8 +11,7 @@ import {
   unfollowUserAction,
   cancelFollowRequestAction
 } from '@/lib/actions/followActions';
-// ★ フォロー状態の型をインポート (定義場所に合わせてパスを修正)
-import type { FollowStatusInfo, FollowStatus } from '@/lib/actions/followActions';
+import type { FollowStatusInfo, FollowStatus } from '@/lib/types';
 
 interface FollowButtonProps {
   targetUserId: string;                  // フォロー対象ユーザーの DB ID

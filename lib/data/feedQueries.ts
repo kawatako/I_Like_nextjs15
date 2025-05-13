@@ -1,6 +1,5 @@
-// lib/data/feedQueries.ts
-
 import prisma from "@/lib/client";
+import { safeQuery } from "@/lib/db";
 import { createClient } from "@supabase/supabase-js";
 import type { PaginatedResponse, FeedItemWithRelations } from "@/lib/types";
 import { feedItemPayload } from "@/lib/prisma/payloads";
@@ -14,7 +13,7 @@ const supabaseAdmin = createClient(
 /**
  * 公開URLまたはblob: URLを受け取り、必要ならSupabaseの署名付きURLに変換して返す
  */
-async function signUrl(publicUrl?: string | null): Promise<string | undefined> {
+export async function signUrl(publicUrl?: string | null): Promise<string | undefined> {
   if (!publicUrl || publicUrl.startsWith("blob:")) return publicUrl ?? undefined;
   try {
     const url = new URL(publicUrl);
@@ -93,21 +92,25 @@ export async function getHomeFeed({
   const take = limit + 1;
   try {
     // フォロー中ユーザーIDを取得
-    const following = await prisma.follow.findMany({
-      where: { followerId: userId },
-      select: { followingId: true },
-    });
+    const following = await safeQuery(() =>
+      prisma.follow.findMany({
+        where: { followerId: userId },
+        select: { followingId: true },
+      })
+    );
     const followingIds = following.map((f) => f.followingId);
 
     // 生データ取得
-    const rawItems = await prisma.feedItem.findMany({
-      where: { userId: { in: followingIds } },
-      select: feedItemPayload.select,
-      orderBy: { createdAt: "desc" },
-      take,
-      skip: cursor ? 1 : 0,
-      cursor: cursor ? { id: cursor } : undefined,
-    });
+    const rawItems = await safeQuery(() =>
+      prisma.feedItem.findMany({
+        where: { userId: { in: followingIds } },
+        select: feedItemPayload.select,
+        orderBy: { createdAt: "desc" },
+        take,
+        skip: cursor ? 1 : 0,
+        cursor: cursor ? { id: cursor } : undefined,
+      })
+    );
 
     // 次カーソル計算
     let nextCursor: string | null = null;
@@ -138,10 +141,12 @@ export async function getFeedItemDetails(
   }
 
   try {
-    const fi = await prisma.feedItem.findUnique({
-      where: { id: feedItemId },
-      select: feedItemPayload.select,
-    });
+    const fi = await safeQuery(() =>
+      prisma.feedItem.findUnique({
+        where: { id: feedItemId },
+        select: feedItemPayload.select,
+      })
+    );
     if (!fi) return null;
 
     // マッピング＆署名付きURL生成

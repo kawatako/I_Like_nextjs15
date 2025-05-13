@@ -6,18 +6,8 @@ export type ListStatus = "DRAFT" | "PUBLISHED";
 /** フィードの種類 */
 export type FeedType = "POST" | "RANKING_UPDATE" | "RETWEET" | "QUOTE_RETWEET";
 
-/** フォローリクエストのステータス */
-export type FollowRequestStatus = "PENDING" | "ACCEPTED" | "REJECTED";
-/// フォローリクエストのステータスを表す型
-export type FollowStatus =
-  | "SELF"
-  | "NOT_FOLLOWING"
-  | "FOLLOWING"
-  | "REQUEST_SENT"
-  | "REQUEST_RECEIVED"
-  | "BLOCKED"
-  | "BLOCKED_BY"
-  | "CANNOT_FOLLOW";
+
+
 
 export type TrendPeriod =
   "WEEKLY" | "MONTHLY";
@@ -158,19 +148,28 @@ export interface FeedItemWithRelations {
   _count: { retweets: number };
 }
 
-// getFollowStatus が返す情報の型
-export interface FollowStatusInfo {
-  status: FollowStatus;
-  targetUserId: string;
-  targetUsername: string;
-  targetIsPrivate: boolean;
-  followRequestId?: string;  // フォローリクエスト送信済みの場合のリクエストID
-}
+//フォローリクエストのステータス DB（Prisma）の FollowRequest.status 列に対応。申請中／承認／拒否 の３状態
+// つまり「申請レコードのステータス」
+export type FollowRequestStatus = "PENDING" | "ACCEPTED" | "REJECTED";
 
-// フォロー／フォロー解除／リクエスト承認・拒否などのアクション結果に含めるステータス
+// フロントエンドや汎用クエリで得られる「２者間の関係状態」を表す。自分自身／フォロー中／未フォロー／リクエスト送信済／リクエスト受信済／… など、UI 上で必要な多様なケースを列挙
+//つまり「相手のプロフィールを見たときに表示すべき状態」
+export type FollowStatus =
+  | "SELF" // 自分自身
+  | "NOT_FOLLOWING" // フォローしていない (公開アカウント)
+  | "FOLLOWING" // フォロー中
+  | "REQUEST_SENT" // フォローリクエスト送信済み (相手が非公開)
+  | "REQUEST_RECEIVED" // 相手からフォローリクエストが来ている (承認待ち)
+  | "BLOCKED" // 相手をブロックしている (将来的に実装する場合)
+  | "BLOCKED_BY" // 相手からブロックされている (将来的に実装する場合)
+  | "CANNOT_FOLLOW"; // フォローできないその他の理由 (例: ログインしていない)
+
+// フォロー／フォロー解除／リクエスト承認・拒否などのアクション実行後に返す結果の状態。
+// つまり「アクション結果を呼び出し元コンポーネントに返すための値」
 export interface FollowActionResult extends ActionResult {
   status?: "following" | "not_following" | "requested" | "error";
 }
+
 
 // フォローリクエストを一覧取得するときの型
 export interface FollowRequestWithRequester {
@@ -190,3 +189,11 @@ export interface FollowCursorRecord {
   id: string;         // follow テーブルのレコードID（カーソル用）
   user: UserSnippet;  // following または follower の user 情報
 }
+
+export type FollowStatusInfo = {
+  status: FollowStatus;
+  targetUserId: string; // 対象ユーザーのDB ID
+  targetUsername: string; // 対象ユーザーの username
+  targetIsPrivate: boolean; // 対象ユーザーが非公開か
+  // followRequestId?: string; // 送信済みリクエストのID (キャンセル用)
+};

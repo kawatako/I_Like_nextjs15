@@ -3,6 +3,7 @@
 
 import { auth } from "@clerk/nextjs/server";
 import prisma from "@/lib/client";
+import { safeQuery } from "@/lib/db";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { getUserDbIdByClerkId } from "@/lib/data/userQueries";
@@ -27,6 +28,7 @@ export type ProfileUpdateData = {
 };
 
 // --- バリデーションスキーマ ---
+// 受け取ったプロファイル更新データを検証／変換
 const ProfileUpdateSchema = z
   .object({
     name: z.string().trim().max(30).optional().nullable(),
@@ -96,11 +98,13 @@ export async function updateProfileAction(
 
   // 5. DB 更新＆キャッシュ再検証
   try {
-    const updated = await prisma.user.update({
-      where: { id: userDbId },
-      data: updateData,
-      select: { username: true },
-    });
+    const updated = await safeQuery(() =>
+      prisma.user.update({
+        where: { id: userDbId },
+        data: updateData,
+        select: { username: true },
+      })
+    );
 
     // 自分のプロフィール周りを再検証
     revalidatePath(`/profile/${updated.username}`);

@@ -3,6 +3,7 @@
 
 import { auth } from "@clerk/nextjs/server";
 import prisma from "../client";
+import { safeQuery } from "@/lib/db";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -15,7 +16,8 @@ import type {
   ListStatus,
 } from "@/lib/types";
 
-// --- Zod スキーマ ---
+// --- Zod スキーマ定義 ---
+// 各フィールドのバリデーションルールを定義
 const subjectAllowedCharsRegex =
   /^[\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}A-Za-z0-9 ]+$/u;
 const SubjectSchema = z
@@ -42,193 +44,100 @@ const ItemDescriptionSchema = z
   .max(500, "アイテム説明は500字以内です。")
   .optional();
 
-// --- 型定義 ---
-interface RankingDataForSave {
-  subject: string;
-  description: string | null;
-  listImageUrl?: string | null;
-  tags?: string[];
-}
-interface ItemDataForSave {
-  id?: string;
-  itemName: string;
-  itemDescription?: string | null;
-  imageUrl?: string | null;
-}
+// --- ヘルパー関数 ---
 
-// --- Server Actions ---
-
-export async function createCompleteRankingAction(
-  rankingData: RankingDataForSave,
-  itemsData: ItemDataForSave[],
-  status: ListStatus
-): Promise<ActionResult & { newListId?: string }> {
+/**
+ * 認証済みユーザーの取得とDB ID／usernameの取得
+ * @throws 認証失敗やユーザー未登録時にエラー
+ */
+async function requireUser() {
   const { userId: clerkId } = await auth();
-  if (!clerkId) return { success: false, error: "ログインしてください。" };
-
-  // 1. ユーザー情報取得
-  let userDbId: string;
-  let username: string;
-  const userRec = await prisma.user.findUnique({
-    where: { clerkId },
-    select: { id: true, username: true },
-  });
-  if (!userRec?.id || !userRec.username)
-    return { success: false, error: "ユーザー情報が見つかりません。" };
-  userDbId = userRec.id;
-  username = userRec.username;
-
-  // 2. バリデーション
-  try {
-    SubjectSchema.parse(rankingData.subject);
-    DescriptionSchema.parse(rankingData.description ?? "");
-    if (itemsData.length > 10) throw new Error("アイテムは10個まで");
-    if (status === "PUBLISHED" && itemsData.length === 0)
-      throw new Error("公開にはアイテム必須");
-    itemsData.forEach((item, i) => {
-      ItemNameSchema.parse(item.itemName);
-      ItemDescriptionSchema.parse(item.itemDescription ?? "");
-      if (
-        status === "PUBLISHED" &&
-        (!item.itemName || item.itemName.trim() === "")
-      ) {
-        throw new Error(`${i + 1}番目アイテム名必須`);
-      }
-    });
-    const tags = rankingData.tags ?? [];
-    if (tags.some((t) => t.trim().length === 0 || t.length > 30))
-      throw new Error("タグ名は1〜30文字");
-    if (tags.length > 5) throw new Error("タグは5個まで");
-  } catch (e) {
-    if (e instanceof z.ZodError)
-      return {
-        success: false,
-        error: e.errors.map((e) => e.message).join("\n"),
-      };
-    if (e instanceof Error) return { success: false, error: e.message };
-    return { success: false, error: "検証中にエラーが発生しました。" };
-  }
-
-  // 3. トランザクション
-  const newList = await prisma.$transaction(
-    async (tx: Prisma.TransactionClient) => {
-      // タグ upsert
-      const tags = rankingData.tags ?? [];
-      const tagOps = tags
-        .map((t) => t.trim())
-        .filter((t) => t.length > 0)
-        .map((name) => ({
-          where: { name },
-          create: { name },
-        }));
-      const upserted = await Promise.all(
-        tagOps.map((data) =>
-          tx.tag.upsert({
-            where: data.where,
-            create: data.create,
-            update: {},
-            select: { id: true },
-          })
-        )
-      );
-      const tagIds = upserted.map((t) => ({ id: t.id }));
-
-      // リスト作成
-      const created = await tx.rankingList.create({
-        data: {
-          authorId: userDbId,
-          subject: rankingData.subject.trim(),
-          description: rankingData.description?.trim() || null,
-          status,
-          listImageUrl: rankingData.listImageUrl || null,
-          tags: { connect: tagIds },
-        },
-      });
-      // アイテム作成
-      if (itemsData.length > 0) {
-        await tx.rankedItem.createMany({
-          data: itemsData.map((item, i) => ({
-            listId: created.id,
-            rank: i + 1,
-            itemName: item.itemName.trim(),
-            itemDescription: item.itemDescription?.trim() || null,
-            imageUrl: item.imageUrl || null,
-          })),
-        });
-      }
-      // 公開なら FeedItem
-      if (status === "PUBLISHED") {
-        await tx.feedItem.create({
-          data: {
-            userId: userDbId,
-            type: "RANKING_UPDATE",
-            rankingListId: created.id,
-          },
-        });
-      }
-      return created;
-    }
+  if (!clerkId) throw new Error("ログインしてください。");
+  const rec = await safeQuery(() =>
+    prisma.user.findUnique({ where: { clerkId }, select: { id: true, username: true } })
   );
+  if (!rec?.id || !rec.username) throw new Error("ユーザー情報が見つかりません。");
+  return { userDbId: rec.id, username: rec.username };
+}
 
-  // 4. 再検証
-  revalidatePath(`/rankings/${newList.id}`);
+/**
+ * Transaction内でタグをUpsertし、ID配列を返す
+ * 空配列や重複タグを除外
+ */
+async function upsertTags(tx: Prisma.TransactionClient, tags?: string[]) {
+  if (!tags || tags.length === 0) return [];
+  const ops = tags
+    .map((t) => t.trim())
+    .filter((t) => t.length > 0)
+    .map((name) => ({ where: { name }, create: { name } }));
+  const ups = await Promise.all(
+    ops.map((op) =>
+      tx.tag.upsert({ where: op.where, create: op.create, update: {}, select: { id: true } })
+    )
+  );
+  return ups.map((u) => ({ id: u.id }));
+}
+
+/**
+ * Prisma transactionの実行をラップしてsafeQueryを適用
+ */
+function runTx<T>(fn: (tx: Prisma.TransactionClient) => Promise<T>): Promise<T> {
+  return safeQuery(() => prisma.$transaction(fn));
+}
+
+/**
+ * ランキング作成・編集後のキャッシュ再検証をまとめて実行
+ */
+function revalidateAfter(listId: string, username: string, status: ListStatus) {
+  revalidatePath(`/rankings/${listId}`);
+  revalidatePath(`/rankings/${listId}/edit`);
   revalidatePath(`/profile/${username}`);
   if (status === "PUBLISHED") {
     revalidatePath("/");
     revalidatePath("/trends");
   }
-
-  return { success: true, newListId: newList.id };
 }
 
+/**
+ * 完整なランキングを作成し、タグ・アイテムを登録し、公開時はFeedItemも生成
+ */
+export async function createCompleteRankingAction(
+  rankingData: { subject: string; description: string | null; listImageUrl?: string | null; tags?: string[] },
+  itemsData: { itemName: string; itemDescription?: string | null; imageUrl?: string | null }[],
+  status: ListStatus
+): Promise<ActionResult & { newListId?: string }> {
+  const { userDbId, username } = await requireUser();
 
-export async function saveRankingListItemsAction(
-  listId: string,
-  itemsData: ItemDataForSave[],
-  listSubject: string,
-  listDescription: string | null,
-  listImageUrl: string | null | undefined,
-  tags: string[],
-  targetStatus: ListStatus
-): Promise<ActionResult> {
-  const { userId: clerkId } = await auth();
-  if (!clerkId) return { success: false, error: "ログインしてください。" };
-
-  const userRec = await prisma.user.findUnique({
-    where: { clerkId },
-    select: { id: true, username: true },
+  // バリデーション
+  SubjectSchema.parse(rankingData.subject);
+  DescriptionSchema.parse(rankingData.description ?? "");
+  if (itemsData.length > 10) throw new Error("アイテムは10個まで");
+  if (status === "PUBLISHED" && itemsData.length === 0) throw new Error("公開にはアイテム必須");
+  itemsData.forEach((item, i) => {
+    ItemNameSchema.parse(item.itemName);
+    ItemDescriptionSchema.parse(item.itemDescription ?? "");
+    if (status === "PUBLISHED" && !item.itemName.trim()) throw new Error(`${i + 1}番目アイテム名必須`);
   });
-  if (!userRec?.id) return { success: false, error: "ユーザー情報が見つかりません。" };
-  const userDbId = userRec.id;
 
-  // バリデーション（省略）
+  // タグUpsert
+  const tagIds = await runTx((tx) => upsertTags(tx, rankingData.tags));
 
-  // 権限チェック
-  const list = await prisma.rankingList.findUnique({
-    where: { id: listId, authorId: userDbId },
-    select: { id: true, status: true },
-  });
-  if (!list) return { success: false, error: "編集権限がありません。" };
-
-  await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
-    // タグ upsert
-    const tagOps = tags
-      .map((t) => t.trim())
-      .filter((t) => t.length > 0)
-      .map((name) => ({ where: { name }, create: { name } }));
-    const upserted = await Promise.all(
-      tagOps.map((data) =>
-        tx.tag.upsert({ where: data.where, create: data.create, update: {}, select: { id: true } })
-      )
-    );
-    const tagIds = upserted.map((t) => ({ id: t.id }));
-
-    // アイテム全削除 → 再作成
-    await tx.rankedItem.deleteMany({ where: { listId } });
+  // トランザクション実行
+  const newList = await runTx(async (tx) => {
+    const created = await tx.rankingList.create({
+      data: {
+        authorId: userDbId,
+        subject: rankingData.subject.trim(),
+        description: rankingData.description?.trim() || null,
+        status,
+        listImageUrl: rankingData.listImageUrl || null,
+        tags: { connect: tagIds },
+      },
+    });
     if (itemsData.length > 0) {
       await tx.rankedItem.createMany({
         data: itemsData.map((item, i) => ({
-          listId,
+          listId: created.id,
           rank: i + 1,
           itemName: item.itemName.trim(),
           itemDescription: item.itemDescription?.trim() || null,
@@ -236,109 +145,103 @@ export async function saveRankingListItemsAction(
         })),
       });
     }
+    if (status === "PUBLISHED") {
+      await tx.feedItem.create({
+        data: { userId: userDbId, type: "RANKING_UPDATE", rankingListId: created.id },
+      });
+    }
+    return created;
+  });
 
-    // 本体更新
+  // キャッシュ再検証
+  revalidateAfter(newList.id, username, status);
+  return { success: true, newListId: newList.id };
+}
+
+/**
+ * 既存ランキングのアイテム構成を更新し、タグ・FeedItemも整合
+ */
+export async function saveRankingListItemsAction(
+  listId: string,
+  itemsData: { itemName: string; itemDescription?: string | null; imageUrl?: string | null }[],
+  listSubject: string,
+  listDescription: string | null,
+  listImageUrl: string | null | undefined,
+  tags: string[],
+  targetStatus: ListStatus
+): Promise<ActionResult> {
+  const { userDbId, username } = await requireUser();
+  const list = await safeQuery(() =>
+    prisma.rankingList.findUnique({ where: { id: listId, authorId: userDbId }, select: { id: true } })
+  );
+  if (!list) return { success: false, error: "編集権限がありません。" };
+
+  // トランザクション実行
+  await runTx(async (tx) => {
+    const tagIds = await upsertTags(tx, tags);
+    await tx.rankedItem.deleteMany({ where: { listId } });
+    if (itemsData.length > 0) {
+      await tx.rankedItem.createMany({
+        data: itemsData.map((item, i) => ({ listId, rank: i + 1, itemName: item.itemName.trim(), itemDescription: item.itemDescription?.trim() || null, imageUrl: item.imageUrl || null })),
+      });
+    }
     await tx.rankingList.update({
       where: { id: listId, authorId: userDbId },
-      data: {
-        subject: listSubject.trim(),
-        description: listDescription?.trim() || null,
-        status: targetStatus,
-        listImageUrl: listImageUrl || null,
-        tags: { set: tagIds },
-      },
+      data: { subject: listSubject.trim(), description: listDescription?.trim() || null, status: targetStatus, listImageUrl: listImageUrl || null, tags: { set: tagIds } },
     });
-
-    // 公開状態変化に合わせて FeedItem upsert
     if (targetStatus === "PUBLISHED") {
       await tx.feedItem.upsert({
-        where: {
-          rankingListId_type: { rankingListId: listId, type: "RANKING_UPDATE" },
-        },
+        where: { rankingListId_type: { rankingListId: listId, type: "RANKING_UPDATE" } },
         create: { userId: userDbId, type: "RANKING_UPDATE", rankingListId: listId },
         update: { updatedAt: new Date() },
       });
     }
   });
 
-  const username = userRec.username!;
-  revalidatePath(`/rankings/${listId}/edit`);
-  revalidatePath(`/rankings/${listId}`);
-  revalidatePath(`/profile/${username}`);
-  if (targetStatus === "PUBLISHED") {
-    revalidatePath("/");
-    revalidatePath("/trends");
-  }
-
+  revalidateAfter(listId, username, targetStatus);
   return { success: true };
 }
 
-
+/**
+ * ランキングと関連FeedItemを削除し、権限チェック後にリダイレクト
+ */
 export async function deleteRankingListAction(
   prevState: ActionResult | null,
   formData: FormData
 ): Promise<ActionResult> {
-  const { userId: clerkId } = await auth();
-  if (!clerkId) {
-    return { success: false, error: "ログインしてください。" };
-  }
+  const { userDbId, username } = await requireUser();
   const listId = formData.get("listId") as string;
-  const userRec = await prisma.user.findUnique({
-    where: { clerkId },
-    select: { id: true, username: true },
-  });
-  const userDbId = userRec?.id!;
-  // トランザクションで削除
-  await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
-    await tx.feedItem.deleteMany({
-      where: { rankingListId: listId, type: "RANKING_UPDATE" },
-    });
-    const res = await tx.rankingList.deleteMany({
-      where: { id: listId, authorId: userDbId },
-    });
+  await runTx(async (tx) => {
+    await tx.feedItem.deleteMany({ where: { rankingListId: listId, type: "RANKING_UPDATE" } });
+    const res = await tx.rankingList.deleteMany({ where: { id: listId, authorId: userDbId } });
     if (res.count === 0) throw new Error("権限がありません。");
   });
-  const username = userRec?.username!;
   redirect(username ? `/profile/${username}` : "/");
 }
 
-
+/**
+ * ユーザーのランキングリスト表示順を一括更新
+ */
 export async function updateRankingListOrderAction(
   orderedListIds: string[]
 ): Promise<ActionResult> {
-  const { userId: clerkId } = await auth();
-  if (!clerkId) {
-    return { success: false, error: "ログインしてください。" };
-  }
-  const userRec = await prisma.user.findUnique({
-    where: { clerkId },
-    select: { id: true, username: true },
-  });
-  const userDbId = userRec?.id!;
-  await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+  const { userDbId, username } = await requireUser();
+  await runTx(async (tx) => {
     await Promise.all(
-      orderedListIds.map((id, idx) =>
-        tx.rankingList.updateMany({
-          where: { id, authorId: userDbId },
-          data: { displayOrder: idx },
-        })
-      )
+      orderedListIds.map((id, idx) => tx.rankingList.updateMany({ where: { id, authorId: userDbId }, data: { displayOrder: idx } }))
     );
   });
-  revalidatePath(`/profile/${userRec?.username}`);
+  revalidatePath(`/profile/${username}`);
   return { success: true };
 }
 
-
+/**
+ * プロフィール別のランキングリストをページネーションで取得（次ページ読み込み）
+ */
 export async function loadMoreProfileRankingsAction(
   targetUserId: string,
   status: ListStatus,
   cursor: string | null
 ): Promise<PaginatedResponse<RankingListSnippet>> {
-  return getProfileRankingsPaginated({
-    userId: targetUserId,
-    status,
-    limit: 10,
-    cursor: cursor ?? undefined,
-  });
+  return getProfileRankingsPaginated({ userId: targetUserId, status, limit: 10, cursor: cursor ?? undefined });
 }
