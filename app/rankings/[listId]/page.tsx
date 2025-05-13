@@ -46,10 +46,10 @@ export default async function RankingDetailPage({
 
   // ヘッダー画像
   const headerImageUrl = userProfileData.image
-    ? await generateImageUrl("i-like", extractKey(userProfileData.image)!)
+    ? await generateImageUrl(userProfileData.image)
     : null;
   const headerCoverUrl = userProfileData.coverImageUrl
-    ? await generateImageUrl("i-like", extractKey(userProfileData.coverImageUrl)!)
+    ? await generateImageUrl(userProfileData.coverImageUrl)
     : null;
 
   // アイテム画像
@@ -58,7 +58,7 @@ export default async function RankingDetailPage({
       if (!item.imageUrl?.startsWith("blob:")) {
         const key = extractKey(item.imageUrl!);
         if (key) {
-          item.imageUrl = await generateImageUrl("i-like", key);
+          item.imageUrl = await generateImageUrl(item.imageUrl!);
         }
       }
       return item;
