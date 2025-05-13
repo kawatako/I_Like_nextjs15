@@ -1,57 +1,36 @@
+// lib/data/feedQueries.ts
+"use server";
+
 import prisma from "@/lib/client";
 import { safeQuery } from "@/lib/db";
-import { createClient } from "@supabase/supabase-js";
+import { generateImageUrl } from "@/lib/utils/storage";
 import type { PaginatedResponse, FeedItemWithRelations } from "@/lib/types";
 import { feedItemPayload } from "@/lib/prisma/payloads";
 
-// Supabase 管理クライアント（プライベートバケットの署名付きURL生成用）
-const supabaseAdmin = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
-
 /**
- * 公開URLまたはblob: URLを受け取り、必要ならSupabaseの署名付きURLに変換して返す
- */
-export async function signUrl(publicUrl?: string | null): Promise<string | undefined> {
-  if (!publicUrl || publicUrl.startsWith("blob:")) return publicUrl ?? undefined;
-  try {
-    const url = new URL(publicUrl);
-    const prefix = "/storage/v1/object/public/i-like/";
-    if (!url.pathname.startsWith(prefix)) return publicUrl;
-    const key = url.pathname.slice(prefix.length);
-    const { data, error } = await supabaseAdmin.storage
-      .from("i-like")
-      .createSignedUrl(key, 60 * 60 * 24);
-    if (error) {
-      console.error("Signed URL生成失敗:", error);
-      return publicUrl;
-    }
-    return data.signedUrl;
-  } catch (e) {
-    console.error("signUrl error:", e);
-    return publicUrl;
-  }
-}
-
-/**
- * フィードアイテムの生データを再帰的にFeedItemWithRelations型にマッピングし、画像URLは署名付きURLに変換して返す
+ * フィードアイテムの生データを再帰的に FeedItemWithRelations 型にマッピングし、
+ * 画像 URL はすべて generateImageUrl で署名付き URL に変換して返す
  */
 export async function mapAndSignFeedItem(fi: any): Promise<FeedItemWithRelations> {
   // ユーザーアバター
-  const userImage = await signUrl(fi.user?.image);
-  // 投稿画像
+  const userImage = await generateImageUrl(fi.user?.image);
+
+  // 投稿（Post）の画像
   const post = fi.post
-    ? { ...fi.post, imageUrl: await signUrl(fi.post.imageUrl) }
+    ? {
+        ...fi.post,
+        imageUrl: await generateImageUrl(fi.post.imageUrl),
+      }
     : undefined;
-  // ランキング更新アイテム画像
+
+  // ランキングリスト更新アイテム（RankingList）のアイテム画像
   const rankingList = fi.rankingList
     ? {
         ...fi.rankingList,
         items: await Promise.all(
           fi.rankingList.items.map(async (item: any) => ({
             ...item,
-            imageUrl: await signUrl(item.imageUrl),
+            imageUrl: await generateImageUrl(item.imageUrl),
           }))
         ),
       }
@@ -73,7 +52,7 @@ export async function mapAndSignFeedItem(fi: any): Promise<FeedItemWithRelations
 }
 
 /**
- * ホームフィードを取得し、画像URLを署名付きURLに変換して返す
+ * ホームフィードを取得し、画像 URL をすべて署名付き URL に変換して返す
  */
 export async function getHomeFeed({
   userId,
@@ -91,7 +70,7 @@ export async function getHomeFeed({
 
   const take = limit + 1;
   try {
-    // フォロー中ユーザーIDを取得
+    // 1) フォロー中ユーザー ID の取得
     const following = await safeQuery(() =>
       prisma.follow.findMany({
         where: { followerId: userId },
@@ -100,7 +79,7 @@ export async function getHomeFeed({
     );
     const followingIds = following.map((f) => f.followingId);
 
-    // 生データ取得
+    // 2) フィードアイテムの生データ取得
     const rawItems = await safeQuery(() =>
       prisma.feedItem.findMany({
         where: { userId: { in: followingIds } },
@@ -112,14 +91,14 @@ export async function getHomeFeed({
       })
     );
 
-    // 次カーソル計算
+    // 3) 次のカーソル計算
     let nextCursor: string | null = null;
     if (rawItems.length > limit) {
       const nxt = rawItems.pop();
       nextCursor = nxt?.id ?? null;
     }
 
-    // FeedItemWithRelations にマッピング＆署名付きURL生成
+    // 4) 署名付き URL 変換を含むマッピング
     const items = await Promise.all(rawItems.map(mapAndSignFeedItem));
 
     return { items, nextCursor };
@@ -130,7 +109,8 @@ export async function getHomeFeed({
 }
 
 /**
- * 単一のフィードアイテム詳細を取得し、画像URLを署名付きURLに変換して返す
+ * 単一のフィードアイテム詳細を取得し、
+ * 画像 URL をすべて署名付き URL に変換して返す
  */
 export async function getFeedItemDetails(
   feedItemId: string
@@ -149,7 +129,6 @@ export async function getFeedItemDetails(
     );
     if (!fi) return null;
 
-    // マッピング＆署名付きURL生成
     return await mapAndSignFeedItem(fi);
   } catch (error) {
     console.error("[getFeedItemDetails] Error fetching details:", error);
