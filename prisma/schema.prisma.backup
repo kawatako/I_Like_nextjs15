@@ -13,7 +13,8 @@ generator edgeClient {
 
 datasource db {
   provider = "postgresql"
-  url      = env("SUPABASE_DB_URL")
+  url      = env("DATABASE_URL") // 本番／アプリケーション使用時のプーリング用
+  directUrl = env("DIRECT_DATABASE_URL") // CLI／マイグレーション用
 }
 
 // ランキングリストの公開状態 Enum

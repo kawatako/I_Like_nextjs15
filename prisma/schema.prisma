@@ -10,8 +10,8 @@ generator edgeClient {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("SUPABASE_DB_URL")
+  provider  = "postgresql"
+  url = env("DIRECT_DATABASE_URL")     // マイグレーション／introspection 用（DB 直結）
 }
 
 model Tag {
