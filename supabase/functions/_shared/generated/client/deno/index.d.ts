@@ -34,6 +34,11 @@ export type RankingList = $Result.DefaultSelection<Prisma.$RankingListPayload>
  */
 export type RankedItem = $Result.DefaultSelection<Prisma.$RankedItemPayload>
 /**
+ * Model RankingListTag
+ * 
+ */
+export type RankingListTag = $Result.DefaultSelection<Prisma.$RankingListTagPayload>
+/**
  * Model TrendingSubject
  * 
  */
@@ -309,6 +314,16 @@ export class PrismaClient<
     * ```
     */
   get rankedItem(): Prisma.RankedItemDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.rankingListTag`: Exposes CRUD operations for the **RankingListTag** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more RankingListTags
+    * const rankingListTags = await prisma.rankingListTag.findMany()
+    * ```
+    */
+  get rankingListTag(): Prisma.RankingListTagDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.trendingSubject`: Exposes CRUD operations for the **TrendingSubject** model.
@@ -863,6 +878,7 @@ export namespace Prisma {
     User: 'User',
     RankingList: 'RankingList',
     RankedItem: 'RankedItem',
+    RankingListTag: 'RankingListTag',
     TrendingSubject: 'TrendingSubject',
     TrendingTag: 'TrendingTag',
     TrendingItem: 'TrendingItem',
@@ -892,7 +908,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "tag" | "user" | "rankingList" | "rankedItem" | "trendingSubject" | "trendingTag" | "trendingItem" | "averageItemRank" | "post" | "retweet" | "feedItem" | "like" | "reply" | "followRequest" | "follow"
+      modelProps: "tag" | "user" | "rankingList" | "rankedItem" | "rankingListTag" | "trendingSubject" | "trendingTag" | "trendingItem" | "averageItemRank" | "post" | "retweet" | "feedItem" | "like" | "reply" | "followRequest" | "follow"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1189,6 +1205,80 @@ export namespace Prisma {
           count: {
             args: Prisma.RankedItemCountArgs<ExtArgs>
             result: $Utils.Optional<RankedItemCountAggregateOutputType> | number
+          }
+        }
+      }
+      RankingListTag: {
+        payload: Prisma.$RankingListTagPayload<ExtArgs>
+        fields: Prisma.RankingListTagFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.RankingListTagFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RankingListTagPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.RankingListTagFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RankingListTagPayload>
+          }
+          findFirst: {
+            args: Prisma.RankingListTagFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RankingListTagPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.RankingListTagFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RankingListTagPayload>
+          }
+          findMany: {
+            args: Prisma.RankingListTagFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RankingListTagPayload>[]
+          }
+          create: {
+            args: Prisma.RankingListTagCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RankingListTagPayload>
+          }
+          createMany: {
+            args: Prisma.RankingListTagCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.RankingListTagCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RankingListTagPayload>[]
+          }
+          delete: {
+            args: Prisma.RankingListTagDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RankingListTagPayload>
+          }
+          update: {
+            args: Prisma.RankingListTagUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RankingListTagPayload>
+          }
+          deleteMany: {
+            args: Prisma.RankingListTagDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.RankingListTagUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.RankingListTagUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RankingListTagPayload>[]
+          }
+          upsert: {
+            args: Prisma.RankingListTagUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RankingListTagPayload>
+          }
+          aggregate: {
+            args: Prisma.RankingListTagAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateRankingListTag>
+          }
+          groupBy: {
+            args: Prisma.RankingListTagGroupByArgs<ExtArgs>
+            result: $Utils.Optional<RankingListTagGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.RankingListTagCountArgs<ExtArgs>
+            result: $Utils.Optional<RankingListTagCountAggregateOutputType> | number
           }
         }
       }
@@ -2094,6 +2184,7 @@ export namespace Prisma {
     user?: UserOmit
     rankingList?: RankingListOmit
     rankedItem?: RankedItemOmit
+    rankingListTag?: RankingListTagOmit
     trendingSubject?: TrendingSubjectOmit
     trendingTag?: TrendingTagOmit
     trendingItem?: TrendingItemOmit
@@ -2200,12 +2291,12 @@ export namespace Prisma {
 
   export type TagCountOutputType = {
     trendingStats: number
-    rankingLists: number
+    rankingListTags: number
   }
 
   export type TagCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     trendingStats?: boolean | TagCountOutputTypeCountTrendingStatsArgs
-    rankingLists?: boolean | TagCountOutputTypeCountRankingListsArgs
+    rankingListTags?: boolean | TagCountOutputTypeCountRankingListTagsArgs
   }
 
   // Custom InputTypes
@@ -2229,8 +2320,8 @@ export namespace Prisma {
   /**
    * TagCountOutputType without action
    */
-  export type TagCountOutputTypeCountRankingListsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: RankingListWhereInput
+  export type TagCountOutputTypeCountRankingListTagsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: RankingListTagWhereInput
   }
 
 
@@ -2354,14 +2445,14 @@ export namespace Prisma {
     feedItems: number
     likes: number
     items: number
-    tags: number
+    rankingListTags: number
   }
 
   export type RankingListCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     feedItems?: boolean | RankingListCountOutputTypeCountFeedItemsArgs
     likes?: boolean | RankingListCountOutputTypeCountLikesArgs
     items?: boolean | RankingListCountOutputTypeCountItemsArgs
-    tags?: boolean | RankingListCountOutputTypeCountTagsArgs
+    rankingListTags?: boolean | RankingListCountOutputTypeCountRankingListTagsArgs
   }
 
   // Custom InputTypes
@@ -2399,8 +2490,8 @@ export namespace Prisma {
   /**
    * RankingListCountOutputType without action
    */
-  export type RankingListCountOutputTypeCountTagsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: TagWhereInput
+  export type RankingListCountOutputTypeCountRankingListTagsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: RankingListTagWhereInput
   }
 
 
@@ -2655,7 +2746,7 @@ export namespace Prisma {
     name?: boolean
     createdAt?: boolean
     trendingStats?: boolean | Tag$trendingStatsArgs<ExtArgs>
-    rankingLists?: boolean | Tag$rankingListsArgs<ExtArgs>
+    rankingListTags?: boolean | Tag$rankingListTagsArgs<ExtArgs>
     _count?: boolean | TagCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["tag"]>
 
@@ -2680,7 +2771,7 @@ export namespace Prisma {
   export type TagOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "createdAt", ExtArgs["result"]["tag"]>
   export type TagInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     trendingStats?: boolean | Tag$trendingStatsArgs<ExtArgs>
-    rankingLists?: boolean | Tag$rankingListsArgs<ExtArgs>
+    rankingListTags?: boolean | Tag$rankingListTagsArgs<ExtArgs>
     _count?: boolean | TagCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type TagIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -2690,7 +2781,7 @@ export namespace Prisma {
     name: "Tag"
     objects: {
       trendingStats: Prisma.$TrendingTagPayload<ExtArgs>[]
-      rankingLists: Prisma.$RankingListPayload<ExtArgs>[]
+      rankingListTags: Prisma.$RankingListTagPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -3091,7 +3182,7 @@ export namespace Prisma {
   export interface Prisma__TagClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     trendingStats<T extends Tag$trendingStatsArgs<ExtArgs> = {}>(args?: Subset<T, Tag$trendingStatsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TrendingTagPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    rankingLists<T extends Tag$rankingListsArgs<ExtArgs> = {}>(args?: Subset<T, Tag$rankingListsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RankingListPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    rankingListTags<T extends Tag$rankingListTagsArgs<ExtArgs> = {}>(args?: Subset<T, Tag$rankingListTagsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RankingListTagPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3536,27 +3627,27 @@ export namespace Prisma {
   }
 
   /**
-   * Tag.rankingLists
+   * Tag.rankingListTags
    */
-  export type Tag$rankingListsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Tag$rankingListTagsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the RankingList
+     * Select specific fields to fetch from the RankingListTag
      */
-    select?: RankingListSelect<ExtArgs> | null
+    select?: RankingListTagSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the RankingList
+     * Omit specific fields from the RankingListTag
      */
-    omit?: RankingListOmit<ExtArgs> | null
+    omit?: RankingListTagOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: RankingListInclude<ExtArgs> | null
-    where?: RankingListWhereInput
-    orderBy?: RankingListOrderByWithRelationInput | RankingListOrderByWithRelationInput[]
-    cursor?: RankingListWhereUniqueInput
+    include?: RankingListTagInclude<ExtArgs> | null
+    where?: RankingListTagWhereInput
+    orderBy?: RankingListTagOrderByWithRelationInput | RankingListTagOrderByWithRelationInput[]
+    cursor?: RankingListTagWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: RankingListScalarFieldEnum | RankingListScalarFieldEnum[]
+    distinct?: RankingListTagScalarFieldEnum | RankingListTagScalarFieldEnum[]
   }
 
   /**
@@ -5246,7 +5337,7 @@ export namespace Prisma {
     likes?: boolean | RankingList$likesArgs<ExtArgs>
     items?: boolean | RankingList$itemsArgs<ExtArgs>
     author?: boolean | UserDefaultArgs<ExtArgs>
-    tags?: boolean | RankingList$tagsArgs<ExtArgs>
+    rankingListTags?: boolean | RankingList$rankingListTagsArgs<ExtArgs>
     _count?: boolean | RankingListCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["rankingList"]>
 
@@ -5297,7 +5388,7 @@ export namespace Prisma {
     likes?: boolean | RankingList$likesArgs<ExtArgs>
     items?: boolean | RankingList$itemsArgs<ExtArgs>
     author?: boolean | UserDefaultArgs<ExtArgs>
-    tags?: boolean | RankingList$tagsArgs<ExtArgs>
+    rankingListTags?: boolean | RankingList$rankingListTagsArgs<ExtArgs>
     _count?: boolean | RankingListCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type RankingListIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -5314,7 +5405,7 @@ export namespace Prisma {
       likes: Prisma.$LikePayload<ExtArgs>[]
       items: Prisma.$RankedItemPayload<ExtArgs>[]
       author: Prisma.$UserPayload<ExtArgs>
-      tags: Prisma.$TagPayload<ExtArgs>[]
+      rankingListTags: Prisma.$RankingListTagPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -5725,7 +5816,7 @@ export namespace Prisma {
     likes<T extends RankingList$likesArgs<ExtArgs> = {}>(args?: Subset<T, RankingList$likesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LikePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     items<T extends RankingList$itemsArgs<ExtArgs> = {}>(args?: Subset<T, RankingList$itemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RankedItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     author<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    tags<T extends RankingList$tagsArgs<ExtArgs> = {}>(args?: Subset<T, RankingList$tagsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TagPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    rankingListTags<T extends RankingList$rankingListTagsArgs<ExtArgs> = {}>(args?: Subset<T, RankingList$rankingListTagsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RankingListTagPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -6233,27 +6324,27 @@ export namespace Prisma {
   }
 
   /**
-   * RankingList.tags
+   * RankingList.rankingListTags
    */
-  export type RankingList$tagsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type RankingList$rankingListTagsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Tag
+     * Select specific fields to fetch from the RankingListTag
      */
-    select?: TagSelect<ExtArgs> | null
+    select?: RankingListTagSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the Tag
+     * Omit specific fields from the RankingListTag
      */
-    omit?: TagOmit<ExtArgs> | null
+    omit?: RankingListTagOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: TagInclude<ExtArgs> | null
-    where?: TagWhereInput
-    orderBy?: TagOrderByWithRelationInput | TagOrderByWithRelationInput[]
-    cursor?: TagWhereUniqueInput
+    include?: RankingListTagInclude<ExtArgs> | null
+    where?: RankingListTagWhereInput
+    orderBy?: RankingListTagOrderByWithRelationInput | RankingListTagOrderByWithRelationInput[]
+    cursor?: RankingListTagWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: TagScalarFieldEnum | TagScalarFieldEnum[]
+    distinct?: RankingListTagScalarFieldEnum | RankingListTagScalarFieldEnum[]
   }
 
   /**
@@ -7390,6 +7481,1046 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: RankedItemInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model RankingListTag
+   */
+
+  export type AggregateRankingListTag = {
+    _count: RankingListTagCountAggregateOutputType | null
+    _min: RankingListTagMinAggregateOutputType | null
+    _max: RankingListTagMaxAggregateOutputType | null
+  }
+
+  export type RankingListTagMinAggregateOutputType = {
+    id: string | null
+    listId: string | null
+    tagId: string | null
+  }
+
+  export type RankingListTagMaxAggregateOutputType = {
+    id: string | null
+    listId: string | null
+    tagId: string | null
+  }
+
+  export type RankingListTagCountAggregateOutputType = {
+    id: number
+    listId: number
+    tagId: number
+    _all: number
+  }
+
+
+  export type RankingListTagMinAggregateInputType = {
+    id?: true
+    listId?: true
+    tagId?: true
+  }
+
+  export type RankingListTagMaxAggregateInputType = {
+    id?: true
+    listId?: true
+    tagId?: true
+  }
+
+  export type RankingListTagCountAggregateInputType = {
+    id?: true
+    listId?: true
+    tagId?: true
+    _all?: true
+  }
+
+  export type RankingListTagAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which RankingListTag to aggregate.
+     */
+    where?: RankingListTagWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RankingListTags to fetch.
+     */
+    orderBy?: RankingListTagOrderByWithRelationInput | RankingListTagOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: RankingListTagWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RankingListTags from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RankingListTags.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned RankingListTags
+    **/
+    _count?: true | RankingListTagCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: RankingListTagMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: RankingListTagMaxAggregateInputType
+  }
+
+  export type GetRankingListTagAggregateType<T extends RankingListTagAggregateArgs> = {
+        [P in keyof T & keyof AggregateRankingListTag]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateRankingListTag[P]>
+      : GetScalarType<T[P], AggregateRankingListTag[P]>
+  }
+
+
+
+
+  export type RankingListTagGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: RankingListTagWhereInput
+    orderBy?: RankingListTagOrderByWithAggregationInput | RankingListTagOrderByWithAggregationInput[]
+    by: RankingListTagScalarFieldEnum[] | RankingListTagScalarFieldEnum
+    having?: RankingListTagScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: RankingListTagCountAggregateInputType | true
+    _min?: RankingListTagMinAggregateInputType
+    _max?: RankingListTagMaxAggregateInputType
+  }
+
+  export type RankingListTagGroupByOutputType = {
+    id: string
+    listId: string
+    tagId: string
+    _count: RankingListTagCountAggregateOutputType | null
+    _min: RankingListTagMinAggregateOutputType | null
+    _max: RankingListTagMaxAggregateOutputType | null
+  }
+
+  type GetRankingListTagGroupByPayload<T extends RankingListTagGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<RankingListTagGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof RankingListTagGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], RankingListTagGroupByOutputType[P]>
+            : GetScalarType<T[P], RankingListTagGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type RankingListTagSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    listId?: boolean
+    tagId?: boolean
+    list?: boolean | RankingListDefaultArgs<ExtArgs>
+    tag?: boolean | TagDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["rankingListTag"]>
+
+  export type RankingListTagSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    listId?: boolean
+    tagId?: boolean
+    list?: boolean | RankingListDefaultArgs<ExtArgs>
+    tag?: boolean | TagDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["rankingListTag"]>
+
+  export type RankingListTagSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    listId?: boolean
+    tagId?: boolean
+    list?: boolean | RankingListDefaultArgs<ExtArgs>
+    tag?: boolean | TagDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["rankingListTag"]>
+
+  export type RankingListTagSelectScalar = {
+    id?: boolean
+    listId?: boolean
+    tagId?: boolean
+  }
+
+  export type RankingListTagOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "listId" | "tagId", ExtArgs["result"]["rankingListTag"]>
+  export type RankingListTagInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    list?: boolean | RankingListDefaultArgs<ExtArgs>
+    tag?: boolean | TagDefaultArgs<ExtArgs>
+  }
+  export type RankingListTagIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    list?: boolean | RankingListDefaultArgs<ExtArgs>
+    tag?: boolean | TagDefaultArgs<ExtArgs>
+  }
+  export type RankingListTagIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    list?: boolean | RankingListDefaultArgs<ExtArgs>
+    tag?: boolean | TagDefaultArgs<ExtArgs>
+  }
+
+  export type $RankingListTagPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "RankingListTag"
+    objects: {
+      list: Prisma.$RankingListPayload<ExtArgs>
+      tag: Prisma.$TagPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      listId: string
+      tagId: string
+    }, ExtArgs["result"]["rankingListTag"]>
+    composites: {}
+  }
+
+  type RankingListTagGetPayload<S extends boolean | null | undefined | RankingListTagDefaultArgs> = $Result.GetResult<Prisma.$RankingListTagPayload, S>
+
+  type RankingListTagCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<RankingListTagFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: RankingListTagCountAggregateInputType | true
+    }
+
+  export interface RankingListTagDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['RankingListTag'], meta: { name: 'RankingListTag' } }
+    /**
+     * Find zero or one RankingListTag that matches the filter.
+     * @param {RankingListTagFindUniqueArgs} args - Arguments to find a RankingListTag
+     * @example
+     * // Get one RankingListTag
+     * const rankingListTag = await prisma.rankingListTag.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends RankingListTagFindUniqueArgs>(args: SelectSubset<T, RankingListTagFindUniqueArgs<ExtArgs>>): Prisma__RankingListTagClient<$Result.GetResult<Prisma.$RankingListTagPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one RankingListTag that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {RankingListTagFindUniqueOrThrowArgs} args - Arguments to find a RankingListTag
+     * @example
+     * // Get one RankingListTag
+     * const rankingListTag = await prisma.rankingListTag.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends RankingListTagFindUniqueOrThrowArgs>(args: SelectSubset<T, RankingListTagFindUniqueOrThrowArgs<ExtArgs>>): Prisma__RankingListTagClient<$Result.GetResult<Prisma.$RankingListTagPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first RankingListTag that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RankingListTagFindFirstArgs} args - Arguments to find a RankingListTag
+     * @example
+     * // Get one RankingListTag
+     * const rankingListTag = await prisma.rankingListTag.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends RankingListTagFindFirstArgs>(args?: SelectSubset<T, RankingListTagFindFirstArgs<ExtArgs>>): Prisma__RankingListTagClient<$Result.GetResult<Prisma.$RankingListTagPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first RankingListTag that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RankingListTagFindFirstOrThrowArgs} args - Arguments to find a RankingListTag
+     * @example
+     * // Get one RankingListTag
+     * const rankingListTag = await prisma.rankingListTag.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends RankingListTagFindFirstOrThrowArgs>(args?: SelectSubset<T, RankingListTagFindFirstOrThrowArgs<ExtArgs>>): Prisma__RankingListTagClient<$Result.GetResult<Prisma.$RankingListTagPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more RankingListTags that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RankingListTagFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all RankingListTags
+     * const rankingListTags = await prisma.rankingListTag.findMany()
+     * 
+     * // Get first 10 RankingListTags
+     * const rankingListTags = await prisma.rankingListTag.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const rankingListTagWithIdOnly = await prisma.rankingListTag.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends RankingListTagFindManyArgs>(args?: SelectSubset<T, RankingListTagFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RankingListTagPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a RankingListTag.
+     * @param {RankingListTagCreateArgs} args - Arguments to create a RankingListTag.
+     * @example
+     * // Create one RankingListTag
+     * const RankingListTag = await prisma.rankingListTag.create({
+     *   data: {
+     *     // ... data to create a RankingListTag
+     *   }
+     * })
+     * 
+     */
+    create<T extends RankingListTagCreateArgs>(args: SelectSubset<T, RankingListTagCreateArgs<ExtArgs>>): Prisma__RankingListTagClient<$Result.GetResult<Prisma.$RankingListTagPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many RankingListTags.
+     * @param {RankingListTagCreateManyArgs} args - Arguments to create many RankingListTags.
+     * @example
+     * // Create many RankingListTags
+     * const rankingListTag = await prisma.rankingListTag.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends RankingListTagCreateManyArgs>(args?: SelectSubset<T, RankingListTagCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many RankingListTags and returns the data saved in the database.
+     * @param {RankingListTagCreateManyAndReturnArgs} args - Arguments to create many RankingListTags.
+     * @example
+     * // Create many RankingListTags
+     * const rankingListTag = await prisma.rankingListTag.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many RankingListTags and only return the `id`
+     * const rankingListTagWithIdOnly = await prisma.rankingListTag.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends RankingListTagCreateManyAndReturnArgs>(args?: SelectSubset<T, RankingListTagCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RankingListTagPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a RankingListTag.
+     * @param {RankingListTagDeleteArgs} args - Arguments to delete one RankingListTag.
+     * @example
+     * // Delete one RankingListTag
+     * const RankingListTag = await prisma.rankingListTag.delete({
+     *   where: {
+     *     // ... filter to delete one RankingListTag
+     *   }
+     * })
+     * 
+     */
+    delete<T extends RankingListTagDeleteArgs>(args: SelectSubset<T, RankingListTagDeleteArgs<ExtArgs>>): Prisma__RankingListTagClient<$Result.GetResult<Prisma.$RankingListTagPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one RankingListTag.
+     * @param {RankingListTagUpdateArgs} args - Arguments to update one RankingListTag.
+     * @example
+     * // Update one RankingListTag
+     * const rankingListTag = await prisma.rankingListTag.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends RankingListTagUpdateArgs>(args: SelectSubset<T, RankingListTagUpdateArgs<ExtArgs>>): Prisma__RankingListTagClient<$Result.GetResult<Prisma.$RankingListTagPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more RankingListTags.
+     * @param {RankingListTagDeleteManyArgs} args - Arguments to filter RankingListTags to delete.
+     * @example
+     * // Delete a few RankingListTags
+     * const { count } = await prisma.rankingListTag.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends RankingListTagDeleteManyArgs>(args?: SelectSubset<T, RankingListTagDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more RankingListTags.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RankingListTagUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many RankingListTags
+     * const rankingListTag = await prisma.rankingListTag.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends RankingListTagUpdateManyArgs>(args: SelectSubset<T, RankingListTagUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more RankingListTags and returns the data updated in the database.
+     * @param {RankingListTagUpdateManyAndReturnArgs} args - Arguments to update many RankingListTags.
+     * @example
+     * // Update many RankingListTags
+     * const rankingListTag = await prisma.rankingListTag.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more RankingListTags and only return the `id`
+     * const rankingListTagWithIdOnly = await prisma.rankingListTag.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends RankingListTagUpdateManyAndReturnArgs>(args: SelectSubset<T, RankingListTagUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RankingListTagPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one RankingListTag.
+     * @param {RankingListTagUpsertArgs} args - Arguments to update or create a RankingListTag.
+     * @example
+     * // Update or create a RankingListTag
+     * const rankingListTag = await prisma.rankingListTag.upsert({
+     *   create: {
+     *     // ... data to create a RankingListTag
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the RankingListTag we want to update
+     *   }
+     * })
+     */
+    upsert<T extends RankingListTagUpsertArgs>(args: SelectSubset<T, RankingListTagUpsertArgs<ExtArgs>>): Prisma__RankingListTagClient<$Result.GetResult<Prisma.$RankingListTagPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of RankingListTags.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RankingListTagCountArgs} args - Arguments to filter RankingListTags to count.
+     * @example
+     * // Count the number of RankingListTags
+     * const count = await prisma.rankingListTag.count({
+     *   where: {
+     *     // ... the filter for the RankingListTags we want to count
+     *   }
+     * })
+    **/
+    count<T extends RankingListTagCountArgs>(
+      args?: Subset<T, RankingListTagCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], RankingListTagCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a RankingListTag.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RankingListTagAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends RankingListTagAggregateArgs>(args: Subset<T, RankingListTagAggregateArgs>): Prisma.PrismaPromise<GetRankingListTagAggregateType<T>>
+
+    /**
+     * Group by RankingListTag.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RankingListTagGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends RankingListTagGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: RankingListTagGroupByArgs['orderBy'] }
+        : { orderBy?: RankingListTagGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, RankingListTagGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetRankingListTagGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the RankingListTag model
+   */
+  readonly fields: RankingListTagFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for RankingListTag.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__RankingListTagClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    list<T extends RankingListDefaultArgs<ExtArgs> = {}>(args?: Subset<T, RankingListDefaultArgs<ExtArgs>>): Prisma__RankingListClient<$Result.GetResult<Prisma.$RankingListPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    tag<T extends TagDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TagDefaultArgs<ExtArgs>>): Prisma__TagClient<$Result.GetResult<Prisma.$TagPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the RankingListTag model
+   */
+  interface RankingListTagFieldRefs {
+    readonly id: FieldRef<"RankingListTag", 'String'>
+    readonly listId: FieldRef<"RankingListTag", 'String'>
+    readonly tagId: FieldRef<"RankingListTag", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * RankingListTag findUnique
+   */
+  export type RankingListTagFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RankingListTag
+     */
+    select?: RankingListTagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RankingListTag
+     */
+    omit?: RankingListTagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RankingListTagInclude<ExtArgs> | null
+    /**
+     * Filter, which RankingListTag to fetch.
+     */
+    where: RankingListTagWhereUniqueInput
+  }
+
+  /**
+   * RankingListTag findUniqueOrThrow
+   */
+  export type RankingListTagFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RankingListTag
+     */
+    select?: RankingListTagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RankingListTag
+     */
+    omit?: RankingListTagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RankingListTagInclude<ExtArgs> | null
+    /**
+     * Filter, which RankingListTag to fetch.
+     */
+    where: RankingListTagWhereUniqueInput
+  }
+
+  /**
+   * RankingListTag findFirst
+   */
+  export type RankingListTagFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RankingListTag
+     */
+    select?: RankingListTagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RankingListTag
+     */
+    omit?: RankingListTagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RankingListTagInclude<ExtArgs> | null
+    /**
+     * Filter, which RankingListTag to fetch.
+     */
+    where?: RankingListTagWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RankingListTags to fetch.
+     */
+    orderBy?: RankingListTagOrderByWithRelationInput | RankingListTagOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for RankingListTags.
+     */
+    cursor?: RankingListTagWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RankingListTags from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RankingListTags.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of RankingListTags.
+     */
+    distinct?: RankingListTagScalarFieldEnum | RankingListTagScalarFieldEnum[]
+  }
+
+  /**
+   * RankingListTag findFirstOrThrow
+   */
+  export type RankingListTagFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RankingListTag
+     */
+    select?: RankingListTagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RankingListTag
+     */
+    omit?: RankingListTagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RankingListTagInclude<ExtArgs> | null
+    /**
+     * Filter, which RankingListTag to fetch.
+     */
+    where?: RankingListTagWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RankingListTags to fetch.
+     */
+    orderBy?: RankingListTagOrderByWithRelationInput | RankingListTagOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for RankingListTags.
+     */
+    cursor?: RankingListTagWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RankingListTags from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RankingListTags.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of RankingListTags.
+     */
+    distinct?: RankingListTagScalarFieldEnum | RankingListTagScalarFieldEnum[]
+  }
+
+  /**
+   * RankingListTag findMany
+   */
+  export type RankingListTagFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RankingListTag
+     */
+    select?: RankingListTagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RankingListTag
+     */
+    omit?: RankingListTagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RankingListTagInclude<ExtArgs> | null
+    /**
+     * Filter, which RankingListTags to fetch.
+     */
+    where?: RankingListTagWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RankingListTags to fetch.
+     */
+    orderBy?: RankingListTagOrderByWithRelationInput | RankingListTagOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing RankingListTags.
+     */
+    cursor?: RankingListTagWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RankingListTags from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RankingListTags.
+     */
+    skip?: number
+    distinct?: RankingListTagScalarFieldEnum | RankingListTagScalarFieldEnum[]
+  }
+
+  /**
+   * RankingListTag create
+   */
+  export type RankingListTagCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RankingListTag
+     */
+    select?: RankingListTagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RankingListTag
+     */
+    omit?: RankingListTagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RankingListTagInclude<ExtArgs> | null
+    /**
+     * The data needed to create a RankingListTag.
+     */
+    data: XOR<RankingListTagCreateInput, RankingListTagUncheckedCreateInput>
+  }
+
+  /**
+   * RankingListTag createMany
+   */
+  export type RankingListTagCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many RankingListTags.
+     */
+    data: RankingListTagCreateManyInput | RankingListTagCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * RankingListTag createManyAndReturn
+   */
+  export type RankingListTagCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RankingListTag
+     */
+    select?: RankingListTagSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the RankingListTag
+     */
+    omit?: RankingListTagOmit<ExtArgs> | null
+    /**
+     * The data used to create many RankingListTags.
+     */
+    data: RankingListTagCreateManyInput | RankingListTagCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RankingListTagIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * RankingListTag update
+   */
+  export type RankingListTagUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RankingListTag
+     */
+    select?: RankingListTagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RankingListTag
+     */
+    omit?: RankingListTagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RankingListTagInclude<ExtArgs> | null
+    /**
+     * The data needed to update a RankingListTag.
+     */
+    data: XOR<RankingListTagUpdateInput, RankingListTagUncheckedUpdateInput>
+    /**
+     * Choose, which RankingListTag to update.
+     */
+    where: RankingListTagWhereUniqueInput
+  }
+
+  /**
+   * RankingListTag updateMany
+   */
+  export type RankingListTagUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update RankingListTags.
+     */
+    data: XOR<RankingListTagUpdateManyMutationInput, RankingListTagUncheckedUpdateManyInput>
+    /**
+     * Filter which RankingListTags to update
+     */
+    where?: RankingListTagWhereInput
+    /**
+     * Limit how many RankingListTags to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * RankingListTag updateManyAndReturn
+   */
+  export type RankingListTagUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RankingListTag
+     */
+    select?: RankingListTagSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the RankingListTag
+     */
+    omit?: RankingListTagOmit<ExtArgs> | null
+    /**
+     * The data used to update RankingListTags.
+     */
+    data: XOR<RankingListTagUpdateManyMutationInput, RankingListTagUncheckedUpdateManyInput>
+    /**
+     * Filter which RankingListTags to update
+     */
+    where?: RankingListTagWhereInput
+    /**
+     * Limit how many RankingListTags to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RankingListTagIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * RankingListTag upsert
+   */
+  export type RankingListTagUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RankingListTag
+     */
+    select?: RankingListTagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RankingListTag
+     */
+    omit?: RankingListTagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RankingListTagInclude<ExtArgs> | null
+    /**
+     * The filter to search for the RankingListTag to update in case it exists.
+     */
+    where: RankingListTagWhereUniqueInput
+    /**
+     * In case the RankingListTag found by the `where` argument doesn't exist, create a new RankingListTag with this data.
+     */
+    create: XOR<RankingListTagCreateInput, RankingListTagUncheckedCreateInput>
+    /**
+     * In case the RankingListTag was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<RankingListTagUpdateInput, RankingListTagUncheckedUpdateInput>
+  }
+
+  /**
+   * RankingListTag delete
+   */
+  export type RankingListTagDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RankingListTag
+     */
+    select?: RankingListTagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RankingListTag
+     */
+    omit?: RankingListTagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RankingListTagInclude<ExtArgs> | null
+    /**
+     * Filter which RankingListTag to delete.
+     */
+    where: RankingListTagWhereUniqueInput
+  }
+
+  /**
+   * RankingListTag deleteMany
+   */
+  export type RankingListTagDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which RankingListTags to delete
+     */
+    where?: RankingListTagWhereInput
+    /**
+     * Limit how many RankingListTags to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * RankingListTag without action
+   */
+  export type RankingListTagDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RankingListTag
+     */
+    select?: RankingListTagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RankingListTag
+     */
+    omit?: RankingListTagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RankingListTagInclude<ExtArgs> | null
   }
 
 
@@ -19604,6 +20735,15 @@ export namespace Prisma {
   export type RankedItemScalarFieldEnum = (typeof RankedItemScalarFieldEnum)[keyof typeof RankedItemScalarFieldEnum]
 
 
+  export const RankingListTagScalarFieldEnum: {
+    id: 'id',
+    listId: 'listId',
+    tagId: 'tagId'
+  };
+
+  export type RankingListTagScalarFieldEnum = (typeof RankingListTagScalarFieldEnum)[keyof typeof RankingListTagScalarFieldEnum]
+
+
   export const TrendingSubjectScalarFieldEnum: {
     id: 'id',
     subject: 'subject',
@@ -19924,7 +21064,7 @@ export namespace Prisma {
     name?: StringFilter<"Tag"> | string
     createdAt?: DateTimeFilter<"Tag"> | Date | string
     trendingStats?: TrendingTagListRelationFilter
-    rankingLists?: RankingListListRelationFilter
+    rankingListTags?: RankingListTagListRelationFilter
   }
 
   export type TagOrderByWithRelationInput = {
@@ -19932,7 +21072,7 @@ export namespace Prisma {
     name?: SortOrder
     createdAt?: SortOrder
     trendingStats?: TrendingTagOrderByRelationAggregateInput
-    rankingLists?: RankingListOrderByRelationAggregateInput
+    rankingListTags?: RankingListTagOrderByRelationAggregateInput
   }
 
   export type TagWhereUniqueInput = Prisma.AtLeast<{
@@ -19943,7 +21083,7 @@ export namespace Prisma {
     NOT?: TagWhereInput | TagWhereInput[]
     createdAt?: DateTimeFilter<"Tag"> | Date | string
     trendingStats?: TrendingTagListRelationFilter
-    rankingLists?: RankingListListRelationFilter
+    rankingListTags?: RankingListTagListRelationFilter
   }, "id" | "name">
 
   export type TagOrderByWithAggregationInput = {
@@ -20104,7 +21244,7 @@ export namespace Prisma {
     likes?: LikeListRelationFilter
     items?: RankedItemListRelationFilter
     author?: XOR<UserScalarRelationFilter, UserWhereInput>
-    tags?: TagListRelationFilter
+    rankingListTags?: RankingListTagListRelationFilter
   }
 
   export type RankingListOrderByWithRelationInput = {
@@ -20122,7 +21262,7 @@ export namespace Prisma {
     likes?: LikeOrderByRelationAggregateInput
     items?: RankedItemOrderByRelationAggregateInput
     author?: UserOrderByWithRelationInput
-    tags?: TagOrderByRelationAggregateInput
+    rankingListTags?: RankingListTagOrderByRelationAggregateInput
   }
 
   export type RankingListWhereUniqueInput = Prisma.AtLeast<{
@@ -20143,7 +21283,7 @@ export namespace Prisma {
     likes?: LikeListRelationFilter
     items?: RankedItemListRelationFilter
     author?: XOR<UserScalarRelationFilter, UserWhereInput>
-    tags?: TagListRelationFilter
+    rankingListTags?: RankingListTagListRelationFilter
   }, "id">
 
   export type RankingListOrderByWithAggregationInput = {
@@ -20245,6 +21385,55 @@ export namespace Prisma {
     itemDescription?: StringNullableWithAggregatesFilter<"RankedItem"> | string | null
     listId?: StringWithAggregatesFilter<"RankedItem"> | string
     createdAt?: DateTimeWithAggregatesFilter<"RankedItem"> | Date | string
+  }
+
+  export type RankingListTagWhereInput = {
+    AND?: RankingListTagWhereInput | RankingListTagWhereInput[]
+    OR?: RankingListTagWhereInput[]
+    NOT?: RankingListTagWhereInput | RankingListTagWhereInput[]
+    id?: StringFilter<"RankingListTag"> | string
+    listId?: StringFilter<"RankingListTag"> | string
+    tagId?: StringFilter<"RankingListTag"> | string
+    list?: XOR<RankingListScalarRelationFilter, RankingListWhereInput>
+    tag?: XOR<TagScalarRelationFilter, TagWhereInput>
+  }
+
+  export type RankingListTagOrderByWithRelationInput = {
+    id?: SortOrder
+    listId?: SortOrder
+    tagId?: SortOrder
+    list?: RankingListOrderByWithRelationInput
+    tag?: TagOrderByWithRelationInput
+  }
+
+  export type RankingListTagWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    listId_tagId?: RankingListTagListIdTagIdCompoundUniqueInput
+    AND?: RankingListTagWhereInput | RankingListTagWhereInput[]
+    OR?: RankingListTagWhereInput[]
+    NOT?: RankingListTagWhereInput | RankingListTagWhereInput[]
+    listId?: StringFilter<"RankingListTag"> | string
+    tagId?: StringFilter<"RankingListTag"> | string
+    list?: XOR<RankingListScalarRelationFilter, RankingListWhereInput>
+    tag?: XOR<TagScalarRelationFilter, TagWhereInput>
+  }, "id" | "listId_tagId">
+
+  export type RankingListTagOrderByWithAggregationInput = {
+    id?: SortOrder
+    listId?: SortOrder
+    tagId?: SortOrder
+    _count?: RankingListTagCountOrderByAggregateInput
+    _max?: RankingListTagMaxOrderByAggregateInput
+    _min?: RankingListTagMinOrderByAggregateInput
+  }
+
+  export type RankingListTagScalarWhereWithAggregatesInput = {
+    AND?: RankingListTagScalarWhereWithAggregatesInput | RankingListTagScalarWhereWithAggregatesInput[]
+    OR?: RankingListTagScalarWhereWithAggregatesInput[]
+    NOT?: RankingListTagScalarWhereWithAggregatesInput | RankingListTagScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"RankingListTag"> | string
+    listId?: StringWithAggregatesFilter<"RankingListTag"> | string
+    tagId?: StringWithAggregatesFilter<"RankingListTag"> | string
   }
 
   export type TrendingSubjectWhereInput = {
@@ -20959,7 +22148,7 @@ export namespace Prisma {
     name: string
     createdAt?: Date | string
     trendingStats?: TrendingTagCreateNestedManyWithoutTagInput
-    rankingLists?: RankingListCreateNestedManyWithoutTagsInput
+    rankingListTags?: RankingListTagCreateNestedManyWithoutTagInput
   }
 
   export type TagUncheckedCreateInput = {
@@ -20967,7 +22156,7 @@ export namespace Prisma {
     name: string
     createdAt?: Date | string
     trendingStats?: TrendingTagUncheckedCreateNestedManyWithoutTagInput
-    rankingLists?: RankingListUncheckedCreateNestedManyWithoutTagsInput
+    rankingListTags?: RankingListTagUncheckedCreateNestedManyWithoutTagInput
   }
 
   export type TagUpdateInput = {
@@ -20975,7 +22164,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     trendingStats?: TrendingTagUpdateManyWithoutTagNestedInput
-    rankingLists?: RankingListUpdateManyWithoutTagsNestedInput
+    rankingListTags?: RankingListTagUpdateManyWithoutTagNestedInput
   }
 
   export type TagUncheckedUpdateInput = {
@@ -20983,7 +22172,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     trendingStats?: TrendingTagUncheckedUpdateManyWithoutTagNestedInput
-    rankingLists?: RankingListUncheckedUpdateManyWithoutTagsNestedInput
+    rankingListTags?: RankingListTagUncheckedUpdateManyWithoutTagNestedInput
   }
 
   export type TagCreateManyInput = {
@@ -21170,7 +22359,7 @@ export namespace Prisma {
     likes?: LikeCreateNestedManyWithoutRankingListInput
     items?: RankedItemCreateNestedManyWithoutRankingListInput
     author: UserCreateNestedOneWithoutRankingListsInput
-    tags?: TagCreateNestedManyWithoutRankingListsInput
+    rankingListTags?: RankingListTagCreateNestedManyWithoutListInput
   }
 
   export type RankingListUncheckedCreateInput = {
@@ -21187,7 +22376,7 @@ export namespace Prisma {
     feedItems?: FeedItemUncheckedCreateNestedManyWithoutRankingListInput
     likes?: LikeUncheckedCreateNestedManyWithoutRankingListInput
     items?: RankedItemUncheckedCreateNestedManyWithoutRankingListInput
-    tags?: TagUncheckedCreateNestedManyWithoutRankingListsInput
+    rankingListTags?: RankingListTagUncheckedCreateNestedManyWithoutListInput
   }
 
   export type RankingListUpdateInput = {
@@ -21204,7 +22393,7 @@ export namespace Prisma {
     likes?: LikeUpdateManyWithoutRankingListNestedInput
     items?: RankedItemUpdateManyWithoutRankingListNestedInput
     author?: UserUpdateOneRequiredWithoutRankingListsNestedInput
-    tags?: TagUpdateManyWithoutRankingListsNestedInput
+    rankingListTags?: RankingListTagUpdateManyWithoutListNestedInput
   }
 
   export type RankingListUncheckedUpdateInput = {
@@ -21221,7 +22410,7 @@ export namespace Prisma {
     feedItems?: FeedItemUncheckedUpdateManyWithoutRankingListNestedInput
     likes?: LikeUncheckedUpdateManyWithoutRankingListNestedInput
     items?: RankedItemUncheckedUpdateManyWithoutRankingListNestedInput
-    tags?: TagUncheckedUpdateManyWithoutRankingListsNestedInput
+    rankingListTags?: RankingListTagUncheckedUpdateManyWithoutListNestedInput
   }
 
   export type RankingListCreateManyInput = {
@@ -21329,6 +22518,46 @@ export namespace Prisma {
     itemDescription?: NullableStringFieldUpdateOperationsInput | string | null
     listId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RankingListTagCreateInput = {
+    id?: string
+    list: RankingListCreateNestedOneWithoutRankingListTagsInput
+    tag: TagCreateNestedOneWithoutRankingListTagsInput
+  }
+
+  export type RankingListTagUncheckedCreateInput = {
+    id?: string
+    listId: string
+    tagId: string
+  }
+
+  export type RankingListTagUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    list?: RankingListUpdateOneRequiredWithoutRankingListTagsNestedInput
+    tag?: TagUpdateOneRequiredWithoutRankingListTagsNestedInput
+  }
+
+  export type RankingListTagUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    listId?: StringFieldUpdateOperationsInput | string
+    tagId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type RankingListTagCreateManyInput = {
+    id?: string
+    listId: string
+    tagId: string
+  }
+
+  export type RankingListTagUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type RankingListTagUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    listId?: StringFieldUpdateOperationsInput | string
+    tagId?: StringFieldUpdateOperationsInput | string
   }
 
   export type TrendingSubjectCreateInput = {
@@ -22048,17 +23277,17 @@ export namespace Prisma {
     none?: TrendingTagWhereInput
   }
 
-  export type RankingListListRelationFilter = {
-    every?: RankingListWhereInput
-    some?: RankingListWhereInput
-    none?: RankingListWhereInput
+  export type RankingListTagListRelationFilter = {
+    every?: RankingListTagWhereInput
+    some?: RankingListTagWhereInput
+    none?: RankingListTagWhereInput
   }
 
   export type TrendingTagOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
-  export type RankingListOrderByRelationAggregateInput = {
+  export type RankingListTagOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -22196,6 +23425,12 @@ export namespace Prisma {
     none?: PostWhereInput
   }
 
+  export type RankingListListRelationFilter = {
+    every?: RankingListWhereInput
+    some?: RankingListWhereInput
+    none?: RankingListWhereInput
+  }
+
   export type ReplyListRelationFilter = {
     every?: ReplyWhereInput
     some?: ReplyWhereInput
@@ -22230,6 +23465,10 @@ export namespace Prisma {
   }
 
   export type PostOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type RankingListOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -22393,17 +23632,7 @@ export namespace Prisma {
     isNot?: UserWhereInput
   }
 
-  export type TagListRelationFilter = {
-    every?: TagWhereInput
-    some?: TagWhereInput
-    none?: TagWhereInput
-  }
-
   export type RankedItemOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
-  export type TagOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -22541,6 +23770,34 @@ export namespace Prisma {
     rank?: SortOrder
   }
 
+  export type TagScalarRelationFilter = {
+    is?: TagWhereInput
+    isNot?: TagWhereInput
+  }
+
+  export type RankingListTagListIdTagIdCompoundUniqueInput = {
+    listId: string
+    tagId: string
+  }
+
+  export type RankingListTagCountOrderByAggregateInput = {
+    id?: SortOrder
+    listId?: SortOrder
+    tagId?: SortOrder
+  }
+
+  export type RankingListTagMaxOrderByAggregateInput = {
+    id?: SortOrder
+    listId?: SortOrder
+    tagId?: SortOrder
+  }
+
+  export type RankingListTagMinOrderByAggregateInput = {
+    id?: SortOrder
+    listId?: SortOrder
+    tagId?: SortOrder
+  }
+
   export type EnumTrendPeriodFilter<$PrismaModel = never> = {
     equals?: $Enums.TrendPeriod | EnumTrendPeriodFieldRefInput<$PrismaModel>
     in?: $Enums.TrendPeriod[] | ListEnumTrendPeriodFieldRefInput<$PrismaModel>
@@ -22594,11 +23851,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumTrendPeriodFilter<$PrismaModel>
     _max?: NestedEnumTrendPeriodFilter<$PrismaModel>
-  }
-
-  export type TagScalarRelationFilter = {
-    is?: TagWhereInput
-    isNot?: TagWhereInput
   }
 
   export type TrendingTagTagIdPeriodCalculationDateCompoundUniqueInput = {
@@ -23029,10 +24281,11 @@ export namespace Prisma {
     connect?: TrendingTagWhereUniqueInput | TrendingTagWhereUniqueInput[]
   }
 
-  export type RankingListCreateNestedManyWithoutTagsInput = {
-    create?: XOR<RankingListCreateWithoutTagsInput, RankingListUncheckedCreateWithoutTagsInput> | RankingListCreateWithoutTagsInput[] | RankingListUncheckedCreateWithoutTagsInput[]
-    connectOrCreate?: RankingListCreateOrConnectWithoutTagsInput | RankingListCreateOrConnectWithoutTagsInput[]
-    connect?: RankingListWhereUniqueInput | RankingListWhereUniqueInput[]
+  export type RankingListTagCreateNestedManyWithoutTagInput = {
+    create?: XOR<RankingListTagCreateWithoutTagInput, RankingListTagUncheckedCreateWithoutTagInput> | RankingListTagCreateWithoutTagInput[] | RankingListTagUncheckedCreateWithoutTagInput[]
+    connectOrCreate?: RankingListTagCreateOrConnectWithoutTagInput | RankingListTagCreateOrConnectWithoutTagInput[]
+    createMany?: RankingListTagCreateManyTagInputEnvelope
+    connect?: RankingListTagWhereUniqueInput | RankingListTagWhereUniqueInput[]
   }
 
   export type TrendingTagUncheckedCreateNestedManyWithoutTagInput = {
@@ -23042,10 +24295,11 @@ export namespace Prisma {
     connect?: TrendingTagWhereUniqueInput | TrendingTagWhereUniqueInput[]
   }
 
-  export type RankingListUncheckedCreateNestedManyWithoutTagsInput = {
-    create?: XOR<RankingListCreateWithoutTagsInput, RankingListUncheckedCreateWithoutTagsInput> | RankingListCreateWithoutTagsInput[] | RankingListUncheckedCreateWithoutTagsInput[]
-    connectOrCreate?: RankingListCreateOrConnectWithoutTagsInput | RankingListCreateOrConnectWithoutTagsInput[]
-    connect?: RankingListWhereUniqueInput | RankingListWhereUniqueInput[]
+  export type RankingListTagUncheckedCreateNestedManyWithoutTagInput = {
+    create?: XOR<RankingListTagCreateWithoutTagInput, RankingListTagUncheckedCreateWithoutTagInput> | RankingListTagCreateWithoutTagInput[] | RankingListTagUncheckedCreateWithoutTagInput[]
+    connectOrCreate?: RankingListTagCreateOrConnectWithoutTagInput | RankingListTagCreateOrConnectWithoutTagInput[]
+    createMany?: RankingListTagCreateManyTagInputEnvelope
+    connect?: RankingListTagWhereUniqueInput | RankingListTagWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -23070,17 +24324,18 @@ export namespace Prisma {
     deleteMany?: TrendingTagScalarWhereInput | TrendingTagScalarWhereInput[]
   }
 
-  export type RankingListUpdateManyWithoutTagsNestedInput = {
-    create?: XOR<RankingListCreateWithoutTagsInput, RankingListUncheckedCreateWithoutTagsInput> | RankingListCreateWithoutTagsInput[] | RankingListUncheckedCreateWithoutTagsInput[]
-    connectOrCreate?: RankingListCreateOrConnectWithoutTagsInput | RankingListCreateOrConnectWithoutTagsInput[]
-    upsert?: RankingListUpsertWithWhereUniqueWithoutTagsInput | RankingListUpsertWithWhereUniqueWithoutTagsInput[]
-    set?: RankingListWhereUniqueInput | RankingListWhereUniqueInput[]
-    disconnect?: RankingListWhereUniqueInput | RankingListWhereUniqueInput[]
-    delete?: RankingListWhereUniqueInput | RankingListWhereUniqueInput[]
-    connect?: RankingListWhereUniqueInput | RankingListWhereUniqueInput[]
-    update?: RankingListUpdateWithWhereUniqueWithoutTagsInput | RankingListUpdateWithWhereUniqueWithoutTagsInput[]
-    updateMany?: RankingListUpdateManyWithWhereWithoutTagsInput | RankingListUpdateManyWithWhereWithoutTagsInput[]
-    deleteMany?: RankingListScalarWhereInput | RankingListScalarWhereInput[]
+  export type RankingListTagUpdateManyWithoutTagNestedInput = {
+    create?: XOR<RankingListTagCreateWithoutTagInput, RankingListTagUncheckedCreateWithoutTagInput> | RankingListTagCreateWithoutTagInput[] | RankingListTagUncheckedCreateWithoutTagInput[]
+    connectOrCreate?: RankingListTagCreateOrConnectWithoutTagInput | RankingListTagCreateOrConnectWithoutTagInput[]
+    upsert?: RankingListTagUpsertWithWhereUniqueWithoutTagInput | RankingListTagUpsertWithWhereUniqueWithoutTagInput[]
+    createMany?: RankingListTagCreateManyTagInputEnvelope
+    set?: RankingListTagWhereUniqueInput | RankingListTagWhereUniqueInput[]
+    disconnect?: RankingListTagWhereUniqueInput | RankingListTagWhereUniqueInput[]
+    delete?: RankingListTagWhereUniqueInput | RankingListTagWhereUniqueInput[]
+    connect?: RankingListTagWhereUniqueInput | RankingListTagWhereUniqueInput[]
+    update?: RankingListTagUpdateWithWhereUniqueWithoutTagInput | RankingListTagUpdateWithWhereUniqueWithoutTagInput[]
+    updateMany?: RankingListTagUpdateManyWithWhereWithoutTagInput | RankingListTagUpdateManyWithWhereWithoutTagInput[]
+    deleteMany?: RankingListTagScalarWhereInput | RankingListTagScalarWhereInput[]
   }
 
   export type TrendingTagUncheckedUpdateManyWithoutTagNestedInput = {
@@ -23097,17 +24352,18 @@ export namespace Prisma {
     deleteMany?: TrendingTagScalarWhereInput | TrendingTagScalarWhereInput[]
   }
 
-  export type RankingListUncheckedUpdateManyWithoutTagsNestedInput = {
-    create?: XOR<RankingListCreateWithoutTagsInput, RankingListUncheckedCreateWithoutTagsInput> | RankingListCreateWithoutTagsInput[] | RankingListUncheckedCreateWithoutTagsInput[]
-    connectOrCreate?: RankingListCreateOrConnectWithoutTagsInput | RankingListCreateOrConnectWithoutTagsInput[]
-    upsert?: RankingListUpsertWithWhereUniqueWithoutTagsInput | RankingListUpsertWithWhereUniqueWithoutTagsInput[]
-    set?: RankingListWhereUniqueInput | RankingListWhereUniqueInput[]
-    disconnect?: RankingListWhereUniqueInput | RankingListWhereUniqueInput[]
-    delete?: RankingListWhereUniqueInput | RankingListWhereUniqueInput[]
-    connect?: RankingListWhereUniqueInput | RankingListWhereUniqueInput[]
-    update?: RankingListUpdateWithWhereUniqueWithoutTagsInput | RankingListUpdateWithWhereUniqueWithoutTagsInput[]
-    updateMany?: RankingListUpdateManyWithWhereWithoutTagsInput | RankingListUpdateManyWithWhereWithoutTagsInput[]
-    deleteMany?: RankingListScalarWhereInput | RankingListScalarWhereInput[]
+  export type RankingListTagUncheckedUpdateManyWithoutTagNestedInput = {
+    create?: XOR<RankingListTagCreateWithoutTagInput, RankingListTagUncheckedCreateWithoutTagInput> | RankingListTagCreateWithoutTagInput[] | RankingListTagUncheckedCreateWithoutTagInput[]
+    connectOrCreate?: RankingListTagCreateOrConnectWithoutTagInput | RankingListTagCreateOrConnectWithoutTagInput[]
+    upsert?: RankingListTagUpsertWithWhereUniqueWithoutTagInput | RankingListTagUpsertWithWhereUniqueWithoutTagInput[]
+    createMany?: RankingListTagCreateManyTagInputEnvelope
+    set?: RankingListTagWhereUniqueInput | RankingListTagWhereUniqueInput[]
+    disconnect?: RankingListTagWhereUniqueInput | RankingListTagWhereUniqueInput[]
+    delete?: RankingListTagWhereUniqueInput | RankingListTagWhereUniqueInput[]
+    connect?: RankingListTagWhereUniqueInput | RankingListTagWhereUniqueInput[]
+    update?: RankingListTagUpdateWithWhereUniqueWithoutTagInput | RankingListTagUpdateWithWhereUniqueWithoutTagInput[]
+    updateMany?: RankingListTagUpdateManyWithWhereWithoutTagInput | RankingListTagUpdateManyWithWhereWithoutTagInput[]
+    deleteMany?: RankingListTagScalarWhereInput | RankingListTagScalarWhereInput[]
   }
 
   export type FeedItemCreateNestedManyWithoutUserInput = {
@@ -23569,10 +24825,11 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
-  export type TagCreateNestedManyWithoutRankingListsInput = {
-    create?: XOR<TagCreateWithoutRankingListsInput, TagUncheckedCreateWithoutRankingListsInput> | TagCreateWithoutRankingListsInput[] | TagUncheckedCreateWithoutRankingListsInput[]
-    connectOrCreate?: TagCreateOrConnectWithoutRankingListsInput | TagCreateOrConnectWithoutRankingListsInput[]
-    connect?: TagWhereUniqueInput | TagWhereUniqueInput[]
+  export type RankingListTagCreateNestedManyWithoutListInput = {
+    create?: XOR<RankingListTagCreateWithoutListInput, RankingListTagUncheckedCreateWithoutListInput> | RankingListTagCreateWithoutListInput[] | RankingListTagUncheckedCreateWithoutListInput[]
+    connectOrCreate?: RankingListTagCreateOrConnectWithoutListInput | RankingListTagCreateOrConnectWithoutListInput[]
+    createMany?: RankingListTagCreateManyListInputEnvelope
+    connect?: RankingListTagWhereUniqueInput | RankingListTagWhereUniqueInput[]
   }
 
   export type FeedItemUncheckedCreateNestedManyWithoutRankingListInput = {
@@ -23596,10 +24853,11 @@ export namespace Prisma {
     connect?: RankedItemWhereUniqueInput | RankedItemWhereUniqueInput[]
   }
 
-  export type TagUncheckedCreateNestedManyWithoutRankingListsInput = {
-    create?: XOR<TagCreateWithoutRankingListsInput, TagUncheckedCreateWithoutRankingListsInput> | TagCreateWithoutRankingListsInput[] | TagUncheckedCreateWithoutRankingListsInput[]
-    connectOrCreate?: TagCreateOrConnectWithoutRankingListsInput | TagCreateOrConnectWithoutRankingListsInput[]
-    connect?: TagWhereUniqueInput | TagWhereUniqueInput[]
+  export type RankingListTagUncheckedCreateNestedManyWithoutListInput = {
+    create?: XOR<RankingListTagCreateWithoutListInput, RankingListTagUncheckedCreateWithoutListInput> | RankingListTagCreateWithoutListInput[] | RankingListTagUncheckedCreateWithoutListInput[]
+    connectOrCreate?: RankingListTagCreateOrConnectWithoutListInput | RankingListTagCreateOrConnectWithoutListInput[]
+    createMany?: RankingListTagCreateManyListInputEnvelope
+    connect?: RankingListTagWhereUniqueInput | RankingListTagWhereUniqueInput[]
   }
 
   export type EnumListStatusFieldUpdateOperationsInput = {
@@ -23672,17 +24930,18 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutRankingListsInput, UserUpdateWithoutRankingListsInput>, UserUncheckedUpdateWithoutRankingListsInput>
   }
 
-  export type TagUpdateManyWithoutRankingListsNestedInput = {
-    create?: XOR<TagCreateWithoutRankingListsInput, TagUncheckedCreateWithoutRankingListsInput> | TagCreateWithoutRankingListsInput[] | TagUncheckedCreateWithoutRankingListsInput[]
-    connectOrCreate?: TagCreateOrConnectWithoutRankingListsInput | TagCreateOrConnectWithoutRankingListsInput[]
-    upsert?: TagUpsertWithWhereUniqueWithoutRankingListsInput | TagUpsertWithWhereUniqueWithoutRankingListsInput[]
-    set?: TagWhereUniqueInput | TagWhereUniqueInput[]
-    disconnect?: TagWhereUniqueInput | TagWhereUniqueInput[]
-    delete?: TagWhereUniqueInput | TagWhereUniqueInput[]
-    connect?: TagWhereUniqueInput | TagWhereUniqueInput[]
-    update?: TagUpdateWithWhereUniqueWithoutRankingListsInput | TagUpdateWithWhereUniqueWithoutRankingListsInput[]
-    updateMany?: TagUpdateManyWithWhereWithoutRankingListsInput | TagUpdateManyWithWhereWithoutRankingListsInput[]
-    deleteMany?: TagScalarWhereInput | TagScalarWhereInput[]
+  export type RankingListTagUpdateManyWithoutListNestedInput = {
+    create?: XOR<RankingListTagCreateWithoutListInput, RankingListTagUncheckedCreateWithoutListInput> | RankingListTagCreateWithoutListInput[] | RankingListTagUncheckedCreateWithoutListInput[]
+    connectOrCreate?: RankingListTagCreateOrConnectWithoutListInput | RankingListTagCreateOrConnectWithoutListInput[]
+    upsert?: RankingListTagUpsertWithWhereUniqueWithoutListInput | RankingListTagUpsertWithWhereUniqueWithoutListInput[]
+    createMany?: RankingListTagCreateManyListInputEnvelope
+    set?: RankingListTagWhereUniqueInput | RankingListTagWhereUniqueInput[]
+    disconnect?: RankingListTagWhereUniqueInput | RankingListTagWhereUniqueInput[]
+    delete?: RankingListTagWhereUniqueInput | RankingListTagWhereUniqueInput[]
+    connect?: RankingListTagWhereUniqueInput | RankingListTagWhereUniqueInput[]
+    update?: RankingListTagUpdateWithWhereUniqueWithoutListInput | RankingListTagUpdateWithWhereUniqueWithoutListInput[]
+    updateMany?: RankingListTagUpdateManyWithWhereWithoutListInput | RankingListTagUpdateManyWithWhereWithoutListInput[]
+    deleteMany?: RankingListTagScalarWhereInput | RankingListTagScalarWhereInput[]
   }
 
   export type FeedItemUncheckedUpdateManyWithoutRankingListNestedInput = {
@@ -23727,17 +24986,18 @@ export namespace Prisma {
     deleteMany?: RankedItemScalarWhereInput | RankedItemScalarWhereInput[]
   }
 
-  export type TagUncheckedUpdateManyWithoutRankingListsNestedInput = {
-    create?: XOR<TagCreateWithoutRankingListsInput, TagUncheckedCreateWithoutRankingListsInput> | TagCreateWithoutRankingListsInput[] | TagUncheckedCreateWithoutRankingListsInput[]
-    connectOrCreate?: TagCreateOrConnectWithoutRankingListsInput | TagCreateOrConnectWithoutRankingListsInput[]
-    upsert?: TagUpsertWithWhereUniqueWithoutRankingListsInput | TagUpsertWithWhereUniqueWithoutRankingListsInput[]
-    set?: TagWhereUniqueInput | TagWhereUniqueInput[]
-    disconnect?: TagWhereUniqueInput | TagWhereUniqueInput[]
-    delete?: TagWhereUniqueInput | TagWhereUniqueInput[]
-    connect?: TagWhereUniqueInput | TagWhereUniqueInput[]
-    update?: TagUpdateWithWhereUniqueWithoutRankingListsInput | TagUpdateWithWhereUniqueWithoutRankingListsInput[]
-    updateMany?: TagUpdateManyWithWhereWithoutRankingListsInput | TagUpdateManyWithWhereWithoutRankingListsInput[]
-    deleteMany?: TagScalarWhereInput | TagScalarWhereInput[]
+  export type RankingListTagUncheckedUpdateManyWithoutListNestedInput = {
+    create?: XOR<RankingListTagCreateWithoutListInput, RankingListTagUncheckedCreateWithoutListInput> | RankingListTagCreateWithoutListInput[] | RankingListTagUncheckedCreateWithoutListInput[]
+    connectOrCreate?: RankingListTagCreateOrConnectWithoutListInput | RankingListTagCreateOrConnectWithoutListInput[]
+    upsert?: RankingListTagUpsertWithWhereUniqueWithoutListInput | RankingListTagUpsertWithWhereUniqueWithoutListInput[]
+    createMany?: RankingListTagCreateManyListInputEnvelope
+    set?: RankingListTagWhereUniqueInput | RankingListTagWhereUniqueInput[]
+    disconnect?: RankingListTagWhereUniqueInput | RankingListTagWhereUniqueInput[]
+    delete?: RankingListTagWhereUniqueInput | RankingListTagWhereUniqueInput[]
+    connect?: RankingListTagWhereUniqueInput | RankingListTagWhereUniqueInput[]
+    update?: RankingListTagUpdateWithWhereUniqueWithoutListInput | RankingListTagUpdateWithWhereUniqueWithoutListInput[]
+    updateMany?: RankingListTagUpdateManyWithWhereWithoutListInput | RankingListTagUpdateManyWithWhereWithoutListInput[]
+    deleteMany?: RankingListTagScalarWhereInput | RankingListTagScalarWhereInput[]
   }
 
   export type RankingListCreateNestedOneWithoutItemsInput = {
@@ -23752,6 +25012,34 @@ export namespace Prisma {
     upsert?: RankingListUpsertWithoutItemsInput
     connect?: RankingListWhereUniqueInput
     update?: XOR<XOR<RankingListUpdateToOneWithWhereWithoutItemsInput, RankingListUpdateWithoutItemsInput>, RankingListUncheckedUpdateWithoutItemsInput>
+  }
+
+  export type RankingListCreateNestedOneWithoutRankingListTagsInput = {
+    create?: XOR<RankingListCreateWithoutRankingListTagsInput, RankingListUncheckedCreateWithoutRankingListTagsInput>
+    connectOrCreate?: RankingListCreateOrConnectWithoutRankingListTagsInput
+    connect?: RankingListWhereUniqueInput
+  }
+
+  export type TagCreateNestedOneWithoutRankingListTagsInput = {
+    create?: XOR<TagCreateWithoutRankingListTagsInput, TagUncheckedCreateWithoutRankingListTagsInput>
+    connectOrCreate?: TagCreateOrConnectWithoutRankingListTagsInput
+    connect?: TagWhereUniqueInput
+  }
+
+  export type RankingListUpdateOneRequiredWithoutRankingListTagsNestedInput = {
+    create?: XOR<RankingListCreateWithoutRankingListTagsInput, RankingListUncheckedCreateWithoutRankingListTagsInput>
+    connectOrCreate?: RankingListCreateOrConnectWithoutRankingListTagsInput
+    upsert?: RankingListUpsertWithoutRankingListTagsInput
+    connect?: RankingListWhereUniqueInput
+    update?: XOR<XOR<RankingListUpdateToOneWithWhereWithoutRankingListTagsInput, RankingListUpdateWithoutRankingListTagsInput>, RankingListUncheckedUpdateWithoutRankingListTagsInput>
+  }
+
+  export type TagUpdateOneRequiredWithoutRankingListTagsNestedInput = {
+    create?: XOR<TagCreateWithoutRankingListTagsInput, TagUncheckedCreateWithoutRankingListTagsInput>
+    connectOrCreate?: TagCreateOrConnectWithoutRankingListTagsInput
+    upsert?: TagUpsertWithoutRankingListTagsInput
+    connect?: TagWhereUniqueInput
+    update?: XOR<XOR<TagUpdateToOneWithWhereWithoutRankingListTagsInput, TagUpdateWithoutRankingListTagsInput>, TagUncheckedUpdateWithoutRankingListTagsInput>
   }
 
   export type EnumTrendPeriodFieldUpdateOperationsInput = {
@@ -24624,41 +25912,24 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type RankingListCreateWithoutTagsInput = {
+  export type RankingListTagCreateWithoutTagInput = {
     id?: string
-    subject: string
-    description?: string | null
-    status?: $Enums.ListStatus
-    listImageUrl?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    displayOrder?: number | null
-    likeCount?: number
-    feedItems?: FeedItemCreateNestedManyWithoutRankingListInput
-    likes?: LikeCreateNestedManyWithoutRankingListInput
-    items?: RankedItemCreateNestedManyWithoutRankingListInput
-    author: UserCreateNestedOneWithoutRankingListsInput
+    list: RankingListCreateNestedOneWithoutRankingListTagsInput
   }
 
-  export type RankingListUncheckedCreateWithoutTagsInput = {
+  export type RankingListTagUncheckedCreateWithoutTagInput = {
     id?: string
-    subject: string
-    description?: string | null
-    status?: $Enums.ListStatus
-    listImageUrl?: string | null
-    authorId: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    displayOrder?: number | null
-    likeCount?: number
-    feedItems?: FeedItemUncheckedCreateNestedManyWithoutRankingListInput
-    likes?: LikeUncheckedCreateNestedManyWithoutRankingListInput
-    items?: RankedItemUncheckedCreateNestedManyWithoutRankingListInput
+    listId: string
   }
 
-  export type RankingListCreateOrConnectWithoutTagsInput = {
-    where: RankingListWhereUniqueInput
-    create: XOR<RankingListCreateWithoutTagsInput, RankingListUncheckedCreateWithoutTagsInput>
+  export type RankingListTagCreateOrConnectWithoutTagInput = {
+    where: RankingListTagWhereUniqueInput
+    create: XOR<RankingListTagCreateWithoutTagInput, RankingListTagUncheckedCreateWithoutTagInput>
+  }
+
+  export type RankingListTagCreateManyTagInputEnvelope = {
+    data: RankingListTagCreateManyTagInput | RankingListTagCreateManyTagInput[]
+    skipDuplicates?: boolean
   }
 
   export type TrendingTagUpsertWithWhereUniqueWithoutTagInput = {
@@ -24689,36 +25960,29 @@ export namespace Prisma {
     calculationDate?: DateTimeFilter<"TrendingTag"> | Date | string
   }
 
-  export type RankingListUpsertWithWhereUniqueWithoutTagsInput = {
-    where: RankingListWhereUniqueInput
-    update: XOR<RankingListUpdateWithoutTagsInput, RankingListUncheckedUpdateWithoutTagsInput>
-    create: XOR<RankingListCreateWithoutTagsInput, RankingListUncheckedCreateWithoutTagsInput>
+  export type RankingListTagUpsertWithWhereUniqueWithoutTagInput = {
+    where: RankingListTagWhereUniqueInput
+    update: XOR<RankingListTagUpdateWithoutTagInput, RankingListTagUncheckedUpdateWithoutTagInput>
+    create: XOR<RankingListTagCreateWithoutTagInput, RankingListTagUncheckedCreateWithoutTagInput>
   }
 
-  export type RankingListUpdateWithWhereUniqueWithoutTagsInput = {
-    where: RankingListWhereUniqueInput
-    data: XOR<RankingListUpdateWithoutTagsInput, RankingListUncheckedUpdateWithoutTagsInput>
+  export type RankingListTagUpdateWithWhereUniqueWithoutTagInput = {
+    where: RankingListTagWhereUniqueInput
+    data: XOR<RankingListTagUpdateWithoutTagInput, RankingListTagUncheckedUpdateWithoutTagInput>
   }
 
-  export type RankingListUpdateManyWithWhereWithoutTagsInput = {
-    where: RankingListScalarWhereInput
-    data: XOR<RankingListUpdateManyMutationInput, RankingListUncheckedUpdateManyWithoutTagsInput>
+  export type RankingListTagUpdateManyWithWhereWithoutTagInput = {
+    where: RankingListTagScalarWhereInput
+    data: XOR<RankingListTagUpdateManyMutationInput, RankingListTagUncheckedUpdateManyWithoutTagInput>
   }
 
-  export type RankingListScalarWhereInput = {
-    AND?: RankingListScalarWhereInput | RankingListScalarWhereInput[]
-    OR?: RankingListScalarWhereInput[]
-    NOT?: RankingListScalarWhereInput | RankingListScalarWhereInput[]
-    id?: StringFilter<"RankingList"> | string
-    subject?: StringFilter<"RankingList"> | string
-    description?: StringNullableFilter<"RankingList"> | string | null
-    status?: EnumListStatusFilter<"RankingList"> | $Enums.ListStatus
-    listImageUrl?: StringNullableFilter<"RankingList"> | string | null
-    authorId?: StringFilter<"RankingList"> | string
-    createdAt?: DateTimeFilter<"RankingList"> | Date | string
-    updatedAt?: DateTimeFilter<"RankingList"> | Date | string
-    displayOrder?: IntNullableFilter<"RankingList"> | number | null
-    likeCount?: IntFilter<"RankingList"> | number
+  export type RankingListTagScalarWhereInput = {
+    AND?: RankingListTagScalarWhereInput | RankingListTagScalarWhereInput[]
+    OR?: RankingListTagScalarWhereInput[]
+    NOT?: RankingListTagScalarWhereInput | RankingListTagScalarWhereInput[]
+    id?: StringFilter<"RankingListTag"> | string
+    listId?: StringFilter<"RankingListTag"> | string
+    tagId?: StringFilter<"RankingListTag"> | string
   }
 
   export type FeedItemCreateWithoutUserInput = {
@@ -24928,7 +26192,7 @@ export namespace Prisma {
     feedItems?: FeedItemCreateNestedManyWithoutRankingListInput
     likes?: LikeCreateNestedManyWithoutRankingListInput
     items?: RankedItemCreateNestedManyWithoutRankingListInput
-    tags?: TagCreateNestedManyWithoutRankingListsInput
+    rankingListTags?: RankingListTagCreateNestedManyWithoutListInput
   }
 
   export type RankingListUncheckedCreateWithoutAuthorInput = {
@@ -24944,7 +26208,7 @@ export namespace Prisma {
     feedItems?: FeedItemUncheckedCreateNestedManyWithoutRankingListInput
     likes?: LikeUncheckedCreateNestedManyWithoutRankingListInput
     items?: RankedItemUncheckedCreateNestedManyWithoutRankingListInput
-    tags?: TagUncheckedCreateNestedManyWithoutRankingListsInput
+    rankingListTags?: RankingListTagUncheckedCreateNestedManyWithoutListInput
   }
 
   export type RankingListCreateOrConnectWithoutAuthorInput = {
@@ -25195,6 +26459,22 @@ export namespace Prisma {
     data: XOR<RankingListUpdateManyMutationInput, RankingListUncheckedUpdateManyWithoutAuthorInput>
   }
 
+  export type RankingListScalarWhereInput = {
+    AND?: RankingListScalarWhereInput | RankingListScalarWhereInput[]
+    OR?: RankingListScalarWhereInput[]
+    NOT?: RankingListScalarWhereInput | RankingListScalarWhereInput[]
+    id?: StringFilter<"RankingList"> | string
+    subject?: StringFilter<"RankingList"> | string
+    description?: StringNullableFilter<"RankingList"> | string | null
+    status?: EnumListStatusFilter<"RankingList"> | $Enums.ListStatus
+    listImageUrl?: StringNullableFilter<"RankingList"> | string | null
+    authorId?: StringFilter<"RankingList"> | string
+    createdAt?: DateTimeFilter<"RankingList"> | Date | string
+    updatedAt?: DateTimeFilter<"RankingList"> | Date | string
+    displayOrder?: IntNullableFilter<"RankingList"> | number | null
+    likeCount?: IntFilter<"RankingList"> | number
+  }
+
   export type ReplyUpsertWithWhereUniqueWithoutUserInput = {
     where: ReplyWhereUniqueInput
     update: XOR<ReplyUpdateWithoutUserInput, ReplyUncheckedUpdateWithoutUserInput>
@@ -25396,23 +26676,24 @@ export namespace Prisma {
     create: XOR<UserCreateWithoutRankingListsInput, UserUncheckedCreateWithoutRankingListsInput>
   }
 
-  export type TagCreateWithoutRankingListsInput = {
+  export type RankingListTagCreateWithoutListInput = {
     id?: string
-    name: string
-    createdAt?: Date | string
-    trendingStats?: TrendingTagCreateNestedManyWithoutTagInput
+    tag: TagCreateNestedOneWithoutRankingListTagsInput
   }
 
-  export type TagUncheckedCreateWithoutRankingListsInput = {
+  export type RankingListTagUncheckedCreateWithoutListInput = {
     id?: string
-    name: string
-    createdAt?: Date | string
-    trendingStats?: TrendingTagUncheckedCreateNestedManyWithoutTagInput
+    tagId: string
   }
 
-  export type TagCreateOrConnectWithoutRankingListsInput = {
-    where: TagWhereUniqueInput
-    create: XOR<TagCreateWithoutRankingListsInput, TagUncheckedCreateWithoutRankingListsInput>
+  export type RankingListTagCreateOrConnectWithoutListInput = {
+    where: RankingListTagWhereUniqueInput
+    create: XOR<RankingListTagCreateWithoutListInput, RankingListTagUncheckedCreateWithoutListInput>
+  }
+
+  export type RankingListTagCreateManyListInputEnvelope = {
+    data: RankingListTagCreateManyListInput | RankingListTagCreateManyListInput[]
+    skipDuplicates?: boolean
   }
 
   export type FeedItemUpsertWithWhereUniqueWithoutRankingListInput = {
@@ -25537,29 +26818,20 @@ export namespace Prisma {
     retweets?: RetweetUncheckedUpdateManyWithoutUserNestedInput
   }
 
-  export type TagUpsertWithWhereUniqueWithoutRankingListsInput = {
-    where: TagWhereUniqueInput
-    update: XOR<TagUpdateWithoutRankingListsInput, TagUncheckedUpdateWithoutRankingListsInput>
-    create: XOR<TagCreateWithoutRankingListsInput, TagUncheckedCreateWithoutRankingListsInput>
+  export type RankingListTagUpsertWithWhereUniqueWithoutListInput = {
+    where: RankingListTagWhereUniqueInput
+    update: XOR<RankingListTagUpdateWithoutListInput, RankingListTagUncheckedUpdateWithoutListInput>
+    create: XOR<RankingListTagCreateWithoutListInput, RankingListTagUncheckedCreateWithoutListInput>
   }
 
-  export type TagUpdateWithWhereUniqueWithoutRankingListsInput = {
-    where: TagWhereUniqueInput
-    data: XOR<TagUpdateWithoutRankingListsInput, TagUncheckedUpdateWithoutRankingListsInput>
+  export type RankingListTagUpdateWithWhereUniqueWithoutListInput = {
+    where: RankingListTagWhereUniqueInput
+    data: XOR<RankingListTagUpdateWithoutListInput, RankingListTagUncheckedUpdateWithoutListInput>
   }
 
-  export type TagUpdateManyWithWhereWithoutRankingListsInput = {
-    where: TagScalarWhereInput
-    data: XOR<TagUpdateManyMutationInput, TagUncheckedUpdateManyWithoutRankingListsInput>
-  }
-
-  export type TagScalarWhereInput = {
-    AND?: TagScalarWhereInput | TagScalarWhereInput[]
-    OR?: TagScalarWhereInput[]
-    NOT?: TagScalarWhereInput | TagScalarWhereInput[]
-    id?: StringFilter<"Tag"> | string
-    name?: StringFilter<"Tag"> | string
-    createdAt?: DateTimeFilter<"Tag"> | Date | string
+  export type RankingListTagUpdateManyWithWhereWithoutListInput = {
+    where: RankingListTagScalarWhereInput
+    data: XOR<RankingListTagUpdateManyMutationInput, RankingListTagUncheckedUpdateManyWithoutListInput>
   }
 
   export type RankingListCreateWithoutItemsInput = {
@@ -25575,7 +26847,7 @@ export namespace Prisma {
     feedItems?: FeedItemCreateNestedManyWithoutRankingListInput
     likes?: LikeCreateNestedManyWithoutRankingListInput
     author: UserCreateNestedOneWithoutRankingListsInput
-    tags?: TagCreateNestedManyWithoutRankingListsInput
+    rankingListTags?: RankingListTagCreateNestedManyWithoutListInput
   }
 
   export type RankingListUncheckedCreateWithoutItemsInput = {
@@ -25591,7 +26863,7 @@ export namespace Prisma {
     likeCount?: number
     feedItems?: FeedItemUncheckedCreateNestedManyWithoutRankingListInput
     likes?: LikeUncheckedCreateNestedManyWithoutRankingListInput
-    tags?: TagUncheckedCreateNestedManyWithoutRankingListsInput
+    rankingListTags?: RankingListTagUncheckedCreateNestedManyWithoutListInput
   }
 
   export type RankingListCreateOrConnectWithoutItemsInput = {
@@ -25623,7 +26895,7 @@ export namespace Prisma {
     feedItems?: FeedItemUpdateManyWithoutRankingListNestedInput
     likes?: LikeUpdateManyWithoutRankingListNestedInput
     author?: UserUpdateOneRequiredWithoutRankingListsNestedInput
-    tags?: TagUpdateManyWithoutRankingListsNestedInput
+    rankingListTags?: RankingListTagUpdateManyWithoutListNestedInput
   }
 
   export type RankingListUncheckedUpdateWithoutItemsInput = {
@@ -25639,21 +26911,145 @@ export namespace Prisma {
     likeCount?: IntFieldUpdateOperationsInput | number
     feedItems?: FeedItemUncheckedUpdateManyWithoutRankingListNestedInput
     likes?: LikeUncheckedUpdateManyWithoutRankingListNestedInput
-    tags?: TagUncheckedUpdateManyWithoutRankingListsNestedInput
+    rankingListTags?: RankingListTagUncheckedUpdateManyWithoutListNestedInput
+  }
+
+  export type RankingListCreateWithoutRankingListTagsInput = {
+    id?: string
+    subject: string
+    description?: string | null
+    status?: $Enums.ListStatus
+    listImageUrl?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    displayOrder?: number | null
+    likeCount?: number
+    feedItems?: FeedItemCreateNestedManyWithoutRankingListInput
+    likes?: LikeCreateNestedManyWithoutRankingListInput
+    items?: RankedItemCreateNestedManyWithoutRankingListInput
+    author: UserCreateNestedOneWithoutRankingListsInput
+  }
+
+  export type RankingListUncheckedCreateWithoutRankingListTagsInput = {
+    id?: string
+    subject: string
+    description?: string | null
+    status?: $Enums.ListStatus
+    listImageUrl?: string | null
+    authorId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    displayOrder?: number | null
+    likeCount?: number
+    feedItems?: FeedItemUncheckedCreateNestedManyWithoutRankingListInput
+    likes?: LikeUncheckedCreateNestedManyWithoutRankingListInput
+    items?: RankedItemUncheckedCreateNestedManyWithoutRankingListInput
+  }
+
+  export type RankingListCreateOrConnectWithoutRankingListTagsInput = {
+    where: RankingListWhereUniqueInput
+    create: XOR<RankingListCreateWithoutRankingListTagsInput, RankingListUncheckedCreateWithoutRankingListTagsInput>
+  }
+
+  export type TagCreateWithoutRankingListTagsInput = {
+    id?: string
+    name: string
+    createdAt?: Date | string
+    trendingStats?: TrendingTagCreateNestedManyWithoutTagInput
+  }
+
+  export type TagUncheckedCreateWithoutRankingListTagsInput = {
+    id?: string
+    name: string
+    createdAt?: Date | string
+    trendingStats?: TrendingTagUncheckedCreateNestedManyWithoutTagInput
+  }
+
+  export type TagCreateOrConnectWithoutRankingListTagsInput = {
+    where: TagWhereUniqueInput
+    create: XOR<TagCreateWithoutRankingListTagsInput, TagUncheckedCreateWithoutRankingListTagsInput>
+  }
+
+  export type RankingListUpsertWithoutRankingListTagsInput = {
+    update: XOR<RankingListUpdateWithoutRankingListTagsInput, RankingListUncheckedUpdateWithoutRankingListTagsInput>
+    create: XOR<RankingListCreateWithoutRankingListTagsInput, RankingListUncheckedCreateWithoutRankingListTagsInput>
+    where?: RankingListWhereInput
+  }
+
+  export type RankingListUpdateToOneWithWhereWithoutRankingListTagsInput = {
+    where?: RankingListWhereInput
+    data: XOR<RankingListUpdateWithoutRankingListTagsInput, RankingListUncheckedUpdateWithoutRankingListTagsInput>
+  }
+
+  export type RankingListUpdateWithoutRankingListTagsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    subject?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumListStatusFieldUpdateOperationsInput | $Enums.ListStatus
+    listImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    displayOrder?: NullableIntFieldUpdateOperationsInput | number | null
+    likeCount?: IntFieldUpdateOperationsInput | number
+    feedItems?: FeedItemUpdateManyWithoutRankingListNestedInput
+    likes?: LikeUpdateManyWithoutRankingListNestedInput
+    items?: RankedItemUpdateManyWithoutRankingListNestedInput
+    author?: UserUpdateOneRequiredWithoutRankingListsNestedInput
+  }
+
+  export type RankingListUncheckedUpdateWithoutRankingListTagsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    subject?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumListStatusFieldUpdateOperationsInput | $Enums.ListStatus
+    listImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    authorId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    displayOrder?: NullableIntFieldUpdateOperationsInput | number | null
+    likeCount?: IntFieldUpdateOperationsInput | number
+    feedItems?: FeedItemUncheckedUpdateManyWithoutRankingListNestedInput
+    likes?: LikeUncheckedUpdateManyWithoutRankingListNestedInput
+    items?: RankedItemUncheckedUpdateManyWithoutRankingListNestedInput
+  }
+
+  export type TagUpsertWithoutRankingListTagsInput = {
+    update: XOR<TagUpdateWithoutRankingListTagsInput, TagUncheckedUpdateWithoutRankingListTagsInput>
+    create: XOR<TagCreateWithoutRankingListTagsInput, TagUncheckedCreateWithoutRankingListTagsInput>
+    where?: TagWhereInput
+  }
+
+  export type TagUpdateToOneWithWhereWithoutRankingListTagsInput = {
+    where?: TagWhereInput
+    data: XOR<TagUpdateWithoutRankingListTagsInput, TagUncheckedUpdateWithoutRankingListTagsInput>
+  }
+
+  export type TagUpdateWithoutRankingListTagsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    trendingStats?: TrendingTagUpdateManyWithoutTagNestedInput
+  }
+
+  export type TagUncheckedUpdateWithoutRankingListTagsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    trendingStats?: TrendingTagUncheckedUpdateManyWithoutTagNestedInput
   }
 
   export type TagCreateWithoutTrendingStatsInput = {
     id?: string
     name: string
     createdAt?: Date | string
-    rankingLists?: RankingListCreateNestedManyWithoutTagsInput
+    rankingListTags?: RankingListTagCreateNestedManyWithoutTagInput
   }
 
   export type TagUncheckedCreateWithoutTrendingStatsInput = {
     id?: string
     name: string
     createdAt?: Date | string
-    rankingLists?: RankingListUncheckedCreateNestedManyWithoutTagsInput
+    rankingListTags?: RankingListTagUncheckedCreateNestedManyWithoutTagInput
   }
 
   export type TagCreateOrConnectWithoutTrendingStatsInput = {
@@ -25676,14 +27072,14 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    rankingLists?: RankingListUpdateManyWithoutTagsNestedInput
+    rankingListTags?: RankingListTagUpdateManyWithoutTagNestedInput
   }
 
   export type TagUncheckedUpdateWithoutTrendingStatsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    rankingLists?: RankingListUncheckedUpdateManyWithoutTagsNestedInput
+    rankingListTags?: RankingListTagUncheckedUpdateManyWithoutTagNestedInput
   }
 
   export type FeedItemCreateWithoutPostInput = {
@@ -26174,7 +27570,7 @@ export namespace Prisma {
     likes?: LikeCreateNestedManyWithoutRankingListInput
     items?: RankedItemCreateNestedManyWithoutRankingListInput
     author: UserCreateNestedOneWithoutRankingListsInput
-    tags?: TagCreateNestedManyWithoutRankingListsInput
+    rankingListTags?: RankingListTagCreateNestedManyWithoutListInput
   }
 
   export type RankingListUncheckedCreateWithoutFeedItemsInput = {
@@ -26190,7 +27586,7 @@ export namespace Prisma {
     likeCount?: number
     likes?: LikeUncheckedCreateNestedManyWithoutRankingListInput
     items?: RankedItemUncheckedCreateNestedManyWithoutRankingListInput
-    tags?: TagUncheckedCreateNestedManyWithoutRankingListsInput
+    rankingListTags?: RankingListTagUncheckedCreateNestedManyWithoutListInput
   }
 
   export type RankingListCreateOrConnectWithoutFeedItemsInput = {
@@ -26484,7 +27880,7 @@ export namespace Prisma {
     likes?: LikeUpdateManyWithoutRankingListNestedInput
     items?: RankedItemUpdateManyWithoutRankingListNestedInput
     author?: UserUpdateOneRequiredWithoutRankingListsNestedInput
-    tags?: TagUpdateManyWithoutRankingListsNestedInput
+    rankingListTags?: RankingListTagUpdateManyWithoutListNestedInput
   }
 
   export type RankingListUncheckedUpdateWithoutFeedItemsInput = {
@@ -26500,7 +27896,7 @@ export namespace Prisma {
     likeCount?: IntFieldUpdateOperationsInput | number
     likes?: LikeUncheckedUpdateManyWithoutRankingListNestedInput
     items?: RankedItemUncheckedUpdateManyWithoutRankingListNestedInput
-    tags?: TagUncheckedUpdateManyWithoutRankingListsNestedInput
+    rankingListTags?: RankingListTagUncheckedUpdateManyWithoutListNestedInput
   }
 
   export type UserUpsertWithoutFeedItemsInput = {
@@ -26736,7 +28132,7 @@ export namespace Prisma {
     feedItems?: FeedItemCreateNestedManyWithoutRankingListInput
     items?: RankedItemCreateNestedManyWithoutRankingListInput
     author: UserCreateNestedOneWithoutRankingListsInput
-    tags?: TagCreateNestedManyWithoutRankingListsInput
+    rankingListTags?: RankingListTagCreateNestedManyWithoutListInput
   }
 
   export type RankingListUncheckedCreateWithoutLikesInput = {
@@ -26752,7 +28148,7 @@ export namespace Prisma {
     likeCount?: number
     feedItems?: FeedItemUncheckedCreateNestedManyWithoutRankingListInput
     items?: RankedItemUncheckedCreateNestedManyWithoutRankingListInput
-    tags?: TagUncheckedCreateNestedManyWithoutRankingListsInput
+    rankingListTags?: RankingListTagUncheckedCreateNestedManyWithoutListInput
   }
 
   export type RankingListCreateOrConnectWithoutLikesInput = {
@@ -26874,7 +28270,7 @@ export namespace Prisma {
     feedItems?: FeedItemUpdateManyWithoutRankingListNestedInput
     items?: RankedItemUpdateManyWithoutRankingListNestedInput
     author?: UserUpdateOneRequiredWithoutRankingListsNestedInput
-    tags?: TagUpdateManyWithoutRankingListsNestedInput
+    rankingListTags?: RankingListTagUpdateManyWithoutListNestedInput
   }
 
   export type RankingListUncheckedUpdateWithoutLikesInput = {
@@ -26890,7 +28286,7 @@ export namespace Prisma {
     likeCount?: IntFieldUpdateOperationsInput | number
     feedItems?: FeedItemUncheckedUpdateManyWithoutRankingListNestedInput
     items?: RankedItemUncheckedUpdateManyWithoutRankingListNestedInput
-    tags?: TagUncheckedUpdateManyWithoutRankingListsNestedInput
+    rankingListTags?: RankingListTagUncheckedUpdateManyWithoutListNestedInput
   }
 
   export type UserUpsertWithoutLikesInput = {
@@ -27606,6 +29002,11 @@ export namespace Prisma {
     calculationDate: Date | string
   }
 
+  export type RankingListTagCreateManyTagInput = {
+    id?: string
+    listId: string
+  }
+
   export type TrendingTagUpdateWithoutTagInput = {
     id?: StringFieldUpdateOperationsInput | string
     tagName?: StringFieldUpdateOperationsInput | string
@@ -27630,49 +29031,19 @@ export namespace Prisma {
     calculationDate?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type RankingListUpdateWithoutTagsInput = {
+  export type RankingListTagUpdateWithoutTagInput = {
     id?: StringFieldUpdateOperationsInput | string
-    subject?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: EnumListStatusFieldUpdateOperationsInput | $Enums.ListStatus
-    listImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    displayOrder?: NullableIntFieldUpdateOperationsInput | number | null
-    likeCount?: IntFieldUpdateOperationsInput | number
-    feedItems?: FeedItemUpdateManyWithoutRankingListNestedInput
-    likes?: LikeUpdateManyWithoutRankingListNestedInput
-    items?: RankedItemUpdateManyWithoutRankingListNestedInput
-    author?: UserUpdateOneRequiredWithoutRankingListsNestedInput
+    list?: RankingListUpdateOneRequiredWithoutRankingListTagsNestedInput
   }
 
-  export type RankingListUncheckedUpdateWithoutTagsInput = {
+  export type RankingListTagUncheckedUpdateWithoutTagInput = {
     id?: StringFieldUpdateOperationsInput | string
-    subject?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: EnumListStatusFieldUpdateOperationsInput | $Enums.ListStatus
-    listImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    authorId?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    displayOrder?: NullableIntFieldUpdateOperationsInput | number | null
-    likeCount?: IntFieldUpdateOperationsInput | number
-    feedItems?: FeedItemUncheckedUpdateManyWithoutRankingListNestedInput
-    likes?: LikeUncheckedUpdateManyWithoutRankingListNestedInput
-    items?: RankedItemUncheckedUpdateManyWithoutRankingListNestedInput
+    listId?: StringFieldUpdateOperationsInput | string
   }
 
-  export type RankingListUncheckedUpdateManyWithoutTagsInput = {
+  export type RankingListTagUncheckedUpdateManyWithoutTagInput = {
     id?: StringFieldUpdateOperationsInput | string
-    subject?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: EnumListStatusFieldUpdateOperationsInput | $Enums.ListStatus
-    listImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    authorId?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    displayOrder?: NullableIntFieldUpdateOperationsInput | number | null
-    likeCount?: IntFieldUpdateOperationsInput | number
+    listId?: StringFieldUpdateOperationsInput | string
   }
 
   export type FeedItemCreateManyUserInput = {
@@ -27950,7 +29321,7 @@ export namespace Prisma {
     feedItems?: FeedItemUpdateManyWithoutRankingListNestedInput
     likes?: LikeUpdateManyWithoutRankingListNestedInput
     items?: RankedItemUpdateManyWithoutRankingListNestedInput
-    tags?: TagUpdateManyWithoutRankingListsNestedInput
+    rankingListTags?: RankingListTagUpdateManyWithoutListNestedInput
   }
 
   export type RankingListUncheckedUpdateWithoutAuthorInput = {
@@ -27966,7 +29337,7 @@ export namespace Prisma {
     feedItems?: FeedItemUncheckedUpdateManyWithoutRankingListNestedInput
     likes?: LikeUncheckedUpdateManyWithoutRankingListNestedInput
     items?: RankedItemUncheckedUpdateManyWithoutRankingListNestedInput
-    tags?: TagUncheckedUpdateManyWithoutRankingListsNestedInput
+    rankingListTags?: RankingListTagUncheckedUpdateManyWithoutListNestedInput
   }
 
   export type RankingListUncheckedUpdateManyWithoutAuthorInput = {
@@ -28049,6 +29420,11 @@ export namespace Prisma {
     imageUrl?: string | null
     itemDescription?: string | null
     createdAt?: Date | string
+  }
+
+  export type RankingListTagCreateManyListInput = {
+    id?: string
+    tagId: string
   }
 
   export type FeedItemUpdateWithoutRankingListInput = {
@@ -28141,24 +29517,19 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type TagUpdateWithoutRankingListsInput = {
+  export type RankingListTagUpdateWithoutListInput = {
     id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    trendingStats?: TrendingTagUpdateManyWithoutTagNestedInput
+    tag?: TagUpdateOneRequiredWithoutRankingListTagsNestedInput
   }
 
-  export type TagUncheckedUpdateWithoutRankingListsInput = {
+  export type RankingListTagUncheckedUpdateWithoutListInput = {
     id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    trendingStats?: TrendingTagUncheckedUpdateManyWithoutTagNestedInput
+    tagId?: StringFieldUpdateOperationsInput | string
   }
 
-  export type TagUncheckedUpdateManyWithoutRankingListsInput = {
+  export type RankingListTagUncheckedUpdateManyWithoutListInput = {
     id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tagId?: StringFieldUpdateOperationsInput | string
   }
 
   export type FeedItemCreateManyPostInput = {

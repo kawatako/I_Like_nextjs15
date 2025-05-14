@@ -11,15 +11,15 @@ generator edgeClient {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DIRECT_DATABASE_URL") // マイグレーション／introspection 用（DB 直結）
+  url      = env("DIRECT_DATABASE_URL")
 }
 
 model Tag {
-  id            String        @id @default(cuid())
-  name          String        @unique
-  createdAt     DateTime      @default(now())
-  trendingStats TrendingTag[] @relation("TagToTrendingTag")
-  rankingLists  RankingList[] @relation("RankingListTags")
+  id              String           @id @default(cuid())
+  name            String           @unique
+  createdAt       DateTime         @default(now())
+  trendingStats   TrendingTag[]    @relation("TagToTrendingTag")
+  rankingListTags RankingListTag[]
 
   @@index([name])
 }
@@ -51,27 +51,28 @@ model User {
 }
 
 model RankingList {
-  id           String       @id @default(cuid())
-  subject      String
-  description  String?
-  status       ListStatus   @default(DRAFT)
-  listImageUrl String?
-  authorId     String
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
-  displayOrder Int?
-  likeCount    Int          @default(0)
-  feedItems    FeedItem[]
-  likes        Like[]
-  items        RankedItem[]
-  author       User         @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  tags         Tag[]        @relation("RankingListTags")
+  id              String           @id @default(cuid())
+  subject         String
+  description     String?
+  status          ListStatus       @default(DRAFT)
+  listImageUrl    String?
+  authorId        String
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  displayOrder    Int?
+  likeCount       Int              @default(0)
+  feedItems       FeedItem[]
+  likes           Like[]
+  items           RankedItem[]
+  author          User             @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  rankingListTags RankingListTag[]
 
   @@index([subject])
   @@index([authorId])
   @@index([status])
   @@index([createdAt])
   @@index([authorId, displayOrder])
+  @@index([status, subject, createdAt], map: "idx_rankinglist_status_subject_createdat")
 }
 
 model RankedItem {
@@ -88,6 +89,17 @@ model RankedItem {
   @@index([listId, rank])
 }
 
+model RankingListTag {
+  id     String      @id @default(cuid())
+  list   RankingList @relation(fields: [listId], references: [id])
+  listId String
+  tag    Tag         @relation(fields: [tagId], references: [id])
+  tagId  String
+
+  @@unique([listId, tagId])
+  @@map("RankingListTag")
+}
+
 model TrendingSubject {
   id              String      @id @default(cuid())
   subject         String
@@ -97,6 +109,7 @@ model TrendingSubject {
 
   @@unique([subject, period, calculationDate])
   @@index([period, calculationDate, count(sort: Desc)])
+  @@index([period, calculationDate], map: "idx_trendingsubject_period_calcdate")
 }
 
 model TrendingTag {
@@ -110,6 +123,7 @@ model TrendingTag {
 
   @@unique([tagId, period, calculationDate])
   @@index([period, calculationDate, count(sort: Desc)])
+  @@index([period, calculationDate], map: "idx_trendingtag_period_calcdate")
 }
 
 model TrendingItem {
@@ -121,6 +135,7 @@ model TrendingItem {
 
   @@index([itemName])
   @@index([period, calculationDate, rankScore(sort: Desc)])
+  @@index([period, calculationDate], map: "idx_trendingitem_period_calcdate")
 }
 
 model AverageItemRank {
@@ -135,6 +150,8 @@ model AverageItemRank {
   @@index([calculationDate])
   @@index([calculationDate], map: "AverageItemRank_calculationDate_idx1")
   @@index([subject], map: "AverageItemRank_subject_idx1")
+  @@index([calculationDate], map: "idx_avgitemrank_calcdate")
+  @@index([subject, calculationDate], map: "idx_avgitemrank_subject_calcdate")
 }
 
 model Post {

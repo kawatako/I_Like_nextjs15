@@ -1,12 +1,15 @@
 // supabase/functions/calculate-trends/index.ts
+// Edge Function: 期間ごとのランキングトレンドを集計し、Supabaseテーブルに保存
 // @ts-nocheck
 import { serve } from "https://deno.land/std@0.181.0/http/server.ts";
 import { sb } from "../_shared/supabaseClient.ts";
 
+// HTTPサーバーとして動作
 serve(async () => {
   const now = new Date();
 
   // ── 期間算出（カレンダー方式） ──
+  // 今週の始まり(月曜日)、先週の月曜～日曜、先月の1日～末日を算出
   const thisMonday = new Date(now);
   thisMonday.setDate(now.getDate() - ((now.getDay() + 6) % 7));
   const lastMonday = new Date(thisMonday);
@@ -20,10 +23,12 @@ serve(async () => {
   lastMonthLast.setHours(23, 59, 59, 999);
   const lastMonthFirst = new Date(now.getFullYear(), now.getMonth() - 1, 1);
 
+  // 週次と月次の2種類でループ
   for (const [period, from, to] of [
     ["WEEKLY", lastMonday, lastSunday],
     ["MONTHLY", lastMonthFirst, lastMonthLast],
   ] as const) {
+    // 集計日時をISO文字列と日付文字列で用意
     const calcDate =
       period === "WEEKLY"
         ? lastSunday.toISOString()
@@ -31,6 +36,7 @@ serve(async () => {
     const calcDateString = calcDate.slice(0, 10);
 
     // ===== 1) RankingList を期間内で取得 =====
+    // PUBLISHED なランキングリストのIDとテーマを取得
     const { data: lists, error: errLists } = await sb
       .from("RankingList")
       .select("id,subject")
@@ -44,6 +50,7 @@ serve(async () => {
     const listIds = (lists ?? []).map((l: any) => l.id);
 
     // ===== TrendingSubject =====
+    // テーマごとの出現回数を集計し、上位100件を取得
     const subjectCount = new Map<string, number>();
     (lists ?? []).forEach((l: any) => {
       subjectCount.set(l.subject, (subjectCount.get(l.subject) || 0) + 1);
@@ -53,11 +60,14 @@ serve(async () => {
       .sort((a, b) => b.count - a.count)
       .slice(0, 100);
 
+    // 古い期間のトレンドデータを削除
     await sb
       .from("TrendingSubject")
       .delete()
       .eq("period", period)
       .eq("calculationDate", calcDateString);
+
+    // 新データを挿入
     if (topSubjects.length) {
       await sb.from("TrendingSubject").insert(
         topSubjects.map((r) => ({
@@ -70,28 +80,30 @@ serve(async () => {
     }
 
     // ===== TrendingTag =====
-    // 2) Prisma の暗黙的 M-N テーブル `_RankingListTags` から tagId を集計
+    // 中間テーブル RankingListTag からタグIDを取得
     const { data: pivots, error: errPivots } = await sb
-      .from("_RankingListTags")
-      // A が RankingList.id、B が Tag.id という列名なのでリネームして取得
-      .select("A,B")
-      .in("A", listIds);
+      .from("RankingListTag")
+      .select("listId, tagId")
+      .in("listId", listIds);
     if (errPivots) {
-      console.error("fetch _RankingListTags error:", errPivots);
+      console.error("fetch RankingListTag error:", errPivots);
       return new Response("Internal Error", { status: 500 });
     }
+
+    // タグごとの出現回数をマップで集計
     const tagCount = new Map<string, number>();
-    (pivots ?? []).forEach((p: any) => {
-      const tagId = p.B;
-      tagCount.set(tagId, (tagCount.get(tagId) || 0) + 1);
+    (pivots ?? []).forEach((p: { listId: string; tagId: string }) => {
+      tagCount.set(p.tagId, (tagCount.get(p.tagId) || 0) + 1);
     });
+
+    // 上位100件のタグIDを取得
     const topTagEntries = Array.from(tagCount.entries())
       .map(([tagId, count]) => ({ tagId, count }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 100);
     const tagIds = topTagEntries.map((e) => e.tagId);
 
-    // 3) Tag テーブルから名前を取得
+    // タグテーブルからタグ名を取得
     const { data: tagRows, error: errTags } = await sb
       .from("Tag")
       .select("id,name")
@@ -105,12 +117,14 @@ serve(async () => {
       nameMap.set(t.id, t.name);
     });
 
-    // 4) TrendingTag を置き換え
+    // 古いタグトレンドを削除
     await sb
       .from("TrendingTag")
       .delete()
       .eq("period", period)
       .eq("calculationDate", calcDateString);
+
+    // 新しいタグトレンドを挿入
     if (topTagEntries.length) {
       await sb.from("TrendingTag").insert(
         topTagEntries.map((r) => ({
@@ -124,7 +138,7 @@ serve(async () => {
     }
 
     // ===== TrendingItem =====
-    // 2) RankedItem を取得
+    // 各ランキングの上位3位までにポイントを付与してスコア集計
     const { data: items, error: errItems } = await sb
       .from("RankedItem")
       .select("itemName,rank")
@@ -133,7 +147,6 @@ serve(async () => {
       console.error("fetch RankedItem error:", errItems);
       return new Response("Internal Error", { status: 500 });
     }
-    // 3) スコア計算
     const itemScore = new Map<string, number>();
     (items ?? []).forEach((it: any) => {
       let pts = 0;
@@ -149,12 +162,14 @@ serve(async () => {
       .sort((a, b) => b.rankScore - a.rankScore)
       .slice(0, 100);
 
-    // 4) TrendingItem を置き換え
+    // 古いアイテムトレンドを削除
     await sb
       .from("TrendingItem")
       .delete()
       .eq("period", period)
       .eq("calculationDate", calcDateString);
+
+    // 新しいアイテムトレンドを挿入
     if (topItems.length) {
       await sb.from("TrendingItem").insert(
         topItems.map((r) => ({
@@ -167,6 +182,7 @@ serve(async () => {
     }
   }
 
+  // 成功レスポンスを返す
   return new Response(JSON.stringify({ status: "ok" }), {
     headers: { "Content-Type": "application/json" },
   });

@@ -15,13 +15,11 @@ import type {
   ListStatus,
 } from "@/lib/types";
 
-/** 
- * 認証済みユーザーの DB ID と username を取得。
- * 認証失敗 or DB レコードなしで例外を投げる。
- */
+/** 認証済みユーザーの DB ID と username を取得 */
 async function requireUser() {
   const { userId: clerkId } = await auth();
   if (!clerkId) throw new Error("ログインしてください。");
+
   const rec = await safeQuery(() =>
     prisma.user.findUnique({
       where: { clerkId },
@@ -32,19 +30,15 @@ async function requireUser() {
   return { userDbId: rec.id, username: rec.username };
 }
 
-/** 
- * トランザクション内でタグを upsert し、ID 配列を返す。
- * `tx` を any にして Data Proxy との型不整合を回避。
- */
+/** トランザクション内でタグを upsert し、ID 配列を返す */
 async function upsertTags(tx: any, tags?: string[]): Promise<{ id: string }[]> {
   if (!tags || tags.length === 0) return [];
+
   const ops = tags
     .map((t) => t.trim())
     .filter((t) => t.length > 0)
-    .map((name) => ({
-      where: { name },
-      create: { name },
-    }));
+    .map((name) => ({ where: { name }, create: { name } }));
+
   const ups = await Promise.all(
     ops.map((op) =>
       tx.tag.upsert({
@@ -55,10 +49,11 @@ async function upsertTags(tx: any, tags?: string[]): Promise<{ id: string }[]> {
       })
     )
   );
+
   return ups.map((u: any) => ({ id: u.id }));
 }
 
-// Zod スキーマ定義
+// Zod スキーマ
 const subjectAllowed = /^[\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}A-Za-z0-9 ]+$/u;
 const SubjectSchema = z
   .string()
@@ -76,9 +71,9 @@ const ItemDescSchema = z.string().trim().max(500, "説明は500字以内です�
 
 /**
  * 新規ランキングを作成し、
- * - タグ upsert
+ * - タグ upsert & pivot
  * - RankedItem createMany
- * - PUBLISHED時は FeedItem create
+ * - PUBLISHED時に FeedItem create
  */
 export async function createCompleteRankingAction(
   rankingData: {
@@ -110,9 +105,9 @@ export async function createCompleteRankingAction(
   });
 
   try {
-    // @ts-ignore: Data Proxy client vs TransactionClient の型不整合を無視
     const newList = await safeQuery(() =>
       prisma.$transaction(async (tx) => {
+        // 1) タグ upsert & pivot挿入
         const tagIds = await upsertTags(tx, rankingData.tags);
         const created = await tx.rankingList.create({
           data: {
@@ -121,9 +116,15 @@ export async function createCompleteRankingAction(
             description: rankingData.description?.trim() || null,
             status,
             listImageUrl: rankingData.listImageUrl || null,
-            tags: { connect: tagIds },
           },
         });
+        if (tagIds.length > 0) {
+          await tx.rankingListTag.createMany({
+            data: tagIds.map((t) => ({ listId: created.id, tagId: t.id })),
+          });
+        }
+
+        // 2) アイテム挿入
         if (itemsData.length > 0) {
           await tx.rankedItem.createMany({
             data: itemsData.map((item, idx) => ({
@@ -135,6 +136,8 @@ export async function createCompleteRankingAction(
             })),
           });
         }
+
+        // 3) フィード作成
         if (status === "PUBLISHED") {
           await tx.feedItem.create({
             data: {
@@ -164,8 +167,10 @@ export async function createCompleteRankingAction(
 }
 
 /**
- * 既存ランキングのアイテム・タグを更新し、
- * PUBLISHED時は FeedItem を upsert
+ * 既存ランキングの更新：
+ * - タグ upsert & pivot更新
+ * - RankedItem delete & createMany
+ * - フィード upsert
  */
 export async function saveRankingListItemsAction(
   listId: string,
@@ -192,10 +197,18 @@ export async function saveRankingListItemsAction(
   if (!list) return { success: false, error: "編集権限がありません。" };
 
   try {
-    // @ts-ignore: Data Proxy client vs TransactionClient の型不整合を無視
     await safeQuery(() =>
       prisma.$transaction(async (tx) => {
+        // 1) タグ upsert & pivot更新
         const tagIds = await upsertTags(tx, tags);
+        await tx.rankingListTag.deleteMany({ where: { listId } });
+        if (tagIds.length > 0) {
+          await tx.rankingListTag.createMany({
+            data: tagIds.map((t) => ({ listId, tagId: t.id })),
+          });
+        }
+
+        // 2) アイテム更新
         await tx.rankedItem.deleteMany({ where: { listId } });
         if (itemsData.length > 0) {
           await tx.rankedItem.createMany({
@@ -208,6 +221,8 @@ export async function saveRankingListItemsAction(
             })),
           });
         }
+
+        // 3) ランキングメタ更新
         await tx.rankingList.update({
           where: { id: listId, authorId: userDbId },
           data: {
@@ -215,9 +230,10 @@ export async function saveRankingListItemsAction(
             description: listDescription?.trim() || null,
             status: targetStatus,
             listImageUrl: listImageUrl || null,
-            tags: { set: tagIds },
           },
         });
+
+        // 4) フィード upsert
         if (targetStatus === "PUBLISHED") {
           await tx.feedItem.upsert({
             where: {
@@ -237,6 +253,7 @@ export async function saveRankingListItemsAction(
       })
     );
 
+    // キャッシュ再検証
     revalidatePath(`/rankings/${listId}/edit`);
     revalidatePath(`/rankings/${listId}`);
     revalidatePath(`/profile/${username}`);
@@ -253,7 +270,7 @@ export async function saveRankingListItemsAction(
 }
 
 /**
- * ランキングと FeedItem をまとめて削除
+ * ランキング削除
  */
 export async function deleteRankingListAction(
   prevState: ActionResult | null,
@@ -262,7 +279,6 @@ export async function deleteRankingListAction(
   const { userDbId, username } = await requireUser();
   const listId = formData.get("listId") as string;
 
-  // 依存のない deleteMany は配列版 transaction で並列実行
   await safeQuery(() =>
     prisma.$transaction([
       prisma.feedItem.deleteMany({
@@ -279,7 +295,7 @@ export async function deleteRankingListAction(
 }
 
 /**
- * displayOrder を一括更新
+ * displayOrder 一括更新
  */
 export async function updateRankingListOrderAction(
   orderedListIds: string[]

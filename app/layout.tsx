@@ -8,6 +8,7 @@ import LeftSidebar from "@/components/component/layouts/LeftSidebar";
 import BottomNavbar from "@/components/component/layouts/BottomNavbar";
 import { auth } from "@clerk/nextjs/server";
 import { ClerkProvider } from "@clerk/nextjs";
+import { jaJP } from '@clerk/localizations';
 import { Toaster } from "@/components/ui/toaster";
 import { getCurrentLoginUserData } from "@/lib/data/userQueries";
 import { KeepAlivePing } from "@/components/KeepAlivePing";
@@ -34,6 +35,7 @@ export default async function RootLayout({
       <head />
       <body className={`${inter.className} flex flex-col h-full bg-gray-100 dark:bg-gray-900`}>
         <ClerkProvider
+          localization={jaJP}
           publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY!}
           proxyUrl={process.env.NEXT_PUBLIC_CLERK_PROXY_URL!}
         >
