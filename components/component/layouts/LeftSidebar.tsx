@@ -37,7 +37,7 @@ const navItems = [
     label: "フォロー",
     href: (username: string | null) => `/follows/${username ?? ''}`,
   },
-  { icon: CrownIcon, label: "ランキングを作成", href: "/rankings/create" },
+  { icon: CrownIcon, label: "ランキング作成", href: "/rankings/create" },
   { icon: SearchIcon, label: "トレンド", href: "/trends" },
   { icon: BellIcon, label: "通知", href: "#" }, 
 ];
@@ -89,7 +89,7 @@ export default function LeftSidebar({
         <Link href="/#" className="block">
           <div className="flex items-center gap-3 px-3 py-2.5 rounded-md text-foreground/80 hover:bg-muted hover:text-foreground transition-colors">
             <SettingsIcon className="h-5 w-5" />
-            <span className="font-medium">Settings</span>
+            <span className="font-medium">設定</span>
           </div>
         </Link>
       </div>
