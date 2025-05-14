@@ -286,35 +286,6 @@ async function main() {
       }
     }
   }
-  // 同様に alice と bob のリツイート処理...
-  console.log(`Created ${retweetFeedItems.length} retweets.`);
-
-  // --- 9. 引用リツイートと関連 FeedItem 作成 ---
-  console.log("Creating quote retweets and related feed items...");
-  // userkawa, alice の引用リツイート処理...
-  console.log("Quote retweets created.");
-
-  // --- 10. いいね作成 (対象: Post / RankingList) ---
-  console.log("Creating likes...");
-  // userkawa, alice, bob のいいね処理...
-  console.log("Like data created.");
-
-  // --- トレンド・集計処理 ---
-  console.log("Seeding TrendingSubject / TrendingTag / TrendingItem…");
-  // 以降の raw SQL 挿入処理は省略せずにそのまま
-  await prisma.$executeRawUnsafe(`
-    INSERT INTO public."TrendingSubject" ...
-  `);
-  // 他の INSERT 文も同様に...
-
-  console.log("Seeding finished.");
-
-  // --- 11. AverageItemRank シード (全期間) ---
-  console.log("Seeding AverageItemRank...");
-  await prisma.$executeRawUnsafe(`
-    INSERT INTO public."AverageItemRank" ...
-  `);
-  console.log("AverageItemRank seeded.");
 }
 
 main()

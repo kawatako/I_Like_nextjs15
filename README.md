@@ -1,4 +1,4 @@
-【実装設計レポート】ランキング SNS アプリケーション
+【実装設計レポート】ランキング SNS アプリケーション 「TopMe」
 
 1. プロジェクト概要
 目的: ユーザーが自由にテーマを設定し、アイテムをランク付けして共有できる、SNS 機能（フォロー、いいね、リツイート等）を備えた Web アプリケーションを開発する。
@@ -25,64 +25,84 @@ Node.js: 20.15.1
 
 3. ファイル構成 (主要ディレクトリ)
 .
-├── app/                      # Next.js App Router (ルーティング、ページ、レイアウト)
-│   ├── (home)/             # ホーム画面関連 (レイアウト、ページ)
-│   ├── api/                  # API Routes (例: Webhook)
-│   ├── profile/              # プロフィール関連ページ
-│   │   └── [username]/
-│   │       ├── edit/page.tsx # プロフィール編集ページ (RSC)
-│   │       ├── follows/      # フォロー/フォロワー/リクエストページ (完成済み)
-│   │       ├── page.tsx      # プロフィール表示ページ (RSC)
-│   │       └── tabs/         # プロフィールタブ関連コンポーネント
-│   │           ├── ProfileTabsClient.tsx (Client)
-│   │           ├── RankingTab.tsx (RSC)
-│   │           ├── DraftsTab.tsx (RSC)
-│   │           ├── FeedTab.tsx (RSC)
-│   │           ├── LikesTab.tsx (RSC)
-│   │           └── RankingLikesTab.tsx (RSC)
-│   ├── rankings/             # ランキング関連ページ
-│   │   ├── create/page.tsx # ランキング新規作成ページ (RSC)
-│   │   └── [listId]/         # ランキング詳細・編集ページ
-│   │       ├── edit/page.tsx # ランキング編集ページ (RSC)
-│   │       └── page.tsx      # ランキング詳細ページ (RSC)
-│   ├── feeds/                # フィード詳細ページ
-│   │   └── [feedItemId]/page.tsx
-│   ├── settings/             # 設定ページ (Clerk コンポーネント使用想定)
-│   ├── sign-in/              # サインインページ (Clerk)
-│   └── sign-up/              # サインアップページ (Clerk)
-├── components/               # 再利用可能な UI コンポーネント
-│   ├── component/            # アプリケーション固有コンポーネント
-│   │   ├── common/           # アプリ全体で使う共通部品 (ImageUploader, TagInput)
-│   │   ├── feeds/            # フィード関連 (TimelineFeed, 各種Card)
-│   │   ├── follows/          # フォロー関連 (FollowButton)
-│   │   ├── likes/            # いいね関連 (FeedLike)
-│   │   ├── modals/           # モーダル (RetweetQuoteDialog, QuoteCommentModal)
-│   │   ├── posts/            # 投稿関連 (PostForm, PostDetail)
-│   │   ├── profiles/         # プロフィール関連 (ProfileHeader, ProfileTabsClient, 各リストClient)
-│   │   ├── rankings/         # ランキング関連 (NewRankingForm, RankingEditView, RankingDetailView, EditableRankedItem, LikedRankingListItem)
-│   │   └── Icons.tsx         # アイコン集約
-│   └── ui/                   # shadcn/ui コンポーネント
-├── lib/                      # 共通ロジック、ユーティリティ、サービス
-│   ├── actions/              # Server Actions (DB変更、外部連携など)
-│   ├── data/                 # データ取得関数 (DB読み取り、整形)
-│   ├── hooks/                # カスタムフック (useInfiniteScroll, useCardInteraction, useImageUploader)
-│   ├── prisma/               # Prisma 関連
-│   │   └── payloads.ts       # 共通 Select/Payload 定義 ★New★
-│   ├── types.ts              # 共有 TypeScript 型定義
-│   └── client.ts             # Prisma Client インスタンス
-│   └── supabaseClient.ts     # Supabase Client インスタンス (画像アップロード用)
-│   └── utils.ts              # 共通ヘルパー関数 (例: cn)
-├── prisma/                   # Prisma スキーマ、マイグレーション
-│   ├── migrations/
-│   └── schema.prisma
-├── public/                   # 静的ファイル
-├── supabase/                 # Supabase Functions プロジェクト (トレンド集計用) ★New★
-│   └── functions/
-│       ├── _shared/
-│       │   └── prisma.ts     # Edge Function用 Prisma Client 初期化 ★New★
-│       └── calculate-trends/ # トレンド集計関数 ★New★
-│           └── index.ts
-└── ... (設定ファイル: next.config.js, tailwind.config.ts, tsconfig.json, .env.local etc.)
+app/
+├── api/
+│   ├── healthcheck/route.ts        — サービスの死活監視用エンドポイント  
+│   ├── keep-alive/route.ts         — アプリケーションをアイドル状態から維持するための定期 ping  
+│   ├── uploadImage/route.ts        — 画像アップロード処理（Supabase Storage 連携）  
+│   └── webhooks/clerk/route.ts     — Clerk の Webhook（ユーザー作成・更新同期）  
+├── feeds/[feedItemId]/page.tsx     — フィードアイテム詳細ページ  
+├── follows/[username]/page.tsx     — フォロー／フォロワー一覧ページ  
+├── layout.tsx                      — 全体のレイアウト（ヘッダー・フッター・ナビなど）  
+├── notification/                   — 通知関連ページ（未実装 or 計画中）  
+├── page.tsx                        — ホームタイムラインページ  
+├── profile/[username]/
+│   ├── edit/page.tsx               — プロフィール編集ページ（RSC）  
+│   ├── page.tsx                    — プロフィール表示ページ（RSC）  
+│   └── tabs/
+│       ├── ProfileTabsClient.tsx   — プロフィールのタブ切り替えクライアントコンポーネント  
+│       ├── RankingTab.tsx          — 自作ランキング一覧タブ  
+│       ├── DraftsTab.tsx           — 下書きランキング一覧タブ  
+│       ├── FeedTab.tsx             — 投稿・RT タイムラインタブ  
+│       ├── LikesTab.tsx            — いいね済みアイテム一覧タブ  
+│       └── RankingLikesTab.tsx     — ランキングいいね一覧タブ  
+├── rankings/
+│   ├── create/page.tsx             — 新規ランキング作成ページ  
+│   └── [listId]/
+│       ├── edit/page.tsx           — ランキング編集ページ  
+│       └── page.tsx                — ランキング詳細表示ページ  
+├── search/page.tsx                 — 検索結果表示ページ（タグ・タイトル・ユーザー）  
+├── sign-in/[[...sign-in]]/page.tsx — Clerk サインイン UI  
+├── sign-up/[[...sign-up]]/page.tsx — Clerk サインアップ UI  
+└── trends/
+    ├── page.tsx                    — トレンドトップページ  
+    └── average/[subject]/page.tsx  — 特定テーマ(subject)の週・月平均スコア推移ページ  
+
+components/
+├── component/
+│   ├── common/
+│   │   ├── ClientOnly.tsx          — クライアントサイドのみで描画するラッパー  
+│   │   ├── ImageUploader.tsx       — 画像アップロード UI＋ロジック  
+│   │   └── SubmitButton.tsx        — ボタン＋読み込みインジケータ  
+│   ├── feeds/
+│   │   ├── cards/
+│   │   │   ├── PostCard.tsx        — 投稿フィードカード  
+│   │   │   ├── RankingUpdateCard.tsx — ランキング更新フィードカード  
+│   │   │   ├── RetweetCard.tsx     — リツイートカード  
+│   │   │   └── QuoteRetweetCard.tsx — 引用リツイートカード  
+│   │   └── TimelineFeed.tsx        — ホーム／プロフィール用タイムライン  
+│   ├── follows/                    — フォロー関連ボタン・一覧コンポーネント  
+│   ├── likes/FeedLike.tsx          — いいねボタン＋カウント表示  
+│   ├── modals/                     — RT/引用RT 用モーダルダイアログ  
+│   ├── posts/                      — 投稿フォーム・投稿リスト・詳細  
+│   ├── profiles/                   — プロフィールヘッダー・編集フォーム・各タブリスト  
+│   ├── rankings/                   — ランキング作成／編集／詳細表示用コンポーネント  
+│   ├── search/                     — 検索フォーム・ソートタブ・結果リスト  
+│   └── trends/                     — トレンド件数リスト・テーマ別推移表示など  
+└── ui/                             — shadcn/ui ベースの共通 UI コンポーネント  
+
+lib/
+├── actions/                        — Server Actions（DB 書き込みや外部 API 呼び出し）  
+├── data/                           — DB 読み込み専用クエリ群  
+├── client.ts                       — PrismaClient／SupabaseClient の初期化  
+├── prisma/payloads.ts              — Prisma の select・include 定義共通化  
+├── supabaseClient.ts               — Supabase JavaScript クライアント初期化  
+├── types.ts                        — アプリ内共通型定義  
+└── utils/
+    ├── cn.ts                       — className 結合ヘルパー  
+    └── storage.ts                  — Supabase Storage 周りユーティリティ  
+
+prisma/
+├── schema.prisma                   — DB モデル定義  
+└── migrations/                     — マイグレーション SQL  
+
+supabase/functions/
+├── _shared/supabaseClient.ts       — Edge Function 用 SupabaseClient 初期化  
+└── calculate-trends/index.ts      — トレンド集計処理の Edge Function  
+
+その他設定ファイル：
+- next.config.mjs / tsconfig.json / tailwind.config.ts / middleware.ts など
+
 
 4. データベース設計 (主要モデル)
 User: Clerk 認証と連携。プロフィール情報 (bio, location, birthday, image, coverImageUrl, socialLinks - JSON型), フォロー/フォロワー関係、いいね、投稿、ランキング、フィードアイテム等へのリレーションを持つ。
@@ -131,43 +151,15 @@ FeedItem モデル中心。フォロー中のユーザー (+自分自身) のア
 5.11. コメント機能 (計画): Post および RankingList への単純リプライ形式。
 
 6. 主要な共通コンポーネントとカスタムフック
-UI コンポーネント: CardHeader, ImageUploader, TagInput (これから作成), EditableRankedItem, SortableListItem, LikedRankingListItem, FeedLike, FollowButton, 各種カード (PostCard 等), モーダル (RetweetQuoteDialog 等)
+UI コンポーネント: CardHeader, ImageUploader, TagInput, EditableRankedItem, SortableListItem, LikedRankingListItem, FeedLike, FollowButton, 各種カード (PostCard 等), モーダル (RetweetQuoteDialog 等)
 カスタムフック: useInfiniteScroll, useCardInteraction, useImageUploader
 
 7. 今後の開発計画・優先順位
-ランキング機能の完成:
-タグ入力 UI (TagInput) の作成とフォーム (NewRankingForm, RankingEditView) への組み込み。
-アイテム画像 UI (EditableRankedItem) の実装とフォームへの組み込み。
-Server Actions (createCompleteRankingAction, saveRankingListItemsAction) へのタグ処理ロジック実装と画像 URL 連携の最終確認。
-詳細表示 (RankingDetailView)、一覧表示 (ProfileRankingLists) へのタグ・画像表示追加。
-プロフィール編集機能の完成:
-ProfileEditForm コンポーネントの完成（handleSubmit ロジック）。
-updateProfileAction との連携・動作確認。
-プロフィールタブ表示の完成:
-LikesTab のクライアントコンポーネント (LikedFeedList) とデータ取得アクション (getLikedFeedItemsAction) の実装完了と動作確認。
-各タブコンポーネントの表示調整、無限スクロール等の最終確認。
-トレンド機能バックエンド実装: 集計用 Supabase Edge Function (calculate-trends) の実装・デプロイ、Cron Job 設定。
-トレンド機能 UI 実装: トレンドページ作成、期間選択 UI、各トレンド表示コンポーネント作成、データ取得関数呼び出し。
-ランキング検索機能の実装。
 通知機能の実装。
 コメント機能の実装。
-ランキング作成時のサジェスト機能の実装。
+ランキング作成時の入力補助機能の実装。
 他SNSへのシェアボタン
 関連のランキング
-
-7.1 今後の開発計画・優先順位から完了ずみ
-タグ入力 UI (TagInput) の作成とフォーム (NewRankingForm, RankingEditView) への組み込み。
-アイテム画像 UI (EditableRankedItem) の実装とフォームへの組み込み。
-Server Actions (createCompleteRankingAction, saveRankingListItemsAction) へのタグ処理ロジック実装と画像 URL 連携の最終確認。
-詳細表示 (RankingDetailView)、一覧表示 (ProfileRankingLists) へのタグ・画像表示追加。
-プロフィール編集機能の完成:
-ProfileEditForm コンポーネントの完成（handleSubmit ロジック）。
-updateProfileAction との連携・動作確認。
-プロフィールタブ表示の完成:
-LikesTab のクライアントコンポーネント (LikedFeedList) とデータ取得アクション (getLikedFeedItemsAction) の実装完了と動作確認。
-各タブコンポーネントの表示調整、無限スクロール等の最終確認。
-トレンド機能バックエンド実装: 集計用 Supabase Edge Function (calculate-trends) の実装・デプロイ、Cron Job 設定。
-トレンド機能 UI 実装: トレンドページ作成、期間選択 UI、各トレンド表示コンポーネント作成、データ取得関数呼び出し。
 
 8. 課題・検討事項
 トレンド機能「注目アイテム」のアイテム名表記ゆれへの対応策検討。(未定)
@@ -308,13 +300,4 @@ TrendingSubject の月次件数順が正しく反映
             ├── SearchResultList.tsx   # 検索結果リスト＋無限スクロールトリガー
             └── SearchPageClient.tsx   # 上記４つを束ねる Client Component（無限スクロール＋タブ切替）
 
-
-#　アイドル切断対の対策
-| 対策                           | 場所                                 | 内容                                                                             | 長所                         | 短所                                 |
-| ---------------------------- | ---------------------------------- | ------------------------------------------------------------------------------ | -------------------------- | ---------------------------------- |
-| **接続数制限**（connection\_limit） | 環境変数の接続文字列                         | `?connection_limit=1` を付与し、常に同じ１接続だけを使い回す                                      | プール切断後も再利用で切断が減る           | 同時ユーザーが増えると接続待ちが発生                 |
-| **外部ウォームアップ**                | `/api/keep-alive` + GitHub Actions | 5 分ごとに外部ジョブ（GitHub Actions）から `/api/keep-alive` を叩き、PrismaClient 側で `SELECT 1` | 関数起動直後に必ず一度だけコネクション再接続を試みる | 無料プランは GitHub Actions のスケジュール制限に注意 |
-| **ミドルウェア**（Clerk only）       | `middleware.ts`                    | Clerk 認証向けミドルウェアにのみ限定。DB 呼び出しは含めない                                             | 認証処理が安定                    | DB ウォームアップは行われない                   |
-
-};
 
