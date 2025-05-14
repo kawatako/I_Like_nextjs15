@@ -87,9 +87,15 @@ export interface RankingListViewData {
     itemDescription: string | null;
     imageUrl: string | null;
   }[];
-  tags: { id: string; name: string }[];
+  rankingListTags: {
+    tag: {
+      id: string;
+      name: string;
+    };
+  }[];
   _count: { items: number };
 }
+
 
 /** ランキング編集ページ用 */
 export interface RankingListEditableData {
@@ -98,7 +104,10 @@ export interface RankingListEditableData {
   description: string | null;
   status: ListStatus;
   listImageUrl: string | null;
-  author: { id: string; username: string };
+  author: {
+    id: string;
+    username: string;
+  };
   items: {
     id: string;
     rank: number;
@@ -106,8 +115,13 @@ export interface RankingListEditableData {
     itemDescription: string | null;
     imageUrl: string | null;
   }[];
-  tags: { id: string; name: string }[];
-}
+  rankingListTags: {
+    tag: {
+      id: string;
+      name: string;
+    };
+  }[];
+};
 
 /** プロフィールページでのユーザーデータ */
 export interface UserProfileData {

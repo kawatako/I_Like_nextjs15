@@ -1,3 +1,4 @@
+//component/rankings/RankingEdit.tsx
 "use client";
 
 import {
@@ -51,7 +52,7 @@ interface Props {
       itemDescription: string | null;
       imageUrl: string | null;
     }[];
-    tags: { name: string }[];
+    rankingListTags: { tag: { id: string; name: string } }[];
   };
 }
 
@@ -75,7 +76,7 @@ export function RankingEdit({ rankingList }: Props) {
     }))
   );
   const [tags, setTags] = useState<string[]>(
-    rankingList.tags.map((t) => t.name)
+    rankingList.rankingListTags.map((t) => t.tag.name)
   );
   const [formError, setFormError] = useState<string | null>(null);
   const [isMounted, setIsMounted] = useState(false);

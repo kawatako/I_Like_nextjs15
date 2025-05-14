@@ -2,13 +2,10 @@
 import { RankingEdit } from "@/components/component/rankings/RankingEdit";
 import { getRankingListForEdit } from "@/lib/data/rankingQueries"; // データ取得関数をインポート
 import { notFound } from "next/navigation";
-// ★ ↓表示・編集用UIコンポーネント (これは次に作成します)
-// import { RankingListEditView } from "@/components/component/rankings/RankingListEditView";
 
 // ページコンポーネントは通常 async 関数になります
 export default async function RankingEditPage(props: { params: Promise<{ listId: string }> }) {
   const params = await props.params;
-  // 1. URLパラメータから listId を取得
   const listId = params.listId;
   console.log(`Rendering edit page for listId: ${listId}`); // ログ
 

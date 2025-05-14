@@ -105,7 +105,6 @@ export default function TagInput({
           ))}
         </div>
       )}
-      {/* タグ数の表示 (任意) */}
       <p className="text-xs text-muted-foreground text-right">
         {value.length} / {maxTags} 個
       </p>

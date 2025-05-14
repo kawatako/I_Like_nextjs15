@@ -22,8 +22,8 @@ export function RankingDetailView({ ranking, isOwner }: Props) {
 
   return (
     <div className="max-w-4xl mx-auto p-4">
-      <h2 className="text-2xl md:text-3xl font-bold mb-4 text-center sm:text-left"> {/* ヘッダーと同じスタイル例 */}
-         {ranking.subject} <span className="text-xl font-normal text-muted-foreground">TOP {ranking._count?.items ?? 0}</span> {/* TOP N も表示 */}
+      <h2 className="text-2xl md:text-3xl font-bold mb-4 text-center sm:text-left"> 
+         {ranking.subject} <span className="text-xl font-normal text-muted-foreground">TOP {ranking._count?.items ?? 0}</span>
       </h2>
       {/* 説明 */}
       {ranking.description && (
@@ -105,13 +105,13 @@ export function RankingDetailView({ ranking, isOwner }: Props) {
           </div>
 
           {/* タグ */}
-          {ranking.tags.length > 0 && (
+          {ranking.rankingListTags.length > 0 && (
             <div className="mt-8">
               <h3 className="font-medium mb-2">タグ</h3>
               <div className="flex flex-wrap gap-2">
-                {ranking.tags.map((t) => (
-                  <Badge key={t.id} variant="outline">
-                    {t.name}
+                {ranking.rankingListTags.map((t) => (
+                  <Badge key={t.tag.id} variant="outline">
+                    {t.tag.name}
                   </Badge>
                 ))}
               </div>
