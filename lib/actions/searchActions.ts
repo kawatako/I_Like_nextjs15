@@ -4,7 +4,7 @@
 import prisma from "@/lib/client";
 import { safeQuery } from "@/lib/db";
 import { rankingListSnippetSelect } from "@/lib/prisma/payloads";
-import type { PaginatedResponse, RankingListSnippet, TrendPeriod } from "@/lib/types";
+import type { PaginatedResponse, RankingListSnippet, TrendPeriod,UserSnippet } from "@/lib/types";
 
 const DEFAULT_LIMIT = 10;
 
@@ -15,8 +15,8 @@ const DEFAULT_LIMIT = 10;
  */
 export async function searchRankingListsAction(
   query: string,
-  tab: "title" | "item" | "tag",
-  sort: "count" | "new" | "like",
+  tab: "title" | "item" | "tag"| "user",
+  sort: "count" | "new" | "like"| "username" | "name",
   cursor?: string,
   limit: number = DEFAULT_LIMIT
 ): Promise<PaginatedResponse<RankingListSnippet>> {
@@ -27,14 +27,14 @@ export async function searchRankingListsAction(
   // 公開済みのみ対象
   const whereClause: any = { status: "PUBLISHED" };
   if (tab === "title") {
-    whereClause.subject = { contains: query, mode: "insensitive" };
+    whereClause.subject = { contains: query, mode: "insensitive" as const };
   } else if (tab === "item") {
     whereClause.items = {
-      some: { itemName: { contains: query, mode: "insensitive" } },
+      some: { itemName: { contains: query, mode: "insensitive" as const} },
     };
   } else {
     whereClause.tags = {
-      some: { name: { equals: query, mode: "insensitive" } },
+      some: { name: { equals: query, mode: "insensitive" as const} },
     };
   }
 
@@ -103,4 +103,58 @@ export async function searchRankingListsAction(
     results.pop();
   }
   return { items: results, nextCursor };
+}
+
+/// --- ユーザー検索 ---
+export async function searchUsersAction(
+  query: string,
+  sort: "username" | "name",
+  cursor?: string,
+  limit = 10
+): Promise<PaginatedResponse<UserSnippet>> {
+  const take = limit + 1;
+  const skip = cursor ? 1 : 0;
+
+  const users = await prisma.user.findMany({
+    where: {
+      OR: [
+        { [sort]: { equals: query, mode: "insensitive" as const} },        // 完全一致
+        { [sort]: { startsWith: query, mode: "insensitive" as const} },    // 前方一致
+        { [sort]: { contains: query, mode: "insensitive" } as const},      // 部分一致
+      ],
+    },
+    orderBy: [{ [sort]: "asc" }],
+    cursor: cursor ? { id: cursor } : undefined,
+    skip,
+    take,
+    select: {
+      id: true,
+      username: true,
+      name: true,
+      image: true,
+    },
+  });
+
+  // JavaScript側で完全一致→前方一致→部分一致の順にソート
+  const sortedUsers = [
+    ...users.filter((u) => u[sort]?.toLowerCase() === query.toLowerCase()),
+    ...users.filter(
+      (u) =>
+        u[sort]?.toLowerCase().startsWith(query.toLowerCase()) &&
+        u[sort]?.toLowerCase() !== query.toLowerCase()
+    ),
+    ...users.filter(
+      (u) =>
+        u[sort]?.toLowerCase().includes(query.toLowerCase()) &&
+        !u[sort]?.toLowerCase().startsWith(query.toLowerCase())
+    ),
+  ];
+
+  let nextCursor = null;
+  if (sortedUsers.length > limit) {
+    const next = sortedUsers.pop();
+    nextCursor = next!.id;
+  }
+
+  return { items: sortedUsers, nextCursor };
 }

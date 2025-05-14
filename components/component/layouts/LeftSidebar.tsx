@@ -12,12 +12,12 @@ import {
   UserIcon,
   SettingsIcon,
   UsersIcon,
-} from "../Icons"; // アイコンのパスは適宜修正してください
+} from "../Icons";
 
 interface UserData {
   id: string;
   username: string | null;
-  image: string | null; // User モデルに合わせて 'image' になっているか確認
+  image: string | null;
 }
 
 interface LeftSidebarProps {
@@ -29,7 +29,6 @@ const navItems = [
   {
     icon: UserIcon,
     label: "プロフィール",
-    // username が null の場合は /profile になるように調整 (必要なら '/' などに変更)
     href: (username: string | null) => `/profile/${username ?? ''}`,
   },
   {
@@ -64,7 +63,7 @@ export default function LeftSidebar({
         </div>
       </div>
       <nav className="flex-grow">
-        <ul className="space-y-1"> {/* 間隔を少し狭める例: space-y-1 */}
+        <ul className="space-y-1">
           {navItems.map(({ icon: Icon, label, href }) => (
             <li key={label}>
               <Link
