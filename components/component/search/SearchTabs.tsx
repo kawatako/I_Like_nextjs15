@@ -4,14 +4,15 @@
 import React from "react";
 
 interface SearchTabsProps {
-  current: "title" | "item" | "tag";
-  onChange: (tab: "title" | "item" | "tag") => void;
+  current: "title" | "item" | "tag"|"user";
+  onChange: (tab: "title" | "item" | "tag"|"user") => void;
 }
 
 const TAB_ITEMS: { key: SearchTabsProps["current"]; label: string }[] = [
   { key: "title", label: "タイトル" },
   { key: "item", label: "アイテム" },
   { key: "tag", label: "タグ" },
+  { key: "user", label: "ユーザー" },
 ];
 
 export default function SearchTabs({ current, onChange }: SearchTabsProps) {

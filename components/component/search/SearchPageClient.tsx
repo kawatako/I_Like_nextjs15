@@ -2,25 +2,25 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import type { PaginatedResponse, RankingListSnippet } from "@/lib/types";
+import type { PaginatedResponse, RankingListSnippet, UserSnippet } from "@/lib/types";
 import { useInfiniteScroll } from "@/components/hooks/useInfiniteScroll";
-import { searchRankingListsAction } from "@/lib/actions/searchActions";
+import { searchRankingListsAction, searchUsersAction } from "@/lib/actions/searchActions";
 import SearchTabs from "@/components/component/search/SearchTabs";
 import SearchSortTabs from "@/components/component/search/SearchSortTabs";
 import SearchResultList from "@/components/component/search/SearchResultList";
 
 interface Props {
-  initialData: PaginatedResponse<RankingListSnippet>;
+  initialData: PaginatedResponse<RankingListSnippet | UserSnippet>;
   query: string;
-  initialTab: "title" | "item" | "tag";
-  initialSort: "count" | "new" | "like";
+  initialTab: "title" | "item" | "tag" | "user";
+  initialSort: "count" | "new" | "like" | "username" | "name";
 }
 
 type SearchKey = readonly [
   "search",
   string,
-  "title" | "item" | "tag",
-  "count" | "new" | "like",
+  "title" | "item" | "tag" | "user",
+  "count" | "new" | "like" | "username" | "name",
   string?
 ];
 
@@ -30,12 +30,11 @@ export default function SearchPageClient({
   initialTab,
   initialSort,
 }: Props) {
-  const [tab, setTab] = useState(initialTab);
-  const [sort, setSort] = useState(initialSort);
+  const [tab, setTab] = useState<Props["initialTab"]>(initialTab);
+  const [sort, setSort] = useState<Props["initialSort"]>(initialSort);
 
-  // SWR Infinite のキー生成
   const getKey = useCallback(
-    (pageIndex: number, prev: PaginatedResponse<RankingListSnippet> | null) => {
+    (pageIndex: number, prev: PaginatedResponse<RankingListSnippet | UserSnippet> | null) => {
       if (pageIndex === 0) {
         return ["search", query, tab, sort, undefined] as SearchKey;
       }
@@ -45,10 +44,13 @@ export default function SearchPageClient({
     [query, tab, sort]
   );
 
-  // フェッチャー：引数に型を注釈
   const fetcher = useCallback(
-    ([, q, t, s, cursor]: SearchKey) =>
-      searchRankingListsAction(q, t, s, cursor),
+    ([, q, t, s, cursor]: SearchKey) => {
+      if (t === "user") {
+        return searchUsersAction(q, s as "username" | "name", cursor);
+      }
+      return searchRankingListsAction(q, t as "title" | "item" | "tag", s as "count" | "new" | "like", cursor);
+    },
     []
   );
 
@@ -58,18 +60,19 @@ export default function SearchPageClient({
     isLoadingMore,
     isReachingEnd,
     loadMoreRef,
-  } = useInfiniteScroll<PaginatedResponse<RankingListSnippet>>(
+  } = useInfiniteScroll<PaginatedResponse<RankingListSnippet | UserSnippet>>(
     getKey,
     fetcher,
-    { fallbackData: [initialData] } // ← 配列で渡す
+    { fallbackData: [initialData] }
   );
 
   return (
     <div className="space-y-4">
       <SearchTabs current={tab} onChange={setTab} />
-      <SearchSortTabs current={sort} onChange={setSort} />
+      <SearchSortTabs current={sort} onChange={(s) => setSort(s as Props["initialSort"])} tab={tab} />
       <SearchResultList
         items={lists}
+        tab={tab}
         isLoadingInitial={isLoadingInitialData}
         isLoadingMore={isLoadingMore}
         isReachingEnd={isReachingEnd}

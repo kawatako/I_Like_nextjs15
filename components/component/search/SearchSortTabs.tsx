@@ -1,23 +1,27 @@
 // components/component/search/SearchSortTabs.tsx
-"use client";
-
-import React from "react";
-
 interface SearchSortTabsProps {
-  current: "count" | "new" | "like";
-  onChange: (sort: "count" | "new" | "like") => void;
+  current: string;
+  onChange: (sort: string) => void;
+  tab: "title" | "item" | "tag" | "user";
 }
-
-const SORT_ITEMS: { key: SearchSortTabsProps["current"]; label: string }[] = [
-  { key: "count", label: "件数順" },
-  { key: "new", label: "新着順" },
-  { key: "like", label: "いいね順" },
-];
 
 export default function SearchSortTabs({
   current,
   onChange,
+  tab,
 }: SearchSortTabsProps) {
+  const SORT_ITEMS =
+    tab === "user"
+      ? [
+          { key: "username", label: "@ユーザーネーム" },
+          { key: "name", label: "表示名" },
+        ]
+      : [
+          { key: "count", label: "件数順" },
+          { key: "new", label: "新着順" },
+          { key: "like", label: "いいね順" },
+        ];
+
   return (
     <div className="flex border-b">
       {SORT_ITEMS.map(({ key, label }) => (

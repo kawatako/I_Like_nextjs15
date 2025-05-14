@@ -1,9 +1,8 @@
 // app/search/page.tsx
 
 import SearchPageClient from "@/components/component/search/SearchPageClient";
-import { searchRankingListsAction } from "@/lib/actions/searchActions";
+import { searchRankingListsAction,searchUsersAction } from "@/lib/actions/searchActions";
 import type { Metadata } from "next";
-import type { PaginatedResponse, RankingListSnippet } from "@/lib/types";
 
 export const metadata: Metadata = {
   title: "検索 - TopMe",
@@ -26,12 +25,13 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     | "title"
     | "item"
     | "tag"
-    | undefined;
+    | "user";
   const sort = (Array.isArray(sp.sort) ? sp.sort[0] : sp.sort) as
     | "count"
     | "new"
     | "like"
-    | undefined;
+    | "username"
+    | "name";
   const cursor = typeof sp.cursor === "string" ? sp.cursor : undefined;
 
   // デフォルト値
@@ -39,8 +39,10 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   const finalSort = sort ?? "count";
 
   // 初回データ取得 (Server Action)
-  const initialData: PaginatedResponse<RankingListSnippet> =
-    await searchRankingListsAction(q, finalTab, finalSort, cursor);
+  const initialData =
+  finalTab === "user"
+    ? await searchUsersAction(q, finalSort as "username" | "name", cursor)
+    : await searchRankingListsAction(q, finalTab, finalSort, cursor);
 
   return (
     <SearchPageClient
