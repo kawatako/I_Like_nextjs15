@@ -25,23 +25,21 @@ interface LeftSidebarProps {
 }
 
 const navItems = [
-  { icon: HomeIcon, label: "Home", href: "/" },
+  { icon: HomeIcon, label: "ホーム", href: "/" },
   {
     icon: UserIcon,
-    label: "Profile",
+    label: "プロフィール",
     // username が null の場合は /profile になるように調整 (必要なら '/' などに変更)
     href: (username: string | null) => `/profile/${username ?? ''}`,
   },
   {
     icon: UsersIcon,
-    label: "Follows",
+    label: "フォロー",
     href: (username: string | null) => `/follows/${username ?? ''}`,
   },
-  { icon: CrownIcon, label: "Create Ranking", href: "/rankings/create" },
-  { icon: SearchIcon, label: "Trends", href: "/trends" },
-  { icon: PlusIcon, label: "Create Post", href: "/posts/new" },
-  { icon: HeartIcon, label: "Likes", href: "/likes" },
-  { icon: BellIcon, label: "Notifications", href: "#" }, 
+  { icon: CrownIcon, label: "ランキングを作成", href: "/rankings/create" },
+  { icon: SearchIcon, label: "トレンド", href: "/trends" },
+  { icon: BellIcon, label: "通知", href: "#" }, 
 ];
 
 export default function LeftSidebar({
@@ -52,12 +50,10 @@ export default function LeftSidebar({
 
   return (
     <div className={`${desktopClasses} bg-background text-foreground rounded-lg shadow-md p-4 h-full border`}>
-      {/* ユーザー情報表示部分は変更なし */}
       <div className="flex items-center gap-4 mb-6 pb-4 border-b">
         <Avatar className="w-12 h-12 border">
           <AvatarImage src={currentLoginUserData?.image ?? undefined} />
           <AvatarFallback>
-             {/* ユーザー名がない場合イニシャル等表示するロジックは省略 */}
             {currentLoginUserData?.username?.charAt(0)}
           </AvatarFallback>
         </Avatar>
@@ -65,11 +61,8 @@ export default function LeftSidebar({
           <h3 className="text-lg font-bold">
             {currentLoginUserData?.username ?? 'User'}
           </h3>
-          {/* 必要であれば @ユーザー名 などを表示 */}
-          {/* <p className="text-sm text-muted-foreground">@{currentLoginUserData?.username}</p> */}
         </div>
       </div>
-      {/* ナビゲーションリスト表示部分は変更なし (navItems が変わっただけ) */}
       <nav className="flex-grow">
         <ul className="space-y-1"> {/* 間隔を少し狭める例: space-y-1 */}
           {navItems.map(({ icon: Icon, label, href }) => (
@@ -82,7 +75,6 @@ export default function LeftSidebar({
                 }
                 className="block"
               >
-                {/* スタイルを少し調整 (例: padding) */}
                 <div className="flex items-center gap-3 px-3 py-2.5 rounded-md text-foreground/80 hover:bg-muted hover:text-foreground transition-colors">
                   <Icon className="h-5 w-5" />
                   <span className="font-medium">{label}</span>

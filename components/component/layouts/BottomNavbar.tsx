@@ -44,12 +44,12 @@ export default function BottomNavbar({
     : "/follows";
 
   const navItems: NavItem[] = [
-    { href: "/", icon: HomeIcon, label: "Home" },
-    { href: "/trends", icon: SearchIcon, label: "Trends" },
-    { href: "/rankings/create", icon: CrownIcon, label: "Create Ranking" },
-    { href: "#", icon: BellIcon, label: "Notifications" },
-    { href: followsHref, icon: UsersIcon, label: "Follows", isFollows: true },
-    { href: profileHref, icon: UserIcon, label: "Profile", isProfile: true },
+    { href: "/", icon: HomeIcon, label: "ホーム" },
+    { href: "/trends", icon: SearchIcon, label: "トレンド" },
+    { href: "/rankings/create", icon: CrownIcon, label: "ランキングを作成" },
+    { href: "#", icon: BellIcon, label: "通知" },
+    { href: followsHref, icon: UsersIcon, label: "フォロー", isFollows: true },
+    { href: profileHref, icon: UserIcon, label: "プロフィール", isProfile: true },
   ];
 
   return (

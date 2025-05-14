@@ -16,7 +16,8 @@ export default async function SubjectAveragePage({ params }: PageProps) {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">「{subject}」の平均順位</h1>
+      <h1 className="text-2xl font-bold mb-4">「{subject}」のランキング集計</h1>
+      <h3 className="text-lg mb-4">集計は毎日0時にされます</h3>
       <AverageItemRankList subject={subject} />
     </div>
   );
