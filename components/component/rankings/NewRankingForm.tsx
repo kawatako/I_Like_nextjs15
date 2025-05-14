@@ -214,7 +214,7 @@ export function NewRankingForm() {
         <Card>
           <CardHeader>
             <CardTitle>ランキング基本情報</CardTitle>
-            <CardDescription>テーマ、説明、タグを設定します。</CardDescription>
+            <CardDescription>タイトル、説明、タグを設定します。</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
