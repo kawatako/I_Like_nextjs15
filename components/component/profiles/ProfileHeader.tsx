@@ -108,12 +108,14 @@ export function ProfileHeader({
 
         {/* ユーザー情報 */}
         <div className="mt-4 space-y-3">
+          <Link href={`/profile/${username}/`}>
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold break-all">
               {name || username}
             </h1>
             <p className="text-muted-foreground">@{username}</p>
           </div>
+          </Link>
           {bio && (
             <p className="text-sm max-w-prose whitespace-pre-wrap">{bio}</p>
           )}

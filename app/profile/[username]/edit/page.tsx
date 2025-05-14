@@ -5,9 +5,7 @@ import prisma from "@/lib/client";
 import ProfileEditForm from "@/components/component/profiles/ProfileEditForm";
 import { getUsernameFromDb } from "@/lib/data/userQueries";
 
-// ページコンポーネントの Props 型
 interface ProfileEditPageProps {
-  // Next.js 15 以降は params が Promise になるので Promise<…> とする
   params: Promise<{ username: string }>;
 }
 
