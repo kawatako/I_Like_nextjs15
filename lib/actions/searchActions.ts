@@ -5,6 +5,7 @@ import prisma from "@/lib/client";
 import { safeQuery } from "@/lib/db";
 import { rankingListSnippetSelect } from "@/lib/prisma/payloads";
 import type { PaginatedResponse, RankingListSnippet, TrendPeriod,UserSnippet } from "@/lib/types";
+import { generateImageUrl } from "@/lib/utils/storage";
 
 const DEFAULT_LIMIT = 10;
 
@@ -118,9 +119,9 @@ export async function searchUsersAction(
   const users = await prisma.user.findMany({
     where: {
       OR: [
-        { [sort]: { equals: query, mode: "insensitive" as const} },        // 完全一致
-        { [sort]: { startsWith: query, mode: "insensitive" as const} },    // 前方一致
-        { [sort]: { contains: query, mode: "insensitive" } as const},      // 部分一致
+        { [sort]: { equals: query, mode: "insensitive" as const } },  // 完全一致
+        { [sort]: { startsWith: query, mode: "insensitive" as const } }, // 前方一致
+        { [sort]: { contains: query, mode: "insensitive" as const } },  // 部分一致
       ],
     },
     orderBy: [{ [sort]: "asc" }],
@@ -135,7 +136,7 @@ export async function searchUsersAction(
     },
   });
 
-  // JavaScript側で完全一致→前方一致→部分一致の順にソート
+  // 並び替え（完全→前方→部分）
   const sortedUsers = [
     ...users.filter((u) => u[sort]?.toLowerCase() === query.toLowerCase()),
     ...users.filter(
@@ -156,5 +157,13 @@ export async function searchUsersAction(
     nextCursor = next!.id;
   }
 
-  return { items: sortedUsers, nextCursor };
+  // 画像表示のため署名付きURLを付けて返却
+  const usersWithSignedUrls = await Promise.all(
+    sortedUsers.map(async (user) => ({
+      ...user,
+      image: await generateImageUrl(user.image),
+    }))
+  );
+
+  return { items: usersWithSignedUrls, nextCursor };
 }
