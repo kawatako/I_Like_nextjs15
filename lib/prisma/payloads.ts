@@ -43,10 +43,14 @@ export const rankingListEditSelect = {
     orderBy: { rank: 'asc' as const },
     select: { id: true, rank: true, itemName: true, itemDescription: true, imageUrl: true },
   },
-  tags: {
-    select: { id: true, name: true },
+  rankingListTags: { // ← こちらも同様に修正
+    select: {
+      tag: {
+        select: { id: true, name: true },
+      },
+    },
   },
-} as const
+} as const;
 
 // — RankingList 詳細表示用ペイロード —
 export const rankingListViewSelect = {
@@ -63,7 +67,13 @@ export const rankingListViewSelect = {
     orderBy: { rank: 'asc' as const },
     select: { id: true, rank: true, itemName: true, itemDescription: true, imageUrl: true },
   },
-  tags: { select: { id: true, name: true } },
+    rankingListTags: {
+    select: {
+      tag: {
+        select: { id: true, name: true },
+      },
+    },
+  },
   _count: { select: { items: true } },
 } as const
 
