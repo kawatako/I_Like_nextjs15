@@ -12837,7 +12837,6 @@ export namespace Prisma {
   export type AverageItemCommentMinAggregateOutputType = {
     id: string | null
     subject: string | null
-    itemName: string | null
     userId: string | null
     content: string | null
     createdAt: Date | null
@@ -12846,7 +12845,6 @@ export namespace Prisma {
   export type AverageItemCommentMaxAggregateOutputType = {
     id: string | null
     subject: string | null
-    itemName: string | null
     userId: string | null
     content: string | null
     createdAt: Date | null
@@ -12855,7 +12853,6 @@ export namespace Prisma {
   export type AverageItemCommentCountAggregateOutputType = {
     id: number
     subject: number
-    itemName: number
     userId: number
     content: number
     createdAt: number
@@ -12866,7 +12863,6 @@ export namespace Prisma {
   export type AverageItemCommentMinAggregateInputType = {
     id?: true
     subject?: true
-    itemName?: true
     userId?: true
     content?: true
     createdAt?: true
@@ -12875,7 +12871,6 @@ export namespace Prisma {
   export type AverageItemCommentMaxAggregateInputType = {
     id?: true
     subject?: true
-    itemName?: true
     userId?: true
     content?: true
     createdAt?: true
@@ -12884,7 +12879,6 @@ export namespace Prisma {
   export type AverageItemCommentCountAggregateInputType = {
     id?: true
     subject?: true
-    itemName?: true
     userId?: true
     content?: true
     createdAt?: true
@@ -12966,7 +12960,6 @@ export namespace Prisma {
   export type AverageItemCommentGroupByOutputType = {
     id: string
     subject: string
-    itemName: string
     userId: string
     content: string
     createdAt: Date
@@ -12992,7 +12985,6 @@ export namespace Prisma {
   export type AverageItemCommentSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     subject?: boolean
-    itemName?: boolean
     userId?: boolean
     content?: boolean
     createdAt?: boolean
@@ -13001,7 +12993,6 @@ export namespace Prisma {
   export type AverageItemCommentSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     subject?: boolean
-    itemName?: boolean
     userId?: boolean
     content?: boolean
     createdAt?: boolean
@@ -13010,7 +13001,6 @@ export namespace Prisma {
   export type AverageItemCommentSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     subject?: boolean
-    itemName?: boolean
     userId?: boolean
     content?: boolean
     createdAt?: boolean
@@ -13019,13 +13009,12 @@ export namespace Prisma {
   export type AverageItemCommentSelectScalar = {
     id?: boolean
     subject?: boolean
-    itemName?: boolean
     userId?: boolean
     content?: boolean
     createdAt?: boolean
   }
 
-  export type AverageItemCommentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "subject" | "itemName" | "userId" | "content" | "createdAt", ExtArgs["result"]["averageItemComment"]>
+  export type AverageItemCommentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "subject" | "userId" | "content" | "createdAt", ExtArgs["result"]["averageItemComment"]>
 
   export type $AverageItemCommentPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "AverageItemComment"
@@ -13033,7 +13022,6 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       subject: string
-      itemName: string
       userId: string
       content: string
       createdAt: Date
@@ -13462,7 +13450,6 @@ export namespace Prisma {
   interface AverageItemCommentFieldRefs {
     readonly id: FieldRef<"AverageItemComment", 'String'>
     readonly subject: FieldRef<"AverageItemComment", 'String'>
-    readonly itemName: FieldRef<"AverageItemComment", 'String'>
     readonly userId: FieldRef<"AverageItemComment", 'String'>
     readonly content: FieldRef<"AverageItemComment", 'String'>
     readonly createdAt: FieldRef<"AverageItemComment", 'DateTime'>
@@ -21892,7 +21879,6 @@ export namespace Prisma {
   export const AverageItemCommentScalarFieldEnum: {
     id: 'id',
     subject: 'subject',
-    itemName: 'itemName',
     userId: 'userId',
     content: 'content',
     createdAt: 'createdAt'
@@ -22784,7 +22770,6 @@ export namespace Prisma {
     NOT?: AverageItemCommentWhereInput | AverageItemCommentWhereInput[]
     id?: StringFilter<"AverageItemComment"> | string
     subject?: StringFilter<"AverageItemComment"> | string
-    itemName?: StringFilter<"AverageItemComment"> | string
     userId?: StringFilter<"AverageItemComment"> | string
     content?: StringFilter<"AverageItemComment"> | string
     createdAt?: DateTimeFilter<"AverageItemComment"> | Date | string
@@ -22793,7 +22778,6 @@ export namespace Prisma {
   export type AverageItemCommentOrderByWithRelationInput = {
     id?: SortOrder
     subject?: SortOrder
-    itemName?: SortOrder
     userId?: SortOrder
     content?: SortOrder
     createdAt?: SortOrder
@@ -22805,7 +22789,6 @@ export namespace Prisma {
     OR?: AverageItemCommentWhereInput[]
     NOT?: AverageItemCommentWhereInput | AverageItemCommentWhereInput[]
     subject?: StringFilter<"AverageItemComment"> | string
-    itemName?: StringFilter<"AverageItemComment"> | string
     userId?: StringFilter<"AverageItemComment"> | string
     content?: StringFilter<"AverageItemComment"> | string
     createdAt?: DateTimeFilter<"AverageItemComment"> | Date | string
@@ -22814,7 +22797,6 @@ export namespace Prisma {
   export type AverageItemCommentOrderByWithAggregationInput = {
     id?: SortOrder
     subject?: SortOrder
-    itemName?: SortOrder
     userId?: SortOrder
     content?: SortOrder
     createdAt?: SortOrder
@@ -22829,7 +22811,6 @@ export namespace Prisma {
     NOT?: AverageItemCommentScalarWhereWithAggregatesInput | AverageItemCommentScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"AverageItemComment"> | string
     subject?: StringWithAggregatesFilter<"AverageItemComment"> | string
-    itemName?: StringWithAggregatesFilter<"AverageItemComment"> | string
     userId?: StringWithAggregatesFilter<"AverageItemComment"> | string
     content?: StringWithAggregatesFilter<"AverageItemComment"> | string
     createdAt?: DateTimeWithAggregatesFilter<"AverageItemComment"> | Date | string
@@ -23968,7 +23949,6 @@ export namespace Prisma {
   export type AverageItemCommentCreateInput = {
     id?: string
     subject: string
-    itemName: string
     userId: string
     content: string
     createdAt?: Date | string
@@ -23977,7 +23957,6 @@ export namespace Prisma {
   export type AverageItemCommentUncheckedCreateInput = {
     id?: string
     subject: string
-    itemName: string
     userId: string
     content: string
     createdAt?: Date | string
@@ -23986,7 +23965,6 @@ export namespace Prisma {
   export type AverageItemCommentUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     subject?: StringFieldUpdateOperationsInput | string
-    itemName?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -23995,7 +23973,6 @@ export namespace Prisma {
   export type AverageItemCommentUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     subject?: StringFieldUpdateOperationsInput | string
-    itemName?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -24004,7 +23981,6 @@ export namespace Prisma {
   export type AverageItemCommentCreateManyInput = {
     id?: string
     subject: string
-    itemName: string
     userId: string
     content: string
     createdAt?: Date | string
@@ -24013,7 +23989,6 @@ export namespace Prisma {
   export type AverageItemCommentUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     subject?: StringFieldUpdateOperationsInput | string
-    itemName?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -24022,7 +23997,6 @@ export namespace Prisma {
   export type AverageItemCommentUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     subject?: StringFieldUpdateOperationsInput | string
-    itemName?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -25251,7 +25225,6 @@ export namespace Prisma {
   export type AverageItemCommentCountOrderByAggregateInput = {
     id?: SortOrder
     subject?: SortOrder
-    itemName?: SortOrder
     userId?: SortOrder
     content?: SortOrder
     createdAt?: SortOrder
@@ -25260,7 +25233,6 @@ export namespace Prisma {
   export type AverageItemCommentMaxOrderByAggregateInput = {
     id?: SortOrder
     subject?: SortOrder
-    itemName?: SortOrder
     userId?: SortOrder
     content?: SortOrder
     createdAt?: SortOrder
@@ -25269,7 +25241,6 @@ export namespace Prisma {
   export type AverageItemCommentMinOrderByAggregateInput = {
     id?: SortOrder
     subject?: SortOrder
-    itemName?: SortOrder
     userId?: SortOrder
     content?: SortOrder
     createdAt?: SortOrder

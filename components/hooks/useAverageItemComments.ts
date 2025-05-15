@@ -1,27 +1,33 @@
-// lib/hooks/useAverageItemComments.ts
-import useSWR from 'swr';
-import { supabase } from '@/lib/supabaseClient';
+import useSWR from 'swr'
 
 export interface Comment {
-  id: string;
-  userId: string;
-  user: { username: string; image: string | null };
-  content: string;
-  createdAt: string;
+  id: string
+  subject: string
+  content: string
+  userId: string
+  createdAt: string
 }
 
-export function useAverageItemComments(subject: string, itemName: string) {
-  const key = [`/api/average-comments/${encodeURIComponent(subject)}/${encodeURIComponent(itemName)}`];
-  const fetcher = (url: string) => fetch(url).then((res) => res.json());
-  const { data, error, mutate } = useSWR<Comment[]>(key, fetcher);
+export function useAverageItemComments(subject: string) {
+  const key = ['average-comments', subject] as const
+  const fetcher = async (): Promise<Comment[]> => {
+    const res = await fetch(`/api/average-comments/${encodeURIComponent(subject)}`)
+    if (!res.ok) throw new Error('Failed to fetch comments')
+    return res.json()
+  }
+  const { data, error, mutate } = useSWR<Comment[]>(key, fetcher)
   const postComment = async (content: string) => {
-    const res = await fetch(key[0], {
+    await fetch(`/api/average-comments/${encodeURIComponent(subject)}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ content }),
-    });
-    const newComment = await res.json();
-    mutate([newComment, ...(data ?? [])], false);
-  };
-  return { comments: data ?? [], isLoading: !error && !data, isError: error, postComment };
+    })
+    mutate()
+  }
+  return {
+    comments: data ?? [],
+    isLoading: !error && !data,
+    isError: error,
+    postComment,
+  }
 }

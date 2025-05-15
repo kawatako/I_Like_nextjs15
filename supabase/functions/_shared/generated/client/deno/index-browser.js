@@ -208,7 +208,6 @@ exports.Prisma.AverageItemRankScalarFieldEnum = {
 exports.Prisma.AverageItemCommentScalarFieldEnum = {
   id: 'id',
   subject: 'subject',
-  itemName: 'itemName',
   userId: 'userId',
   content: 'content',
   createdAt: 'createdAt'
