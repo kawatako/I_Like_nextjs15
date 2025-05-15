@@ -2,6 +2,7 @@
 import { notFound } from 'next/navigation'
 import { createClient } from '@supabase/supabase-js'
 import ProfileEditForm from '@/components/component/profiles/ProfileEditForm'
+import prisma from '@/lib/client'
 
 const supabaseAdmin = createClient(
   process.env.SUPABASE_URL!,
@@ -12,37 +13,46 @@ async function getSignedUrl(path: string) {
   const { data, error } = await supabaseAdmin
     .storage
     .from('i-like')
-    .createSignedUrl(path, 60 * 60)
+    .createSignedUrl(path, 60 * 60) // 1時間有効
   if (error || !data) return null
   return data.signedUrl
 }
 
-export default async function EditPage(context: any) {
-  const { username } = context.params
+export default async function EditPage({
+  params,
+}: {
+  // Next.js15 では params が Promise になりました
+  params: Promise<{ username: string }>
+}) {
+  // Promise を await して中身を取り出す
+  const { username } = await params
 
-  // ユーザー情報取得
-  const { data: user, error } = await supabaseAdmin
-    .from('user')
-    .select(`
-      name,
-      bio,
-      location,
-      birthday,
-      image,
-      coverImageUrl,
-      socialLinks,
-      username
-    `)
-    .eq('username', username)
-    .single()
+  // Prisma でユーザー情報を取得
+  const user = await prisma.user.findUnique({
+    where: { username },
+    select: {
+      name: true,
+      bio: true,
+      location: true,
+      birthday: true,         // Date | null
+      image: true,            // ストレージのパス
+      coverImageUrl: true,    // ストレージのパス
+      socialLinks: true,
+      username: true,
+    },
+  })
 
-  if (error || !user) {
+  if (!user) {
     notFound()
   }
 
-  // プレビュー用署名付き URL を生成
-  const imageUrl = user.image ? await getSignedUrl(user.image) : null
-  const coverUrl = user.coverImageUrl ? await getSignedUrl(user.coverImageUrl) : null
+  // プライベートバケット用の署名付き URL を生成
+  const imageUrl = user.image
+    ? await getSignedUrl(user.image)
+    : null
+  const coverUrl = user.coverImageUrl
+    ? await getSignedUrl(user.coverImageUrl)
+    : null
 
   return (
     <ProfileEditForm
@@ -50,8 +60,7 @@ export default async function EditPage(context: any) {
         name: user.name,
         bio: user.bio,
         location: user.location,
-        // ProfileEditForm 側で date → string に変換するのでここは string|null
-        birthday: user.birthday?.toISOString().split('T')[0] ?? null,
+        birthday: user.birthday,     // Date | null のまま渡す
         image: imageUrl,
         coverImageUrl: coverUrl,
         socialLinks: user.socialLinks,
