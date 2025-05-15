@@ -150,154 +150,15 @@ FeedItem モデル中心。フォロー中のユーザー (+自分自身) のア
 5.10. 通知機能 (計画): フォロー系、いいね、RT、引用RT、コメントを対象。
 5.11. コメント機能 (計画): Post および RankingList への単純リプライ形式。
 
-6. 主要な共通コンポーネントとカスタムフック
-UI コンポーネント: CardHeader, ImageUploader, TagInput, EditableRankedItem, SortableListItem, LikedRankingListItem, FeedLike, FollowButton, 各種カード (PostCard 等), モーダル (RetweetQuoteDialog 等)
-カスタムフック: useInfiniteScroll, useCardInteraction, useImageUploader
-
-7. 今後の開発計画・優先順位
+6. 今後の開発計画・優先順位
 通知機能の実装。
-コメント機能の実装。
 ランキング作成時の入力補助機能の実装。
-他SNSへのシェアボタン
 関連のランキング
 
-8. 課題・検討事項
+7. 課題・検討事項
 トレンド機能「注目アイテム」のアイテム名表記ゆれへの対応策検討。(未定)
 トレンド集計バッチ処理のパフォーマンスチューニング（特にデータ量増加時）。
-データベース Like テーブルへの複合ユニーク制約追加検討。
 通知、コメント、シェア機能、サジェスト機能の詳細仕様策定。
-全体的なエラーハンドリングとUI/UX の改善。
+キャッシュ戦略などデータ処理
 利用規約
-
-# 検索機能
-1. 機能概要
-ユーザーはヘッダーの検索窓から自由にキーワードを入力し、下記の条件で公開済みランキングを検索・絞り込み・ソートした結果を確認できる。
-
-専用ページ /search に遷移し、結果をタブ／サブタブで切り替え
-
-初回SSR で 10 件を取得し描画し、以降は クライアント側無限スクロール で追加読み込み
-
-2. 用語定義
-用語	説明
-ランキングリスト	ユーザーが作成した RankingList レコード（公開済みのみ対象）
-スニペット（Snippet）	検索結果一覧で表示する最小限情報。RankingListSnippet 型で取得
-タブ（Tab）	検索対象フィルター：「タイトル」「アイテム」「タグ」の３種類
-サブタブ（Sort）	ソート条件：「件数順（月次）」「新着順」「いいね順」の３種類
-nextCursor	無限スクロール用カーソル。直前取得の最後の RankingList.id
-
-3. 機能要件
-3.1 検索入力・ページ遷移
-配置：グローバルヘッダー内のフォーム
-
-挙動：Enter or ボタン押下で /search?q=<クエリ> に遷移
-
-3.2 URL クエリパラメータ
-q：検索キーワード
-
-tab：title｜item｜tag（デフォルト：title）
-
-sort：count｜new｜like（デフォルト：count）
-
-cursor：無限スクロール中の次ページ取得用カーソル
-
-例）/search?q=映画&tab=item&sort=new&cursor=abc123
-
-3.3 検索対象フィルター（Tab）
-タイトル（title）：RankingList.subject にキーワードが部分一致（case-insensitive）
-
-アイテム（item）：配下 RankedItem.itemName に部分一致
-
-タグ（tag）：Tag.name がキーワードと完全一致（case-insensitive）
-
-3.4 ソート（Sub-Tab）
-件数順（count）
-
-TrendingSubject テーブル（period=MONTHLY）から月次集計件数を参照
-
-件数データがないものは 0 とみなし降順
-
-新着順（new）：RankingList.createdAt DESC
-
-いいね順（like）：RankingList.likeCount DESC
-
-3.5 ページネーション／無限スクロール
-１回あたり取得数：limit = 10（クライアント側も同様）
-
-実装：
-
-Server Component（page.tsx）で searchRankingListsAction を実行し初回結果を initialData として渡す
-
-Client Component（SearchPageClient.tsx）で useInfiniteScroll に fallbackData=initialData をセット
-
-getKey(page, prev) で ["search", q, tab, sort, prev.nextCursor] を返却
-
-searchRankingListsAction を fetcher として呼び出し、nextCursor がある限り追加入力
-
-3.6 API／Server Action
-関数名：searchRankingListsAction(query, tab, sort, cursor?, limit?)
-
-返却型：Promise<PaginatedResponse<RankingListSnippet>>
-
-編集する
-type PaginatedResponse<T> = {
-  items: T[];         // 取得データ（最大 limit 件）
-  nextCursor: string | null; // 追加取得用カーソル
-}
-内部処理フロー：
-
-where.status = PUBLISHED を固定
-
-where フィルターを tab に応じて組み立て
-
-orderBy を sort に応じて設定、ただし count のみ JS 側マージ＆ソート
-
-Prisma の findMany({ where, orderBy, cursor, skip, take }) で取得
-
-余剰分（take = limit + 1）を切り分けて nextCursor を算出
-
-4. UI 要件
-SearchTabs（タイトル／アイテム／タグ）
-
-SearchSortTabs（件数順／新着順／いいね順）
-
-SearchResultList
-
-リストアイテム：RankingListSnippet の subject／アイテム上位３／サムネイル／いいね数／アイテム総数
-
-下部に IntersectionObserver 用 div ref={loadMoreRef} を配置
-
-ローディング表示、終端表示を用意
-
-5. 非機能要件
-レスポンス性能：初回SSRは 200ms 以下、以降フェッチは 100ms 以下を目指す
-
-キャッシュ：SWR のキャッシュを有効にし、タブ切替時も再利用
-
-SEO：初回 SSR 時点で検索結果を HTML に含める
-
-セキュリティ：公開済みのみ検索対象。クライアントから不正クエリでもステータス固定
-
-6. 受け入れ基準
-q に “あ” を入れて /search?q=あ で 10 件が初回表示される
-
-タブ／ソートを切り替えると URL の tab／sort が更新され結果も変更
-
-下までスクロールすると次ページ 10 件が追加され、cursor が URL に反映
-
-TrendingSubject の月次件数順が正しく反映
-
-検索後ブラウザの戻る／進むで状態復元可能
-
-├── app/
-│   └── search/
-│       └── page.tsx                   # Server Component（初回SSR＋Client呼び出し）
-└── components/
-    └── component/
-        └── search/                ← クライアント用コンポーネントは全部ここ
-            ├── SearchForm.tsx         # ヘッダー内の検索フォーム
-            ├── SearchTabs.tsx         # 「タイトル／アイテム／タグ」タブ
-            ├── SearchSortTabs.tsx     # 「件数順／新着順／いいね順」サブタブ
-            ├── SearchResultList.tsx   # 検索結果リスト＋無限スクロールトリガー
-            └── SearchPageClient.tsx   # 上記４つを束ねる Client Component（無限スクロール＋タブ切替）
-
 
