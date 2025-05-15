@@ -50,12 +50,6 @@ export default function RankingItem({ item, rank }: Props) {
         {/* 右側：内容 */}
         <CardContent className="flex-1 p-4">
           <div className="flex flex-col md:flex-row md:items-center gap-4">
-            {item.image && (
-              <div className="relative w-full md:w-24 h-24 rounded-md overflow-hidden">
-                <Image src={item.image} alt={item.itemName} fill className="object-cover" />
-              </div>
-            )}
-
             <div className="flex-1">
               <h3 className="font-bold text-lg truncate">{item.itemName}</h3>
               {item.description && (
@@ -65,14 +59,10 @@ export default function RankingItem({ item, rank }: Props) {
               {/* ボルダスコア・登場回数 */}
               <div className="mt-2 space-y-1 text-sm text-muted-foreground">
                 <div>
-                  スコア: <span className="font-medium">{item.avgRank.toFixed(0)}</span>
+                  ランキングスコア: <span className="font-medium">{item.avgRank.toFixed(0)}</span>
                 </div>
                 <div>
-                  登場回数: <span className="font-medium">{item.count}</span>
-                </div>
-                <div>
-                  集計日:{" "}
-                  {new Date(item.calculationDate).toLocaleDateString()}
+                  投票人数: <span className="font-medium">{item.count}</span>
                 </div>
               </div>
 

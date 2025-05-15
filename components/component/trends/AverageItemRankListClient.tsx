@@ -14,9 +14,6 @@ export interface AverageRank {
   calculationDate: string;
 }
 
-interface AverageItemRankListClientProps {
-  subject: string;
-}
 
 export default function AverageItemRankListClient({ subject }: { subject: string }) {
   const [tab, setTab] = useState<"ranking" | "comments">("ranking")
@@ -24,8 +21,8 @@ export default function AverageItemRankListClient({ subject }: { subject: string
  
   const dummyComments = [
     { user: "ユーザーA", text: "この集計、とても参考になります！" },
-    { user: "ユーザーB", text: "Item X のスコアが思ったより高い…" },
-    { user: "ユーザーC", text: "全期間でのボルダスコアも見たいです。" },
+    { user: "ユーザーB", text: "Item X が思ったより高い…" },
+    { user: "ユーザーC", text: "全期間でのランキングも見たいです。" },
   ];
 
   if (isLoading) return <p>Loading…</p>;
