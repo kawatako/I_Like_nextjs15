@@ -1,31 +1,22 @@
-// components/component/profiles/ProfileEditForm.tsx
 "use client";
 
-import { useState, useCallback, useTransition, FormEvent } from "react";
+import { useState, useCallback, useTransition, FormEvent, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import type { User } from "@prisma/client";
 import { useImageUploader } from "@/components/hooks/useImageUploader";
-import {
-  updateProfileAction,
-  type ProfileUpdateData,
-} from "@/lib/actions/userActons";
+import { updateProfileAction, type ProfileUpdateData } from "@/lib/actions/userActons";
 import { useToast } from "@/components/hooks/use-toast";
-import ImageUploader from "../common/ImageUploader"; // 
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-} from "@/components/ui/card";
+import ImageUploader from "../common/ImageUploader";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "@/components/component/Icons";
-import { z } from "zod"; // 
+import { z } from "zod";
 
 // 編集に必要なユーザーデータの部分型
-type InitialProfileData = Pick<
+export type InitialProfileData = Pick<
   User,
   | "name"
   | "bio"
@@ -34,7 +25,7 @@ type InitialProfileData = Pick<
   | "image"
   | "coverImageUrl"
   | "socialLinks"
-  | "username" 
+  | "username"
 >;
 
 interface ProfileEditFormProps {
@@ -42,7 +33,6 @@ interface ProfileEditFormProps {
 }
 
 // --- Zod スキーマ (アクション側と合わせる) ---
-// (アクションからインポートするか、共通ファイルに定義するのが望ましい)
 const ProfileUpdateSchema = z
   .object({
     name: z
@@ -64,63 +54,27 @@ const ProfileUpdateSchema = z
       .optional()
       .nullable(),
     birthday: z
-      .string()
+      .instanceof(Date)
       .nullable()
-      .optional()
-      // refine で日付として有効かチェック (空文字とnullは許可)
-      .refine(
-        (date) =>
-          date === null ||
-          date === undefined ||
-          date === "" ||
-          !isNaN(Date.parse(date)),
-        {
-          message: "有効な日付を入力してください。",
-        }
-      )
-      // transform で Date オブジェクトか null に変換
-      .transform((date) => (date && date !== "" ? new Date(date) : null)),
+      .optional(),
     socialLinks: z
       .object({
-        x: z
-          .string()
-          .url("X: 有効なURLを")
-          .optional()
-          .nullable()
-          .or(z.literal("")),
-        instagram: z
-          .string()
-          .url("Instagram: 有効なURLを")
-          .optional()
-          .nullable()
-          .or(z.literal("")),
-        tiktok: z
-          .string()
-          .url("TikTok: 有効なURLを")
-          .optional()
-          .nullable()
-          .or(z.literal("")),
-        website: z
-          .string()
-          .url("Webサイト: 有効なURLを")
-          .optional()
-          .nullable()
-          .or(z.literal("")),
+        x: z.string().url("X: 有効なURLを").optional().nullable().or(z.literal("")),
+        instagram: z.string().url("Instagram: 有効なURLを").optional().nullable().or(z.literal("")),
+        tiktok: z.string().url("TikTok: 有効なURLを").optional().nullable().or(z.literal("")),
+        website: z.string().url("Webサイト: 有効なURLを").optional().nullable().or(z.literal("")),
       })
       .optional()
       .nullable(),
-    // image, coverImageUrl はファイルで扱うため、ここではスキーマに入れない方が扱いやすい
-    // image: z.string().url("有効な画像URLを").optional().nullable(),
-    // coverImageUrl: z.string().url("有効なカバー画像URLを").optional().nullable(),
   })
   .strict();
 
-// --- 編集フォームコンポーネント ---
 export default function ProfileEditForm({ initialData }: ProfileEditFormProps) {
   const router = useRouter();
   const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
 
+  // テキストフィールド
   const [name, setName] = useState(initialData.name ?? "");
   const [bio, setBio] = useState(initialData.bio ?? "");
   const [location, setLocation] = useState(initialData.location ?? "");
@@ -136,24 +90,30 @@ export default function ProfileEditForm({ initialData }: ProfileEditFormProps) {
     website: (initialData.socialLinks as any)?.website ?? "",
   });
 
-  const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
-  const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
+  // --- ① 三値 state に変更 ---
+  // undefined: 未操作 / File: 新規アップロード / null: 削除
+  const [coverImageFile, setCoverImageFile] = useState<File | null | undefined>(undefined);
+  const [coverImagePath, setCoverImagePath] = useState<string | null>(null);
 
-  const { uploadImage: uploadCoverImage, isLoading: isCoverUploading } =
-    useImageUploader();
-  const { uploadImage: uploadProfileImage, isLoading: isProfileUploading } =
-    useImageUploader();
+  const [profileImageFile, setProfileImageFile] = useState<File | null | undefined>(undefined);
+  const [profileImagePath, setProfileImagePath] = useState<string | null>(null);
+
+  const { uploadImage: uploadCoverImage, isLoading: isCoverUploading } = useImageUploader();
+  const { uploadImage: uploadProfileImage, isLoading: isProfileUploading } = useImageUploader();
 
   const handleCoverFileChange = useCallback((file: File | null) => {
     setCoverImageFile(file);
+    setCoverImagePath(null);
   }, []);
   const handleProfileFileChange = useCallback((file: File | null) => {
     setProfileImageFile(file);
+    setProfileImagePath(null);
   }, []);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
+    // 入力検証
     const formData = { name, bio, location, birthday, socialLinks };
     const validationResult = ProfileUpdateSchema.partial().safeParse(formData);
     if (!validationResult.success) {
@@ -165,35 +125,51 @@ export default function ProfileEditForm({ initialData }: ProfileEditFormProps) {
       return;
     }
 
-    let coverImageUrl: string | null | undefined = initialData.coverImageUrl;
-    let imageUrl: string | null | undefined = initialData.image;
-
     startTransition(async () => {
       try {
+        // プレビュー更新用 URL
+        let coverUrl: string | null | undefined = initialData.coverImageUrl;
+        let profileUrl: string | null | undefined = initialData.image;
+
         const uploadPromises: Promise<void>[] = [];
-        if (coverImageFile) {
-          uploadPromises.push(
-            uploadCoverImage(coverImageFile).then((url) => {
-              if (url) coverImageUrl = url;
-              else throw new Error("カバー画像アップロード失敗");
-            })
-          );
-        } else if (coverImageFile === null && initialData.coverImageUrl) {
-          coverImageUrl = null; // 画像削除の場合
+
+        // cover
+        if (coverImageFile !== undefined) {
+          if (coverImageFile) {
+            uploadPromises.push(
+              uploadCoverImage(coverImageFile).then((res) => {
+                if (!res) throw new Error("カバー画像アップロード失敗");
+                coverUrl = res.signedUrl;
+                setCoverImagePath(res.path);
+              })
+            );
+          } else {
+            // 画像削除
+            coverUrl = null;
+            setCoverImagePath(null);
+          }
         }
-        if (profileImageFile) {
-          uploadPromises.push(
-            uploadProfileImage(profileImageFile).then((url) => {
-              if (url) imageUrl = url;
-              else throw new Error("アイコン画像アップロード失敗");
-            })
-          );
-        } else if (profileImageFile === null && initialData.image) {
-          imageUrl = null; // 画像削除の場合
+
+        // profile
+        if (profileImageFile !== undefined) {
+          if (profileImageFile) {
+            uploadPromises.push(
+              uploadProfileImage(profileImageFile).then((res) => {
+                if (!res) throw new Error("アイコンアップロード失敗");
+                profileUrl = res.signedUrl;
+                setProfileImagePath(res.path);
+              })
+            );
+          } else {
+            profileUrl = null;
+            setProfileImagePath(null);
+          }
         }
+
         await Promise.all(uploadPromises);
 
-        const updateData: ProfileUpdateData = {
+        // --- ② updateData に image/coverImageUrl を必要時のみ含める ---
+        const updateData: Partial<ProfileUpdateData> = {
           name: name || null,
           bio: bio || null,
           location: location || null,
@@ -204,11 +180,16 @@ export default function ProfileEditForm({ initialData }: ProfileEditFormProps) {
             tiktok: socialLinks.tiktok || null,
             website: socialLinks.website || null,
           },
-          image: profileImageFile ? imageUrl : initialData.image,
-          coverImageUrl: coverImageFile ? coverImageUrl : initialData.coverImageUrl,
         };
 
-        const result = await updateProfileAction(updateData);
+        if (coverImageFile !== undefined) {
+          updateData.coverImageUrl = coverImagePath;
+        }
+        if (profileImageFile !== undefined) {
+          updateData.image = profileImagePath;
+        }
+
+        const result = await updateProfileAction(updateData as ProfileUpdateData);
 
         if (result.success) {
           toast({ title: "プロフィールを更新しました" });
@@ -217,24 +198,24 @@ export default function ProfileEditForm({ initialData }: ProfileEditFormProps) {
         } else {
           throw new Error(result.error || "更新に失敗しました");
         }
-      } catch (error) {
+      } catch (error: any) {
         toast({
           title: "エラー",
-          description:
-            error instanceof Error ? error.message : "更新できませんでした",
+          description: error.message,
           variant: "destructive",
         });
       }
     });
   };
 
-  const isProcessing = isPending || isCoverUploading || isProfileUploading;
+  const isProcessing =
+    isPending || isCoverUploading || isProfileUploading;
 
   return (
     <form onSubmit={handleSubmit} className='space-y-8'>
       <ImageUploader
         label='カバー画像'
-        initialImageUrl={initialData.coverImageUrl}
+        initialImageUrl={initialData.coverImageUrl ?? null}
         onFileChange={handleCoverFileChange}
         disabled={isProcessing}
         previewClassName='w-full aspect-[3/1] sm:aspect-[4/1]'
@@ -245,7 +226,7 @@ export default function ProfileEditForm({ initialData }: ProfileEditFormProps) {
       <div className='relative pl-4 sm:pl-6 pt-[-4rem] z-10 w-fit'>
         <ImageUploader
           label='プロフィールアイコン'
-          initialImageUrl={initialData.image}
+          initialImageUrl={initialData.image ?? null}
           onFileChange={handleProfileFileChange}
           disabled={isProcessing}
           previewClassName='w-24 h-24 sm:w-32 sm:h-32 rounded-full border-4 border-background'
@@ -315,9 +296,7 @@ export default function ProfileEditForm({ initialData }: ProfileEditFormProps) {
               type='url'
               placeholder='https://'
               value={socialLinks.website}
-              onChange={(e) =>
-                setSocialLinks({ ...socialLinks, website: e.target.value })
-              }
+              onChange={(e) => setSocialLinks({ ...socialLinks, website: e.target.value })}
               disabled={isProcessing}
             />
           </div>
@@ -328,9 +307,7 @@ export default function ProfileEditForm({ initialData }: ProfileEditFormProps) {
               type='url'
               placeholder='https://x.com/...'
               value={socialLinks.x}
-              onChange={(e) =>
-                setSocialLinks({ ...socialLinks, x: e.target.value })
-              }
+              onChange={(e) => setSocialLinks({ ...socialLinks, x: e.target.value })}
               disabled={isProcessing}
             />
           </div>
@@ -341,9 +318,7 @@ export default function ProfileEditForm({ initialData }: ProfileEditFormProps) {
               type='url'
               placeholder='https://instagram.com/...'
               value={socialLinks.instagram}
-              onChange={(e) =>
-                setSocialLinks({ ...socialLinks, instagram: e.target.value })
-              }
+              onChange={(e) => setSocialLinks({ ...socialLinks, instagram: e.target.value })}
               disabled={isProcessing}
             />
           </div>
@@ -354,9 +329,7 @@ export default function ProfileEditForm({ initialData }: ProfileEditFormProps) {
               type='url'
               placeholder='https://tiktok.com/@...'
               value={socialLinks.tiktok}
-              onChange={(e) =>
-                setSocialLinks({ ...socialLinks, tiktok: e.target.value })
-              }
+              onChange={(e) => setSocialLinks({ ...socialLinks, tiktok: e.target.value })}
               disabled={isProcessing}
             />
           </div>
@@ -364,19 +337,12 @@ export default function ProfileEditForm({ initialData }: ProfileEditFormProps) {
       </Card>
 
       <div className='flex justify-end gap-2'>
-        <Button
-          type='button'
-          variant='outline'
-          onClick={() => router.back()}
-          disabled={isProcessing}
-        >
+        <Button type='button' variant='outline' onClick={() => router.back()} disabled={isProcessing}>
           キャンセル
         </Button>
         <Button type='submit' disabled={isProcessing}>
-          {isProcessing ? (
-            <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-          ) : null}
-          {isProcessing ? "保存中..." : "保存する"}
+          {isProcessing ? <Loader2 className='mr-2 h-4 w-4 animate-spin' /> : null}
+          {isProcessing ? "保存中…" : "保存する"}
         </Button>
       </div>
     </form>

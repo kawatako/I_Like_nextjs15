@@ -194,7 +194,7 @@ export async function POST(req: Request) {
 
   // --- User Deleted イベント ---
   if (eventType === "user.deleted") {
-    // 削除イベントでは evt.data に削除されたユーザーの情報が含まれるが、IDが null の場合もあるらしい
+    // 削除イベントでは evt.data に削除されたユーザーの情報が含まれるが、IDが null の場合もある
     const deletedClerkUserId = evt.data.id;
 
     // ID が取得できない場合は処理できない（ログは残す）
