@@ -3,13 +3,12 @@ import { RankingEdit } from "@/components/component/rankings/RankingEdit";
 import { getRankingListForEdit } from "@/lib/data/rankingQueries"; // データ取得関数をインポート
 import { notFound } from "next/navigation";
 
-// ページコンポーネントは通常 async 関数になります
 export default async function RankingEditPage(props: { params: Promise<{ listId: string }> }) {
   const params = await props.params;
   const listId = params.listId;
   console.log(`Rendering edit page for listId: ${listId}`); // ログ
 
-  // 2. データ取得関数を呼び出す
+  // データ取得関数を呼び出す
   // この関数内で認証・権限チェックも行われる
   const rankingList = await getRankingListForEdit(listId);
 
@@ -26,7 +25,6 @@ export default async function RankingEditPage(props: { params: Promise<{ listId:
     <div className="container mx-auto p-4">
       {/* --- JSON 表示の代わりに RankingListEditView を呼び出す --- */}
       <RankingEdit rankingList={rankingList} />
-      {/* ---------------------------------------------------------- */}
     </div>
   );
 }
