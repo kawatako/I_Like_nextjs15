@@ -175,7 +175,7 @@ export function NewRankingForm() {
             if (item.imageFile) {
               const uploaded = await uploadImage(item.imageFile);
               if (!uploaded) throw new Error("画像アップロードに失敗しました。");
-              finalUrl = uploaded;
+              finalUrl = uploaded.signedUrl;
             }
             return {
               itemName: item.itemName.trim(),
