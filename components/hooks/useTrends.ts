@@ -101,32 +101,36 @@ export function useTrendingItems(period: 'WEEKLY' | 'MONTHLY') {
   }
 }
 
-
-// --- 平均順位（全期間） ---
-export interface AverageRank {
+//ボルダスコアの型
+export interface BordaRank {
   itemName: string
-  avgRank: number
+  avgRank: number // ボルダスコア
   count: number
   calculationDate: string
 }
-export function useAverageItemRank(subject: string) {
-  const key = ['average-item-rank', subject] as const;
-  const fetcher = async (): Promise<AverageRank[]> => {
+
+// --- 平均順位(ボルダスコア順)（全期間） ---
+export function useBordaItemRank(subject: string) {
+  const key = ['borda-item-rank', subject] as const
+
+  const fetcher = async (): Promise<BordaRank[]> => {
     const { data, error } = await supabase
       .from('AverageItemRank')
       .select('itemName,avgRank,count,calculationDate')
       .eq('subject', subject)
-      .order('avgRank', { ascending: true })
-      .limit(10);
+      // ボルダスコアを降順にソート
+      .order('avgRank', { ascending: false })
+      .limit(10)
 
-    if (error) throw error;
-    return data;
-  };
+    if (error) throw error
+    return data
+  }
 
-  const { data, error } = useSWR<AverageRank[]>(key, fetcher);
+  const { data, error } = useSWR<BordaRank[]>(key, fetcher)
+
   return {
     averageRanks: data ?? [],
     isLoading: !error && !data,
     isError: error,
-  };
+  }
 }
