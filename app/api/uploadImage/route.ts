@@ -31,7 +31,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'ファイルサイズは5MB以内にしてください' }, { status: 413 })
     }
 
-    // 一般的な拡張子チェック
+    // 拡張子チェック
     const allowedTypes = ['image/jpeg', 'image/png', 'image/webp']
     if (!allowedTypes.includes(file.type)) {
       return NextResponse.json({ error: 'JPEG/PNG/WebP形式の画像をアップロードしてください' }, { status: 415 })
@@ -46,18 +46,27 @@ export async function POST(request: Request) {
     const { data, error } = await supabase.storage
       .from('i-like')
       .upload(filePath, file, { cacheControl: '3600', upsert: false })
-
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
+    if (error || !data) {
+      return NextResponse.json({ error: error?.message || 'アップロード失敗' }, { status: 500 })
     }
 
-    // 公開 URL を生成
-    const { data: urlData } = supabase.storage
+    // 署名付き URL を生成 (1時間 有効)
+    const { data: signedData, error: signErr } = await supabase.storage
       .from('i-like')
-      .getPublicUrl(data.path)
+      .createSignedUrl(data.path, 60 * 60)
+    if (signErr || !signedData) {
+      return NextResponse.json(
+        { error: '署名付き URL の生成に失敗しました' },
+        { status: 500 }
+      )
+    }
 
-    return NextResponse.json({ publicUrl: urlData.publicUrl })
+    return NextResponse.json({ publicUrl: signedData.signedUrl })
   } catch (e) {
-    return NextResponse.json({ error: 'サーバーエラーが発生しました' }, { status: 500 })
+    console.error(e)
+    return NextResponse.json(
+      { error: 'サーバーエラーが発生しました' },
+      { status: 500 }
+    )
   }
 }

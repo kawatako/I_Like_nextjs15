@@ -1,61 +1,62 @@
 // app/profile/[username]/edit/page.tsx
-import { notFound } from "next/navigation";
-import { auth } from "@clerk/nextjs/server";
-import prisma from "@/lib/client";
-import ProfileEditForm from "@/components/component/profiles/ProfileEditForm";
-import { getUsernameFromDb } from "@/lib/data/userQueries";
+import { notFound } from 'next/navigation'
+import { createClient } from '@supabase/supabase-js'
+import ProfileEditForm from '@/components/component/profiles/ProfileEditForm'
 
-interface ProfileEditPageProps {
-  params: Promise<{ username: string }>;
+const supabaseAdmin = createClient(
+  process.env.SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+)
+
+async function getSignedUrl(path: string) {
+  const { data, error } = await supabaseAdmin
+    .storage
+    .from('i-like')
+    .createSignedUrl(path, 60 * 60)
+  if (error || !data) return null
+  return data.signedUrl
 }
 
-export default async function ProfileEditPage({
-  params,
-}: ProfileEditPageProps) {
-  // Promise を解決してからパラメータを取得
-  const { username: targetUsername } = await params;
+export default async function EditPage(context: any) {
+  const { username } = context.params
 
-  // 1. 認証情報を取得
-  const { userId: clerkId, sessionClaims } = await auth();
-  if (!clerkId) {
-    return notFound();
+  // ユーザー情報取得
+  const { data: user, error } = await supabaseAdmin
+    .from('user')
+    .select(`
+      name,
+      bio,
+      location,
+      birthday,
+      image,
+      coverImageUrl,
+      socialLinks,
+      username
+    `)
+    .eq('username', username)
+    .single()
+
+  if (error || !user) {
+    notFound()
   }
 
-  // 2. Clerk セッションのメタデータから username を取り出す
-  type SessionClaimsWithUsername = { metadata?: { username?: string } };
-  const claims = sessionClaims as SessionClaimsWithUsername;
-  const loggedInUsername =
-    claims?.metadata?.username ?? (await getUsernameFromDb(clerkId));
+  // プレビュー用署名付き URL を生成
+  const imageUrl = user.image ? await getSignedUrl(user.image) : null
+  const coverUrl = user.coverImageUrl ? await getSignedUrl(user.coverImageUrl) : null
 
-  // ログインユーザー名が取れない or URL の username と一致しない → 404
-  if (!loggedInUsername || loggedInUsername !== targetUsername) {
-    return notFound();
-  }
-
-  // 3. 編集対象ユーザーの現在データを取得
-  const userProfileData = await prisma.user.findUnique({
-    where: { username: targetUsername },
-    select: {
-      username: true,
-      name: true,
-      bio: true,
-      location: true,
-      birthday: true,
-      image: true,
-      coverImageUrl: true,
-      socialLinks: true,
-    },
-  });
-
-  if (!userProfileData) {
-    return notFound();
-  }
-
-  // 4. フォームに初期データを渡してレンダリング
   return (
-    <div className="container mx-auto px-4 py-8 max-w-3xl">
-      <h1 className="text-3xl font-bold mb-6">プロフィールを編集</h1>
-      <ProfileEditForm initialData={userProfileData} />
-    </div>
-  );
+    <ProfileEditForm
+      initialData={{
+        name: user.name,
+        bio: user.bio,
+        location: user.location,
+        // ProfileEditForm 側で date → string に変換するのでここは string|null
+        birthday: user.birthday?.toISOString().split('T')[0] ?? null,
+        image: imageUrl,
+        coverImageUrl: coverUrl,
+        socialLinks: user.socialLinks,
+        username: user.username,
+      }}
+    />
+  )
 }
