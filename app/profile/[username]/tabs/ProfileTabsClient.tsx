@@ -71,8 +71,8 @@ export default function ProfileTabsClient({
     <div className="w-full flex justify-center">
       <div className="w-full max-w-3xl mx-auto">
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full mt-4">
-          {/* タブリストのみを横スクロール可能に */}
-          <div className="overflow-x-auto overflow-y-hidden pb-2">
+          {/* タブリストのみを横スクロール可能 */}
+          <div className="overflow-x-auto overflow-y-hidden pb-2 flex justify-center">
             <TabsList className="min-w-max w-auto inline-flex">
               {availableTabs.map((tab) => (
                 <TabsTrigger value={tab.value} key={tab.value} className="flex-shrink-0">
