@@ -68,31 +68,37 @@ export default function ProfileTabsClient({
   };
 
   return (
-    <div className="w-full overflow-x-auto overflow-y-hidden scrollbar-hide"> {/* Tailwindでの横スクロール対応 */}
+    <div className="w-full">
       <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full mt-4">
-        <TabsList className="flex w-full min-w-max"> {/* min-w-maxで内容に合わせて幅を確保 */}
+        {/* タブリストのみを横スクロール可能に */}
+        <div className="overflow-x-auto overflow-y-hidden pb-2">
+          <TabsList className="min-w-max w-auto inline-flex">
+            {availableTabs.map((tab) => (
+              <TabsTrigger value={tab.value} key={tab.value} className="flex-shrink-0">
+                <span className="text-sm sm:text-base whitespace-nowrap">{tab.label}</span>
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </div>
+        
+        {/* コンテンツ部分は通常の幅に */}
+        <div className="w-full">
           {availableTabs.map((tab) => (
-            <TabsTrigger value={tab.value} key={tab.value} className="flex-shrink-0">
-              <span className="text-sm sm:text-base whitespace-nowrap">{tab.label}</span>
-            </TabsTrigger>
+            <TabsContent value={tab.value} key={tab.value} className="mt-0 w-full">
+              <Suspense fallback={<div className="flex justify-center items-center h-40"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>}>
+                {activeTab === tab.value && (
+                  <>
+                    {tab.value === "rankings" && <RankingTab targetUserId={targetUserId} isCurrentUser={isCurrentUser} username={username} />}
+                    {tab.value === "drafts" && isCurrentUser && <DraftsTab targetUserId={targetUserId} isCurrentUser={isCurrentUser} username={username} />}
+                    {tab.value === "feed" && <FeedTab targetUserId={targetUserId} loggedInUserDbId={loggedInUserDbId} />}
+                    {tab.value === "likes" && <LikesTab targetUserId={targetUserId} loggedInUserDbId={loggedInUserDbId} />}
+                    {tab.value === "ranking_likes" && <RankingLikesTab targetUserId={targetUserId} loggedInUserDbId={loggedInUserDbId} />}
+                  </>
+                )}
+              </Suspense>
+            </TabsContent>
           ))}
-        </TabsList>
-
-        {availableTabs.map((tab) => (
-          <TabsContent value={tab.value} key={tab.value} className="mt-0">
-            <Suspense fallback={<div className="flex justify-center items-center h-40"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>}>
-              {activeTab === tab.value && (
-                <>
-                  {tab.value === "rankings" && <RankingTab targetUserId={targetUserId} isCurrentUser={isCurrentUser} username={username} />}
-                  {tab.value === "drafts" && isCurrentUser && <DraftsTab targetUserId={targetUserId} isCurrentUser={isCurrentUser} username={username} />}
-                  {tab.value === "feed" && <FeedTab targetUserId={targetUserId} loggedInUserDbId={loggedInUserDbId} />}
-                  {tab.value === "likes" && <LikesTab targetUserId={targetUserId} loggedInUserDbId={loggedInUserDbId} />}
-                  {tab.value === "ranking_likes" && <RankingLikesTab targetUserId={targetUserId} loggedInUserDbId={loggedInUserDbId} />}
-                </>
-              )}
-            </Suspense>
-          </TabsContent>
-        ))}
+        </div>
       </Tabs>
     </div>
   );
