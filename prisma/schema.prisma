@@ -139,7 +139,7 @@ model TrendingItem {
 }
 
 model AverageItemRank {
-  id              String   @id @default(cuid())
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   subject         String
   itemName        String
   avgRank         Float
@@ -152,6 +152,19 @@ model AverageItemRank {
   @@index([subject], map: "AverageItemRank_subject_idx1")
   @@index([calculationDate], map: "idx_avgitemrank_calcdate")
   @@index([subject, calculationDate], map: "idx_avgitemrank_subject_calcdate")
+}
+
+//AverageItemRankに対するコメント
+model AverageItemComment {
+  id              String    @id @default(cuid())
+  subject         String             // テーマ名（AverageItemRank.subject と対応）
+  itemName        String             // アイテム名（AverageItemRank.itemName と対応）
+  userId          String             // コメント投稿者のユーザID
+  content         String             // コメント本文
+  createdAt       DateTime  @default(now())
+
+  @@index([subject, itemName])
+  @@index([userId])
 }
 
 model Post {

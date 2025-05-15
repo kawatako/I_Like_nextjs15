@@ -205,6 +205,15 @@ exports.Prisma.AverageItemRankScalarFieldEnum = {
   count: 'count'
 };
 
+exports.Prisma.AverageItemCommentScalarFieldEnum = {
+  id: 'id',
+  subject: 'subject',
+  itemName: 'itemName',
+  userId: 'userId',
+  content: 'content',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.PostScalarFieldEnum = {
   id: 'id',
   content: 'content',
@@ -326,6 +335,7 @@ exports.Prisma.ModelName = {
   TrendingTag: 'TrendingTag',
   TrendingItem: 'TrendingItem',
   AverageItemRank: 'AverageItemRank',
+  AverageItemComment: 'AverageItemComment',
   Post: 'Post',
   Retweet: 'Retweet',
   FeedItem: 'FeedItem',

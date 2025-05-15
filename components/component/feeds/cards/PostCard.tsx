@@ -141,21 +141,15 @@ export default function PostCard({ item, loggedInUserDbId }: PostCardProps) {
         <QuoteCommentModal
           open={isQuoteModalOpen}
           onOpenChange={setIsQuoteModalOpen}
-          // ★ selectedItemForQuote をそのまま渡せるか、型を合わせる ★
-          //    QuoteCommentModal の Props 定義による
           quotedFeedItem={selectedItemForQuote as FeedItemWithRelations} // 仮アサーション
         />
       )}
-      {/* ★ ↑ QuoteCommentModal に渡すのは selectedItemForQuote (FeedItem) で、
-             Modal 内部の QuotedItemPreview が originalItem = selectedItemForQuote.quotedFeedItem を使うべき ★
-             Modal の Props 名を見直すのが良い
-         */}
       {selectedItemForQuote && ( // selectedItemForQuote があれば Modal を描画準備
         <QuoteCommentModal
           open={isQuoteModalOpen}
           onOpenChange={setIsQuoteModalOpen}
           // ★ QuoteCommentModal には引用したい FeedItem を渡す ★
-          quotedFeedItem={selectedItemForQuote} // 名前は紛らわしいが、引用「したい」アイテム
+          quotedFeedItem={selectedItemForQuote} // 引用「したい」アイテム
         />
       )}
     </div>

@@ -3,14 +3,20 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
 import { Trophy } from "@/components/component/Icons";
 import { Card, CardContent } from "@/components/ui/card";
-import { AverageRank } from "@/components/component/trends/AverageItemRankListClient";
 
 interface Props {
-  item: AverageRank & { image?: string; description?: string; details?: Record<string,string> };
-  rank: number;
+  item: {
+    itemName: string
+    avgRank: number
+    count: number
+    calculationDate: string
+    image?: string
+    description?: string
+    details?: Record<string, string>
+  }
+  rank: number
 }
 
 export default function RankingItem({ item, rank }: Props) {
@@ -62,7 +68,7 @@ export default function RankingItem({ item, rank }: Props) {
                   ランキングスコア: <span className="font-medium">{item.avgRank.toFixed(0)}</span>
                 </div>
                 <div>
-                  投票人数: <span className="font-medium">{item.count}</span>
+                  集計人数: <span className="font-medium">{item.count}</span>
                 </div>
               </div>
 

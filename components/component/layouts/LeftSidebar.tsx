@@ -5,13 +5,13 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
   HomeIcon,
   SearchIcon,
-  HeartIcon,
+  TrendingUpIcon,
   BellIcon,
-  PlusIcon,
   CrownIcon,
   UserIcon,
   SettingsIcon,
   UsersIcon,
+  ChatBubbleIcon
 } from "../Icons";
 
 interface UserData {
@@ -37,7 +37,7 @@ const navItems = [
     href: (username: string | null) => `/follows/${username ?? ''}`,
   },
   { icon: CrownIcon, label: "ランキング作成", href: "/rankings/create" },
-  { icon: SearchIcon, label: "トレンド", href: "/trends" },
+  { icon: TrendingUpIcon, label: "トレンド", href: "/trends" },
   { icon: BellIcon, label: "通知", href: "#" }, 
 ];
 
@@ -85,6 +85,12 @@ export default function LeftSidebar({
       </nav>
 
       <div className="mt-auto pt-4 border-t">
+                <Link href="https://docs.google.com/forms/d/e/1FAIpQLSdLbVn1Wwbzfa9Zdq6ZjAnrrRMzur-ZKhu4-EXrmT8Q8__p0g/viewform" className="block" target="_blank" rel="noopener noreferrer">
+          <div className="flex items-center gap-3 px-3 py-2.5 rounded-md text-foreground/80 hover:bg-muted hover:text-foreground transition-colors">
+            <ChatBubbleIcon className="h-5 w-5" />
+            <span className="font-medium">ご意見</span>
+          </div>
+        </Link>
         <Link href="/#" className="block">
           <div className="flex items-center gap-3 px-3 py-2.5 rounded-md text-foreground/80 hover:bg-muted hover:text-foreground transition-colors">
             <SettingsIcon className="h-5 w-5" />

@@ -104,32 +104,26 @@ export function useTrendingItems(period: 'WEEKLY' | 'MONTHLY') {
 //ボルダスコアの型
 export interface BordaRank {
   itemName: string
-  avgRank: number // ボルダスコア
-  count: number
+  avgRank: number  //ボルだスコア
+  count: number  //アイテムの出現数
   calculationDate: string
 }
 
-// --- 平均順位(ボルダスコア順)（全期間） ---
 export function useBordaItemRank(subject: string) {
   const key = ['borda-item-rank', subject] as const
-
   const fetcher = async (): Promise<BordaRank[]> => {
     const { data, error } = await supabase
       .from('AverageItemRank')
       .select('itemName,avgRank,count,calculationDate')
       .eq('subject', subject)
-      // ボルダスコアを降順にソート
       .order('avgRank', { ascending: false })
       .limit(10)
-
     if (error) throw error
-    return data
+    return data as BordaRank[]
   }
-
   const { data, error } = useSWR<BordaRank[]>(key, fetcher)
-
   return {
-    averageRanks: data ?? [],
+    bordaItems: data ?? [],
     isLoading: !error && !data,
     isError: error,
   }

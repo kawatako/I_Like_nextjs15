@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import {
   HomeIcon,
   SearchIcon,
+  TrendingUpIcon,
   CrownIcon,
   BellIcon,
   UserIcon,
@@ -45,7 +46,7 @@ export default function BottomNavbar({
 
   const navItems: NavItem[] = [
     { href: "/", icon: HomeIcon, label: "ホーム" },
-    { href: "/trends", icon: SearchIcon, label: "トレンド" },
+    { href: "/trends", icon: TrendingUpIcon, label: "トレンド" },
     { href: "/rankings/create", icon: CrownIcon, label: "ランキング作成" },
     { href: "#", icon: BellIcon, label: "通知" },
     { href: followsHref, icon: UsersIcon, label: "フォロー", isFollows: true },

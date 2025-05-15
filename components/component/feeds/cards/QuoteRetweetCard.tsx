@@ -137,11 +137,7 @@ export default function QuoteRetweetCard({
           // もしくは Modal 側で selectedItemForQuote を受け取る
         />
       )}
-      {/* ★★★ QuoteCommentModal の Props 再考 ★★★
-          QuoteCommentModal は引用元の FeedItem を必要とするので、
-          selectedItemForQuote (引用ボタンが押されたカードの FeedItem) を渡すのが正しい。
-          Modal 内部の QuotedItemPreview は props.quotedFeedItem を表示する。
-      */}
+
       {selectedItemForQuote && (
         <QuoteCommentModal
           open={isQuoteModalOpen}

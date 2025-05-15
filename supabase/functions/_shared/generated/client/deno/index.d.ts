@@ -59,6 +59,11 @@ export type TrendingItem = $Result.DefaultSelection<Prisma.$TrendingItemPayload>
  */
 export type AverageItemRank = $Result.DefaultSelection<Prisma.$AverageItemRankPayload>
 /**
+ * Model AverageItemComment
+ * 
+ */
+export type AverageItemComment = $Result.DefaultSelection<Prisma.$AverageItemCommentPayload>
+/**
  * Model Post
  * 
  */
@@ -364,6 +369,16 @@ export class PrismaClient<
     * ```
     */
   get averageItemRank(): Prisma.AverageItemRankDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.averageItemComment`: Exposes CRUD operations for the **AverageItemComment** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more AverageItemComments
+    * const averageItemComments = await prisma.averageItemComment.findMany()
+    * ```
+    */
+  get averageItemComment(): Prisma.AverageItemCommentDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.post`: Exposes CRUD operations for the **Post** model.
@@ -883,6 +898,7 @@ export namespace Prisma {
     TrendingTag: 'TrendingTag',
     TrendingItem: 'TrendingItem',
     AverageItemRank: 'AverageItemRank',
+    AverageItemComment: 'AverageItemComment',
     Post: 'Post',
     Retweet: 'Retweet',
     FeedItem: 'FeedItem',
@@ -908,7 +924,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "tag" | "user" | "rankingList" | "rankedItem" | "rankingListTag" | "trendingSubject" | "trendingTag" | "trendingItem" | "averageItemRank" | "post" | "retweet" | "feedItem" | "like" | "reply" | "followRequest" | "follow"
+      modelProps: "tag" | "user" | "rankingList" | "rankedItem" | "rankingListTag" | "trendingSubject" | "trendingTag" | "trendingItem" | "averageItemRank" | "averageItemComment" | "post" | "retweet" | "feedItem" | "like" | "reply" | "followRequest" | "follow"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1578,6 +1594,80 @@ export namespace Prisma {
           }
         }
       }
+      AverageItemComment: {
+        payload: Prisma.$AverageItemCommentPayload<ExtArgs>
+        fields: Prisma.AverageItemCommentFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.AverageItemCommentFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AverageItemCommentPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.AverageItemCommentFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AverageItemCommentPayload>
+          }
+          findFirst: {
+            args: Prisma.AverageItemCommentFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AverageItemCommentPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.AverageItemCommentFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AverageItemCommentPayload>
+          }
+          findMany: {
+            args: Prisma.AverageItemCommentFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AverageItemCommentPayload>[]
+          }
+          create: {
+            args: Prisma.AverageItemCommentCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AverageItemCommentPayload>
+          }
+          createMany: {
+            args: Prisma.AverageItemCommentCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.AverageItemCommentCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AverageItemCommentPayload>[]
+          }
+          delete: {
+            args: Prisma.AverageItemCommentDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AverageItemCommentPayload>
+          }
+          update: {
+            args: Prisma.AverageItemCommentUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AverageItemCommentPayload>
+          }
+          deleteMany: {
+            args: Prisma.AverageItemCommentDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.AverageItemCommentUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.AverageItemCommentUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AverageItemCommentPayload>[]
+          }
+          upsert: {
+            args: Prisma.AverageItemCommentUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AverageItemCommentPayload>
+          }
+          aggregate: {
+            args: Prisma.AverageItemCommentAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateAverageItemComment>
+          }
+          groupBy: {
+            args: Prisma.AverageItemCommentGroupByArgs<ExtArgs>
+            result: $Utils.Optional<AverageItemCommentGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.AverageItemCommentCountArgs<ExtArgs>
+            result: $Utils.Optional<AverageItemCommentCountAggregateOutputType> | number
+          }
+        }
+      }
       Post: {
         payload: Prisma.$PostPayload<ExtArgs>
         fields: Prisma.PostFieldRefs
@@ -2189,6 +2279,7 @@ export namespace Prisma {
     trendingTag?: TrendingTagOmit
     trendingItem?: TrendingItemOmit
     averageItemRank?: AverageItemRankOmit
+    averageItemComment?: AverageItemCommentOmit
     post?: PostOmit
     retweet?: RetweetOmit
     feedItem?: FeedItemOmit
@@ -12734,6 +12825,1014 @@ export namespace Prisma {
 
 
   /**
+   * Model AverageItemComment
+   */
+
+  export type AggregateAverageItemComment = {
+    _count: AverageItemCommentCountAggregateOutputType | null
+    _min: AverageItemCommentMinAggregateOutputType | null
+    _max: AverageItemCommentMaxAggregateOutputType | null
+  }
+
+  export type AverageItemCommentMinAggregateOutputType = {
+    id: string | null
+    subject: string | null
+    itemName: string | null
+    userId: string | null
+    content: string | null
+    createdAt: Date | null
+  }
+
+  export type AverageItemCommentMaxAggregateOutputType = {
+    id: string | null
+    subject: string | null
+    itemName: string | null
+    userId: string | null
+    content: string | null
+    createdAt: Date | null
+  }
+
+  export type AverageItemCommentCountAggregateOutputType = {
+    id: number
+    subject: number
+    itemName: number
+    userId: number
+    content: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type AverageItemCommentMinAggregateInputType = {
+    id?: true
+    subject?: true
+    itemName?: true
+    userId?: true
+    content?: true
+    createdAt?: true
+  }
+
+  export type AverageItemCommentMaxAggregateInputType = {
+    id?: true
+    subject?: true
+    itemName?: true
+    userId?: true
+    content?: true
+    createdAt?: true
+  }
+
+  export type AverageItemCommentCountAggregateInputType = {
+    id?: true
+    subject?: true
+    itemName?: true
+    userId?: true
+    content?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type AverageItemCommentAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AverageItemComment to aggregate.
+     */
+    where?: AverageItemCommentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AverageItemComments to fetch.
+     */
+    orderBy?: AverageItemCommentOrderByWithRelationInput | AverageItemCommentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: AverageItemCommentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AverageItemComments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AverageItemComments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned AverageItemComments
+    **/
+    _count?: true | AverageItemCommentCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: AverageItemCommentMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: AverageItemCommentMaxAggregateInputType
+  }
+
+  export type GetAverageItemCommentAggregateType<T extends AverageItemCommentAggregateArgs> = {
+        [P in keyof T & keyof AggregateAverageItemComment]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAverageItemComment[P]>
+      : GetScalarType<T[P], AggregateAverageItemComment[P]>
+  }
+
+
+
+
+  export type AverageItemCommentGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AverageItemCommentWhereInput
+    orderBy?: AverageItemCommentOrderByWithAggregationInput | AverageItemCommentOrderByWithAggregationInput[]
+    by: AverageItemCommentScalarFieldEnum[] | AverageItemCommentScalarFieldEnum
+    having?: AverageItemCommentScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: AverageItemCommentCountAggregateInputType | true
+    _min?: AverageItemCommentMinAggregateInputType
+    _max?: AverageItemCommentMaxAggregateInputType
+  }
+
+  export type AverageItemCommentGroupByOutputType = {
+    id: string
+    subject: string
+    itemName: string
+    userId: string
+    content: string
+    createdAt: Date
+    _count: AverageItemCommentCountAggregateOutputType | null
+    _min: AverageItemCommentMinAggregateOutputType | null
+    _max: AverageItemCommentMaxAggregateOutputType | null
+  }
+
+  type GetAverageItemCommentGroupByPayload<T extends AverageItemCommentGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<AverageItemCommentGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof AverageItemCommentGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], AverageItemCommentGroupByOutputType[P]>
+            : GetScalarType<T[P], AverageItemCommentGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type AverageItemCommentSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    subject?: boolean
+    itemName?: boolean
+    userId?: boolean
+    content?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["averageItemComment"]>
+
+  export type AverageItemCommentSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    subject?: boolean
+    itemName?: boolean
+    userId?: boolean
+    content?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["averageItemComment"]>
+
+  export type AverageItemCommentSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    subject?: boolean
+    itemName?: boolean
+    userId?: boolean
+    content?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["averageItemComment"]>
+
+  export type AverageItemCommentSelectScalar = {
+    id?: boolean
+    subject?: boolean
+    itemName?: boolean
+    userId?: boolean
+    content?: boolean
+    createdAt?: boolean
+  }
+
+  export type AverageItemCommentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "subject" | "itemName" | "userId" | "content" | "createdAt", ExtArgs["result"]["averageItemComment"]>
+
+  export type $AverageItemCommentPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "AverageItemComment"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      subject: string
+      itemName: string
+      userId: string
+      content: string
+      createdAt: Date
+    }, ExtArgs["result"]["averageItemComment"]>
+    composites: {}
+  }
+
+  type AverageItemCommentGetPayload<S extends boolean | null | undefined | AverageItemCommentDefaultArgs> = $Result.GetResult<Prisma.$AverageItemCommentPayload, S>
+
+  type AverageItemCommentCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<AverageItemCommentFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: AverageItemCommentCountAggregateInputType | true
+    }
+
+  export interface AverageItemCommentDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['AverageItemComment'], meta: { name: 'AverageItemComment' } }
+    /**
+     * Find zero or one AverageItemComment that matches the filter.
+     * @param {AverageItemCommentFindUniqueArgs} args - Arguments to find a AverageItemComment
+     * @example
+     * // Get one AverageItemComment
+     * const averageItemComment = await prisma.averageItemComment.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends AverageItemCommentFindUniqueArgs>(args: SelectSubset<T, AverageItemCommentFindUniqueArgs<ExtArgs>>): Prisma__AverageItemCommentClient<$Result.GetResult<Prisma.$AverageItemCommentPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one AverageItemComment that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {AverageItemCommentFindUniqueOrThrowArgs} args - Arguments to find a AverageItemComment
+     * @example
+     * // Get one AverageItemComment
+     * const averageItemComment = await prisma.averageItemComment.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends AverageItemCommentFindUniqueOrThrowArgs>(args: SelectSubset<T, AverageItemCommentFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AverageItemCommentClient<$Result.GetResult<Prisma.$AverageItemCommentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first AverageItemComment that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AverageItemCommentFindFirstArgs} args - Arguments to find a AverageItemComment
+     * @example
+     * // Get one AverageItemComment
+     * const averageItemComment = await prisma.averageItemComment.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends AverageItemCommentFindFirstArgs>(args?: SelectSubset<T, AverageItemCommentFindFirstArgs<ExtArgs>>): Prisma__AverageItemCommentClient<$Result.GetResult<Prisma.$AverageItemCommentPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first AverageItemComment that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AverageItemCommentFindFirstOrThrowArgs} args - Arguments to find a AverageItemComment
+     * @example
+     * // Get one AverageItemComment
+     * const averageItemComment = await prisma.averageItemComment.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends AverageItemCommentFindFirstOrThrowArgs>(args?: SelectSubset<T, AverageItemCommentFindFirstOrThrowArgs<ExtArgs>>): Prisma__AverageItemCommentClient<$Result.GetResult<Prisma.$AverageItemCommentPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more AverageItemComments that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AverageItemCommentFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all AverageItemComments
+     * const averageItemComments = await prisma.averageItemComment.findMany()
+     * 
+     * // Get first 10 AverageItemComments
+     * const averageItemComments = await prisma.averageItemComment.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const averageItemCommentWithIdOnly = await prisma.averageItemComment.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends AverageItemCommentFindManyArgs>(args?: SelectSubset<T, AverageItemCommentFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AverageItemCommentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a AverageItemComment.
+     * @param {AverageItemCommentCreateArgs} args - Arguments to create a AverageItemComment.
+     * @example
+     * // Create one AverageItemComment
+     * const AverageItemComment = await prisma.averageItemComment.create({
+     *   data: {
+     *     // ... data to create a AverageItemComment
+     *   }
+     * })
+     * 
+     */
+    create<T extends AverageItemCommentCreateArgs>(args: SelectSubset<T, AverageItemCommentCreateArgs<ExtArgs>>): Prisma__AverageItemCommentClient<$Result.GetResult<Prisma.$AverageItemCommentPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many AverageItemComments.
+     * @param {AverageItemCommentCreateManyArgs} args - Arguments to create many AverageItemComments.
+     * @example
+     * // Create many AverageItemComments
+     * const averageItemComment = await prisma.averageItemComment.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends AverageItemCommentCreateManyArgs>(args?: SelectSubset<T, AverageItemCommentCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many AverageItemComments and returns the data saved in the database.
+     * @param {AverageItemCommentCreateManyAndReturnArgs} args - Arguments to create many AverageItemComments.
+     * @example
+     * // Create many AverageItemComments
+     * const averageItemComment = await prisma.averageItemComment.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many AverageItemComments and only return the `id`
+     * const averageItemCommentWithIdOnly = await prisma.averageItemComment.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends AverageItemCommentCreateManyAndReturnArgs>(args?: SelectSubset<T, AverageItemCommentCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AverageItemCommentPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a AverageItemComment.
+     * @param {AverageItemCommentDeleteArgs} args - Arguments to delete one AverageItemComment.
+     * @example
+     * // Delete one AverageItemComment
+     * const AverageItemComment = await prisma.averageItemComment.delete({
+     *   where: {
+     *     // ... filter to delete one AverageItemComment
+     *   }
+     * })
+     * 
+     */
+    delete<T extends AverageItemCommentDeleteArgs>(args: SelectSubset<T, AverageItemCommentDeleteArgs<ExtArgs>>): Prisma__AverageItemCommentClient<$Result.GetResult<Prisma.$AverageItemCommentPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one AverageItemComment.
+     * @param {AverageItemCommentUpdateArgs} args - Arguments to update one AverageItemComment.
+     * @example
+     * // Update one AverageItemComment
+     * const averageItemComment = await prisma.averageItemComment.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends AverageItemCommentUpdateArgs>(args: SelectSubset<T, AverageItemCommentUpdateArgs<ExtArgs>>): Prisma__AverageItemCommentClient<$Result.GetResult<Prisma.$AverageItemCommentPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more AverageItemComments.
+     * @param {AverageItemCommentDeleteManyArgs} args - Arguments to filter AverageItemComments to delete.
+     * @example
+     * // Delete a few AverageItemComments
+     * const { count } = await prisma.averageItemComment.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends AverageItemCommentDeleteManyArgs>(args?: SelectSubset<T, AverageItemCommentDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AverageItemComments.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AverageItemCommentUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many AverageItemComments
+     * const averageItemComment = await prisma.averageItemComment.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends AverageItemCommentUpdateManyArgs>(args: SelectSubset<T, AverageItemCommentUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AverageItemComments and returns the data updated in the database.
+     * @param {AverageItemCommentUpdateManyAndReturnArgs} args - Arguments to update many AverageItemComments.
+     * @example
+     * // Update many AverageItemComments
+     * const averageItemComment = await prisma.averageItemComment.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more AverageItemComments and only return the `id`
+     * const averageItemCommentWithIdOnly = await prisma.averageItemComment.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends AverageItemCommentUpdateManyAndReturnArgs>(args: SelectSubset<T, AverageItemCommentUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AverageItemCommentPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one AverageItemComment.
+     * @param {AverageItemCommentUpsertArgs} args - Arguments to update or create a AverageItemComment.
+     * @example
+     * // Update or create a AverageItemComment
+     * const averageItemComment = await prisma.averageItemComment.upsert({
+     *   create: {
+     *     // ... data to create a AverageItemComment
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the AverageItemComment we want to update
+     *   }
+     * })
+     */
+    upsert<T extends AverageItemCommentUpsertArgs>(args: SelectSubset<T, AverageItemCommentUpsertArgs<ExtArgs>>): Prisma__AverageItemCommentClient<$Result.GetResult<Prisma.$AverageItemCommentPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of AverageItemComments.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AverageItemCommentCountArgs} args - Arguments to filter AverageItemComments to count.
+     * @example
+     * // Count the number of AverageItemComments
+     * const count = await prisma.averageItemComment.count({
+     *   where: {
+     *     // ... the filter for the AverageItemComments we want to count
+     *   }
+     * })
+    **/
+    count<T extends AverageItemCommentCountArgs>(
+      args?: Subset<T, AverageItemCommentCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], AverageItemCommentCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a AverageItemComment.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AverageItemCommentAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AverageItemCommentAggregateArgs>(args: Subset<T, AverageItemCommentAggregateArgs>): Prisma.PrismaPromise<GetAverageItemCommentAggregateType<T>>
+
+    /**
+     * Group by AverageItemComment.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AverageItemCommentGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends AverageItemCommentGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: AverageItemCommentGroupByArgs['orderBy'] }
+        : { orderBy?: AverageItemCommentGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, AverageItemCommentGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAverageItemCommentGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the AverageItemComment model
+   */
+  readonly fields: AverageItemCommentFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for AverageItemComment.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__AverageItemCommentClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the AverageItemComment model
+   */
+  interface AverageItemCommentFieldRefs {
+    readonly id: FieldRef<"AverageItemComment", 'String'>
+    readonly subject: FieldRef<"AverageItemComment", 'String'>
+    readonly itemName: FieldRef<"AverageItemComment", 'String'>
+    readonly userId: FieldRef<"AverageItemComment", 'String'>
+    readonly content: FieldRef<"AverageItemComment", 'String'>
+    readonly createdAt: FieldRef<"AverageItemComment", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * AverageItemComment findUnique
+   */
+  export type AverageItemCommentFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AverageItemComment
+     */
+    select?: AverageItemCommentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AverageItemComment
+     */
+    omit?: AverageItemCommentOmit<ExtArgs> | null
+    /**
+     * Filter, which AverageItemComment to fetch.
+     */
+    where: AverageItemCommentWhereUniqueInput
+  }
+
+  /**
+   * AverageItemComment findUniqueOrThrow
+   */
+  export type AverageItemCommentFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AverageItemComment
+     */
+    select?: AverageItemCommentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AverageItemComment
+     */
+    omit?: AverageItemCommentOmit<ExtArgs> | null
+    /**
+     * Filter, which AverageItemComment to fetch.
+     */
+    where: AverageItemCommentWhereUniqueInput
+  }
+
+  /**
+   * AverageItemComment findFirst
+   */
+  export type AverageItemCommentFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AverageItemComment
+     */
+    select?: AverageItemCommentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AverageItemComment
+     */
+    omit?: AverageItemCommentOmit<ExtArgs> | null
+    /**
+     * Filter, which AverageItemComment to fetch.
+     */
+    where?: AverageItemCommentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AverageItemComments to fetch.
+     */
+    orderBy?: AverageItemCommentOrderByWithRelationInput | AverageItemCommentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AverageItemComments.
+     */
+    cursor?: AverageItemCommentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AverageItemComments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AverageItemComments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AverageItemComments.
+     */
+    distinct?: AverageItemCommentScalarFieldEnum | AverageItemCommentScalarFieldEnum[]
+  }
+
+  /**
+   * AverageItemComment findFirstOrThrow
+   */
+  export type AverageItemCommentFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AverageItemComment
+     */
+    select?: AverageItemCommentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AverageItemComment
+     */
+    omit?: AverageItemCommentOmit<ExtArgs> | null
+    /**
+     * Filter, which AverageItemComment to fetch.
+     */
+    where?: AverageItemCommentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AverageItemComments to fetch.
+     */
+    orderBy?: AverageItemCommentOrderByWithRelationInput | AverageItemCommentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AverageItemComments.
+     */
+    cursor?: AverageItemCommentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AverageItemComments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AverageItemComments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AverageItemComments.
+     */
+    distinct?: AverageItemCommentScalarFieldEnum | AverageItemCommentScalarFieldEnum[]
+  }
+
+  /**
+   * AverageItemComment findMany
+   */
+  export type AverageItemCommentFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AverageItemComment
+     */
+    select?: AverageItemCommentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AverageItemComment
+     */
+    omit?: AverageItemCommentOmit<ExtArgs> | null
+    /**
+     * Filter, which AverageItemComments to fetch.
+     */
+    where?: AverageItemCommentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AverageItemComments to fetch.
+     */
+    orderBy?: AverageItemCommentOrderByWithRelationInput | AverageItemCommentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing AverageItemComments.
+     */
+    cursor?: AverageItemCommentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AverageItemComments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AverageItemComments.
+     */
+    skip?: number
+    distinct?: AverageItemCommentScalarFieldEnum | AverageItemCommentScalarFieldEnum[]
+  }
+
+  /**
+   * AverageItemComment create
+   */
+  export type AverageItemCommentCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AverageItemComment
+     */
+    select?: AverageItemCommentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AverageItemComment
+     */
+    omit?: AverageItemCommentOmit<ExtArgs> | null
+    /**
+     * The data needed to create a AverageItemComment.
+     */
+    data: XOR<AverageItemCommentCreateInput, AverageItemCommentUncheckedCreateInput>
+  }
+
+  /**
+   * AverageItemComment createMany
+   */
+  export type AverageItemCommentCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many AverageItemComments.
+     */
+    data: AverageItemCommentCreateManyInput | AverageItemCommentCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * AverageItemComment createManyAndReturn
+   */
+  export type AverageItemCommentCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AverageItemComment
+     */
+    select?: AverageItemCommentSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the AverageItemComment
+     */
+    omit?: AverageItemCommentOmit<ExtArgs> | null
+    /**
+     * The data used to create many AverageItemComments.
+     */
+    data: AverageItemCommentCreateManyInput | AverageItemCommentCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * AverageItemComment update
+   */
+  export type AverageItemCommentUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AverageItemComment
+     */
+    select?: AverageItemCommentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AverageItemComment
+     */
+    omit?: AverageItemCommentOmit<ExtArgs> | null
+    /**
+     * The data needed to update a AverageItemComment.
+     */
+    data: XOR<AverageItemCommentUpdateInput, AverageItemCommentUncheckedUpdateInput>
+    /**
+     * Choose, which AverageItemComment to update.
+     */
+    where: AverageItemCommentWhereUniqueInput
+  }
+
+  /**
+   * AverageItemComment updateMany
+   */
+  export type AverageItemCommentUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update AverageItemComments.
+     */
+    data: XOR<AverageItemCommentUpdateManyMutationInput, AverageItemCommentUncheckedUpdateManyInput>
+    /**
+     * Filter which AverageItemComments to update
+     */
+    where?: AverageItemCommentWhereInput
+    /**
+     * Limit how many AverageItemComments to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * AverageItemComment updateManyAndReturn
+   */
+  export type AverageItemCommentUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AverageItemComment
+     */
+    select?: AverageItemCommentSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the AverageItemComment
+     */
+    omit?: AverageItemCommentOmit<ExtArgs> | null
+    /**
+     * The data used to update AverageItemComments.
+     */
+    data: XOR<AverageItemCommentUpdateManyMutationInput, AverageItemCommentUncheckedUpdateManyInput>
+    /**
+     * Filter which AverageItemComments to update
+     */
+    where?: AverageItemCommentWhereInput
+    /**
+     * Limit how many AverageItemComments to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * AverageItemComment upsert
+   */
+  export type AverageItemCommentUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AverageItemComment
+     */
+    select?: AverageItemCommentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AverageItemComment
+     */
+    omit?: AverageItemCommentOmit<ExtArgs> | null
+    /**
+     * The filter to search for the AverageItemComment to update in case it exists.
+     */
+    where: AverageItemCommentWhereUniqueInput
+    /**
+     * In case the AverageItemComment found by the `where` argument doesn't exist, create a new AverageItemComment with this data.
+     */
+    create: XOR<AverageItemCommentCreateInput, AverageItemCommentUncheckedCreateInput>
+    /**
+     * In case the AverageItemComment was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<AverageItemCommentUpdateInput, AverageItemCommentUncheckedUpdateInput>
+  }
+
+  /**
+   * AverageItemComment delete
+   */
+  export type AverageItemCommentDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AverageItemComment
+     */
+    select?: AverageItemCommentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AverageItemComment
+     */
+    omit?: AverageItemCommentOmit<ExtArgs> | null
+    /**
+     * Filter which AverageItemComment to delete.
+     */
+    where: AverageItemCommentWhereUniqueInput
+  }
+
+  /**
+   * AverageItemComment deleteMany
+   */
+  export type AverageItemCommentDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AverageItemComments to delete
+     */
+    where?: AverageItemCommentWhereInput
+    /**
+     * Limit how many AverageItemComments to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * AverageItemComment without action
+   */
+  export type AverageItemCommentDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AverageItemComment
+     */
+    select?: AverageItemCommentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AverageItemComment
+     */
+    omit?: AverageItemCommentOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Model Post
    */
 
@@ -20790,6 +21889,18 @@ export namespace Prisma {
   export type AverageItemRankScalarFieldEnum = (typeof AverageItemRankScalarFieldEnum)[keyof typeof AverageItemRankScalarFieldEnum]
 
 
+  export const AverageItemCommentScalarFieldEnum: {
+    id: 'id',
+    subject: 'subject',
+    itemName: 'itemName',
+    userId: 'userId',
+    content: 'content',
+    createdAt: 'createdAt'
+  };
+
+  export type AverageItemCommentScalarFieldEnum = (typeof AverageItemCommentScalarFieldEnum)[keyof typeof AverageItemCommentScalarFieldEnum]
+
+
   export const PostScalarFieldEnum: {
     id: 'id',
     content: 'content',
@@ -21612,7 +22723,7 @@ export namespace Prisma {
     AND?: AverageItemRankWhereInput | AverageItemRankWhereInput[]
     OR?: AverageItemRankWhereInput[]
     NOT?: AverageItemRankWhereInput | AverageItemRankWhereInput[]
-    id?: StringFilter<"AverageItemRank"> | string
+    id?: UuidFilter<"AverageItemRank"> | string
     subject?: StringFilter<"AverageItemRank"> | string
     itemName?: StringFilter<"AverageItemRank"> | string
     avgRank?: FloatFilter<"AverageItemRank"> | number
@@ -21659,12 +22770,69 @@ export namespace Prisma {
     AND?: AverageItemRankScalarWhereWithAggregatesInput | AverageItemRankScalarWhereWithAggregatesInput[]
     OR?: AverageItemRankScalarWhereWithAggregatesInput[]
     NOT?: AverageItemRankScalarWhereWithAggregatesInput | AverageItemRankScalarWhereWithAggregatesInput[]
-    id?: StringWithAggregatesFilter<"AverageItemRank"> | string
+    id?: UuidWithAggregatesFilter<"AverageItemRank"> | string
     subject?: StringWithAggregatesFilter<"AverageItemRank"> | string
     itemName?: StringWithAggregatesFilter<"AverageItemRank"> | string
     avgRank?: FloatWithAggregatesFilter<"AverageItemRank"> | number
     calculationDate?: DateTimeWithAggregatesFilter<"AverageItemRank"> | Date | string
     count?: IntWithAggregatesFilter<"AverageItemRank"> | number
+  }
+
+  export type AverageItemCommentWhereInput = {
+    AND?: AverageItemCommentWhereInput | AverageItemCommentWhereInput[]
+    OR?: AverageItemCommentWhereInput[]
+    NOT?: AverageItemCommentWhereInput | AverageItemCommentWhereInput[]
+    id?: StringFilter<"AverageItemComment"> | string
+    subject?: StringFilter<"AverageItemComment"> | string
+    itemName?: StringFilter<"AverageItemComment"> | string
+    userId?: StringFilter<"AverageItemComment"> | string
+    content?: StringFilter<"AverageItemComment"> | string
+    createdAt?: DateTimeFilter<"AverageItemComment"> | Date | string
+  }
+
+  export type AverageItemCommentOrderByWithRelationInput = {
+    id?: SortOrder
+    subject?: SortOrder
+    itemName?: SortOrder
+    userId?: SortOrder
+    content?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AverageItemCommentWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: AverageItemCommentWhereInput | AverageItemCommentWhereInput[]
+    OR?: AverageItemCommentWhereInput[]
+    NOT?: AverageItemCommentWhereInput | AverageItemCommentWhereInput[]
+    subject?: StringFilter<"AverageItemComment"> | string
+    itemName?: StringFilter<"AverageItemComment"> | string
+    userId?: StringFilter<"AverageItemComment"> | string
+    content?: StringFilter<"AverageItemComment"> | string
+    createdAt?: DateTimeFilter<"AverageItemComment"> | Date | string
+  }, "id">
+
+  export type AverageItemCommentOrderByWithAggregationInput = {
+    id?: SortOrder
+    subject?: SortOrder
+    itemName?: SortOrder
+    userId?: SortOrder
+    content?: SortOrder
+    createdAt?: SortOrder
+    _count?: AverageItemCommentCountOrderByAggregateInput
+    _max?: AverageItemCommentMaxOrderByAggregateInput
+    _min?: AverageItemCommentMinOrderByAggregateInput
+  }
+
+  export type AverageItemCommentScalarWhereWithAggregatesInput = {
+    AND?: AverageItemCommentScalarWhereWithAggregatesInput | AverageItemCommentScalarWhereWithAggregatesInput[]
+    OR?: AverageItemCommentScalarWhereWithAggregatesInput[]
+    NOT?: AverageItemCommentScalarWhereWithAggregatesInput | AverageItemCommentScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"AverageItemComment"> | string
+    subject?: StringWithAggregatesFilter<"AverageItemComment"> | string
+    itemName?: StringWithAggregatesFilter<"AverageItemComment"> | string
+    userId?: StringWithAggregatesFilter<"AverageItemComment"> | string
+    content?: StringWithAggregatesFilter<"AverageItemComment"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"AverageItemComment"> | Date | string
   }
 
   export type PostWhereInput = {
@@ -22795,6 +23963,69 @@ export namespace Prisma {
     avgRank?: FloatFieldUpdateOperationsInput | number
     calculationDate?: DateTimeFieldUpdateOperationsInput | Date | string
     count?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type AverageItemCommentCreateInput = {
+    id?: string
+    subject: string
+    itemName: string
+    userId: string
+    content: string
+    createdAt?: Date | string
+  }
+
+  export type AverageItemCommentUncheckedCreateInput = {
+    id?: string
+    subject: string
+    itemName: string
+    userId: string
+    content: string
+    createdAt?: Date | string
+  }
+
+  export type AverageItemCommentUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    subject?: StringFieldUpdateOperationsInput | string
+    itemName?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AverageItemCommentUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    subject?: StringFieldUpdateOperationsInput | string
+    itemName?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AverageItemCommentCreateManyInput = {
+    id?: string
+    subject: string
+    itemName: string
+    userId: string
+    content: string
+    createdAt?: Date | string
+  }
+
+  export type AverageItemCommentUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    subject?: StringFieldUpdateOperationsInput | string
+    itemName?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AverageItemCommentUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    subject?: StringFieldUpdateOperationsInput | string
+    itemName?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type PostCreateInput = {
@@ -23953,6 +25184,18 @@ export namespace Prisma {
     _max?: NestedFloatFilter<$PrismaModel>
   }
 
+  export type UuidFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel>
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedUuidFilter<$PrismaModel> | string
+  }
+
   export type AverageItemRankCountOrderByAggregateInput = {
     id?: SortOrder
     subject?: SortOrder
@@ -23988,6 +25231,48 @@ export namespace Prisma {
   export type AverageItemRankSumOrderByAggregateInput = {
     avgRank?: SortOrder
     count?: SortOrder
+  }
+
+  export type UuidWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel>
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedUuidWithAggregatesFilter<$PrismaModel> | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedStringFilter<$PrismaModel>
+    _max?: NestedStringFilter<$PrismaModel>
+  }
+
+  export type AverageItemCommentCountOrderByAggregateInput = {
+    id?: SortOrder
+    subject?: SortOrder
+    itemName?: SortOrder
+    userId?: SortOrder
+    content?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AverageItemCommentMaxOrderByAggregateInput = {
+    id?: SortOrder
+    subject?: SortOrder
+    itemName?: SortOrder
+    userId?: SortOrder
+    content?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AverageItemCommentMinOrderByAggregateInput = {
+    id?: SortOrder
+    subject?: SortOrder
+    itemName?: SortOrder
+    userId?: SortOrder
+    content?: SortOrder
+    createdAt?: SortOrder
   }
 
   export type PostCountOrderByAggregateInput = {
@@ -25850,6 +27135,31 @@ export namespace Prisma {
     _sum?: NestedFloatFilter<$PrismaModel>
     _min?: NestedFloatFilter<$PrismaModel>
     _max?: NestedFloatFilter<$PrismaModel>
+  }
+
+  export type NestedUuidFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel>
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedUuidFilter<$PrismaModel> | string
+  }
+
+  export type NestedUuidWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel>
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedUuidWithAggregatesFilter<$PrismaModel> | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedStringFilter<$PrismaModel>
+    _max?: NestedStringFilter<$PrismaModel>
   }
 
   export type NestedEnumFeedTypeFilter<$PrismaModel = never> = {

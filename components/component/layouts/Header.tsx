@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import SearchForm from "../search/SearchForm";
-import { LogInIcon } from "../Icons";
+import { LogInIcon,ChatBubbleIcon } from "../Icons";
 import { ClerkLoading, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 
 export default function Header() {
@@ -19,6 +19,16 @@ export default function Header() {
       <div className="flex-1 flex justify-center px-2 sm:px-4">
         <SearchForm />
       </div>
+
+            {/* サービス品質アンケート (ユーザー関連の左) */}
+      <Link
+        href="https://docs.google.com/forms/d/e/1FAIpQLSdLbVn1Wwbzfa9Zdq6ZjAnrrRMzur-ZKhu4-EXrmT8Q8__p0g/viewform"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center justify-center h-8 w-8 rounded-full hover:bg-muted transition-colors" // アイコンのサイズとホバーエフェクト
+      >
+        <ChatBubbleIcon className="h-5 w-5 text-foreground/80" />
+      </Link>
 
       {/* ユーザー関連 (右端) */}
       <div className="flex items-center gap-4 flex-shrink-0">
