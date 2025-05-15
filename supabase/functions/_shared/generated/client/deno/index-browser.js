@@ -171,6 +171,14 @@ exports.Prisma.RankingListTagScalarFieldEnum = {
   tagId: 'tagId'
 };
 
+exports.Prisma.RankingListCommentScalarFieldEnum = {
+  id: 'id',
+  listId: 'listId',
+  userId: 'userId',
+  content: 'content',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.TrendingSubjectScalarFieldEnum = {
   id: 'id',
   subject: 'subject',
@@ -330,6 +338,7 @@ exports.Prisma.ModelName = {
   RankingList: 'RankingList',
   RankedItem: 'RankedItem',
   RankingListTag: 'RankingListTag',
+  RankingListComment: 'RankingListComment',
   TrendingSubject: 'TrendingSubject',
   TrendingTag: 'TrendingTag',
   TrendingItem: 'TrendingItem',
