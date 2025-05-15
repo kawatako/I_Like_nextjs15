@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import type { RankingListViewData } from "@/lib/types";
 import { UsersIcon, PlusSquareIcon } from '@/components/component/Icons';
 import Link from "next/link";
+import CommentSection from './CommentSection';
 
 
 interface Props {
@@ -121,7 +122,7 @@ export function RankingDetailView({ ranking, isOwner }: Props) {
 
         {/* コメントタブ */}
         <TabsContent value="comments">
-          <p className="text-muted-foreground">コメント機能は未実装です。</p>
+          <CommentSection listId={ranking.id} />
         </TabsContent>
       </Tabs>
     </div>

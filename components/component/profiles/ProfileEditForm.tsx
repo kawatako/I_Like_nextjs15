@@ -34,7 +34,7 @@ type InitialProfileData = Pick<
   | "image"
   | "coverImageUrl"
   | "socialLinks"
-  | "username" // username もリダイレクト用に含める
+  | "username" 
 >;
 
 interface ProfileEditFormProps {
@@ -119,36 +119,31 @@ const ProfileUpdateSchema = z
 export default function ProfileEditForm({ initialData }: ProfileEditFormProps) {
   const router = useRouter();
   const { toast } = useToast();
-  const [isPending, startTransition] = useTransition(); // フォーム送信中の状態
+  const [isPending, startTransition] = useTransition();
 
-  // --- 各フォームフィールドの State ---
   const [name, setName] = useState(initialData.name ?? "");
   const [bio, setBio] = useState(initialData.bio ?? "");
   const [location, setLocation] = useState(initialData.location ?? "");
-  // ★ 生年月日の初期値: Date オブジェクトを 'YYYY-MM-DD' 文字列に変換 ★
   const [birthday, setBirthday] = useState<string>(
     initialData.birthday
       ? new Date(initialData.birthday).toISOString().split("T")[0]
       : ""
   );
-  // ★ socialLinks はオブジェクトとして管理 ★
   const [socialLinks, setSocialLinks] = useState({
-    x: (initialData.socialLinks as any)?.x ?? "", // 型アサーション注意
+    x: (initialData.socialLinks as any)?.x ?? "",
     instagram: (initialData.socialLinks as any)?.instagram ?? "",
     tiktok: (initialData.socialLinks as any)?.tiktok ?? "",
     website: (initialData.socialLinks as any)?.website ?? "",
   });
 
-  // --- 画像関連の State とフック ---
   const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
   const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
-  // アップローダーフックを2回呼び出す (別々のローディング状態を管理できる)
+
   const { uploadImage: uploadCoverImage, isLoading: isCoverUploading } =
     useImageUploader();
   const { uploadImage: uploadProfileImage, isLoading: isProfileUploading } =
     useImageUploader();
 
-  // --- 画像選択/削除ハンドラ (ImageUploader に渡す) ---
   const handleCoverFileChange = useCallback((file: File | null) => {
     setCoverImageFile(file);
   }, []);
@@ -156,13 +151,11 @@ export default function ProfileEditForm({ initialData }: ProfileEditFormProps) {
     setProfileImageFile(file);
   }, []);
 
-  // --- フォーム送信処理 ---
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    // TODO: クライアントサイドでの Zod バリデーション (任意)
     const formData = { name, bio, location, birthday, socialLinks };
-    const validationResult = ProfileUpdateSchema.partial().safeParse(formData); // partial() で一部更新に対応
+    const validationResult = ProfileUpdateSchema.partial().safeParse(formData);
     if (!validationResult.success) {
       toast({
         title: "入力エラー",
@@ -172,12 +165,11 @@ export default function ProfileEditForm({ initialData }: ProfileEditFormProps) {
       return;
     }
 
-    let coverImageUrl: string | null | undefined = initialData.coverImageUrl; // 既存URLを保持
-    let imageUrl: string | null | undefined = initialData.image; // 既存URLを保持
+    let coverImageUrl: string | null | undefined = initialData.coverImageUrl;
+    let imageUrl: string | null | undefined = initialData.image;
 
     startTransition(async () => {
       try {
-        // 画像アップロード (変更があれば実行)
         const uploadPromises: Promise<void>[] = [];
         if (coverImageFile) {
           uploadPromises.push(
@@ -201,31 +193,27 @@ export default function ProfileEditForm({ initialData }: ProfileEditFormProps) {
         }
         await Promise.all(uploadPromises);
 
-        // 更新データの作成
         const updateData: ProfileUpdateData = {
-          name: name || null, // 空文字は null に
+          name: name || null,
           bio: bio || null,
           location: location || null,
-          birthday: birthday || null, // 空文字は null に変換済みのはず
+          birthday: birthday || null,
           socialLinks: {
-            // 空文字は null に変換
             x: socialLinks.x || null,
             instagram: socialLinks.instagram || null,
             tiktok: socialLinks.tiktok || null,
             website: socialLinks.website || null,
           },
-          image: imageUrl,
-          coverImageUrl: coverImageUrl,
+          image: profileImageFile ? imageUrl : initialData.image,
+          coverImageUrl: coverImageFile ? coverImageUrl : initialData.coverImageUrl,
         };
 
-        // Server Action 呼び出し
         const result = await updateProfileAction(updateData);
 
         if (result.success) {
           toast({ title: "プロフィールを更新しました" });
-          // 更新成功したらプロフィールページに戻る
           router.push(`/profile/${initialData.username}`);
-          router.refresh(); // サーバーコンポーネントのデータを再取得させる
+          router.refresh();
         } else {
           throw new Error(result.error || "更新に失敗しました");
         }
@@ -240,40 +228,32 @@ export default function ProfileEditForm({ initialData }: ProfileEditFormProps) {
     });
   };
 
-  // ボタンの disabled 状態
   const isProcessing = isPending || isCoverUploading || isProfileUploading;
 
   return (
-    // --- JSX 骨格 ---
     <form onSubmit={handleSubmit} className='space-y-8'>
-      {/* --- カバー画像 --- */}
       <ImageUploader
         label='カバー画像'
         initialImageUrl={initialData.coverImageUrl}
         onFileChange={handleCoverFileChange}
         disabled={isProcessing}
-        previewClassName='w-full aspect-[3/1] sm:aspect-[4/1]' // 横長に
+        previewClassName='w-full aspect-[3/1] sm:aspect-[4/1]'
         buttonSize='sm'
         buttonClassName='mt-2'
       />
 
-      {/* --- プロフィールアイコン --- */}
-      {/* アイコンは重ねて表示するなど工夫が必要かも */}
       <div className='relative pl-4 sm:pl-6 pt-[-4rem] z-10 w-fit'>
-        {" "}
-        {/* 位置調整 */}
         <ImageUploader
           label='プロフィールアイコン'
           initialImageUrl={initialData.image}
           onFileChange={handleProfileFileChange}
           disabled={isProcessing}
-          previewClassName='w-24 h-24 sm:w-32 sm:h-32 rounded-full border-4 border-background' // 丸形、ボーダー
-          buttonClassName='w-24 h-24 sm:w-32 sm:h-32 rounded-full flex-col' // 丸形ボタン
-          buttonSize={null} // サイズ指定なし
+          previewClassName='w-24 h-24 sm:w-32 sm:h-32 rounded-full border-4 border-background'
+          buttonClassName='w-24 h-24 sm:w-32 sm:h-32 rounded-full flex-col'
+          buttonSize={null}
         />
       </div>
 
-      {/* --- 基本情報 --- */}
       <Card>
         <CardHeader>
           <CardTitle>基本情報</CardTitle>
@@ -323,7 +303,6 @@ export default function ProfileEditForm({ initialData }: ProfileEditFormProps) {
         </CardContent>
       </Card>
 
-      {/* --- リンク --- */}
       <Card>
         <CardHeader>
           <CardTitle>リンク</CardTitle>
@@ -384,7 +363,6 @@ export default function ProfileEditForm({ initialData }: ProfileEditFormProps) {
         </CardContent>
       </Card>
 
-      {/* --- 保存ボタン --- */}
       <div className='flex justify-end gap-2'>
         <Button
           type='button'

@@ -39,6 +39,11 @@ export type RankedItem = $Result.DefaultSelection<Prisma.$RankedItemPayload>
  */
 export type RankingListTag = $Result.DefaultSelection<Prisma.$RankingListTagPayload>
 /**
+ * Model RankingListComment
+ * 
+ */
+export type RankingListComment = $Result.DefaultSelection<Prisma.$RankingListCommentPayload>
+/**
  * Model TrendingSubject
  * 
  */
@@ -329,6 +334,16 @@ export class PrismaClient<
     * ```
     */
   get rankingListTag(): Prisma.RankingListTagDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.rankingListComment`: Exposes CRUD operations for the **RankingListComment** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more RankingListComments
+    * const rankingListComments = await prisma.rankingListComment.findMany()
+    * ```
+    */
+  get rankingListComment(): Prisma.RankingListCommentDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.trendingSubject`: Exposes CRUD operations for the **TrendingSubject** model.
@@ -894,6 +909,7 @@ export namespace Prisma {
     RankingList: 'RankingList',
     RankedItem: 'RankedItem',
     RankingListTag: 'RankingListTag',
+    RankingListComment: 'RankingListComment',
     TrendingSubject: 'TrendingSubject',
     TrendingTag: 'TrendingTag',
     TrendingItem: 'TrendingItem',
@@ -924,7 +940,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "tag" | "user" | "rankingList" | "rankedItem" | "rankingListTag" | "trendingSubject" | "trendingTag" | "trendingItem" | "averageItemRank" | "averageItemComment" | "post" | "retweet" | "feedItem" | "like" | "reply" | "followRequest" | "follow"
+      modelProps: "tag" | "user" | "rankingList" | "rankedItem" | "rankingListTag" | "rankingListComment" | "trendingSubject" | "trendingTag" | "trendingItem" | "averageItemRank" | "averageItemComment" | "post" | "retweet" | "feedItem" | "like" | "reply" | "followRequest" | "follow"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1295,6 +1311,80 @@ export namespace Prisma {
           count: {
             args: Prisma.RankingListTagCountArgs<ExtArgs>
             result: $Utils.Optional<RankingListTagCountAggregateOutputType> | number
+          }
+        }
+      }
+      RankingListComment: {
+        payload: Prisma.$RankingListCommentPayload<ExtArgs>
+        fields: Prisma.RankingListCommentFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.RankingListCommentFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RankingListCommentPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.RankingListCommentFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RankingListCommentPayload>
+          }
+          findFirst: {
+            args: Prisma.RankingListCommentFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RankingListCommentPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.RankingListCommentFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RankingListCommentPayload>
+          }
+          findMany: {
+            args: Prisma.RankingListCommentFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RankingListCommentPayload>[]
+          }
+          create: {
+            args: Prisma.RankingListCommentCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RankingListCommentPayload>
+          }
+          createMany: {
+            args: Prisma.RankingListCommentCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.RankingListCommentCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RankingListCommentPayload>[]
+          }
+          delete: {
+            args: Prisma.RankingListCommentDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RankingListCommentPayload>
+          }
+          update: {
+            args: Prisma.RankingListCommentUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RankingListCommentPayload>
+          }
+          deleteMany: {
+            args: Prisma.RankingListCommentDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.RankingListCommentUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.RankingListCommentUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RankingListCommentPayload>[]
+          }
+          upsert: {
+            args: Prisma.RankingListCommentUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RankingListCommentPayload>
+          }
+          aggregate: {
+            args: Prisma.RankingListCommentAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateRankingListComment>
+          }
+          groupBy: {
+            args: Prisma.RankingListCommentGroupByArgs<ExtArgs>
+            result: $Utils.Optional<RankingListCommentGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.RankingListCommentCountArgs<ExtArgs>
+            result: $Utils.Optional<RankingListCommentCountAggregateOutputType> | number
           }
         }
       }
@@ -2275,6 +2365,7 @@ export namespace Prisma {
     rankingList?: RankingListOmit
     rankedItem?: RankedItemOmit
     rankingListTag?: RankingListTagOmit
+    rankingListComment?: RankingListCommentOmit
     trendingSubject?: TrendingSubjectOmit
     trendingTag?: TrendingTagOmit
     trendingItem?: TrendingItemOmit
@@ -8612,6 +8703,1001 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: RankingListTagInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model RankingListComment
+   */
+
+  export type AggregateRankingListComment = {
+    _count: RankingListCommentCountAggregateOutputType | null
+    _min: RankingListCommentMinAggregateOutputType | null
+    _max: RankingListCommentMaxAggregateOutputType | null
+  }
+
+  export type RankingListCommentMinAggregateOutputType = {
+    id: string | null
+    listId: string | null
+    userId: string | null
+    content: string | null
+    createdAt: Date | null
+  }
+
+  export type RankingListCommentMaxAggregateOutputType = {
+    id: string | null
+    listId: string | null
+    userId: string | null
+    content: string | null
+    createdAt: Date | null
+  }
+
+  export type RankingListCommentCountAggregateOutputType = {
+    id: number
+    listId: number
+    userId: number
+    content: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type RankingListCommentMinAggregateInputType = {
+    id?: true
+    listId?: true
+    userId?: true
+    content?: true
+    createdAt?: true
+  }
+
+  export type RankingListCommentMaxAggregateInputType = {
+    id?: true
+    listId?: true
+    userId?: true
+    content?: true
+    createdAt?: true
+  }
+
+  export type RankingListCommentCountAggregateInputType = {
+    id?: true
+    listId?: true
+    userId?: true
+    content?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type RankingListCommentAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which RankingListComment to aggregate.
+     */
+    where?: RankingListCommentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RankingListComments to fetch.
+     */
+    orderBy?: RankingListCommentOrderByWithRelationInput | RankingListCommentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: RankingListCommentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RankingListComments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RankingListComments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned RankingListComments
+    **/
+    _count?: true | RankingListCommentCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: RankingListCommentMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: RankingListCommentMaxAggregateInputType
+  }
+
+  export type GetRankingListCommentAggregateType<T extends RankingListCommentAggregateArgs> = {
+        [P in keyof T & keyof AggregateRankingListComment]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateRankingListComment[P]>
+      : GetScalarType<T[P], AggregateRankingListComment[P]>
+  }
+
+
+
+
+  export type RankingListCommentGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: RankingListCommentWhereInput
+    orderBy?: RankingListCommentOrderByWithAggregationInput | RankingListCommentOrderByWithAggregationInput[]
+    by: RankingListCommentScalarFieldEnum[] | RankingListCommentScalarFieldEnum
+    having?: RankingListCommentScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: RankingListCommentCountAggregateInputType | true
+    _min?: RankingListCommentMinAggregateInputType
+    _max?: RankingListCommentMaxAggregateInputType
+  }
+
+  export type RankingListCommentGroupByOutputType = {
+    id: string
+    listId: string
+    userId: string
+    content: string
+    createdAt: Date
+    _count: RankingListCommentCountAggregateOutputType | null
+    _min: RankingListCommentMinAggregateOutputType | null
+    _max: RankingListCommentMaxAggregateOutputType | null
+  }
+
+  type GetRankingListCommentGroupByPayload<T extends RankingListCommentGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<RankingListCommentGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof RankingListCommentGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], RankingListCommentGroupByOutputType[P]>
+            : GetScalarType<T[P], RankingListCommentGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type RankingListCommentSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    listId?: boolean
+    userId?: boolean
+    content?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["rankingListComment"]>
+
+  export type RankingListCommentSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    listId?: boolean
+    userId?: boolean
+    content?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["rankingListComment"]>
+
+  export type RankingListCommentSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    listId?: boolean
+    userId?: boolean
+    content?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["rankingListComment"]>
+
+  export type RankingListCommentSelectScalar = {
+    id?: boolean
+    listId?: boolean
+    userId?: boolean
+    content?: boolean
+    createdAt?: boolean
+  }
+
+  export type RankingListCommentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "listId" | "userId" | "content" | "createdAt", ExtArgs["result"]["rankingListComment"]>
+
+  export type $RankingListCommentPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "RankingListComment"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      listId: string
+      userId: string
+      content: string
+      createdAt: Date
+    }, ExtArgs["result"]["rankingListComment"]>
+    composites: {}
+  }
+
+  type RankingListCommentGetPayload<S extends boolean | null | undefined | RankingListCommentDefaultArgs> = $Result.GetResult<Prisma.$RankingListCommentPayload, S>
+
+  type RankingListCommentCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<RankingListCommentFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: RankingListCommentCountAggregateInputType | true
+    }
+
+  export interface RankingListCommentDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['RankingListComment'], meta: { name: 'RankingListComment' } }
+    /**
+     * Find zero or one RankingListComment that matches the filter.
+     * @param {RankingListCommentFindUniqueArgs} args - Arguments to find a RankingListComment
+     * @example
+     * // Get one RankingListComment
+     * const rankingListComment = await prisma.rankingListComment.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends RankingListCommentFindUniqueArgs>(args: SelectSubset<T, RankingListCommentFindUniqueArgs<ExtArgs>>): Prisma__RankingListCommentClient<$Result.GetResult<Prisma.$RankingListCommentPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one RankingListComment that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {RankingListCommentFindUniqueOrThrowArgs} args - Arguments to find a RankingListComment
+     * @example
+     * // Get one RankingListComment
+     * const rankingListComment = await prisma.rankingListComment.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends RankingListCommentFindUniqueOrThrowArgs>(args: SelectSubset<T, RankingListCommentFindUniqueOrThrowArgs<ExtArgs>>): Prisma__RankingListCommentClient<$Result.GetResult<Prisma.$RankingListCommentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first RankingListComment that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RankingListCommentFindFirstArgs} args - Arguments to find a RankingListComment
+     * @example
+     * // Get one RankingListComment
+     * const rankingListComment = await prisma.rankingListComment.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends RankingListCommentFindFirstArgs>(args?: SelectSubset<T, RankingListCommentFindFirstArgs<ExtArgs>>): Prisma__RankingListCommentClient<$Result.GetResult<Prisma.$RankingListCommentPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first RankingListComment that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RankingListCommentFindFirstOrThrowArgs} args - Arguments to find a RankingListComment
+     * @example
+     * // Get one RankingListComment
+     * const rankingListComment = await prisma.rankingListComment.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends RankingListCommentFindFirstOrThrowArgs>(args?: SelectSubset<T, RankingListCommentFindFirstOrThrowArgs<ExtArgs>>): Prisma__RankingListCommentClient<$Result.GetResult<Prisma.$RankingListCommentPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more RankingListComments that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RankingListCommentFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all RankingListComments
+     * const rankingListComments = await prisma.rankingListComment.findMany()
+     * 
+     * // Get first 10 RankingListComments
+     * const rankingListComments = await prisma.rankingListComment.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const rankingListCommentWithIdOnly = await prisma.rankingListComment.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends RankingListCommentFindManyArgs>(args?: SelectSubset<T, RankingListCommentFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RankingListCommentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a RankingListComment.
+     * @param {RankingListCommentCreateArgs} args - Arguments to create a RankingListComment.
+     * @example
+     * // Create one RankingListComment
+     * const RankingListComment = await prisma.rankingListComment.create({
+     *   data: {
+     *     // ... data to create a RankingListComment
+     *   }
+     * })
+     * 
+     */
+    create<T extends RankingListCommentCreateArgs>(args: SelectSubset<T, RankingListCommentCreateArgs<ExtArgs>>): Prisma__RankingListCommentClient<$Result.GetResult<Prisma.$RankingListCommentPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many RankingListComments.
+     * @param {RankingListCommentCreateManyArgs} args - Arguments to create many RankingListComments.
+     * @example
+     * // Create many RankingListComments
+     * const rankingListComment = await prisma.rankingListComment.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends RankingListCommentCreateManyArgs>(args?: SelectSubset<T, RankingListCommentCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many RankingListComments and returns the data saved in the database.
+     * @param {RankingListCommentCreateManyAndReturnArgs} args - Arguments to create many RankingListComments.
+     * @example
+     * // Create many RankingListComments
+     * const rankingListComment = await prisma.rankingListComment.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many RankingListComments and only return the `id`
+     * const rankingListCommentWithIdOnly = await prisma.rankingListComment.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends RankingListCommentCreateManyAndReturnArgs>(args?: SelectSubset<T, RankingListCommentCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RankingListCommentPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a RankingListComment.
+     * @param {RankingListCommentDeleteArgs} args - Arguments to delete one RankingListComment.
+     * @example
+     * // Delete one RankingListComment
+     * const RankingListComment = await prisma.rankingListComment.delete({
+     *   where: {
+     *     // ... filter to delete one RankingListComment
+     *   }
+     * })
+     * 
+     */
+    delete<T extends RankingListCommentDeleteArgs>(args: SelectSubset<T, RankingListCommentDeleteArgs<ExtArgs>>): Prisma__RankingListCommentClient<$Result.GetResult<Prisma.$RankingListCommentPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one RankingListComment.
+     * @param {RankingListCommentUpdateArgs} args - Arguments to update one RankingListComment.
+     * @example
+     * // Update one RankingListComment
+     * const rankingListComment = await prisma.rankingListComment.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends RankingListCommentUpdateArgs>(args: SelectSubset<T, RankingListCommentUpdateArgs<ExtArgs>>): Prisma__RankingListCommentClient<$Result.GetResult<Prisma.$RankingListCommentPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more RankingListComments.
+     * @param {RankingListCommentDeleteManyArgs} args - Arguments to filter RankingListComments to delete.
+     * @example
+     * // Delete a few RankingListComments
+     * const { count } = await prisma.rankingListComment.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends RankingListCommentDeleteManyArgs>(args?: SelectSubset<T, RankingListCommentDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more RankingListComments.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RankingListCommentUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many RankingListComments
+     * const rankingListComment = await prisma.rankingListComment.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends RankingListCommentUpdateManyArgs>(args: SelectSubset<T, RankingListCommentUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more RankingListComments and returns the data updated in the database.
+     * @param {RankingListCommentUpdateManyAndReturnArgs} args - Arguments to update many RankingListComments.
+     * @example
+     * // Update many RankingListComments
+     * const rankingListComment = await prisma.rankingListComment.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more RankingListComments and only return the `id`
+     * const rankingListCommentWithIdOnly = await prisma.rankingListComment.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends RankingListCommentUpdateManyAndReturnArgs>(args: SelectSubset<T, RankingListCommentUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RankingListCommentPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one RankingListComment.
+     * @param {RankingListCommentUpsertArgs} args - Arguments to update or create a RankingListComment.
+     * @example
+     * // Update or create a RankingListComment
+     * const rankingListComment = await prisma.rankingListComment.upsert({
+     *   create: {
+     *     // ... data to create a RankingListComment
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the RankingListComment we want to update
+     *   }
+     * })
+     */
+    upsert<T extends RankingListCommentUpsertArgs>(args: SelectSubset<T, RankingListCommentUpsertArgs<ExtArgs>>): Prisma__RankingListCommentClient<$Result.GetResult<Prisma.$RankingListCommentPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of RankingListComments.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RankingListCommentCountArgs} args - Arguments to filter RankingListComments to count.
+     * @example
+     * // Count the number of RankingListComments
+     * const count = await prisma.rankingListComment.count({
+     *   where: {
+     *     // ... the filter for the RankingListComments we want to count
+     *   }
+     * })
+    **/
+    count<T extends RankingListCommentCountArgs>(
+      args?: Subset<T, RankingListCommentCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], RankingListCommentCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a RankingListComment.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RankingListCommentAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends RankingListCommentAggregateArgs>(args: Subset<T, RankingListCommentAggregateArgs>): Prisma.PrismaPromise<GetRankingListCommentAggregateType<T>>
+
+    /**
+     * Group by RankingListComment.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RankingListCommentGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends RankingListCommentGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: RankingListCommentGroupByArgs['orderBy'] }
+        : { orderBy?: RankingListCommentGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, RankingListCommentGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetRankingListCommentGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the RankingListComment model
+   */
+  readonly fields: RankingListCommentFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for RankingListComment.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__RankingListCommentClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the RankingListComment model
+   */
+  interface RankingListCommentFieldRefs {
+    readonly id: FieldRef<"RankingListComment", 'String'>
+    readonly listId: FieldRef<"RankingListComment", 'String'>
+    readonly userId: FieldRef<"RankingListComment", 'String'>
+    readonly content: FieldRef<"RankingListComment", 'String'>
+    readonly createdAt: FieldRef<"RankingListComment", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * RankingListComment findUnique
+   */
+  export type RankingListCommentFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RankingListComment
+     */
+    select?: RankingListCommentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RankingListComment
+     */
+    omit?: RankingListCommentOmit<ExtArgs> | null
+    /**
+     * Filter, which RankingListComment to fetch.
+     */
+    where: RankingListCommentWhereUniqueInput
+  }
+
+  /**
+   * RankingListComment findUniqueOrThrow
+   */
+  export type RankingListCommentFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RankingListComment
+     */
+    select?: RankingListCommentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RankingListComment
+     */
+    omit?: RankingListCommentOmit<ExtArgs> | null
+    /**
+     * Filter, which RankingListComment to fetch.
+     */
+    where: RankingListCommentWhereUniqueInput
+  }
+
+  /**
+   * RankingListComment findFirst
+   */
+  export type RankingListCommentFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RankingListComment
+     */
+    select?: RankingListCommentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RankingListComment
+     */
+    omit?: RankingListCommentOmit<ExtArgs> | null
+    /**
+     * Filter, which RankingListComment to fetch.
+     */
+    where?: RankingListCommentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RankingListComments to fetch.
+     */
+    orderBy?: RankingListCommentOrderByWithRelationInput | RankingListCommentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for RankingListComments.
+     */
+    cursor?: RankingListCommentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RankingListComments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RankingListComments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of RankingListComments.
+     */
+    distinct?: RankingListCommentScalarFieldEnum | RankingListCommentScalarFieldEnum[]
+  }
+
+  /**
+   * RankingListComment findFirstOrThrow
+   */
+  export type RankingListCommentFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RankingListComment
+     */
+    select?: RankingListCommentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RankingListComment
+     */
+    omit?: RankingListCommentOmit<ExtArgs> | null
+    /**
+     * Filter, which RankingListComment to fetch.
+     */
+    where?: RankingListCommentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RankingListComments to fetch.
+     */
+    orderBy?: RankingListCommentOrderByWithRelationInput | RankingListCommentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for RankingListComments.
+     */
+    cursor?: RankingListCommentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RankingListComments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RankingListComments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of RankingListComments.
+     */
+    distinct?: RankingListCommentScalarFieldEnum | RankingListCommentScalarFieldEnum[]
+  }
+
+  /**
+   * RankingListComment findMany
+   */
+  export type RankingListCommentFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RankingListComment
+     */
+    select?: RankingListCommentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RankingListComment
+     */
+    omit?: RankingListCommentOmit<ExtArgs> | null
+    /**
+     * Filter, which RankingListComments to fetch.
+     */
+    where?: RankingListCommentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RankingListComments to fetch.
+     */
+    orderBy?: RankingListCommentOrderByWithRelationInput | RankingListCommentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing RankingListComments.
+     */
+    cursor?: RankingListCommentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RankingListComments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RankingListComments.
+     */
+    skip?: number
+    distinct?: RankingListCommentScalarFieldEnum | RankingListCommentScalarFieldEnum[]
+  }
+
+  /**
+   * RankingListComment create
+   */
+  export type RankingListCommentCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RankingListComment
+     */
+    select?: RankingListCommentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RankingListComment
+     */
+    omit?: RankingListCommentOmit<ExtArgs> | null
+    /**
+     * The data needed to create a RankingListComment.
+     */
+    data: XOR<RankingListCommentCreateInput, RankingListCommentUncheckedCreateInput>
+  }
+
+  /**
+   * RankingListComment createMany
+   */
+  export type RankingListCommentCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many RankingListComments.
+     */
+    data: RankingListCommentCreateManyInput | RankingListCommentCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * RankingListComment createManyAndReturn
+   */
+  export type RankingListCommentCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RankingListComment
+     */
+    select?: RankingListCommentSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the RankingListComment
+     */
+    omit?: RankingListCommentOmit<ExtArgs> | null
+    /**
+     * The data used to create many RankingListComments.
+     */
+    data: RankingListCommentCreateManyInput | RankingListCommentCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * RankingListComment update
+   */
+  export type RankingListCommentUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RankingListComment
+     */
+    select?: RankingListCommentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RankingListComment
+     */
+    omit?: RankingListCommentOmit<ExtArgs> | null
+    /**
+     * The data needed to update a RankingListComment.
+     */
+    data: XOR<RankingListCommentUpdateInput, RankingListCommentUncheckedUpdateInput>
+    /**
+     * Choose, which RankingListComment to update.
+     */
+    where: RankingListCommentWhereUniqueInput
+  }
+
+  /**
+   * RankingListComment updateMany
+   */
+  export type RankingListCommentUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update RankingListComments.
+     */
+    data: XOR<RankingListCommentUpdateManyMutationInput, RankingListCommentUncheckedUpdateManyInput>
+    /**
+     * Filter which RankingListComments to update
+     */
+    where?: RankingListCommentWhereInput
+    /**
+     * Limit how many RankingListComments to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * RankingListComment updateManyAndReturn
+   */
+  export type RankingListCommentUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RankingListComment
+     */
+    select?: RankingListCommentSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the RankingListComment
+     */
+    omit?: RankingListCommentOmit<ExtArgs> | null
+    /**
+     * The data used to update RankingListComments.
+     */
+    data: XOR<RankingListCommentUpdateManyMutationInput, RankingListCommentUncheckedUpdateManyInput>
+    /**
+     * Filter which RankingListComments to update
+     */
+    where?: RankingListCommentWhereInput
+    /**
+     * Limit how many RankingListComments to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * RankingListComment upsert
+   */
+  export type RankingListCommentUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RankingListComment
+     */
+    select?: RankingListCommentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RankingListComment
+     */
+    omit?: RankingListCommentOmit<ExtArgs> | null
+    /**
+     * The filter to search for the RankingListComment to update in case it exists.
+     */
+    where: RankingListCommentWhereUniqueInput
+    /**
+     * In case the RankingListComment found by the `where` argument doesn't exist, create a new RankingListComment with this data.
+     */
+    create: XOR<RankingListCommentCreateInput, RankingListCommentUncheckedCreateInput>
+    /**
+     * In case the RankingListComment was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<RankingListCommentUpdateInput, RankingListCommentUncheckedUpdateInput>
+  }
+
+  /**
+   * RankingListComment delete
+   */
+  export type RankingListCommentDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RankingListComment
+     */
+    select?: RankingListCommentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RankingListComment
+     */
+    omit?: RankingListCommentOmit<ExtArgs> | null
+    /**
+     * Filter which RankingListComment to delete.
+     */
+    where: RankingListCommentWhereUniqueInput
+  }
+
+  /**
+   * RankingListComment deleteMany
+   */
+  export type RankingListCommentDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which RankingListComments to delete
+     */
+    where?: RankingListCommentWhereInput
+    /**
+     * Limit how many RankingListComments to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * RankingListComment without action
+   */
+  export type RankingListCommentDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RankingListComment
+     */
+    select?: RankingListCommentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RankingListComment
+     */
+    omit?: RankingListCommentOmit<ExtArgs> | null
   }
 
 
@@ -21830,6 +22916,17 @@ export namespace Prisma {
   export type RankingListTagScalarFieldEnum = (typeof RankingListTagScalarFieldEnum)[keyof typeof RankingListTagScalarFieldEnum]
 
 
+  export const RankingListCommentScalarFieldEnum: {
+    id: 'id',
+    listId: 'listId',
+    userId: 'userId',
+    content: 'content',
+    createdAt: 'createdAt'
+  };
+
+  export type RankingListCommentScalarFieldEnum = (typeof RankingListCommentScalarFieldEnum)[keyof typeof RankingListCommentScalarFieldEnum]
+
+
   export const TrendingSubjectScalarFieldEnum: {
     id: 'id',
     subject: 'subject',
@@ -22531,6 +23628,58 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"RankingListTag"> | string
     listId?: StringWithAggregatesFilter<"RankingListTag"> | string
     tagId?: StringWithAggregatesFilter<"RankingListTag"> | string
+  }
+
+  export type RankingListCommentWhereInput = {
+    AND?: RankingListCommentWhereInput | RankingListCommentWhereInput[]
+    OR?: RankingListCommentWhereInput[]
+    NOT?: RankingListCommentWhereInput | RankingListCommentWhereInput[]
+    id?: StringFilter<"RankingListComment"> | string
+    listId?: StringFilter<"RankingListComment"> | string
+    userId?: StringFilter<"RankingListComment"> | string
+    content?: StringFilter<"RankingListComment"> | string
+    createdAt?: DateTimeFilter<"RankingListComment"> | Date | string
+  }
+
+  export type RankingListCommentOrderByWithRelationInput = {
+    id?: SortOrder
+    listId?: SortOrder
+    userId?: SortOrder
+    content?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type RankingListCommentWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: RankingListCommentWhereInput | RankingListCommentWhereInput[]
+    OR?: RankingListCommentWhereInput[]
+    NOT?: RankingListCommentWhereInput | RankingListCommentWhereInput[]
+    listId?: StringFilter<"RankingListComment"> | string
+    userId?: StringFilter<"RankingListComment"> | string
+    content?: StringFilter<"RankingListComment"> | string
+    createdAt?: DateTimeFilter<"RankingListComment"> | Date | string
+  }, "id">
+
+  export type RankingListCommentOrderByWithAggregationInput = {
+    id?: SortOrder
+    listId?: SortOrder
+    userId?: SortOrder
+    content?: SortOrder
+    createdAt?: SortOrder
+    _count?: RankingListCommentCountOrderByAggregateInput
+    _max?: RankingListCommentMaxOrderByAggregateInput
+    _min?: RankingListCommentMinOrderByAggregateInput
+  }
+
+  export type RankingListCommentScalarWhereWithAggregatesInput = {
+    AND?: RankingListCommentScalarWhereWithAggregatesInput | RankingListCommentScalarWhereWithAggregatesInput[]
+    OR?: RankingListCommentScalarWhereWithAggregatesInput[]
+    NOT?: RankingListCommentScalarWhereWithAggregatesInput | RankingListCommentScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"RankingListComment"> | string
+    listId?: StringWithAggregatesFilter<"RankingListComment"> | string
+    userId?: StringWithAggregatesFilter<"RankingListComment"> | string
+    content?: StringWithAggregatesFilter<"RankingListComment"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"RankingListComment"> | Date | string
   }
 
   export type TrendingSubjectWhereInput = {
@@ -23707,6 +24856,62 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     listId?: StringFieldUpdateOperationsInput | string
     tagId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type RankingListCommentCreateInput = {
+    id?: string
+    listId: string
+    userId: string
+    content: string
+    createdAt?: Date | string
+  }
+
+  export type RankingListCommentUncheckedCreateInput = {
+    id?: string
+    listId: string
+    userId: string
+    content: string
+    createdAt?: Date | string
+  }
+
+  export type RankingListCommentUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    listId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RankingListCommentUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    listId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RankingListCommentCreateManyInput = {
+    id?: string
+    listId: string
+    userId: string
+    content: string
+    createdAt?: Date | string
+  }
+
+  export type RankingListCommentUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    listId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RankingListCommentUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    listId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type TrendingSubjectCreateInput = {
@@ -25001,6 +26206,30 @@ export namespace Prisma {
     id?: SortOrder
     listId?: SortOrder
     tagId?: SortOrder
+  }
+
+  export type RankingListCommentCountOrderByAggregateInput = {
+    id?: SortOrder
+    listId?: SortOrder
+    userId?: SortOrder
+    content?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type RankingListCommentMaxOrderByAggregateInput = {
+    id?: SortOrder
+    listId?: SortOrder
+    userId?: SortOrder
+    content?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type RankingListCommentMinOrderByAggregateInput = {
+    id?: SortOrder
+    listId?: SortOrder
+    userId?: SortOrder
+    content?: SortOrder
+    createdAt?: SortOrder
   }
 
   export type EnumTrendPeriodFilter<$PrismaModel = never> = {
