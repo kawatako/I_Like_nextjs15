@@ -1,4 +1,3 @@
-// components/component/rankings/RankingEdit.tsx
 "use client";
 
 import {
@@ -74,9 +73,9 @@ export function RankingEdit({ rankingList }: Props) {
       id: item.id,
       itemName: item.itemName,
       itemDescription: item.itemDescription,
-      imageFile: null,             // 新規ファイル
-      previewUrl: item.imageUrl,   // blob か、本来のパスを signed URL に変換済みならそのまま
-      imagePath: item.imageUrl,    // **ストレージに保存されたパスをそのまま保持**
+      imageFile: null,
+      previewUrl: item.imageUrl,
+      imagePath: item.imageUrl,
     }))
   );
   const [tags, setTags] = useState<string[]>(
@@ -85,7 +84,7 @@ export function RankingEdit({ rankingList }: Props) {
   const [formError, setFormError] = useState<string | null>(null);
   const [isMounted, setIsMounted] = useState(false);
 
-  useEffect(() => { setIsMounted(true) }, []);
+  useEffect(() => { setIsMounted(true); }, []);
 
   const handleAddItemSlot = useCallback(() => {
     if (editableItems.length >= 10) {
@@ -138,16 +137,13 @@ export function RankingEdit({ rankingList }: Props) {
       setEditableItems((items) =>
         items.map((item) => {
           if (item.clientId !== clientId) return item;
-          // 既存 blob プレビューを解放
           if (item.previewUrl?.startsWith("blob:")) {
             URL.revokeObjectURL(item.previewUrl);
           }
           if (file) {
-            // 新規選択時
             const previewUrl = URL.createObjectURL(file);
             return { ...item, imageFile: file, previewUrl, imagePath: null };
           } else {
-            // 削除ボタン時
             return { ...item, imageFile: null, previewUrl: null, imagePath: null };
           }
         })
@@ -175,7 +171,6 @@ export function RankingEdit({ rankingList }: Props) {
     startSaveTransition(async () => {
       setFormError(null);
       try {
-        // まずファイルのアップロードが必要なものだけまとめて
         const uploadPromises = editableItems.map(async (item) => {
           if (item.imageFile) {
             const res = await uploadImage(item.imageFile);
@@ -185,7 +180,6 @@ export function RankingEdit({ rankingList }: Props) {
           return null;
         });
         const uploaded = (await Promise.all(uploadPromises)).filter(Boolean) as { clientId: string; path: string }[];
-        // アップロード結果を state に反映
         setEditableItems((items) =>
           items.map((item) => {
             const u = uploaded.find((u) => u.clientId === item.clientId);
@@ -194,12 +188,11 @@ export function RankingEdit({ rankingList }: Props) {
               : item;
           })
         );
-        // saveAction に渡すデータを組み立て
         const itemsData = editableItems.map((item) => ({
           id: item.id,
           itemName: item.itemName,
           itemDescription: item.itemDescription,
-          imageUrl: item.imagePath ?? null,  // **必ずストレージパスを送る**
+          imageUrl: item.imagePath ?? null,
         }));
         const result = await saveRankingListItemsAction(
           rankingList.id,
@@ -226,7 +219,6 @@ export function RankingEdit({ rankingList }: Props) {
     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
       <div className="space-y-6">
         {/* 基本情報カード省略... */}
-        {/* アイテム編集カード */}
         <Card className="max-h-[60vh] overflow-y-auto pr-3">
           <CardHeader>…</CardHeader>
           <CardContent className="pt-0 space-y-3">
@@ -250,7 +242,6 @@ export function RankingEdit({ rankingList }: Props) {
             <Button onClick={handleAddItemSlot} disabled={isSaving}>+ アイテム追加</Button>
           </CardContent>
         </Card>
-        {/* 保存ボタン */}
         <div className="flex justify-end space-x-2">
           <Button variant="outline" onClick={() => handleSave("DRAFT")} disabled={isSaving}>下書き保存</Button>
           <Button onClick={() => handleSave("PUBLISHED")} disabled={isSaving}>公開更新</Button>
