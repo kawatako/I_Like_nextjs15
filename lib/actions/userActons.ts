@@ -38,7 +38,7 @@ const ProfileUpdateSchema = z
       .string()
       .optional()
       .nullable()
-      .refine((s) => !s || !isNaN(Date.parse(s)), "有効な日付を入力してください")
+      .refine((s) => !s || !isNaN(Date.parse(s)), "有効な日付を入力してください。")
       .transform((s) => (s ? new Date(s) : null)),
     socialLinks: z
       .object({
@@ -49,8 +49,9 @@ const ProfileUpdateSchema = z
       })
       .optional()
       .nullable(),
-    image: z.string().url().optional().nullable(),
-    coverImageUrl: z.string().url().optional().nullable(),
+    // path 文字列として許可
+    image: z.string().optional().nullable(),
+    coverImageUrl: z.string().optional().nullable(),
   })
   .strict();
 
@@ -88,10 +89,15 @@ export async function updateProfileAction(
     bio: valid.bio,
     location: valid.location,
     birthday: valid.birthday,
-    image: valid.image,
-    coverImageUrl: valid.coverImageUrl,
   };
-  // socialLinks は undefined（変更しない）/null（リセット）/オブジェクト のいずれか
+  // クライアント送信値を優先して保存
+  if (data.image !== undefined) {
+    updateData.image = data.image;
+  }
+  if (data.coverImageUrl !== undefined) {
+    updateData.coverImageUrl = data.coverImageUrl;
+  }
+  // socialLinks の処理
   if (valid.socialLinks !== undefined) {
     updateData.socialLinks = valid.socialLinks;
   }
@@ -106,7 +112,6 @@ export async function updateProfileAction(
       })
     );
 
-    // 自分のプロフィール周りを再検証
     revalidatePath(`/profile/${updated.username}`);
     revalidatePath(`/profile/${updated.username}/edit`);
     revalidatePath(`/`);
@@ -119,7 +124,7 @@ export async function updateProfileAction(
       error:
         error instanceof Error
           ? error.message
-          : "プロフィールの更新中にエラーが発生しました",
+          : "プロフィールの更新中にエラーが発生しました。",
     };
   }
 }
