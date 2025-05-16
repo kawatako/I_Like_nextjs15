@@ -1,16 +1,15 @@
-// middleware.ts
+// middleware.ts （プロジェクトルート直下）
 import { clerkMiddleware } from "@clerk/nextjs/server";
+import type { NextRequest, NextFetchEvent } from "next/server";
 
-export default clerkMiddleware();
+export function middleware(request: NextRequest, event: NextFetchEvent) {
+  // clerkMiddleware は (request, event) → Response を返す関数です
+  return clerkMiddleware(request, event);
+}
 
 export const config = {
   matcher: [
-    /*
-      - _next/static と _next/image（Image Optimizer）は除外
-      - favicon.ico や public 配下の静的ファイルも除外
-      - sign-in や sign-up の Next.js App Router ルートは
-        Clerk が内部で扱うので除外するとセッション復元が壊れません
-    */
+    // これまでと同じ matcher
     "/((?!_next/static|_next/image|favicon.ico|sign-in|sign-up).*)",
   ],
 };
