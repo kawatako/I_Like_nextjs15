@@ -15,9 +15,9 @@ export const dynamic = "force-dynamic";
 export default async function RankingDetailPage({
   params,
 }: {
-  params: { listId: string };
+  params: Promise<{ listId: string }>;
 }) {
-  const { listId } = params;
+  const { listId } = await params;
 
   // 1) 下書きも含めてデータ取得
   const raw = await getRankingDetailsForView(listId);
