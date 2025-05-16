@@ -1,29 +1,40 @@
-//app/rankings/[listId]/edit/page.tsx
-import { RankingEdit } from "@/components/component/rankings/RankingEdit";
-import { getRankingListForEdit } from "@/lib/data/rankingQueries"; // データ取得関数をインポート
+// app/rankings/[listId]/edit/page.tsx
 import { notFound } from "next/navigation";
+import { getRankingListForEdit } from "@/lib/data/rankingQueries";
+import { generateImageUrl } from "@/lib/utils/storage";   // 追加
+import { RankingEdit } from "@/components/component/rankings/RankingEdit";
 
-export default async function RankingEditPage(props: { params: Promise<{ listId: string }> }) {
-  const params = await props.params;
-  const listId = params.listId;
-  console.log(`Rendering edit page for listId: ${listId}`); // ログ
+export const dynamic = "force-dynamic";
 
-  // データ取得関数を呼び出す
-  // この関数内で認証・権限チェックも行われる
-  const rankingList = await getRankingListForEdit(listId);
+export default async function RankingEditPage({
+  params,
+}: {
+  params: Promise<{ listId: string }>;
+}) {
+  const { listId } = await params;
 
-  // 3. データが取得できなかった場合 (null が返ってきた場合) は notFound() を呼ぶ
-  if (!rankingList) {
-    console.log(`Ranking list ${listId} not found or user not authorized.`);
-    notFound(); // 404ページを表示
-  }
+  // 1) 編集用データ取得
+  const raw = await getRankingListForEdit(listId);
+  if (!raw) return notFound();
 
-  // 4. データが取得できたら、表示・編集用コンポーネントをレンダリング
-  //    取得したデータを props として渡す
-  console.log(`Rendering edit view for list: ${rankingList.subject}`);
+  // 2) 既存アイテムの imageUrl に署名付き URL を付与
+  const itemsWithSigned = await Promise.all(
+    raw.items.map(async (item) => ({
+      ...item,
+      imageUrl: item.imageUrl
+        ? await generateImageUrl(item.imageUrl)
+        : null,
+    }))
+  );
+
+  // 3) RankingEdit コンポーネントに渡す形に整形
+  const rankingList = {
+    ...raw,
+    items: itemsWithSigned,
+  };
+
   return (
     <div className="container mx-auto p-4">
-      {/* --- JSON 表示の代わりに RankingListEditView を呼び出す --- */}
       <RankingEdit rankingList={rankingList} />
     </div>
   );
