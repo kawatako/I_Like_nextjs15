@@ -51,7 +51,7 @@ export function RankingDetailView({ ranking, isOwner }: Props) {
       <Tabs value={tab} onValueChange={setTab} className="w-full">
         <TabsList className="grid grid-cols-2 mb-6">
           <TabsTrigger value="ranking">ランキング</TabsTrigger>
-          <TabsTrigger value="comments">コメント（</TabsTrigger>
+          <TabsTrigger value="comments">コメント</TabsTrigger>
         </TabsList>
 
         {/* ランキングタブ */}
