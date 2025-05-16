@@ -4,7 +4,6 @@
 import { useState, useEffect, Suspense } from 'react'; // ★ Suspense をインポート ★
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import Link from "next/link"; // Link を使う場合
 import RankingTab from "./RankingTab";
 import DraftsTab from "./DraftsTab";
 import FeedTab from "./FeedTab";
