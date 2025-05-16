@@ -15,58 +15,51 @@ export const dynamic = "force-dynamic";
 export default async function RankingDetailPage({
   params,
 }: {
-  params: Promise<{ listId: string }>;
+  params: { listId: string };
 }) {
-  const { listId } = await params;
+  const { listId } = params;
 
-  // 1) ランキング本体データ取得
+  // 1) 下書きも含めてデータ取得
   const raw = await getRankingDetailsForView(listId);
   if (!raw) return notFound();
 
-  // 2) 作者プロフィール取得
+  // 2) 認証情報取得
+  const { userId: clerkId } = await auth();
+  const loggedInDbId = clerkId ? await getUserDbIdByClerkId(clerkId) : null;
+  const isOwner = loggedInDbId === raw.author.id;
+
+  // 3) 下書きはオーナー以外アクセス禁止
+  if (raw.status === "DRAFT" && !isOwner) {
+    return notFound();
+  }
+
+  // 4) 作者プロフィール取得
   const userProfileData = await getUserProfileData(raw.author.username);
   if (!userProfileData) return notFound();
 
-  // 3) フォロー状態取得
-  const { userId: clerkId } = await auth();
-  const loggedInDbId = clerkId ? await getUserDbIdByClerkId(clerkId) : null;
-  const isOwner = loggedInDbId === userProfileData.id;
-  const followStatusInfo = await getFollowStatus(loggedInDbId, userProfileData.id);
-
-  // 4) プロフィール画像／カバー画像を署名付き URL に
-  const headerImageUrl = userProfileData.image
-    ? await generateImageUrl(userProfileData.image)
-    : null;
-  const headerCoverUrl = userProfileData.coverImageUrl
-    ? await generateImageUrl(userProfileData.coverImageUrl)
-    : null;
-
-  // 5) アイテム画像のパスもすべて署名付き URL に
+  // 5) 画像の署名付き URL 発行
+  const headerImageUrl = await generateImageUrl(userProfileData.image);
+  const headerCoverUrl = await generateImageUrl(userProfileData.coverImageUrl);
   const itemsWithSigned = await Promise.all(
     raw.items.map(async (item) => ({
       ...item,
-      imageUrl: item.imageUrl
-        ? await generateImageUrl(item.imageUrl)
-        : null,
+      imageUrl: item.imageUrl ? await generateImageUrl(item.imageUrl) : null,
     }))
   );
 
-  // 6) コンポーネントに渡す形を整形
-  const headerData = {
-    ...userProfileData,
-    image: headerImageUrl,
-    coverImageUrl: headerCoverUrl,
-  };
-  const rankingWithSigned = { ...raw, items: itemsWithSigned };
-
+  // 6) レンダリング
   return (
     <>
       <ProfileHeader
-        userProfileData={headerData}
+        userProfileData={{
+          ...userProfileData,
+          image: headerImageUrl,
+          coverImageUrl: headerCoverUrl,
+        }}
         isCurrentUser={isOwner}
-        initialFollowStatus={followStatusInfo}
+        initialFollowStatus={await getFollowStatus(loggedInDbId, userProfileData.id)}
       />
-      <RankingDetailView ranking={rankingWithSigned} isOwner={isOwner} />
+      <RankingDetailView ranking={{ ...raw, items: itemsWithSigned }} isOwner={isOwner} />
       {isOwner && (
         <div className="mb-4 flex justify-end px-4">
           <Link href={`/rankings/${listId}/edit`}>
