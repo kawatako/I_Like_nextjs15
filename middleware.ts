@@ -1,16 +1,14 @@
 // src/middleware.ts
-import { withClerkMiddleware } from "@clerk/nextjs/server";
 
-export default withClerkMiddleware(() => {
-  // 何もしなくて OK
-});
+import { clerkMiddleware } from "@clerk/nextjs/server";
 
-// middleware の適用範囲。必要に応じて除外パスを増やしてください。
+export default clerkMiddleware();
+
 export const config = {
   matcher: [
     /*
-      _next/static, _next/image, favicon.ico あたりを除外しつつ、
-      sign-in, sign-up ページは Clerk が独自に扱うので除外します。
+      _next/static, _next/image, favicon.ico, sign-in, sign-up
+      を除外する設定はそのまま。
     */
     "/((?!_next/static|_next/image|favicon.ico|sign-in|sign-up).*)",
   ],
