@@ -17,11 +17,8 @@ import {
 // --- 詳細表示用データ取得 ---
 export async function getRankingDetailsForView(listId: string) {
   return safeQuery(() =>
-    prisma.rankingList.findFirst({
-      where: {
-        id: listId,
-        status: "PUBLISHED",
-      },
+    prisma.rankingList.findUnique({
+      where: { id: listId },
       select: rankingListViewSelect,
     })
   );
