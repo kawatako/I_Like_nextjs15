@@ -167,51 +167,60 @@ export function RankingEdit({ rankingList }: Props) {
     }
   }, []);
 
-  const handleSave = async (status: ListStatus) => {
-    startSaveTransition(async () => {
-      setFormError(null);
-      try {
-        const uploadPromises = editableItems.map(async (item) => {
+const handleSave = async (status: ListStatus) => {
+  startSaveTransition(async () => {
+    setFormError(null);
+    try {
+      // 1) 編集中アイテムをクローン
+      const items = [...editableItems];
+
+      // 2) 新規アップロード分だけ順次アップロードし、clientId→path マップを作成
+      const uploadResults = await Promise.all(
+        items.map(async (item) => {
           if (item.imageFile) {
             const res = await uploadImage(item.imageFile);
             if (!res) throw new Error("画像アップロードに失敗しました");
             return { clientId: item.clientId, path: res.path };
           }
           return null;
-        });
-        const uploaded = (await Promise.all(uploadPromises)).filter(Boolean) as { clientId: string; path: string }[];
-        setEditableItems((items) =>
-          items.map((item) => {
-            const u = uploaded.find((u) => u.clientId === item.clientId);
-            return u
-              ? { ...item, imagePath: u.path, previewUrl: item.previewUrl }
-              : item;
-          })
-        );
-        const itemsData = editableItems.map((item) => ({
-          id: item.id,
-          itemName: item.itemName,
-          itemDescription: item.itemDescription,
-          imageUrl: item.imagePath ?? null,
-        }));
-        const result = await saveRankingListItemsAction(
-          rankingList.id,
-          itemsData,
-          subject,
-          description,
-          null,
-          tags,
-          status
-        );
-        if (!result.success) throw new Error(result.error || "保存に失敗しました");
-        toast({ title: status === "DRAFT" ? "下書きを保存しました" : "公開更新しました" });
-        router.push(`/rankings/${rankingList.id}`);
-      } catch (err: any) {
-        setFormError(err.message);
-        toast({ title: "エラー", description: err.message, variant: "destructive" });
-      }
-    });
-  };
+        })
+      );
+      const uploadMap = new Map(
+        uploadResults.filter((r): r is { clientId: string; path: string } => !!r)
+                          .map((r) => [r.clientId, r.path])
+      );
+
+      // 3) 保存用データを組み立てる
+      const itemsData = items.map((item) => ({
+        id: item.id,
+        itemName: item.itemName,
+        itemDescription: item.itemDescription,
+        // 新規アップロードがあればそのパス、それ以外は既存 path
+        imageUrl: uploadMap.get(item.clientId) ?? item.imagePath ?? null,
+      }));
+
+      // 4) DB に保存
+      const result = await saveRankingListItemsAction(
+        rankingList.id,
+        itemsData,
+        subject,
+        description,
+        null,
+        tags,
+        status
+      );
+      if (!result.success) throw new Error(result.error || "保存に失敗しました");
+
+      toast({
+        title: status === "DRAFT" ? "下書きを保存しました" : "公開更新しました",
+      });
+      router.push(`/rankings/${rankingList.id}`);
+    } catch (err: any) {
+      setFormError(err.message);
+      toast({ title: "エラー", description: err.message, variant: "destructive" });
+    }
+  });
+};
 
   if (!isMounted) return <div className="p-4 text-center">読み込み中…</div>;
 
