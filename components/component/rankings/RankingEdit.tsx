@@ -1,4 +1,4 @@
-//component/rankings/RankingEdit.tsx
+// components/component/rankings/RankingEdit.tsx
 "use client";
 
 import {
@@ -139,16 +139,35 @@ export function RankingEdit({ rankingList }: Props) {
     [editableItems]
   );
 
+  // ← ここだけ入れ替え
   const handleItemImageChange = useCallback(
     (clientId: string, file: File | null) => {
       setEditableItems((items) =>
         items.map((item) => {
           if (item.clientId === clientId) {
+            // 既に blob URL のプレビューがあれば解放
             if (item.previewUrl?.startsWith("blob:")) {
               URL.revokeObjectURL(item.previewUrl);
             }
-            const previewUrl = file ? URL.createObjectURL(file) : item.imageUrl;
-            return { ...item, imageFile: file, previewUrl };
+            if (file) {
+              // 新規ファイル選択時
+              const previewUrl = URL.createObjectURL(file);
+              return {
+                ...item,
+                imageFile: file,
+                previewUrl,
+                // 古い imageUrl は削除しておく
+                imageUrl: null,
+              };
+            } else {
+              // 削除ボタン時はプレビューも既存URLもクリア
+              return {
+                ...item,
+                imageFile: null,
+                previewUrl: null,
+                imageUrl: null,
+              };
+            }
           }
           return item;
         })
@@ -178,15 +197,14 @@ export function RankingEdit({ rankingList }: Props) {
       setFormError(null);
       // (バリデーションは省略)
 
-      // サーバーに渡すデータ
       const itemsData = editableItems.map((item) => ({
         id: item.id,
         itemName: item.itemName,
         itemDescription: item.itemDescription,
+        // previewUrl に最新の状態（null なら削除扱い）
         imageUrl: item.previewUrl ?? null,
       }));
 
-      // listImageUrl は完全に削除したので null を渡す
       const result = await saveRankingListItemsAction(
         rankingList.id,
         itemsData,
