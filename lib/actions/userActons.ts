@@ -119,7 +119,7 @@ export async function updateProfileAction(
       error:
         error instanceof Error
           ? error.message
-          : "プロフィールの更新中にエラーが発生しました。",
+          : "プロフィールの更新中にエラーが発生しました",
     };
   }
 }
