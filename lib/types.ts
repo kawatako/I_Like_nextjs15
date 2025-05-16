@@ -7,8 +7,6 @@ export type ListStatus = "DRAFT" | "PUBLISHED";
 export type FeedType = "POST" | "RANKING_UPDATE" | "RETWEET" | "QUOTE_RETWEET";
 
 
-
-
 export type TrendPeriod =
   "WEEKLY" | "MONTHLY";
 

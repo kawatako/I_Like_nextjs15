@@ -45,7 +45,6 @@ export default function CommentSection({ listId }: Props) {
         {comments.map((c) => (
           <div key={c.id} className="p-3 bg-gray-50 rounded">
             <div className="flex items-center mb-1">
-              {/* 後でユーザー情報を紐付けるならここに表示 */}
               <strong>{c.userId}</strong>
               <span className="ml-auto text-xs text-muted-foreground">
                 {new Date(c.createdAt).toLocaleString()}

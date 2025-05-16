@@ -8,12 +8,11 @@ import RankingUpdateCard from "./cards/RankingUpdateCard";
 import RetweetCard from "./cards/RetweetCard";
 import QuoteRetweetCard from "./cards/QuoteRetweetCard";
 import { getPaginatedFeedAction } from '@/lib/actions/feedActions';
-import { FeedKey } from '@/lib/types'; // FeedKey をインポート
+import { FeedKey } from '@/lib/types';
 import { FeedType } from "@prisma/client";
 import { Loader2 } from "@/components/component/Icons";
-import { useInfiniteScroll } from "@/components/hooks/useInfiniteScroll"; // パスを確認
+import { useInfiniteScroll } from "@/components/hooks/useInfiniteScroll";
 
-// Props 定義
 interface TimelineFeedProps {
   feedType: 'home' | 'profile';
   loggedInUserDbId: string | null;
@@ -108,7 +107,6 @@ export default function TimelineFeed({
             <p className='text-gray-500 text-sm'>これ以上ありません</p>
           )}
       </div>
-      {/* エンプティステート */}
       {/* ★ feedItems が空配列で、かつ終端に達している場合 ★ */}
       {feedItems && feedItems.length === 0 && !isLoadingMore && !isValidating && isReachingEnd && (
           <p className='text-center text-gray-500 py-4'>

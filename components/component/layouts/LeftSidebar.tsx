@@ -1,10 +1,11 @@
 // components/component/layouts/LeftSidebar.tsx
+// // デスクトップ表示用のクラス (モバイルでは非表示)
 import Link from "next/link";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { UserSnippet } from "@/lib/types";
 
 import {
   HomeIcon,
-  SearchIcon,
   TrendingUpIcon,
   BellIcon,
   CrownIcon,
@@ -14,14 +15,8 @@ import {
   ChatBubbleIcon
 } from "../Icons";
 
-interface UserData {
-  id: string;
-  username: string | null;
-  image: string | null;
-}
-
 interface LeftSidebarProps {
-  currentLoginUserData: UserData | null;
+  currentLoginUserData: UserSnippet | null;
 }
 
 const navItems = [
@@ -44,7 +39,6 @@ const navItems = [
 export default function LeftSidebar({
   currentLoginUserData,
 }: LeftSidebarProps) {
-  // デスクトップ表示用のクラス (モバイルでは非表示)
   const desktopClasses = "hidden md:flex flex-col";
 
   return (
@@ -53,15 +47,21 @@ export default function LeftSidebar({
         <Avatar className="w-12 h-12 border">
           <AvatarImage src={currentLoginUserData?.image ?? undefined} />
           <AvatarFallback>
-            {currentLoginUserData?.username?.charAt(0)}
+            {currentLoginUserData?.username?.charAt(0).toUpperCase()}
           </AvatarFallback>
         </Avatar>
         <div>
           <h3 className="text-lg font-bold">
-            {currentLoginUserData?.username ?? 'User'}
+            {currentLoginUserData?.name ?? "User"}
           </h3>
+          {currentLoginUserData?.username && (
+            <p className="text-sm text-muted-foreground">
+              @{currentLoginUserData.username}
+            </p>
+          )}
         </div>
       </div>
+
       <nav className="flex-grow">
         <ul className="space-y-1">
           {navItems.map(({ icon: Icon, label, href }) => (
@@ -85,7 +85,12 @@ export default function LeftSidebar({
       </nav>
 
       <div className="mt-auto pt-4 border-t">
-                <Link href="https://docs.google.com/forms/d/e/1FAIpQLSdLbVn1Wwbzfa9Zdq6ZjAnrrRMzur-ZKhu4-EXrmT8Q8__p0g/viewform" className="block" target="_blank" rel="noopener noreferrer">
+        <Link
+          href="https://docs.google.com/forms/d/e/1FAIpQLSdLbVn1Wwbzfa9Zdq6ZjAnrrRMzur-ZKhu4-EXrmT8Q8__p0g/viewform"
+          className="block"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           <div className="flex items-center gap-3 px-3 py-2.5 rounded-md text-foreground/80 hover:bg-muted hover:text-foreground transition-colors">
             <ChatBubbleIcon className="h-5 w-5" />
             <span className="font-medium">ご意見</span>

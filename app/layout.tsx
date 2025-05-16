@@ -11,6 +11,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { jaJP } from '@clerk/localizations';
 import { Toaster } from "@/components/ui/toaster";
 import { getCurrentLoginUserData } from "@/lib/data/userQueries";
+import { generateImageUrl } from "@/lib/utils/storage";
 import { KeepAlivePing } from "@/components/KeepAlivePing";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -26,8 +27,17 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const { userId: clerkId } = await auth();
-  const currentLoginUserData = clerkId
+  const raw = clerkId
     ? await getCurrentLoginUserData(clerkId)
+    : null;
+
+  // ストレージパスを署名付きURLに変換
+  const currentLoginUserData = raw
+    ? {
+        ...raw,
+        image: await generateImageUrl(raw.image),
+        coverImageUrl: await generateImageUrl(raw.coverImageUrl),
+      }
     : null;
 
   return (
@@ -39,8 +49,8 @@ export default async function RootLayout({
           publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY!}
           proxyUrl={process.env.NEXT_PUBLIC_CLERK_PROXY_URL!}
         >
-        <KeepAlivePing />
-          <Header />
+          <KeepAlivePing />
+          <Header currentLoginUserData={currentLoginUserData} />
           <div className="flex-1 grid grid-cols-1 md:grid-cols-[auto_1fr] lg:grid-cols-[auto_1fr_auto] w-full max-w-7xl mx-auto">
             <aside className="hidden md:block md:w-[240px] lg:w-[260px] p-4 md:p-6 sticky top-16 self-start">
               <LeftSidebar currentLoginUserData={currentLoginUserData} />
