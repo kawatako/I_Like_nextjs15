@@ -3,11 +3,7 @@ import { notFound } from 'next/navigation'
 import { createClient } from '@supabase/supabase-js'
 import ProfileEditForm from '@/components/component/profiles/ProfileEditForm'
 import prisma from '@/lib/client'
-
-const supabaseAdmin = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+import { supabaseAdmin } from '@/lib/utils/storage'
 
 async function getSignedUrl(path: string) {
   const { data, error } = await supabaseAdmin
