@@ -1,3 +1,4 @@
+//@libdata/rankingQueries.ts
 import prisma from "@/lib/client";
 import { safeQuery } from "@/lib/db";
 import { auth } from "@clerk/nextjs/server";
