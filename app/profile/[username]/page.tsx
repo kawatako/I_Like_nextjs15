@@ -25,7 +25,7 @@ export default async function ProfilePage({
   const userProfileData = await getUserProfileData(username);
   if (!userProfileData) notFound();
 
-  // 3) 画像 URL はユーティリティ経由で署名付き URL を発行
+  // 3) 署名付き URL をユーティリティ経由で取得
   const profileImageUrl = await generateImageUrl(userProfileData.image);
   const coverImageUrl   = await generateImageUrl(userProfileData.coverImageUrl);
 
