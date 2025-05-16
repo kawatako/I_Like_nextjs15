@@ -1,4 +1,3 @@
-// lib/actions/rankingActions.ts
 "use server";
 
 import { auth } from "@clerk/nextjs/server";
@@ -22,7 +21,10 @@ async function requireUser() {
   if (!clerkId) throw new Error("ログインしてください。");
 
   const rec = await safeQuery(() =>
-    prisma.user.findUnique({ where: { clerkId }, select: { id: true, username: true } })
+    prisma.user.findUnique({
+      where: { clerkId },
+      select: { id: true, username: true },
+    })
   );
   if (!rec?.id || !rec.username) throw new Error("ユーザー情報が見つかりません。");
   return { userDbId: rec.id, username: rec.username };
@@ -31,32 +33,40 @@ async function requireUser() {
 /** トランザクション内でタグを upsert し、ID 配列を返す */
 async function upsertTags(tx: any, tags?: string[]): Promise<{ id: string }[]> {
   if (!tags || tags.length === 0) return [];
-  const ops = tags.map((t) => t.trim()).filter(Boolean).map((name) => ({ where: { name }, create: { name } }));
+
+  const ops = tags.map((t) => t.trim()).filter((t) => t.length > 0).map((name) => ({ where: { name }, create: { name } }));
   const ups = await Promise.all(
     ops.map((op) =>
-      tx.tag.upsert({ where: op.where, create: op.create, update: {}, select: { id: true } })
+      tx.tag.upsert({
+        where: op.where,
+        create: op.create,
+        update: {},
+        select: { id: true },
+      })
     )
   );
   return ups.map((u: any) => ({ id: u.id }));
 }
 
-/** 単独トランザクション: タグ更新 */
+/** タグ & pivot 更新 */
 async function updateTags(listId: string, tags: string[]) {
   await prisma.$transaction(async (tx) => {
     const tagIds = await upsertTags(tx, tags);
     await tx.rankingListTag.deleteMany({ where: { listId } });
     if (tagIds.length > 0) {
-      await tx.rankingListTag.createMany({ data: tagIds.map((t) => ({ listId, tagId: t.id })) });
+      await tx.rankingListTag.createMany({
+        data: tagIds.map((t) => ({ listId, tagId: t.id })),
+      });
     }
   });
 }
 
 // Zod スキーマ
 const subjectAllowed = /^[\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}A-Za-z0-9 ]+$/u;
-const SubjectSchema = z.string().trim().min(1).max(50).regex(subjectAllowed);
-const DescriptionSchema = z.string().trim().max(500).optional();
-const ItemNameSchema = z.string().trim().min(1).max(100);
-const ItemDescSchema = z.string().trim().max(500).optional();
+const SubjectSchema = z.string().trim().min(1, "テーマを入力してください。").max(50, "テーマは50字以内です。").regex(subjectAllowed, "日本語・英数字・半角スペースのみ使用できます。");
+const DescriptionSchema = z.string().trim().max(500, "説明は500字以内です。").optional();
+const ItemNameSchema = z.string().trim().min(1, "アイテム名は必須です。").max(100, "アイテム名は100字以内です。");
+const ItemDescSchema = z.string().trim().max(500, "説明は500字以内です。").optional();
 
 /** 新規ランキング作成 */
 export async function createCompleteRankingAction(
@@ -72,32 +82,48 @@ export async function createCompleteRankingAction(
   itemsData.forEach((item, i) => {
     ItemNameSchema.parse(item.itemName);
     ItemDescSchema.parse(item.itemDescription ?? "");
-    if (status === "PUBLISHED" && !item.itemName.trim()) throw new Error(`${i+1}番目のアイテム名が必要です。`);
+    if (status === "PUBLISHED" && !item.itemName.trim()) throw new Error(`${i + 1}番目のアイテム名が必要です。`);
   });
 
-  const newList = await safeQuery(() =>
-    prisma.$transaction(async (tx) => {
-      // タグ挿入
-      const tagIds = await upsertTags(tx, rankingData.tags);
-      const created = await tx.rankingList.create({
-        data: { authorId: userDbId, subject: rankingData.subject.trim(), description: rankingData.description?.trim() || null, status, listImageUrl: rankingData.listImageUrl || null }
-      });
-      if (tagIds.length) await tx.rankingListTag.createMany({ data: tagIds.map((t) => ({ listId: created.id, tagId: t.id })) });
-      // アイテム挿入
-      if (itemsData.length) await tx.rankedItem.createMany({ data: itemsData.map((item, idx) => ({ listId: created.id, rank: idx+1, itemName: item.itemName.trim(), itemDescription: item.itemDescription?.trim()||null, imageUrl: item.imageUrl||null })) });
-      // フィード作成
-      if (status === "PUBLISHED") await tx.feedItem.create({ data: { userId: userDbId, type: "RANKING_UPDATE", rankingListId: created.id } });
-      return created;
-    })
-  );
-
-  revalidatePath(`/rankings/${newList.id}`);
-  revalidatePath(`/profile/${username}`);
-  if (status === "PUBLISHED") { revalidatePath(`/`); revalidatePath(`/trends`); }
-  return { success: true, newListId: newList.id };
+  try {
+    const newList = await safeQuery(() =>
+      prisma.$transaction(async (tx) => {
+        const tagIds = await upsertTags(tx, rankingData.tags);
+        const created = await tx.rankingList.create({
+          data: {
+            authorId: userDbId,
+            subject: rankingData.subject.trim(),
+            description: rankingData.description?.trim() || null,
+            status,
+            listImageUrl: rankingData.listImageUrl || null,
+          },
+        });
+        if (tagIds.length > 0) {
+          await tx.rankingListTag.createMany({ data: tagIds.map((t) => ({ listId: created.id, tagId: t.id })) });
+        }
+        if (itemsData.length > 0) {
+          await tx.rankedItem.createMany({ data: itemsData.map((item, idx) => ({ listId: created.id, rank: idx + 1, itemName: item.itemName.trim(), itemDescription: item.itemDescription?.trim() || null, imageUrl: item.imageUrl || null })) });
+        }
+        if (status === "PUBLISHED") {
+          await tx.feedItem.create({ data: { userId: userDbId, type: "RANKING_UPDATE", rankingListId: created.id } });
+        }
+        return created;
+      })
+    );
+    revalidatePath(`/rankings/${newList.id}`);
+    revalidatePath(`/profile/${username}`);
+    if (status === "PUBLISHED") {
+      revalidatePath("/");
+      revalidatePath("/trends");
+    }
+    return { success: true, newListId: newList.id };
+  } catch (err: any) {
+    console.error("[createCompleteRankingAction]", err);
+    return { success: false, error: err.message || "作成中にエラーが発生しました。" };
+  }
 }
 
-/** ランキング更新 + 古い画像削除 */
+/** 既存ランキング更新 */
 export async function saveRankingListItemsAction(
   listId: string,
   itemsData: { itemName: string; itemDescription?: string | null; imageUrl?: string | null }[],
@@ -108,41 +134,54 @@ export async function saveRankingListItemsAction(
   targetStatus: ListStatus
 ): Promise<ActionResult> {
   const { userDbId, username } = await requireUser();
-  // 権限チェック
-  const exist = await safeQuery(() => prisma.rankingList.findUnique({ where: { id: listId, authorId: userDbId }, select: { id: true } }));
-  if (!exist) return { success: false, error: "編集権限がありません。" };
-  // ① 古い画像パス取得
+  const list = await safeQuery(() => prisma.rankingList.findUnique({ where: { id: listId, authorId: userDbId }, select: { id: true } }));
+  if (!list) return { success: false, error: "編集権限がありません。" };
+
+  // ① 古いアイテム画像パスを取得
   const prevItems = await safeQuery(() => prisma.rankedItem.findMany({ where: { listId }, select: { imageUrl: true } }));
-  const keepPaths = new Set(itemsData.map((d) => d.imageUrl).filter(Boolean));
-  const toRemove = prevItems.map((i) => i.imageUrl).filter((p) => p && !keepPaths.has(p));
-  // ② 削除
-  if (toRemove.length) {
-    supabaseAdmin.storage.from("i-like").remove(toRemove as string[]).catch(console.error);
+  const oldPaths = prevItems.map((i) => i.imageUrl).filter((p): p is string => !!p);
+
+  try {
+    // タグ更新
+    await updateTags(listId, tags);
+    // アイテム&メタ&フィード更新
+    await safeQuery(() =>
+      prisma.$transaction(async (tx) => {
+        await tx.rankedItem.deleteMany({ where: { listId } });
+        if (itemsData.length > 0) {
+          await tx.rankedItem.createMany({ data: itemsData.map((item, idx) => ({ listId, rank: idx + 1, itemName: item.itemName.trim(), itemDescription: item.itemDescription?.trim() || null, imageUrl: item.imageUrl || null })) });
+        }
+        await tx.rankingList.update({ where: { id: listId, authorId: userDbId }, data: { subject: listSubject.trim(), description: listDescription?.trim() || null, status: targetStatus, listImageUrl: listImageUrl || null } });
+        if (targetStatus === "PUBLISHED") {
+          await tx.feedItem.upsert({ where: { rankingListId_type: { rankingListId: listId, type: "RANKING_UPDATE" } }, create: { userId: userDbId, type: "RANKING_UPDATE", rankingListId: listId }, update: { updatedAt: new Date() } });
+        }
+      })
+    );
+
+    // ② 差し替えで不要になった画像を削除
+    const newPaths = itemsData.map((i) => i.imageUrl).filter((p): p is string => !!p);
+    const toRemove = oldPaths.filter((p) => !newPaths.includes(p));
+    if (toRemove.length > 0) {
+      supabaseAdmin.storage.from("i-like").remove(toRemove).catch((e) => console.error("古いアイテム画像削除失敗:", e));
+    }
+
+    // キャッシュ再検証
+    revalidatePath(`/rankings/${listId}/edit`);
+    revalidatePath(`/rankings/${listId}`);
+    revalidatePath(`/profile/${username}`);
+    if (targetStatus === "PUBLISHED") {
+      revalidatePath("/");
+      revalidatePath("/trends");
+    }
+    return { success: true };
+  } catch (err: any) {
+    console.error("[saveRankingListItemsAction]", err);
+    return { success: false, error: err.message || "更新中にエラーが発生しました。" };
   }
-  // ③ タグ更新
-  await updateTags(listId, tags);
-  // ④ アイテム+メタ+フィード更新
-  await safeQuery(() =>
-    prisma.$transaction(async (tx) => {
-      await tx.rankedItem.deleteMany({ where: { listId } });
-      if (itemsData.length) await tx.rankedItem.createMany({ data: itemsData.map((item, idx) => ({ listId, rank: idx+1, itemName: item.itemName.trim(), itemDescription: item.itemDescription?.trim()||null, imageUrl: item.imageUrl||null })) });
-      await tx.rankingList.update({ where: { id: listId, authorId: userDbId }, data: { subject: listSubject.trim(), description: listDescription?.trim()||null, status: targetStatus, listImageUrl: listImageUrl||null } });
-      if (targetStatus === "PUBLISHED") await tx.feedItem.upsert({ where: { rankingListId_type: { rankingListId: listId, type: "RANKING_UPDATE" } }, create: { userId: userDbId, type: "RANKING_UPDATE", rankingListId: listId }, update: { updatedAt: new Date() } });
-    })
-  );
-  // 再検証
-  revalidatePath(`/rankings/${listId}/edit`);
-  revalidatePath(`/rankings/${listId}`);
-  revalidatePath(`/profile/${username}`);
-  if (targetStatus === "PUBLISHED") { revalidatePath(`/`); revalidatePath(`/trends`); }
-  return { success: true };
 }
 
-/** ランキング削除 */
-export async function deleteRankingListAction(
-  prevState: ActionResult | null,
-  formData: FormData
-): Promise<ActionResult> {
+/** 以下変更なし */
+export async function deleteRankingListAction(prevState: ActionResult | null, formData: FormData): Promise<ActionResult> {
   const { userDbId, username } = await requireUser();
   const listId = formData.get("listId") as string;
   await safeQuery(() => prisma.$transaction([prisma.feedItem.deleteMany({ where: { rankingListId: listId, type: "RANKING_UPDATE" } }), prisma.rankingList.deleteMany({ where: { id: listId, authorId: userDbId } })]));
@@ -150,7 +189,6 @@ export async function deleteRankingListAction(
   return { success: true };
 }
 
-/** 順序更新 */
 export async function updateRankingListOrderAction(orderedListIds: string[]): Promise<ActionResult> {
   const { userDbId, username } = await requireUser();
   await safeQuery(() => prisma.$transaction(orderedListIds.map((id, idx) => prisma.rankingList.updateMany({ where: { id, authorId: userDbId }, data: { displayOrder: idx } }))));
@@ -158,11 +196,6 @@ export async function updateRankingListOrderAction(orderedListIds: string[]): Pr
   return { success: true };
 }
 
-/** プロフィール別ランキングの次ページ */
-export async function loadMoreProfileRankingsAction(
-  targetUserId: string,
-  status: ListStatus,
-  cursor: string | null
-): Promise<PaginatedResponse<RankingListSnippet>> {
+export async function loadMoreProfileRankingsAction(targetUserId: string, status: ListStatus, cursor: string | null): Promise<PaginatedResponse<RankingListSnippet>> {
   return getProfileRankingsPaginated({ userId: targetUserId, status, limit: 10, cursor: cursor ?? undefined });
 }
