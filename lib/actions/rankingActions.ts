@@ -269,6 +269,9 @@ export async function saveRankingListItemsAction(
   }
 }
 
+// (以下、deleteRankingListAction, updateRankingListOrderAction, loadMoreProfileRankingsAction は変更なし)
+
+
 /**
  * ランキング削除
  */

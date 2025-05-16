@@ -20,6 +20,7 @@ export type EditableItem = {
   imageUrl?: string | null;   // 既存画像のURL
   imageFile?: File | null;   // 新しく選択されたファイル
   previewUrl?: string | null; // プレビュー用URL
+  imagePath?: string | null
 }
 
 // Props の型定義
