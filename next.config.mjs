@@ -3,25 +3,28 @@ const nextConfig = {
   reactStrictMode: true,
   images: {
     remotePatterns: [
-      // Supabase の署名付き URL だけを許可
       {
         protocol: "https",
         hostname: "gvhbqlaaqlprgvthcxic.supabase.co",
         port: "",
+        // サイン付き URL
         pathname: "/storage/v1/object/sign/**",
       },
-      // Clerk のアバターなど
+      {
+        protocol: "https",
+        hostname: "gvhbqlaaqlprgvthcxic.supabase.co",
+        port: "",
+        // 公開バケット用 URL
+        pathname: "/storage/v1/object/public/**",
+      },
       {
         protocol: "https",
         hostname: "img.clerk.com",
-        port: "",
         pathname: "/**",
       },
-      // ドメイン直ホストされた画像（例: ドメイン直URLも使うなら）
       {
         protocol: "https",
         hostname: "www.topme.jp",
-        port: "",
         pathname: "/**",
       },
     ],
