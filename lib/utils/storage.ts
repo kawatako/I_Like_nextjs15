@@ -2,7 +2,7 @@
 import { createClient } from "@supabase/supabase-js";
 
 // Supabase 管理クライアント
-const supabaseAdmin = createClient(
+export const supabaseAdmin = createClient(
   process.env.SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );

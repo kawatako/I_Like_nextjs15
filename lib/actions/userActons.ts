@@ -8,6 +8,7 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { getUserDbIdByClerkId } from "@/lib/data/userQueries";
 import type { ActionResult } from "@/lib/types";
+import { supabaseAdmin } from '@/lib/utils/storage'
 
 // --- 受け取るデータの型 ---
 export type ProfileUpdateData = {
@@ -61,19 +62,19 @@ const ProfileUpdateSchema = z
 export async function updateProfileAction(
   data: ProfileUpdateData
 ): Promise<ActionResult> {
-  // 1. 認証チェック
   const { userId: clerkId } = await auth();
-  if (!clerkId) {
-    return { success: false, error: "ログインしてください。" };
-  }
+  if (!clerkId) return { success: false, error: "ログインしてください。" };
 
-  // 2. DB のユーザー ID を取得
   const userDbId = await getUserDbIdByClerkId(clerkId);
-  if (!userDbId) {
-    return { success: false, error: "ユーザー情報が見つかりません。" };
-  }
+  if (!userDbId) return { success: false, error: "ユーザーが見つかりません。" };
 
-  // 3. 入力のバリデーション
+  // ① 更新前のレコードを取得
+  const prev = await prisma.user.findUnique({
+    where: { id: userDbId },
+    select: { image: true, coverImageUrl: true },
+  });
+
+  // 入力のバリデーション
   const parsed = ProfileUpdateSchema.safeParse(data);
   if (!parsed.success) {
     const msgs = parsed.error.errors
@@ -83,48 +84,43 @@ export async function updateProfileAction(
   }
   const valid = parsed.data;
 
-  // 4. 更新用オブジェクトを組み立て
-  const updateData: Record<string, unknown> = {
-    name: valid.name,
-    bio: valid.bio,
-    location: valid.location,
-    birthday: valid.birthday,
-  };
-  // クライアント送信値を優先して保存
-  if (data.image !== undefined) {
-    updateData.image = data.image;
+  // ② 新しい値を含む updateData を組み立て
+  const updateData: Record<string, unknown> = { /* ...name,bio...*/ };
+  if (data.image !== undefined)       updateData.image = data.image;
+  if (data.coverImageUrl !== undefined) updateData.coverImageUrl = data.coverImageUrl;
+
+  // ③ DB を更新
+  const updated = await safeQuery(() =>
+    prisma.user.update({
+      where: { id: userDbId },
+      data: updateData,
+      select: { username: true }
+    })
+  );
+
+  // ④ 古いファイルを削除
+  const bucket = "i-like";
+  // プロフィール画像
+  if (data.image !== undefined && prev?.image && prev.image !== data.image) {
+    supabaseAdmin
+      .storage
+      .from(bucket)
+      .remove([prev.image])
+      .catch((e) => console.error("古いプロフィール画像削除失敗:", e));
   }
-  if (data.coverImageUrl !== undefined) {
-    updateData.coverImageUrl = data.coverImageUrl;
-  }
-  // socialLinks の処理
-  if (valid.socialLinks !== undefined) {
-    updateData.socialLinks = valid.socialLinks;
+  // カバー画像
+  if (data.coverImageUrl !== undefined && prev?.coverImageUrl && prev.coverImageUrl !== data.coverImageUrl) {
+    supabaseAdmin
+      .storage
+      .from(bucket)
+      .remove([prev.coverImageUrl])
+      .catch((e) => console.error("古いカバー画像削除失敗:", e));
   }
 
-  // 5. DB 更新＆キャッシュ再検証
-  try {
-    const updated = await safeQuery(() =>
-      prisma.user.update({
-        where: { id: userDbId },
-        data: updateData,
-        select: { username: true },
-      })
-    );
+  // ⑤ キャッシュ再検証
+  revalidatePath(`/profile/${updated.username}`);
+  revalidatePath(`/profile/${updated.username}/edit`);
+  revalidatePath(`/`);
 
-    revalidatePath(`/profile/${updated.username}`);
-    revalidatePath(`/profile/${updated.username}/edit`);
-    revalidatePath(`/`);
-
-    return { success: true };
-  } catch (error: any) {
-    console.error("[updateProfileAction] error:", error);
-    return {
-      success: false,
-      error:
-        error instanceof Error
-          ? error.message
-          : "プロフィールの更新中にエラーが発生しました。",
-    };
-  }
+  return { success: true };
 }
