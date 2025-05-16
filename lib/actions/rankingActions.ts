@@ -1,12 +1,11 @@
-// lib/actions/rankingActions.ts
 "use server";
 
 import { auth } from "@clerk/nextjs/server";
 import prisma from "@/lib/client";
 import { safeQuery } from "@/lib/db";
-import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { z } from "zod";
 import { getProfileRankingsPaginated } from "@/lib/data/rankingQueries";
 import type {
   ActionResult,
@@ -14,6 +13,7 @@ import type {
   RankingListSnippet,
   ListStatus,
 } from "@/lib/types";
+
 
 /** 認証済みユーザーの DB ID と username を取得 */
 async function requireUser() {
@@ -51,6 +51,21 @@ async function upsertTags(tx: any, tags?: string[]): Promise<{ id: string }[]> {
   );
 
   return ups.map((u: any) => ({ id: u.id }));
+}
+
+/**
+ * タグ upsert & pivot 更新（単独トランザクション）
+ */
+async function updateTags(listId: string, tags: string[]) {
+  await prisma.$transaction(async (tx) => {
+    const tagIds = await upsertTags(tx, tags);
+    await tx.rankingListTag.deleteMany({ where: { listId } });
+    if (tagIds.length > 0) {
+      await tx.rankingListTag.createMany({
+        data: tagIds.map((t) => ({ listId, tagId: t.id })),
+      });
+    }
+  });
 }
 
 // Zod スキーマ
@@ -168,9 +183,10 @@ export async function createCompleteRankingAction(
 
 /**
  * 既存ランキングの更新：
- * - タグ upsert & pivot更新
+ * - タグ upsert & pivot更新（トランザクション①）
  * - RankedItem delete & createMany
- * - フィード upsert
+ * - ランキングメタ更新
+ * - フィード upsert（トランザクション②）
  */
 export async function saveRankingListItemsAction(
   listId: string,
@@ -197,18 +213,13 @@ export async function saveRankingListItemsAction(
   if (!list) return { success: false, error: "編集権限がありません。" };
 
   try {
+    // トランザクション①：タグ周り
+    await safeQuery(() => updateTags(listId, tags));
+
+    // トランザクション②：アイテム＋メタ＋フィード
     await safeQuery(() =>
       prisma.$transaction(async (tx) => {
-        // 1) タグ upsert & pivot更新
-        const tagIds = await upsertTags(tx, tags);
-        await tx.rankingListTag.deleteMany({ where: { listId } });
-        if (tagIds.length > 0) {
-          await tx.rankingListTag.createMany({
-            data: tagIds.map((t) => ({ listId, tagId: t.id })),
-          });
-        }
-
-        // 2) アイテム更新
+        // アイテム更新
         await tx.rankedItem.deleteMany({ where: { listId } });
         if (itemsData.length > 0) {
           await tx.rankedItem.createMany({
@@ -222,7 +233,7 @@ export async function saveRankingListItemsAction(
           });
         }
 
-        // 3) ランキングメタ更新
+        // ランキングメタ更新
         await tx.rankingList.update({
           where: { id: listId, authorId: userDbId },
           data: {
@@ -233,20 +244,13 @@ export async function saveRankingListItemsAction(
           },
         });
 
-        // 4) フィード upsert
+        // フィード upsert
         if (targetStatus === "PUBLISHED") {
           await tx.feedItem.upsert({
             where: {
-              rankingListId_type: {
-                rankingListId: listId,
-                type: "RANKING_UPDATE",
-              },
+              rankingListId_type: { rankingListId: listId, type: "RANKING_UPDATE" },
             },
-            create: {
-              userId: userDbId,
-              type: "RANKING_UPDATE",
-              rankingListId: listId,
-            },
+            create: { userId: userDbId, type: "RANKING_UPDATE", rankingListId: listId },
             update: { updatedAt: new Date() },
           });
         }
@@ -268,9 +272,6 @@ export async function saveRankingListItemsAction(
     return { success: false, error: err.message || "更新中にエラーが発生しました。" };
   }
 }
-
-// (以下、deleteRankingListAction, updateRankingListOrderAction, loadMoreProfileRankingsAction は変更なし)
-
 
 /**
  * ランキング削除
