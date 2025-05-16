@@ -33,64 +33,31 @@ interface ProfileEditFormProps {
   initialData: InitialProfileData;
 }
 
-// --- Zod スキーマ (アクション側と合わせる) ---
 const ProfileUpdateSchema = z
   .object({
-    name: z
-      .string()
-      .trim()
-      .max(30, "表示名は30文字以内で入力してください。")
-      .optional()
-      .nullable(),
-    bio: z
-      .string()
-      .trim()
-      .max(160, "自己紹介は160文字以内で入力してください。")
-      .optional()
-      .nullable(),
-    location: z
-      .string()
-      .trim()
-      .max(100, "場所は100文字以内で入力してください。")
-      .optional()
-      .nullable(),
-    birthday: z
-      .string()
-      .nullable()
-      .optional()
-      .refine(
-        (date) =>
-          date === null ||
-          date === undefined ||
-          date === "" ||
-          !isNaN(Date.parse(date)),
-        { message: "有効な日付を入力してください。" }
-      )
-      .transform((date) =>
-        date && date !== "" ? new Date(date) : null
-      ),
-    socialLinks: z
-      .object({
-        x: z.string().url("X: 有効なURLを").optional().nullable().or(z.literal("")),
-        instagram: z.string().url("Instagram: 有効なURLを").optional().nullable().or(z.literal("")),
-        tiktok: z.string().url("TikTok: 有効なURLを").optional().nullable().or(z.literal("")),
-        website: z.string().url("Webサイト: 有効なURLを").optional().nullable().or(z.literal("")),
-      })
-      .optional()
-      .nullable(),
-  })
-  .strict();
+    name: z.string().trim().max(30).optional().nullable(),
+    bio: z.string().trim().max(160).optional().nullable(),
+    location: z.string().trim().max(100).optional().nullable(),
+    birthday: z.string().optional().nullable()
+      .refine(s => !s || !isNaN(Date.parse(s)), "有効な日付を入力してください")
+      .transform(s => s ? new Date(s) : null),
+    socialLinks: z.object({
+      x: z.string().url().optional().nullable().or(z.literal("")),
+      instagram: z.string().url().optional().nullable().or(z.literal("")),
+      tiktok: z.string().url().optional().nullable().or(z.literal("")),
+      website: z.string().url().optional().nullable().or(z.literal("")),
+    }).optional().nullable(),
+  }).strict();
 
 export default function ProfileEditForm({ initialData }: ProfileEditFormProps) {
   const router = useRouter();
   const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
 
-  // テキストフィールド
   const [name, setName] = useState(initialData.name ?? "");
   const [bio, setBio] = useState(initialData.bio ?? "");
   const [location, setLocation] = useState(initialData.location ?? "");
-  const [birthday, setBirthday] = useState<string>(
+  const [birthday, setBirthday] = useState(
     initialData.birthday
       ? new Date(initialData.birthday).toISOString().split("T")[0]
       : ""
@@ -102,86 +69,66 @@ export default function ProfileEditForm({ initialData }: ProfileEditFormProps) {
     website: (initialData.socialLinks as any)?.website ?? "",
   });
 
-  // --- ① 三値 state に変更 ---
-  // undefined: 未操作 / File: 新規アップロード / null: 削除
-  const [coverImageFile, setCoverImageFile] = useState<File | null | undefined>(undefined);
-  const [coverImagePath, setCoverImagePath] = useState<string | null>(null);
+  // ファイルの三値管理
+  const [coverFile, setCoverFile] = useState<File | null | undefined>(undefined);
+  const [profileFile, setProfileFile] = useState<File | null | undefined>(undefined);
 
-  const [profileImageFile, setProfileImageFile] = useState<File | null | undefined>(undefined);
-  const [profileImagePath, setProfileImagePath] = useState<string | null>(null);
-
-  const { uploadImage: uploadCoverImage, isLoading: isCoverUploading } = useImageUploader();
-  const { uploadImage: uploadProfileImage, isLoading: isProfileUploading } = useImageUploader();
+  const {
+    uploadImage: uploadCover,
+    isLoading: isCoverUploading,
+  } = useImageUploader();
+  const {
+    uploadImage: uploadProfile,
+    isLoading: isProfileUploading,
+  } = useImageUploader();
 
   const handleCoverFileChange = useCallback((file: File | null) => {
-    setCoverImageFile(file);
-    setCoverImagePath(null);
+    setCoverFile(file);
   }, []);
   const handleProfileFileChange = useCallback((file: File | null) => {
-    setProfileImageFile(file);
-    setProfileImagePath(null);
+    setProfileFile(file);
   }, []);
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    // 入力検証
-    const formData = { name, bio, location, birthday, socialLinks };
-    const validationResult = ProfileUpdateSchema.partial().safeParse(formData);
-    if (!validationResult.success) {
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    const formObj = { name, bio, location, birthday, socialLinks };
+    const validRes = ProfileUpdateSchema.safeParse(formObj);
+    if (!validRes.success) {
       toast({
         title: "入力エラー",
-        description: validationResult.error.errors[0].message,
+        description: validRes.error.errors[0].message,
         variant: "destructive",
       });
       return;
     }
-
     startTransition(async () => {
       try {
-        // プレビュー更新用 URL
-        let coverUrl: string | null | undefined = initialData.coverImageUrl;
-        let profileUrl: string | null | undefined = initialData.image;
+        // ローカル変数でパス管理
+        let newCoverPath: string | null | undefined;
+        let newProfilePath: string | null | undefined;
 
-        const uploadPromises: Promise<void>[] = [];
-
-        // cover
-        if (coverImageFile !== undefined) {
-          if (coverImageFile) {
-            uploadPromises.push(
-              uploadCoverImage(coverImageFile).then((res) => {
-                if (!res) throw new Error("カバー画像アップロード失敗");
-                coverUrl = res.signedUrl;
-                setCoverImagePath(res.path);
-              })
-            );
+        // アップロード処理
+        if (coverFile !== undefined) {
+          if (coverFile) {
+            const res = await uploadCover(coverFile);
+            if (!res) throw new Error("カバー画像アップロード失敗");
+            newCoverPath = res.path;
           } else {
-            // 画像削除
-            coverUrl = null;
-            setCoverImagePath(null);
+            newCoverPath = null;
+          }
+        }
+        if (profileFile !== undefined) {
+          if (profileFile) {
+            const res = await uploadProfile(profileFile);
+            if (!res) throw new Error("アイコンアップロード失敗");
+            newProfilePath = res.path;
+          } else {
+            newProfilePath = null;
           }
         }
 
-        // profile
-        if (profileImageFile !== undefined) {
-          if (profileImageFile) {
-            uploadPromises.push(
-              uploadProfileImage(profileImageFile).then((res) => {
-                if (!res) throw new Error("アイコンアップロード失敗");
-                profileUrl = res.signedUrl;
-                setProfileImagePath(res.path);
-              })
-            );
-          } else {
-            profileUrl = null;
-            setProfileImagePath(null);
-          }
-        }
-
-        await Promise.all(uploadPromises);
-
-        // --- ② updateData に image/coverImageUrl を必要時のみ含める ---
-        const updateData: Partial<ProfileUpdateData> = {
+        // 更新用データ構築
+        const updateData: ProfileUpdateData = {
           name: name || null,
           bio: bio || null,
           location: location || null,
@@ -193,16 +140,10 @@ export default function ProfileEditForm({ initialData }: ProfileEditFormProps) {
             website: socialLinks.website || null,
           },
         };
+        if (newCoverPath !== undefined) updateData.coverImageUrl = newCoverPath;
+        if (newProfilePath !== undefined) updateData.image = newProfilePath;
 
-        if (coverImageFile !== undefined) {
-          updateData.coverImageUrl = coverImagePath;
-        }
-        if (profileImageFile !== undefined) {
-          updateData.image = profileImagePath;
-        }
-
-        const result = await updateProfileAction(updateData as ProfileUpdateData);
-
+        const result = await updateProfileAction(updateData);
         if (result.success) {
           toast({ title: "プロフィールを更新しました" });
           router.push(`/profile/${initialData.username}`);
@@ -210,39 +151,33 @@ export default function ProfileEditForm({ initialData }: ProfileEditFormProps) {
         } else {
           throw new Error(result.error || "更新に失敗しました");
         }
-      } catch (error: any) {
-        toast({
-          title: "エラー",
-          description: error.message,
-          variant: "destructive",
-        });
+      } catch (err: any) {
+        toast({ title: "エラー", description: err.message, variant: "destructive" });
       }
     });
   };
 
-  const isProcessing =
-    isPending || isCoverUploading || isProfileUploading;
+  const isProcessing = isPending || isCoverUploading || isProfileUploading;
 
   return (
-    <form onSubmit={handleSubmit} className='space-y-8'>
+    <form onSubmit={handleSubmit} className="space-y-8">
       <ImageUploader
-        label='カバー画像'
+        label="カバー画像"
         initialImageUrl={initialData.coverImageUrl ?? null}
         onFileChange={handleCoverFileChange}
         disabled={isProcessing}
-        previewClassName='w-full aspect-[3/1] sm:aspect-[4/1]'
-        buttonSize='sm'
-        buttonClassName='mt-2'
+        previewClassName="w-full aspect-[3/1] sm:aspect-[4/1]"
+        buttonSize="sm"
+        buttonClassName="mt-2"
       />
-
-      <div className='relative pl-4 sm:pl-6 pt-[-4rem] z-10 w-fit'>
+      <div className="relative pl-4 sm:pl-6 -mt-16 z-10 w-fit">
         <ImageUploader
-          label='プロフィールアイコン'
+          label="プロフィールアイコン"
           initialImageUrl={initialData.image ?? null}
           onFileChange={handleProfileFileChange}
           disabled={isProcessing}
-          previewClassName='w-24 h-24 sm:w-32 sm:h-32 rounded-full border-4 border-background'
-          buttonClassName='w-24 h-24 sm:w-32 sm:h-32 rounded-full flex-col'
+          previewClassName="w-24 h-24 sm:w-32 sm:h-32 rounded-full border-4 border-background"
+          buttonClassName="w-24 h-24 sm:w-32 sm:h-32 rounded-full flex-col"
           buttonSize={null}
         />
       </div>
