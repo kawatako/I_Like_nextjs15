@@ -1,3 +1,4 @@
+//components/component/profiles/ProfileEditForm.tsx
 "use client";
 
 import { useState, useCallback, useTransition, FormEvent, useEffect } from "react";
@@ -54,9 +55,20 @@ const ProfileUpdateSchema = z
       .optional()
       .nullable(),
     birthday: z
-      .instanceof(Date)
+      .string()
       .nullable()
-      .optional(),
+      .optional()
+      .refine(
+        (date) =>
+          date === null ||
+          date === undefined ||
+          date === "" ||
+          !isNaN(Date.parse(date)),
+        { message: "有効な日付を入力してください。" }
+      )
+      .transform((date) =>
+        date && date !== "" ? new Date(date) : null
+      ),
     socialLinks: z
       .object({
         x: z.string().url("X: 有効なURLを").optional().nullable().or(z.literal("")),
