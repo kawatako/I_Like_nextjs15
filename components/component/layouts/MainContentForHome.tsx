@@ -1,28 +1,24 @@
+// components/component/layouts/MainContentForHome.tsx
 import PostForm from "../posts/PostForm";
 import TimelineFeed from "../feeds/TimelineFeed";
-import type { FeedItemWithRelations } from '@/lib/types'; // FeedItemWithRelations 型をインポート
+import type { UserSnippet } from "@/lib/types";
 
 interface MainContentForHomeProps {
-  initialFeedItems: FeedItemWithRelations[];
-  initialNextCursor: string | null;
-  loggedInUserDbId: string | null; // ログインユーザーのDB IDを渡す
+  currentLoginUserData: UserSnippet;
 }
 
 export default function MainContentForHome({
-  initialFeedItems,
-  initialNextCursor,
-  loggedInUserDbId, // ログインユーザーのDB IDを渡す
+  currentLoginUserData,
 }: MainContentForHomeProps) {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 flex flex-col h-full">
       <div className="mb-3 flex-shrink-0">
-        <PostForm /> {/* PostForm をここに配置 */}
+        <PostForm currentLoginUserData={currentLoginUserData} />
       </div>
       <div className="flex-1 overflow-y-auto">
         <TimelineFeed
-        feedType="home"
-        loggedInUserDbId={loggedInUserDbId}
-        // feedType: "home"）の場合targetUserId は使わない
+          feedType="home"
+          loggedInUserDbId={currentLoginUserData.id}
         />
       </div>
     </div>

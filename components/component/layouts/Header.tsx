@@ -4,9 +4,19 @@
 import Link from "next/link";
 import SearchForm from "../search/SearchForm";
 import { LogInIcon,ChatBubbleIcon } from "../Icons";
-import { ClerkLoading, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { ClerkLoading, SignedIn, SignedOut } from "@clerk/nextjs";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
-export default function Header() {
+interface HeaderProps {
+  currentLoginUserData: {
+    id: string;
+    username: string | null;
+    image: string | null;   // 署名付きURLを含むフルURL
+  } | null;
+}
+
+
+export default function Header({currentLoginUserData}: HeaderProps) {
   return (
     <header className="bg-background shadow-md px-4 md:px-6 py-3 flex items-center justify-between gap-4">
       {/* ロゴ (左端) */}
@@ -37,7 +47,17 @@ export default function Header() {
             <div className="h-8 w-8 animate-pulse rounded-full bg-muted" />
           </ClerkLoading>
           <SignedIn>
-            <UserButton />
+                    {currentLoginUserData ? (
+           <Avatar className="w-8 h-8 border">
+             <AvatarImage
+               src={currentLoginUserData.image ?? undefined}
+               alt={`${currentLoginUserData.username} のアイコン`}
+             />
+             <AvatarFallback>
+               {currentLoginUserData.username?.slice(0, 2).toUpperCase()}
+             </AvatarFallback>
+           </Avatar>
+         ) : null}
           </SignedIn>
           <SignedOut>
             <Link
