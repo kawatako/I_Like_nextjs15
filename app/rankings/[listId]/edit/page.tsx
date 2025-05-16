@@ -1,7 +1,7 @@
 // app/rankings/[listId]/edit/page.tsx
 import { notFound } from "next/navigation";
 import { getRankingListForEdit } from "@/lib/data/rankingQueries";
-import { generateImageUrl } from "@/lib/utils/storage";   // 追加
+import { generateImageUrl } from "@/lib/utils/storage";
 import { RankingEdit } from "@/components/component/rankings/RankingEdit";
 
 export const dynamic = "force-dynamic";
@@ -13,11 +13,11 @@ export default async function RankingEditPage({
 }) {
   const { listId } = await params;
 
-  // 1) 編集用データ取得
+  // ① 認証・権限チェック込みで下書きデータ取得
   const raw = await getRankingListForEdit(listId);
-  if (!raw) return notFound();
+  if (!raw) notFound();
 
-  // 2) 既存アイテムの imageUrl に署名付き URL を付与
+  // ② 既存アイテム画像のパスを全て署名付き URL に変換
   const itemsWithSigned = await Promise.all(
     raw.items.map(async (item) => ({
       ...item,
@@ -27,11 +27,8 @@ export default async function RankingEditPage({
     }))
   );
 
-  // 3) RankingEdit コンポーネントに渡す形に整形
-  const rankingList = {
-    ...raw,
-    items: itemsWithSigned,
-  };
+  // ③ 変換後のアイテム配列を元データに差し替え
+  const rankingList = { ...raw, items: itemsWithSigned };
 
   return (
     <div className="container mx-auto p-4">

@@ -19,7 +19,7 @@ export default async function RankingDetailPage({
 }) {
   const { listId } = await params;
 
-  // 1) ランキングデータ取得
+  // 1) ランキング本体データ取得
   const raw = await getRankingDetailsForView(listId);
   if (!raw) return notFound();
 
@@ -27,13 +27,13 @@ export default async function RankingDetailPage({
   const userProfileData = await getUserProfileData(raw.author.username);
   if (!userProfileData) return notFound();
 
-  // 3) フォロー状態
+  // 3) フォロー状態取得
   const { userId: clerkId } = await auth();
   const loggedInDbId = clerkId ? await getUserDbIdByClerkId(clerkId) : null;
   const isOwner = loggedInDbId === userProfileData.id;
   const followStatusInfo = await getFollowStatus(loggedInDbId, userProfileData.id);
 
-  // 4) ヘッダー用署名付きURL発行
+  // 4) プロフィール画像／カバー画像を署名付き URL に
   const headerImageUrl = userProfileData.image
     ? await generateImageUrl(userProfileData.image)
     : null;
@@ -41,17 +41,17 @@ export default async function RankingDetailPage({
     ? await generateImageUrl(userProfileData.coverImageUrl)
     : null;
 
-  // 5) アイテム画像用署名付きURL発行
+  // 5) アイテム画像のパスもすべて署名付き URL に
   const itemsWithSigned = await Promise.all(
-    raw.items.map(async (item) => {
-      if (item.imageUrl && !item.imageUrl.startsWith("blob:")) {
-        item.imageUrl = await generateImageUrl(item.imageUrl);
-      }
-      return item;
-    })
+    raw.items.map(async (item) => ({
+      ...item,
+      imageUrl: item.imageUrl
+        ? await generateImageUrl(item.imageUrl)
+        : null,
+    }))
   );
 
-  // 6) 描画
+  // 6) コンポーネントに渡す形を整形
   const headerData = {
     ...userProfileData,
     image: headerImageUrl,
