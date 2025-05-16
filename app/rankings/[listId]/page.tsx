@@ -13,10 +13,10 @@ import { Button } from "@/components/ui/button";
 export const dynamic = "force-dynamic";
 
 export default async function RankingDetailPage({
-   params
-   }:{
-    params : Promise<{ listId: string }> 
-   }){
+  params,
+}: {
+  params: Promise<{ listId: string }>;
+}) {
   const { listId } = await params;
 
   // 1) ランキングデータ取得
@@ -27,24 +27,13 @@ export default async function RankingDetailPage({
   const userProfileData = await getUserProfileData(raw.author.username);
   if (!userProfileData) return notFound();
 
-  // 3) フォロー状態 etc...
+  // 3) フォロー状態
   const { userId: clerkId } = await auth();
   const loggedInDbId = clerkId ? await getUserDbIdByClerkId(clerkId) : null;
   const isOwner = loggedInDbId === userProfileData.id;
   const followStatusInfo = await getFollowStatus(loggedInDbId, userProfileData.id);
 
-  // 4) 署名付き URL を発行
-  const extractKey = (url: string) => {
-    try {
-      const u = new URL(url);
-      const prefix = "/storage/v1/object/public/i-like/";
-      return u.pathname.startsWith(prefix) ? u.pathname.slice(prefix.length) : null;
-    } catch {
-      return null;
-    }
-  };
-
-  // ヘッダー画像
+  // 4) ヘッダー用署名付きURL発行
   const headerImageUrl = userProfileData.image
     ? await generateImageUrl(userProfileData.image)
     : null;
@@ -52,20 +41,17 @@ export default async function RankingDetailPage({
     ? await generateImageUrl(userProfileData.coverImageUrl)
     : null;
 
-  // アイテム画像
+  // 5) アイテム画像用署名付きURL発行
   const itemsWithSigned = await Promise.all(
     raw.items.map(async (item) => {
-      if (!item.imageUrl?.startsWith("blob:")) {
-        const key = extractKey(item.imageUrl!);
-        if (key) {
-          item.imageUrl = await generateImageUrl(item.imageUrl!);
-        }
+      if (item.imageUrl && !item.imageUrl.startsWith("blob:")) {
+        item.imageUrl = await generateImageUrl(item.imageUrl);
       }
       return item;
     })
   );
 
-  // コンポーネントに渡す
+  // 6) 描画
   const headerData = {
     ...userProfileData,
     image: headerImageUrl,
