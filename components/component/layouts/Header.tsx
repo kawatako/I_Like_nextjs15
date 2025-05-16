@@ -62,7 +62,7 @@ export default function Header({ currentLoginUserData }: HeaderProps) {
         <SignedOut>
           <Link
             href="/sign-in"
-            className="text-sm font-medium hover:text-primary transition-colors"
+            className="text-sm font-medium hover:text-primary transition-colors"  
           >
             ログイン
           </Link>
