@@ -9,6 +9,7 @@ import { ProfileHeader } from "@/components/component/profiles/ProfileHeader";
 import { RankingDetailView } from "@/components/component/rankings/RankingDetailView";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { DeleteRankingButton } from "@/components/component/rankings/DeleteRankingButton";
 
 export const dynamic = "force-dynamic";
 
@@ -63,6 +64,7 @@ export default async function RankingDetailPage({
           <Link href={`/rankings/${listId}/edit`}>
             <Button variant="outline">編集する</Button>
           </Link>
+          <DeleteRankingButton listId={listId} />
         </div>
       )}
     </>

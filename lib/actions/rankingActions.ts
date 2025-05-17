@@ -222,20 +222,25 @@ export async function deleteRankingListAction(
   const { userDbId, username } = await requireUser();
   const listId = formData.get("listId") as string;
 
-  await safeQuery(() =>
-    prisma.$transaction([
-      prisma.feedItem.deleteMany({
-        where: { rankingListId: listId, type: "RANKING_UPDATE" },
-      }),
-      prisma.rankingList.deleteMany({
-        where: { id: listId, authorId: userDbId },
-      }),
-    ])
-  );
+  await prisma.$transaction([
+    // フィードアイテム
+    prisma.feedItem.deleteMany({
+      where: { rankingListId: listId, type: "RANKING_UPDATE" },
+    }),
+    // ランキングに紐づくアイテム
+    prisma.rankedItem.deleteMany({
+      where: { listId },
+    }),
+    // ランキング本体
+    prisma.rankingList.deleteMany({
+      where: { id: listId, authorId: userDbId },
+    }),
+  ]);
 
   redirect(username ? `/profile/${username}` : "/");
   return { success: true };
 }
+
 
 /**
  * displayOrder 一括更新
