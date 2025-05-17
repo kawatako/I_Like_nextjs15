@@ -1,3 +1,4 @@
+//lib/actions/rankingActions.ts
 "use server";
 
 import { auth } from "@clerk/nextjs/server";
@@ -126,7 +127,8 @@ export async function createCompleteRankingAction(
 /** 既存ランキング更新 */
 export async function saveRankingListItemsAction(
   listId: string,
-  itemsData: { itemName: string; itemDescription?: string | null; imageUrl?: string | null }[],
+  // ここで imagePath を追加
+  itemsData: { itemName: string; itemDescription?: string | null; imagePath?: string | null; imageUrl?: string | null }[],
   listSubject: string,
   listDescription: string | null,
   listImageUrl: string | null | undefined,
@@ -134,35 +136,65 @@ export async function saveRankingListItemsAction(
   targetStatus: ListStatus
 ): Promise<ActionResult> {
   const { userDbId, username } = await requireUser();
-  const list = await safeQuery(() => prisma.rankingList.findUnique({ where: { id: listId, authorId: userDbId }, select: { id: true } }));
+  const list = await safeQuery(() =>
+    prisma.rankingList.findUnique({ where: { id: listId, authorId: userDbId }, select: { id: true } })
+  );
   if (!list) return { success: false, error: "編集権限がありません。" };
 
-  // ① 古いアイテム画像パスを取得
-  const prevItems = await safeQuery(() => prisma.rankedItem.findMany({ where: { listId }, select: { imageUrl: true } }));
-  const oldPaths = prevItems.map((i) => i.imageUrl).filter((p): p is string => !!p);
+  // ① 更新前の古い画像パスを取得
+  const prevItems = await safeQuery(() =>
+    prisma.rankedItem.findMany({ where: { listId }, select: { imageUrl: true } })
+  );
+  const oldPaths = prevItems
+    .map((i) => i.imageUrl)
+    .filter((p): p is string => !!p);
 
   try {
     // タグ更新
     await updateTags(listId, tags);
-    // アイテム&メタ&フィード更新
+
+    // アイテムとメタ情報の更新
     await safeQuery(() =>
       prisma.$transaction(async (tx) => {
         await tx.rankedItem.deleteMany({ where: { listId } });
         if (itemsData.length > 0) {
-          await tx.rankedItem.createMany({ data: itemsData.map((item, idx) => ({ listId, rank: idx + 1, itemName: item.itemName.trim(), itemDescription: item.itemDescription?.trim() || null, imageUrl: item.imageUrl || null })) });
+          await tx.rankedItem.createMany({
+            data: itemsData.map((item, idx) => ({
+              listId,
+              rank: idx + 1,
+              itemName: item.itemName.trim(),
+              itemDescription: item.itemDescription?.trim() || null,
+              // 新しい or 既存のキー文字列を imageUrl に保存
+              imageUrl: item.imageUrl ?? item.imagePath ?? null,
+            })),
+          });
         }
-        await tx.rankingList.update({ where: { id: listId, authorId: userDbId }, data: { subject: listSubject.trim(), description: listDescription?.trim() || null, status: targetStatus, listImageUrl: listImageUrl || null } });
+        await tx.rankingList.update({
+          where: { id: listId, authorId: userDbId },
+          data: {
+            subject: listSubject.trim(),
+            description: listDescription?.trim() || null,
+            status: targetStatus,
+            listImageUrl: listImageUrl || null,
+          },
+        });
         if (targetStatus === "PUBLISHED") {
-          await tx.feedItem.upsert({ where: { rankingListId_type: { rankingListId: listId, type: "RANKING_UPDATE" } }, create: { userId: userDbId, type: "RANKING_UPDATE", rankingListId: listId }, update: { updatedAt: new Date() } });
+          await tx.feedItem.upsert({
+            where: { rankingListId_type: { rankingListId: listId, type: "RANKING_UPDATE" } },
+            create: { userId: userDbId, type: "RANKING_UPDATE", rankingListId: listId },
+            update: { updatedAt: new Date() },
+          });
         }
       })
     );
 
     // ② 差し替えで不要になった画像を削除
-    const newPaths = itemsData.map((i) => i.imageUrl).filter((p): p is string => !!p);
+    const newPaths = itemsData
+      .map((i) => i.imageUrl ?? i.imagePath)
+      .filter((p): p is string => !!p);
     const toRemove = oldPaths.filter((p) => !newPaths.includes(p));
     if (toRemove.length > 0) {
-      supabaseAdmin.storage.from("i-like").remove(toRemove).catch((e) => console.error("古いアイテム画像削除失敗:", e));
+      await supabaseAdmin.storage.from("i-like").remove(toRemove);
     }
 
     // キャッシュ再検証
@@ -170,8 +202,8 @@ export async function saveRankingListItemsAction(
     revalidatePath(`/rankings/${listId}`);
     revalidatePath(`/profile/${username}`);
     if (targetStatus === "PUBLISHED") {
-      revalidatePath("/");
-      revalidatePath("/trends");
+      revalidatePath(`/`);
+      revalidatePath(`/trends`);
     }
     return { success: true };
   } catch (err: any) {
@@ -180,22 +212,66 @@ export async function saveRankingListItemsAction(
   }
 }
 
-/** 以下変更なし */
-export async function deleteRankingListAction(prevState: ActionResult | null, formData: FormData): Promise<ActionResult> {
+/**
+ * ランキング削除
+ */
+export async function deleteRankingListAction(
+  prevState: ActionResult | null,
+  formData: FormData
+): Promise<ActionResult> {
   const { userDbId, username } = await requireUser();
   const listId = formData.get("listId") as string;
-  await safeQuery(() => prisma.$transaction([prisma.feedItem.deleteMany({ where: { rankingListId: listId, type: "RANKING_UPDATE" } }), prisma.rankingList.deleteMany({ where: { id: listId, authorId: userDbId } })]));
+
+  await safeQuery(() =>
+    prisma.$transaction([
+      prisma.feedItem.deleteMany({
+        where: { rankingListId: listId, type: "RANKING_UPDATE" },
+      }),
+      prisma.rankingList.deleteMany({
+        where: { id: listId, authorId: userDbId },
+      }),
+    ])
+  );
+
   redirect(username ? `/profile/${username}` : "/");
   return { success: true };
 }
 
-export async function updateRankingListOrderAction(orderedListIds: string[]): Promise<ActionResult> {
+/**
+ * displayOrder 一括更新
+ */
+export async function updateRankingListOrderAction(
+  orderedListIds: string[]
+): Promise<ActionResult> {
   const { userDbId, username } = await requireUser();
-  await safeQuery(() => prisma.$transaction(orderedListIds.map((id, idx) => prisma.rankingList.updateMany({ where: { id, authorId: userDbId }, data: { displayOrder: idx } }))));
+
+  await safeQuery(() =>
+    prisma.$transaction(
+      orderedListIds.map((id, idx) =>
+        prisma.rankingList.updateMany({
+          where: { id, authorId: userDbId },
+          data: { displayOrder: idx },
+        })
+      )
+    )
+  );
+
   revalidatePath(`/profile/${username}`);
   return { success: true };
 }
 
-export async function loadMoreProfileRankingsAction(targetUserId: string, status: ListStatus, cursor: string | null): Promise<PaginatedResponse<RankingListSnippet>> {
-  return getProfileRankingsPaginated({ userId: targetUserId, status, limit: 10, cursor: cursor ?? undefined });
+/**
+ * プロフィール別ランキングの次ページを取得
+ */
+export async function loadMoreProfileRankingsAction(
+  targetUserId: string,
+  status: ListStatus,
+  cursor: string | null
+): Promise<PaginatedResponse<RankingListSnippet>> {
+  return getProfileRankingsPaginated({
+    userId: targetUserId,
+    status,
+    limit: 10,
+    cursor: cursor ?? undefined,
+  });
 }
