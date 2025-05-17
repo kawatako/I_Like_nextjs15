@@ -1,3 +1,4 @@
+//app/rankings/[listId]/edit/page.tsx
 import { notFound } from "next/navigation";
 import { getRankingListForEdit } from "@/lib/data/rankingQueries";
 import { generateImageUrl } from "@/lib/utils/storage";

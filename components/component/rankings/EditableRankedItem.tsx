@@ -1,3 +1,4 @@
+//components/component/rankings/EditableRankedItem.tsx
 "use client";
 
 import { useRef, type ChangeEvent } from "react";

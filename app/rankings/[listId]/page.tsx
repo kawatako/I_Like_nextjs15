@@ -18,36 +18,31 @@ export default async function RankingDetailPage({
   params: Promise<{ listId: string }>;
 }) {
   const { listId } = await params;
-
-  // 1) 下書きも含めてデータ取得
   const raw = await getRankingDetailsForView(listId);
   if (!raw) return notFound();
 
-  // 2) 認証情報取得
+  // 認証チェック
   const { userId: clerkId } = await auth();
   const loggedInDbId = clerkId ? await getUserDbIdByClerkId(clerkId) : null;
   const isOwner = loggedInDbId === raw.author.id;
+  if (raw.status === "DRAFT" && !isOwner) return notFound();
 
-  // 3) 下書きはオーナー以外アクセス禁止
-  if (raw.status === "DRAFT" && !isOwner) {
-    return notFound();
-  }
-
-  // 4) 作者プロフィール取得
+  // プロフィール画像も署名付き URL に
   const userProfileData = await getUserProfileData(raw.author.username);
   if (!userProfileData) return notFound();
-
-  // 5) 画像の署名付き URL 発行
   const headerImageUrl = await generateImageUrl(userProfileData.image);
   const headerCoverUrl = await generateImageUrl(userProfileData.coverImageUrl);
-  const itemsWithSigned = await Promise.all(
+
+  // ★ 元の item.imageUrl (キー文字列) を署名付き URL に上書き ★
+  const items = await Promise.all(
     raw.items.map(async (item) => ({
       ...item,
-      imageUrl: item.imageUrl ? await generateImageUrl(item.imageUrl) : null,
+      imageUrl: item.imageUrl
+        ? await generateImageUrl(item.imageUrl)
+        : null,
     }))
   );
 
-  // 6) レンダリング
   return (
     <>
       <ProfileHeader
@@ -59,7 +54,10 @@ export default async function RankingDetailPage({
         isCurrentUser={isOwner}
         initialFollowStatus={await getFollowStatus(loggedInDbId, userProfileData.id)}
       />
-      <RankingDetailView ranking={{ ...raw, items: itemsWithSigned }} isOwner={isOwner} />
+      <RankingDetailView
+        ranking={{ ...raw, items }}
+        isOwner={isOwner}
+      />
       {isOwner && (
         <div className="mb-4 flex justify-end px-4">
           <Link href={`/rankings/${listId}/edit`}>

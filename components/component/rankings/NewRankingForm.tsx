@@ -1,3 +1,4 @@
+//components/component/rankings/NewRankingForm.tsx
 "use client";
 
 import { useState, useCallback, useTransition } from "react";
@@ -175,7 +176,7 @@ export function NewRankingForm() {
             if (item.imageFile) {
               const uploaded = await uploadImage(item.imageFile);
               if (!uploaded) throw new Error("画像アップロードに失敗しました。");
-              finalUrl = uploaded.signedUrl;
+              finalUrl = uploaded.path;
             }
             return {
               itemName: item.itemName.trim(),
