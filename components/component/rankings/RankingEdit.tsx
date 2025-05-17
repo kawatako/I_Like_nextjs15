@@ -1,4 +1,4 @@
-//component/rankings/RankingEdit.tsx
+// components/component/rankings/RankingEdit.tsx
 "use client";
 
 import {
@@ -9,30 +9,12 @@ import {
 } from "react";
 import { useRouter } from "next/navigation";
 import { ListStatus } from "@/lib/types";
-import {
-  Card,
-  CardHeader,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/hooks/use-toast";
-import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  DragEndEvent,
-} from "@dnd-kit/core";
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import { EditableRankedItem } from "./EditableRankedItem";
-import type { EditableItem } from "./EditableRankedItem";
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from "@dnd-kit/core";
+import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import { EditableRankedItem, type EditableItem } from "./EditableRankedItem";
 import { saveRankingListItemsAction } from "@/lib/actions/rankingActions";
 import { useImageUploader } from "@/components/hooks/useImageUploader";
 
@@ -45,8 +27,8 @@ interface Props {
       id: string;
       itemName: string;
       itemDescription: string | null;
-      imageUrl: string | null;
-      previewUrl: string | null;
+      imageUrl: string | null;   // 署名付きURL
+      imagePath: string | null;  // 元のキー文字列
     }[];
     rankingListTags: { tag: { id: string; name: string } }[];
   };
@@ -59,9 +41,7 @@ export function RankingEdit({ rankingList }: Props) {
   const [isSaving, startSaveTransition] = useTransition();
 
   const [subject, setSubject] = useState(rankingList.subject);
-  const [description, setDescription] = useState(
-    rankingList.description ?? ""
-  );
+  const [description, setDescription] = useState(rankingList.description ?? "");
   const [editableItems, setEditableItems] = useState<EditableItem[]>(
     rankingList.items.map((item) => ({
       clientId: item.id,
@@ -69,17 +49,17 @@ export function RankingEdit({ rankingList }: Props) {
       itemName: item.itemName,
       itemDescription: item.itemDescription,
       imageFile: null,
-      previewUrl: item.previewUrl,
-      imagePath: item.imageUrl,
+      previewUrl: item.imageUrl,
+      imagePath: item.imagePath,
     }))
   );
-  const [tags, setTags] = useState<string[]>(
-    rankingList.rankingListTags.map((t) => t.tag.name)
-  );
+  const [tags, setTags] = useState<string[]>(rankingList.rankingListTags.map((t) => t.tag.name));
   const [formError, setFormError] = useState<string | null>(null);
   const [isMounted, setIsMounted] = useState(false);
 
-  useEffect(() => { setIsMounted(true); }, []);
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const handleAddItemSlot = useCallback(() => {
     if (editableItems.length >= 10) {
