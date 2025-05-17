@@ -1,21 +1,24 @@
-// components/component/rankings/CommentSection.tsx
 'use client';
 
-import { useState } from 'react';
-import { useAuth,useUser } from '@clerk/nextjs'
-import { Textarea } from "@/components/ui/textarea"
-import { Button } from "@/components/ui/button"
-import { useRankingListComments } from '@/components/hooks/useRankingListComments';
+import Link from "next/link";
+import { useState } from "react";
+import { useAuth } from "@clerk/nextjs";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import {
+  useRankingListComments,
+  RankingComment,
+} from "@/components/hooks/useRankingListComments";
 
 interface Props {
   listId: string;
 }
 
 export default function CommentSection({ listId }: Props) {
-  const { isSignedIn } = useAuth()
-  const { user } = useUser()
-  const { comments, isLoading, isError, postComment } = useRankingListComments(listId);
-  const [draft, setDraft] = useState('');
+  const { isSignedIn } = useAuth();
+  const { comments, isLoading, isError, postComment } =
+    useRankingListComments(listId);
+  const [draft, setDraft] = useState("");
 
   if (isLoading) return <p>Loading comments…</p>;
   if (isError) return <p className="text-red-500">Failed to load comments</p>;
@@ -27,7 +30,7 @@ export default function CommentSection({ listId }: Props) {
           onSubmit={async (e) => {
             e.preventDefault();
             await postComment(draft);
-            setDraft('');
+            setDraft("");
           }}
         >
           <Textarea
@@ -41,18 +44,25 @@ export default function CommentSection({ listId }: Props) {
           </Button>
         </form>
       )}
+
       <div className="space-y-3">
-        {comments.map((c) => (
-          <div key={c.id} className="p-3 bg-gray-50 rounded">
+        {comments.map((c: RankingComment) => (
+          <Link
+            key={c.id}
+            href={`/profile/${c.user.username}`}
+            className="block p-3 bg-gray-50 rounded hover:bg-gray-100"
+          >
             <div className="flex items-center mb-1">
-              {/* 後でユーザー情報を紐付けるならここに表示 */}
-              <strong>{c.userId}</strong>
+              <strong className="text-base">{c.user.name ?? c.user.username}</strong>
+              <span className="ml-2 text-sm text-muted-foreground">
+                @{c.user.username}
+              </span>
               <span className="ml-auto text-xs text-muted-foreground">
                 {new Date(c.createdAt).toLocaleString()}
               </span>
             </div>
             <p>{c.content}</p>
-          </div>
+          </Link>
         ))}
       </div>
     </div>
