@@ -223,15 +223,19 @@ export async function deleteRankingListAction(
   const listId = formData.get("listId") as string;
 
   await prisma.$transaction([
-    // フィードアイテム
+    // 1) フィードアイテム
     prisma.feedItem.deleteMany({
       where: { rankingListId: listId, type: "RANKING_UPDATE" },
     }),
-    // ランキングに紐づくアイテム
+    // 2) ランキングに紐づくアイテム
     prisma.rankedItem.deleteMany({
       where: { listId },
     }),
-    // ランキング本体
+    // 3) ランキング⇔タグの中間テーブル（外部キー制約回避のため先に削除）
+    prisma.rankingListTag.deleteMany({
+      where: { listId },
+    }),
+    // 4) ランキング本体
     prisma.rankingList.deleteMany({
       where: { id: listId, authorId: userDbId },
     }),
