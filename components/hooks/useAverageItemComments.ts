@@ -1,3 +1,4 @@
+//components/hooks/useAverageItemComments.tsx
 import useSWR from 'swr'
 
 export interface Comment {
