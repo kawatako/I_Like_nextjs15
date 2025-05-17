@@ -171,7 +171,7 @@ export function NewRankingForm() {
       try {
         itemsData = await Promise.all(
           editableItems.map(async (item) => {
-            let finalUrl = item.imageUrl ?? null;
+            let finalUrl = item.imagePath ?? null;
             if (item.imageFile) {
               const uploaded = await uploadImage(item.imageFile);
               if (!uploaded) throw new Error("画像アップロードに失敗しました。");
