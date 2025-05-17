@@ -49,6 +49,7 @@ model User {
   replies                Reply[]
   retweets               Retweet[]
   rankingListComments    RankingListComment[] @relation("CommentOnRanking")
+  averageItemComments AverageItemComment[] @relation("AverageItemCommentOnUser")
 }
 
 model RankingList {
@@ -174,7 +175,7 @@ model AverageItemComment {
   userId    String // コメント投稿者のユーザID
   content   String // コメント本文
   createdAt DateTime @default(now())
-
+  user       User     @relation("AverageItemCommentOnUser", fields: [userId], references: [id])
   @@index([userId])
 }
 
