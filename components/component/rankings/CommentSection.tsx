@@ -1,4 +1,4 @@
-//components/component/rankings/CommentSection.tsx
+// components/component/rankings/CommentSection.tsx
 'use client';
 
 import Link from "next/link";
@@ -40,15 +40,21 @@ export default function CommentSection({ listId }: Props) {
             placeholder="コメントを入力…"
             required
           />
-          <Button type="submit" className="mt-2">
-            投稿
-          </Button>
+          {/* 投稿ボタンを右寄せ */}
+          <div className="flex justify-end mt-2">
+            <Button type="submit">
+              投稿
+            </Button>
+          </div>
         </form>
       )}
 
       <div className="space-y-3">
         {comments.map((c: RankingComment) => (
-          <div key={c.id} className="relative block p-3 bg-gray-50 rounded hover:bg-gray-100">
+          <div
+            key={c.id}
+            className="relative block p-3 bg-gray-50 rounded hover:bg-gray-100"
+          >
             <Link
               href={`/profile/${c.user.username}`}
               className="flex items-center mb-1"
@@ -61,9 +67,9 @@ export default function CommentSection({ listId }: Props) {
                 {new Date(c.createdAt).toLocaleString()}
               </span>
             </Link>
-            <p className="mb-1">{c.content}</p>
+            <p className="mb-6">{c.content}</p> {/* 下に余白を確保 */}
 
-            {/* 自分のコメントなら削除ボタン表示 */}
+            {/* 自分のコメントなら削除ボタン表示をカード右下へ */}
             {isSignedIn && (
               <Button
                 variant="ghost"
@@ -77,7 +83,7 @@ export default function CommentSection({ listId }: Props) {
                     }
                   }
                 }}
-                className="absolute top-2 right-2 text-sm text-red-500 hover:text-red-700"
+                className="absolute bottom-2 right-2 text-red-500 hover:text-red-700"
                 title="コメントを削除"
               >
                 🗑️
