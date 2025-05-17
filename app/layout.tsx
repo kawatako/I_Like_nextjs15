@@ -1,5 +1,4 @@
 // app/layout.tsx
-export const runtime = "nodejs";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
@@ -26,6 +25,7 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  // Edge ランタイム上で動作する Clerk の auth()
   const { userId: clerkId } = await auth();
   const raw = clerkId
     ? await getCurrentLoginUserData(clerkId)
