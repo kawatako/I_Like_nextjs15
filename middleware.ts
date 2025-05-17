@@ -1,12 +1,13 @@
-// middleware.ts (プロジェクトルート または src/)
+// middleware.ts
 import { clerkMiddleware } from "@clerk/nextjs/server";
 
 export default clerkMiddleware();
 
 export const config = {
   matcher: [
-    // これで _next/static/_next/image/favicon.ico/sign-in/sign-up/api を除外し、
-    // それ以外すべてのページ（と server-side auth() 呼び出し）は Clerk のセッションチェックが働きます。
-    "/((?!_next/static|_next/image|favicon.ico|sign-in|sign-up|api).*)",
+    // Next.js の内部ファイルと静的アセットだけをスキップ
+    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
+    // API ルートは必ず実行
+    "/(api|trpc)(.*)",
   ],
 };
