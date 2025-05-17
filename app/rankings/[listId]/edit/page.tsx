@@ -1,4 +1,3 @@
-// app/rankings/[listId]/edit/page.tsx
 import { notFound } from "next/navigation";
 import { getRankingListForEdit } from "@/lib/data/rankingQueries";
 import { generateImageUrl } from "@/lib/utils/storage";
@@ -17,18 +16,20 @@ export default async function RankingEditPage({
   const raw = await getRankingListForEdit(listId);
   if (!raw) notFound();
 
-  // ② 既存アイテム画像のパスを全て署名付き URL に変換
-  const itemsWithSigned = await Promise.all(
+  // ② プレビュー用の署名付きURLを別フィールドとして付与
+  const itemsWithPreview = await Promise.all(
     raw.items.map(async (item) => ({
       ...item,
-      imageUrl: item.imageUrl
+      // 元の item.imageUrl はストレージキーのまま保持
+      // プレビュー表示用に previewUrl を追加
+      previewUrl: item.imageUrl
         ? await generateImageUrl(item.imageUrl)
         : null,
     }))
   );
 
-  // ③ 変換後のアイテム配列を元データに差し替え
-  const rankingList = { ...raw, items: itemsWithSigned };
+  // ③ 既存アイテム配列を差し替え
+  const rankingList = { ...raw, items: itemsWithPreview };
 
   return (
     <div className="container mx-auto p-4">

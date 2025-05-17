@@ -11,13 +11,8 @@ import { ListStatus } from "@/lib/types";
 import {
   Card,
   CardHeader,
-  CardTitle,
-  CardDescription,
   CardContent,
 } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/hooks/use-toast";
 import {
@@ -37,9 +32,7 @@ import {
 } from "@dnd-kit/sortable";
 import { EditableRankedItem } from "./EditableRankedItem";
 import type { EditableItem } from "./EditableRankedItem";
-import TagInput from "./TagInput";
 import { saveRankingListItemsAction } from "@/lib/actions/rankingActions";
-import { PlusIcon } from "@/components/component/Icons";
 import { useImageUploader } from "@/components/hooks/useImageUploader";
 
 interface Props {
