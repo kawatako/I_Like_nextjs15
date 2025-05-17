@@ -79,10 +79,13 @@ export async function getHomeFeed({
     );
     const followingIds = following.map((f) => f.followingId);
 
-    // 2) フィードアイテムの生データ取得
+    // ★ 自分自身も含める ★
+    const authorIds = [userId, ...followingIds];
+
+    // 2) フィードアイテムの生データ取得（自分 or フォロー中ユーザー の投稿を取得）
     const rawItems = await safeQuery(() =>
       prisma.feedItem.findMany({
-        where: { userId: { in: followingIds } },
+        where: { userId: { in: authorIds } },
         select: feedItemPayload.select,
         orderBy: { createdAt: "desc" },
         take,
@@ -107,6 +110,7 @@ export async function getHomeFeed({
     return { items: [], nextCursor: null };
   }
 }
+
 
 /**
  * 単一のフィードアイテム詳細を取得し、
