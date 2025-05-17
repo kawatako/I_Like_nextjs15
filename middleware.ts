@@ -1,15 +1,15 @@
-// (プロジェクトルートまたは src/)middleware.ts
+// プロジェクトルート または src/middleware.ts
+
 import { clerkMiddleware } from "@clerk/nextjs/server";
-import type { NextRequest, NextFetchEvent } from "next/server";
 
-export default function middleware(request: NextRequest, event: NextFetchEvent) {
-  console.log("▶️ clerkMiddleware called for:", request.nextUrl.pathname);
-  return clerkMiddleware(request, event);
-}
+// Clerk のミドルウェアをエクスポート
+// Next.js がこの関数を自動的に呼び出すようになります
+export default clerkMiddleware();
 
+// ミドルウェア適用パスの設定
 export const config = {
   matcher: [
-    // 静的ファイル・認証ルートを除外
+    // _next/static と _next/image、favicon.ico、sign-in／sign-up を除外
     "/((?!_next/static|_next/image|favicon.ico|sign-in|sign-up).*)",
   ],
 };
