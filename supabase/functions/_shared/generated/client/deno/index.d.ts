@@ -2522,6 +2522,7 @@ export namespace Prisma {
     rankingLists: number
     replies: number
     retweets: number
+    rankingListComments: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2535,6 +2536,7 @@ export namespace Prisma {
     rankingLists?: boolean | UserCountOutputTypeCountRankingListsArgs
     replies?: boolean | UserCountOutputTypeCountRepliesArgs
     retweets?: boolean | UserCountOutputTypeCountRetweetsArgs
+    rankingListComments?: boolean | UserCountOutputTypeCountRankingListCommentsArgs
   }
 
   // Custom InputTypes
@@ -2616,6 +2618,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountRetweetsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: RetweetWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountRankingListCommentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: RankingListCommentWhereInput
   }
 
 
@@ -4085,6 +4094,7 @@ export namespace Prisma {
     rankingLists?: boolean | User$rankingListsArgs<ExtArgs>
     replies?: boolean | User$repliesArgs<ExtArgs>
     retweets?: boolean | User$retweetsArgs<ExtArgs>
+    rankingListComments?: boolean | User$rankingListCommentsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -4148,6 +4158,7 @@ export namespace Prisma {
     rankingLists?: boolean | User$rankingListsArgs<ExtArgs>
     replies?: boolean | User$repliesArgs<ExtArgs>
     retweets?: boolean | User$retweetsArgs<ExtArgs>
+    rankingListComments?: boolean | User$rankingListCommentsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -4166,6 +4177,7 @@ export namespace Prisma {
       rankingLists: Prisma.$RankingListPayload<ExtArgs>[]
       replies: Prisma.$ReplyPayload<ExtArgs>[]
       retweets: Prisma.$RetweetPayload<ExtArgs>[]
+      rankingListComments: Prisma.$RankingListCommentPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -4585,6 +4597,7 @@ export namespace Prisma {
     rankingLists<T extends User$rankingListsArgs<ExtArgs> = {}>(args?: Subset<T, User$rankingListsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RankingListPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     replies<T extends User$repliesArgs<ExtArgs> = {}>(args?: Subset<T, User$repliesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReplyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     retweets<T extends User$retweetsArgs<ExtArgs> = {}>(args?: Subset<T, User$retweetsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RetweetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    rankingListComments<T extends User$rankingListCommentsArgs<ExtArgs> = {}>(args?: Subset<T, User$rankingListCommentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RankingListCommentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -5252,6 +5265,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: RetweetScalarFieldEnum | RetweetScalarFieldEnum[]
+  }
+
+  /**
+   * User.rankingListComments
+   */
+  export type User$rankingListCommentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RankingListComment
+     */
+    select?: RankingListCommentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RankingListComment
+     */
+    omit?: RankingListCommentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RankingListCommentInclude<ExtArgs> | null
+    where?: RankingListCommentWhereInput
+    orderBy?: RankingListCommentOrderByWithRelationInput | RankingListCommentOrderByWithRelationInput[]
+    cursor?: RankingListCommentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: RankingListCommentScalarFieldEnum | RankingListCommentScalarFieldEnum[]
   }
 
   /**
@@ -8870,6 +8907,7 @@ export namespace Prisma {
     userId?: boolean
     content?: boolean
     createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["rankingListComment"]>
 
   export type RankingListCommentSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -8878,6 +8916,7 @@ export namespace Prisma {
     userId?: boolean
     content?: boolean
     createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["rankingListComment"]>
 
   export type RankingListCommentSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -8886,6 +8925,7 @@ export namespace Prisma {
     userId?: boolean
     content?: boolean
     createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["rankingListComment"]>
 
   export type RankingListCommentSelectScalar = {
@@ -8897,10 +8937,21 @@ export namespace Prisma {
   }
 
   export type RankingListCommentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "listId" | "userId" | "content" | "createdAt", ExtArgs["result"]["rankingListComment"]>
+  export type RankingListCommentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type RankingListCommentIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type RankingListCommentIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
 
   export type $RankingListCommentPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "RankingListComment"
-    objects: {}
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       listId: string
@@ -9301,6 +9352,7 @@ export namespace Prisma {
    */
   export interface Prisma__RankingListCommentClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -9352,6 +9404,10 @@ export namespace Prisma {
      */
     omit?: RankingListCommentOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RankingListCommentInclude<ExtArgs> | null
+    /**
      * Filter, which RankingListComment to fetch.
      */
     where: RankingListCommentWhereUniqueInput
@@ -9370,6 +9426,10 @@ export namespace Prisma {
      */
     omit?: RankingListCommentOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RankingListCommentInclude<ExtArgs> | null
+    /**
      * Filter, which RankingListComment to fetch.
      */
     where: RankingListCommentWhereUniqueInput
@@ -9387,6 +9447,10 @@ export namespace Prisma {
      * Omit specific fields from the RankingListComment
      */
     omit?: RankingListCommentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RankingListCommentInclude<ExtArgs> | null
     /**
      * Filter, which RankingListComment to fetch.
      */
@@ -9436,6 +9500,10 @@ export namespace Prisma {
      */
     omit?: RankingListCommentOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RankingListCommentInclude<ExtArgs> | null
+    /**
      * Filter, which RankingListComment to fetch.
      */
     where?: RankingListCommentWhereInput
@@ -9484,6 +9552,10 @@ export namespace Prisma {
      */
     omit?: RankingListCommentOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RankingListCommentInclude<ExtArgs> | null
+    /**
      * Filter, which RankingListComments to fetch.
      */
     where?: RankingListCommentWhereInput
@@ -9527,6 +9599,10 @@ export namespace Prisma {
      */
     omit?: RankingListCommentOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RankingListCommentInclude<ExtArgs> | null
+    /**
      * The data needed to create a RankingListComment.
      */
     data: XOR<RankingListCommentCreateInput, RankingListCommentUncheckedCreateInput>
@@ -9560,6 +9636,10 @@ export namespace Prisma {
      */
     data: RankingListCommentCreateManyInput | RankingListCommentCreateManyInput[]
     skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RankingListCommentIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -9574,6 +9654,10 @@ export namespace Prisma {
      * Omit specific fields from the RankingListComment
      */
     omit?: RankingListCommentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RankingListCommentInclude<ExtArgs> | null
     /**
      * The data needed to update a RankingListComment.
      */
@@ -9626,6 +9710,10 @@ export namespace Prisma {
      * Limit how many RankingListComments to update.
      */
     limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RankingListCommentIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -9640,6 +9728,10 @@ export namespace Prisma {
      * Omit specific fields from the RankingListComment
      */
     omit?: RankingListCommentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RankingListCommentInclude<ExtArgs> | null
     /**
      * The filter to search for the RankingListComment to update in case it exists.
      */
@@ -9666,6 +9758,10 @@ export namespace Prisma {
      * Omit specific fields from the RankingListComment
      */
     omit?: RankingListCommentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RankingListCommentInclude<ExtArgs> | null
     /**
      * Filter which RankingListComment to delete.
      */
@@ -9698,6 +9794,10 @@ export namespace Prisma {
      * Omit specific fields from the RankingListComment
      */
     omit?: RankingListCommentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RankingListCommentInclude<ExtArgs> | null
   }
 
 
@@ -23325,6 +23425,7 @@ export namespace Prisma {
     rankingLists?: RankingListListRelationFilter
     replies?: ReplyListRelationFilter
     retweets?: RetweetListRelationFilter
+    rankingListComments?: RankingListCommentListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -23351,6 +23452,7 @@ export namespace Prisma {
     rankingLists?: RankingListOrderByRelationAggregateInput
     replies?: ReplyOrderByRelationAggregateInput
     retweets?: RetweetOrderByRelationAggregateInput
+    rankingListComments?: RankingListCommentOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -23380,6 +23482,7 @@ export namespace Prisma {
     rankingLists?: RankingListListRelationFilter
     replies?: ReplyListRelationFilter
     retweets?: RetweetListRelationFilter
+    rankingListComments?: RankingListCommentListRelationFilter
   }, "id" | "clerkId" | "username">
 
   export type UserOrderByWithAggregationInput = {
@@ -23639,6 +23742,7 @@ export namespace Prisma {
     userId?: StringFilter<"RankingListComment"> | string
     content?: StringFilter<"RankingListComment"> | string
     createdAt?: DateTimeFilter<"RankingListComment"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
 
   export type RankingListCommentOrderByWithRelationInput = {
@@ -23647,6 +23751,7 @@ export namespace Prisma {
     userId?: SortOrder
     content?: SortOrder
     createdAt?: SortOrder
+    user?: UserOrderByWithRelationInput
   }
 
   export type RankingListCommentWhereUniqueInput = Prisma.AtLeast<{
@@ -23658,6 +23763,7 @@ export namespace Prisma {
     userId?: StringFilter<"RankingListComment"> | string
     content?: StringFilter<"RankingListComment"> | string
     createdAt?: DateTimeFilter<"RankingListComment"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }, "id">
 
   export type RankingListCommentOrderByWithAggregationInput = {
@@ -24515,6 +24621,7 @@ export namespace Prisma {
     rankingLists?: RankingListCreateNestedManyWithoutAuthorInput
     replies?: ReplyCreateNestedManyWithoutUserInput
     retweets?: RetweetCreateNestedManyWithoutUserInput
+    rankingListComments?: RankingListCommentCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -24541,6 +24648,7 @@ export namespace Prisma {
     rankingLists?: RankingListUncheckedCreateNestedManyWithoutAuthorInput
     replies?: ReplyUncheckedCreateNestedManyWithoutUserInput
     retweets?: RetweetUncheckedCreateNestedManyWithoutUserInput
+    rankingListComments?: RankingListCommentUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -24567,6 +24675,7 @@ export namespace Prisma {
     rankingLists?: RankingListUpdateManyWithoutAuthorNestedInput
     replies?: ReplyUpdateManyWithoutUserNestedInput
     retweets?: RetweetUpdateManyWithoutUserNestedInput
+    rankingListComments?: RankingListCommentUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -24593,6 +24702,7 @@ export namespace Prisma {
     rankingLists?: RankingListUncheckedUpdateManyWithoutAuthorNestedInput
     replies?: ReplyUncheckedUpdateManyWithoutUserNestedInput
     retweets?: RetweetUncheckedUpdateManyWithoutUserNestedInput
+    rankingListComments?: RankingListCommentUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -24861,9 +24971,9 @@ export namespace Prisma {
   export type RankingListCommentCreateInput = {
     id?: string
     listId: string
-    userId: string
     content: string
     createdAt?: Date | string
+    user: UserCreateNestedOneWithoutRankingListCommentsInput
   }
 
   export type RankingListCommentUncheckedCreateInput = {
@@ -24877,9 +24987,9 @@ export namespace Prisma {
   export type RankingListCommentUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     listId?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutRankingListCommentsNestedInput
   }
 
   export type RankingListCommentUncheckedUpdateInput = {
@@ -24901,7 +25011,6 @@ export namespace Prisma {
   export type RankingListCommentUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     listId?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -25853,6 +25962,12 @@ export namespace Prisma {
     none?: RetweetWhereInput
   }
 
+  export type RankingListCommentListRelationFilter = {
+    every?: RankingListCommentWhereInput
+    some?: RankingListCommentWhereInput
+    none?: RankingListCommentWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -25887,6 +26002,10 @@ export namespace Prisma {
   }
 
   export type RetweetOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type RankingListCommentOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -26921,6 +27040,13 @@ export namespace Prisma {
     connect?: RetweetWhereUniqueInput | RetweetWhereUniqueInput[]
   }
 
+  export type RankingListCommentCreateNestedManyWithoutUserInput = {
+    create?: XOR<RankingListCommentCreateWithoutUserInput, RankingListCommentUncheckedCreateWithoutUserInput> | RankingListCommentCreateWithoutUserInput[] | RankingListCommentUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: RankingListCommentCreateOrConnectWithoutUserInput | RankingListCommentCreateOrConnectWithoutUserInput[]
+    createMany?: RankingListCommentCreateManyUserInputEnvelope
+    connect?: RankingListCommentWhereUniqueInput | RankingListCommentWhereUniqueInput[]
+  }
+
   export type FeedItemUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<FeedItemCreateWithoutUserInput, FeedItemUncheckedCreateWithoutUserInput> | FeedItemCreateWithoutUserInput[] | FeedItemUncheckedCreateWithoutUserInput[]
     connectOrCreate?: FeedItemCreateOrConnectWithoutUserInput | FeedItemCreateOrConnectWithoutUserInput[]
@@ -26989,6 +27115,13 @@ export namespace Prisma {
     connectOrCreate?: RetweetCreateOrConnectWithoutUserInput | RetweetCreateOrConnectWithoutUserInput[]
     createMany?: RetweetCreateManyUserInputEnvelope
     connect?: RetweetWhereUniqueInput | RetweetWhereUniqueInput[]
+  }
+
+  export type RankingListCommentUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<RankingListCommentCreateWithoutUserInput, RankingListCommentUncheckedCreateWithoutUserInput> | RankingListCommentCreateWithoutUserInput[] | RankingListCommentUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: RankingListCommentCreateOrConnectWithoutUserInput | RankingListCommentCreateOrConnectWithoutUserInput[]
+    createMany?: RankingListCommentCreateManyUserInputEnvelope
+    connect?: RankingListCommentWhereUniqueInput | RankingListCommentWhereUniqueInput[]
   }
 
   export type NullableStringFieldUpdateOperationsInput = {
@@ -27143,6 +27276,20 @@ export namespace Prisma {
     deleteMany?: RetweetScalarWhereInput | RetweetScalarWhereInput[]
   }
 
+  export type RankingListCommentUpdateManyWithoutUserNestedInput = {
+    create?: XOR<RankingListCommentCreateWithoutUserInput, RankingListCommentUncheckedCreateWithoutUserInput> | RankingListCommentCreateWithoutUserInput[] | RankingListCommentUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: RankingListCommentCreateOrConnectWithoutUserInput | RankingListCommentCreateOrConnectWithoutUserInput[]
+    upsert?: RankingListCommentUpsertWithWhereUniqueWithoutUserInput | RankingListCommentUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: RankingListCommentCreateManyUserInputEnvelope
+    set?: RankingListCommentWhereUniqueInput | RankingListCommentWhereUniqueInput[]
+    disconnect?: RankingListCommentWhereUniqueInput | RankingListCommentWhereUniqueInput[]
+    delete?: RankingListCommentWhereUniqueInput | RankingListCommentWhereUniqueInput[]
+    connect?: RankingListCommentWhereUniqueInput | RankingListCommentWhereUniqueInput[]
+    update?: RankingListCommentUpdateWithWhereUniqueWithoutUserInput | RankingListCommentUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: RankingListCommentUpdateManyWithWhereWithoutUserInput | RankingListCommentUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: RankingListCommentScalarWhereInput | RankingListCommentScalarWhereInput[]
+  }
+
   export type FeedItemUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<FeedItemCreateWithoutUserInput, FeedItemUncheckedCreateWithoutUserInput> | FeedItemCreateWithoutUserInput[] | FeedItemUncheckedCreateWithoutUserInput[]
     connectOrCreate?: FeedItemCreateOrConnectWithoutUserInput | FeedItemCreateOrConnectWithoutUserInput[]
@@ -27281,6 +27428,20 @@ export namespace Prisma {
     update?: RetweetUpdateWithWhereUniqueWithoutUserInput | RetweetUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: RetweetUpdateManyWithWhereWithoutUserInput | RetweetUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: RetweetScalarWhereInput | RetweetScalarWhereInput[]
+  }
+
+  export type RankingListCommentUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<RankingListCommentCreateWithoutUserInput, RankingListCommentUncheckedCreateWithoutUserInput> | RankingListCommentCreateWithoutUserInput[] | RankingListCommentUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: RankingListCommentCreateOrConnectWithoutUserInput | RankingListCommentCreateOrConnectWithoutUserInput[]
+    upsert?: RankingListCommentUpsertWithWhereUniqueWithoutUserInput | RankingListCommentUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: RankingListCommentCreateManyUserInputEnvelope
+    set?: RankingListCommentWhereUniqueInput | RankingListCommentWhereUniqueInput[]
+    disconnect?: RankingListCommentWhereUniqueInput | RankingListCommentWhereUniqueInput[]
+    delete?: RankingListCommentWhereUniqueInput | RankingListCommentWhereUniqueInput[]
+    connect?: RankingListCommentWhereUniqueInput | RankingListCommentWhereUniqueInput[]
+    update?: RankingListCommentUpdateWithWhereUniqueWithoutUserInput | RankingListCommentUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: RankingListCommentUpdateManyWithWhereWithoutUserInput | RankingListCommentUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: RankingListCommentScalarWhereInput | RankingListCommentScalarWhereInput[]
   }
 
   export type FeedItemCreateNestedManyWithoutRankingListInput = {
@@ -27525,6 +27686,20 @@ export namespace Prisma {
     upsert?: TagUpsertWithoutRankingListTagsInput
     connect?: TagWhereUniqueInput
     update?: XOR<XOR<TagUpdateToOneWithWhereWithoutRankingListTagsInput, TagUpdateWithoutRankingListTagsInput>, TagUncheckedUpdateWithoutRankingListTagsInput>
+  }
+
+  export type UserCreateNestedOneWithoutRankingListCommentsInput = {
+    create?: XOR<UserCreateWithoutRankingListCommentsInput, UserUncheckedCreateWithoutRankingListCommentsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutRankingListCommentsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutRankingListCommentsNestedInput = {
+    create?: XOR<UserCreateWithoutRankingListCommentsInput, UserUncheckedCreateWithoutRankingListCommentsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutRankingListCommentsInput
+    upsert?: UserUpsertWithoutRankingListCommentsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutRankingListCommentsInput, UserUpdateWithoutRankingListCommentsInput>, UserUncheckedUpdateWithoutRankingListCommentsInput>
   }
 
   export type EnumTrendPeriodFieldUpdateOperationsInput = {
@@ -28779,6 +28954,30 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type RankingListCommentCreateWithoutUserInput = {
+    id?: string
+    listId: string
+    content: string
+    createdAt?: Date | string
+  }
+
+  export type RankingListCommentUncheckedCreateWithoutUserInput = {
+    id?: string
+    listId: string
+    content: string
+    createdAt?: Date | string
+  }
+
+  export type RankingListCommentCreateOrConnectWithoutUserInput = {
+    where: RankingListCommentWhereUniqueInput
+    create: XOR<RankingListCommentCreateWithoutUserInput, RankingListCommentUncheckedCreateWithoutUserInput>
+  }
+
+  export type RankingListCommentCreateManyUserInputEnvelope = {
+    data: RankingListCommentCreateManyUserInput | RankingListCommentCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
   export type FeedItemUpsertWithWhereUniqueWithoutUserInput = {
     where: FeedItemWhereUniqueInput
     update: XOR<FeedItemUpdateWithoutUserInput, FeedItemUncheckedUpdateWithoutUserInput>
@@ -29039,6 +29238,33 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Retweet"> | Date | string
   }
 
+  export type RankingListCommentUpsertWithWhereUniqueWithoutUserInput = {
+    where: RankingListCommentWhereUniqueInput
+    update: XOR<RankingListCommentUpdateWithoutUserInput, RankingListCommentUncheckedUpdateWithoutUserInput>
+    create: XOR<RankingListCommentCreateWithoutUserInput, RankingListCommentUncheckedCreateWithoutUserInput>
+  }
+
+  export type RankingListCommentUpdateWithWhereUniqueWithoutUserInput = {
+    where: RankingListCommentWhereUniqueInput
+    data: XOR<RankingListCommentUpdateWithoutUserInput, RankingListCommentUncheckedUpdateWithoutUserInput>
+  }
+
+  export type RankingListCommentUpdateManyWithWhereWithoutUserInput = {
+    where: RankingListCommentScalarWhereInput
+    data: XOR<RankingListCommentUpdateManyMutationInput, RankingListCommentUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type RankingListCommentScalarWhereInput = {
+    AND?: RankingListCommentScalarWhereInput | RankingListCommentScalarWhereInput[]
+    OR?: RankingListCommentScalarWhereInput[]
+    NOT?: RankingListCommentScalarWhereInput | RankingListCommentScalarWhereInput[]
+    id?: StringFilter<"RankingListComment"> | string
+    listId?: StringFilter<"RankingListComment"> | string
+    userId?: StringFilter<"RankingListComment"> | string
+    content?: StringFilter<"RankingListComment"> | string
+    createdAt?: DateTimeFilter<"RankingListComment"> | Date | string
+  }
+
   export type FeedItemCreateWithoutRankingListInput = {
     id?: string
     type: $Enums.FeedType
@@ -29154,6 +29380,7 @@ export namespace Prisma {
     posts?: PostCreateNestedManyWithoutAuthorInput
     replies?: ReplyCreateNestedManyWithoutUserInput
     retweets?: RetweetCreateNestedManyWithoutUserInput
+    rankingListComments?: RankingListCommentCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutRankingListsInput = {
@@ -29179,6 +29406,7 @@ export namespace Prisma {
     posts?: PostUncheckedCreateNestedManyWithoutAuthorInput
     replies?: ReplyUncheckedCreateNestedManyWithoutUserInput
     retweets?: RetweetUncheckedCreateNestedManyWithoutUserInput
+    rankingListComments?: RankingListCommentUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutRankingListsInput = {
@@ -29301,6 +29529,7 @@ export namespace Prisma {
     posts?: PostUpdateManyWithoutAuthorNestedInput
     replies?: ReplyUpdateManyWithoutUserNestedInput
     retweets?: RetweetUpdateManyWithoutUserNestedInput
+    rankingListComments?: RankingListCommentUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutRankingListsInput = {
@@ -29326,6 +29555,7 @@ export namespace Prisma {
     posts?: PostUncheckedUpdateManyWithoutAuthorNestedInput
     replies?: ReplyUncheckedUpdateManyWithoutUserNestedInput
     retweets?: RetweetUncheckedUpdateManyWithoutUserNestedInput
+    rankingListComments?: RankingListCommentUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type RankingListTagUpsertWithWhereUniqueWithoutListInput = {
@@ -29548,6 +29778,126 @@ export namespace Prisma {
     trendingStats?: TrendingTagUncheckedUpdateManyWithoutTagNestedInput
   }
 
+  export type UserCreateWithoutRankingListCommentsInput = {
+    id?: string
+    clerkId: string
+    username: string
+    name?: string | null
+    bio?: string | null
+    image?: string | null
+    coverImageUrl?: string | null
+    socialLinks?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isPrivate?: boolean
+    birthday?: Date | string | null
+    location?: string | null
+    feedItems?: FeedItemCreateNestedManyWithoutUserInput
+    following?: FollowCreateNestedManyWithoutFollowerInput
+    followedBy?: FollowCreateNestedManyWithoutFollowingInput
+    receivedFollowRequests?: FollowRequestCreateNestedManyWithoutRequestedInput
+    sentFollowRequests?: FollowRequestCreateNestedManyWithoutRequesterInput
+    likes?: LikeCreateNestedManyWithoutUserInput
+    posts?: PostCreateNestedManyWithoutAuthorInput
+    rankingLists?: RankingListCreateNestedManyWithoutAuthorInput
+    replies?: ReplyCreateNestedManyWithoutUserInput
+    retweets?: RetweetCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutRankingListCommentsInput = {
+    id?: string
+    clerkId: string
+    username: string
+    name?: string | null
+    bio?: string | null
+    image?: string | null
+    coverImageUrl?: string | null
+    socialLinks?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isPrivate?: boolean
+    birthday?: Date | string | null
+    location?: string | null
+    feedItems?: FeedItemUncheckedCreateNestedManyWithoutUserInput
+    following?: FollowUncheckedCreateNestedManyWithoutFollowerInput
+    followedBy?: FollowUncheckedCreateNestedManyWithoutFollowingInput
+    receivedFollowRequests?: FollowRequestUncheckedCreateNestedManyWithoutRequestedInput
+    sentFollowRequests?: FollowRequestUncheckedCreateNestedManyWithoutRequesterInput
+    likes?: LikeUncheckedCreateNestedManyWithoutUserInput
+    posts?: PostUncheckedCreateNestedManyWithoutAuthorInput
+    rankingLists?: RankingListUncheckedCreateNestedManyWithoutAuthorInput
+    replies?: ReplyUncheckedCreateNestedManyWithoutUserInput
+    retweets?: RetweetUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutRankingListCommentsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutRankingListCommentsInput, UserUncheckedCreateWithoutRankingListCommentsInput>
+  }
+
+  export type UserUpsertWithoutRankingListCommentsInput = {
+    update: XOR<UserUpdateWithoutRankingListCommentsInput, UserUncheckedUpdateWithoutRankingListCommentsInput>
+    create: XOR<UserCreateWithoutRankingListCommentsInput, UserUncheckedCreateWithoutRankingListCommentsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutRankingListCommentsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutRankingListCommentsInput, UserUncheckedUpdateWithoutRankingListCommentsInput>
+  }
+
+  export type UserUpdateWithoutRankingListCommentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    clerkId?: StringFieldUpdateOperationsInput | string
+    username?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    socialLinks?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isPrivate?: BoolFieldUpdateOperationsInput | boolean
+    birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    feedItems?: FeedItemUpdateManyWithoutUserNestedInput
+    following?: FollowUpdateManyWithoutFollowerNestedInput
+    followedBy?: FollowUpdateManyWithoutFollowingNestedInput
+    receivedFollowRequests?: FollowRequestUpdateManyWithoutRequestedNestedInput
+    sentFollowRequests?: FollowRequestUpdateManyWithoutRequesterNestedInput
+    likes?: LikeUpdateManyWithoutUserNestedInput
+    posts?: PostUpdateManyWithoutAuthorNestedInput
+    rankingLists?: RankingListUpdateManyWithoutAuthorNestedInput
+    replies?: ReplyUpdateManyWithoutUserNestedInput
+    retweets?: RetweetUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutRankingListCommentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    clerkId?: StringFieldUpdateOperationsInput | string
+    username?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    socialLinks?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isPrivate?: BoolFieldUpdateOperationsInput | boolean
+    birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    feedItems?: FeedItemUncheckedUpdateManyWithoutUserNestedInput
+    following?: FollowUncheckedUpdateManyWithoutFollowerNestedInput
+    followedBy?: FollowUncheckedUpdateManyWithoutFollowingNestedInput
+    receivedFollowRequests?: FollowRequestUncheckedUpdateManyWithoutRequestedNestedInput
+    sentFollowRequests?: FollowRequestUncheckedUpdateManyWithoutRequesterNestedInput
+    likes?: LikeUncheckedUpdateManyWithoutUserNestedInput
+    posts?: PostUncheckedUpdateManyWithoutAuthorNestedInput
+    rankingLists?: RankingListUncheckedUpdateManyWithoutAuthorNestedInput
+    replies?: ReplyUncheckedUpdateManyWithoutUserNestedInput
+    retweets?: RetweetUncheckedUpdateManyWithoutUserNestedInput
+  }
+
   export type TagCreateWithoutTrendingStatsInput = {
     id?: string
     name: string
@@ -29679,6 +30029,7 @@ export namespace Prisma {
     rankingLists?: RankingListCreateNestedManyWithoutAuthorInput
     replies?: ReplyCreateNestedManyWithoutUserInput
     retweets?: RetweetCreateNestedManyWithoutUserInput
+    rankingListComments?: RankingListCommentCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutPostsInput = {
@@ -29704,6 +30055,7 @@ export namespace Prisma {
     rankingLists?: RankingListUncheckedCreateNestedManyWithoutAuthorInput
     replies?: ReplyUncheckedCreateNestedManyWithoutUserInput
     retweets?: RetweetUncheckedCreateNestedManyWithoutUserInput
+    rankingListComments?: RankingListCommentUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutPostsInput = {
@@ -29803,6 +30155,7 @@ export namespace Prisma {
     rankingLists?: RankingListUpdateManyWithoutAuthorNestedInput
     replies?: ReplyUpdateManyWithoutUserNestedInput
     retweets?: RetweetUpdateManyWithoutUserNestedInput
+    rankingListComments?: RankingListCommentUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPostsInput = {
@@ -29828,6 +30181,7 @@ export namespace Prisma {
     rankingLists?: RankingListUncheckedUpdateManyWithoutAuthorNestedInput
     replies?: ReplyUncheckedUpdateManyWithoutUserNestedInput
     retweets?: RetweetUncheckedUpdateManyWithoutUserNestedInput
+    rankingListComments?: RankingListCommentUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ReplyUpsertWithWhereUniqueWithoutPostInput = {
@@ -29904,6 +30258,7 @@ export namespace Prisma {
     posts?: PostCreateNestedManyWithoutAuthorInput
     rankingLists?: RankingListCreateNestedManyWithoutAuthorInput
     replies?: ReplyCreateNestedManyWithoutUserInput
+    rankingListComments?: RankingListCommentCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutRetweetsInput = {
@@ -29929,6 +30284,7 @@ export namespace Prisma {
     posts?: PostUncheckedCreateNestedManyWithoutAuthorInput
     rankingLists?: RankingListUncheckedCreateNestedManyWithoutAuthorInput
     replies?: ReplyUncheckedCreateNestedManyWithoutUserInput
+    rankingListComments?: RankingListCommentUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutRetweetsInput = {
@@ -30011,6 +30367,7 @@ export namespace Prisma {
     posts?: PostUpdateManyWithoutAuthorNestedInput
     rankingLists?: RankingListUpdateManyWithoutAuthorNestedInput
     replies?: ReplyUpdateManyWithoutUserNestedInput
+    rankingListComments?: RankingListCommentUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutRetweetsInput = {
@@ -30036,6 +30393,7 @@ export namespace Prisma {
     posts?: PostUncheckedUpdateManyWithoutAuthorNestedInput
     rankingLists?: RankingListUncheckedUpdateManyWithoutAuthorNestedInput
     replies?: ReplyUncheckedUpdateManyWithoutUserNestedInput
+    rankingListComments?: RankingListCommentUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type PostCreateWithoutFeedItemsInput = {
@@ -30127,6 +30485,7 @@ export namespace Prisma {
     rankingLists?: RankingListCreateNestedManyWithoutAuthorInput
     replies?: ReplyCreateNestedManyWithoutUserInput
     retweets?: RetweetCreateNestedManyWithoutUserInput
+    rankingListComments?: RankingListCommentCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutFeedItemsInput = {
@@ -30152,6 +30511,7 @@ export namespace Prisma {
     rankingLists?: RankingListUncheckedCreateNestedManyWithoutAuthorInput
     replies?: ReplyUncheckedCreateNestedManyWithoutUserInput
     retweets?: RetweetUncheckedCreateNestedManyWithoutUserInput
+    rankingListComments?: RankingListCommentUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutFeedItemsInput = {
@@ -30443,6 +30803,7 @@ export namespace Prisma {
     rankingLists?: RankingListUpdateManyWithoutAuthorNestedInput
     replies?: ReplyUpdateManyWithoutUserNestedInput
     retweets?: RetweetUpdateManyWithoutUserNestedInput
+    rankingListComments?: RankingListCommentUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFeedItemsInput = {
@@ -30468,6 +30829,7 @@ export namespace Prisma {
     rankingLists?: RankingListUncheckedUpdateManyWithoutAuthorNestedInput
     replies?: ReplyUncheckedUpdateManyWithoutUserNestedInput
     retweets?: RetweetUncheckedUpdateManyWithoutUserNestedInput
+    rankingListComments?: RankingListCommentUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type FeedItemUpsertWithoutQuotedByItemsInput = {
@@ -30689,6 +31051,7 @@ export namespace Prisma {
     rankingLists?: RankingListCreateNestedManyWithoutAuthorInput
     replies?: ReplyCreateNestedManyWithoutUserInput
     retweets?: RetweetCreateNestedManyWithoutUserInput
+    rankingListComments?: RankingListCommentCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutLikesInput = {
@@ -30714,6 +31077,7 @@ export namespace Prisma {
     rankingLists?: RankingListUncheckedCreateNestedManyWithoutAuthorInput
     replies?: ReplyUncheckedCreateNestedManyWithoutUserInput
     retweets?: RetweetUncheckedCreateNestedManyWithoutUserInput
+    rankingListComments?: RankingListCommentUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutLikesInput = {
@@ -30833,6 +31197,7 @@ export namespace Prisma {
     rankingLists?: RankingListUpdateManyWithoutAuthorNestedInput
     replies?: ReplyUpdateManyWithoutUserNestedInput
     retweets?: RetweetUpdateManyWithoutUserNestedInput
+    rankingListComments?: RankingListCommentUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutLikesInput = {
@@ -30858,6 +31223,7 @@ export namespace Prisma {
     rankingLists?: RankingListUncheckedUpdateManyWithoutAuthorNestedInput
     replies?: ReplyUncheckedUpdateManyWithoutUserNestedInput
     retweets?: RetweetUncheckedUpdateManyWithoutUserNestedInput
+    rankingListComments?: RankingListCommentUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type PostCreateWithoutRepliesInput = {
@@ -30912,6 +31278,7 @@ export namespace Prisma {
     posts?: PostCreateNestedManyWithoutAuthorInput
     rankingLists?: RankingListCreateNestedManyWithoutAuthorInput
     retweets?: RetweetCreateNestedManyWithoutUserInput
+    rankingListComments?: RankingListCommentCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutRepliesInput = {
@@ -30937,6 +31304,7 @@ export namespace Prisma {
     posts?: PostUncheckedCreateNestedManyWithoutAuthorInput
     rankingLists?: RankingListUncheckedCreateNestedManyWithoutAuthorInput
     retweets?: RetweetUncheckedCreateNestedManyWithoutUserInput
+    rankingListComments?: RankingListCommentUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutRepliesInput = {
@@ -31013,6 +31381,7 @@ export namespace Prisma {
     posts?: PostUpdateManyWithoutAuthorNestedInput
     rankingLists?: RankingListUpdateManyWithoutAuthorNestedInput
     retweets?: RetweetUpdateManyWithoutUserNestedInput
+    rankingListComments?: RankingListCommentUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutRepliesInput = {
@@ -31038,6 +31407,7 @@ export namespace Prisma {
     posts?: PostUncheckedUpdateManyWithoutAuthorNestedInput
     rankingLists?: RankingListUncheckedUpdateManyWithoutAuthorNestedInput
     retweets?: RetweetUncheckedUpdateManyWithoutUserNestedInput
+    rankingListComments?: RankingListCommentUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutReceivedFollowRequestsInput = {
@@ -31063,6 +31433,7 @@ export namespace Prisma {
     rankingLists?: RankingListCreateNestedManyWithoutAuthorInput
     replies?: ReplyCreateNestedManyWithoutUserInput
     retweets?: RetweetCreateNestedManyWithoutUserInput
+    rankingListComments?: RankingListCommentCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutReceivedFollowRequestsInput = {
@@ -31088,6 +31459,7 @@ export namespace Prisma {
     rankingLists?: RankingListUncheckedCreateNestedManyWithoutAuthorInput
     replies?: ReplyUncheckedCreateNestedManyWithoutUserInput
     retweets?: RetweetUncheckedCreateNestedManyWithoutUserInput
+    rankingListComments?: RankingListCommentUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutReceivedFollowRequestsInput = {
@@ -31118,6 +31490,7 @@ export namespace Prisma {
     rankingLists?: RankingListCreateNestedManyWithoutAuthorInput
     replies?: ReplyCreateNestedManyWithoutUserInput
     retweets?: RetweetCreateNestedManyWithoutUserInput
+    rankingListComments?: RankingListCommentCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSentFollowRequestsInput = {
@@ -31143,6 +31516,7 @@ export namespace Prisma {
     rankingLists?: RankingListUncheckedCreateNestedManyWithoutAuthorInput
     replies?: ReplyUncheckedCreateNestedManyWithoutUserInput
     retweets?: RetweetUncheckedCreateNestedManyWithoutUserInput
+    rankingListComments?: RankingListCommentUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSentFollowRequestsInput = {
@@ -31184,6 +31558,7 @@ export namespace Prisma {
     rankingLists?: RankingListUpdateManyWithoutAuthorNestedInput
     replies?: ReplyUpdateManyWithoutUserNestedInput
     retweets?: RetweetUpdateManyWithoutUserNestedInput
+    rankingListComments?: RankingListCommentUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutReceivedFollowRequestsInput = {
@@ -31209,6 +31584,7 @@ export namespace Prisma {
     rankingLists?: RankingListUncheckedUpdateManyWithoutAuthorNestedInput
     replies?: ReplyUncheckedUpdateManyWithoutUserNestedInput
     retweets?: RetweetUncheckedUpdateManyWithoutUserNestedInput
+    rankingListComments?: RankingListCommentUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUpsertWithoutSentFollowRequestsInput = {
@@ -31245,6 +31621,7 @@ export namespace Prisma {
     rankingLists?: RankingListUpdateManyWithoutAuthorNestedInput
     replies?: ReplyUpdateManyWithoutUserNestedInput
     retweets?: RetweetUpdateManyWithoutUserNestedInput
+    rankingListComments?: RankingListCommentUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSentFollowRequestsInput = {
@@ -31270,6 +31647,7 @@ export namespace Prisma {
     rankingLists?: RankingListUncheckedUpdateManyWithoutAuthorNestedInput
     replies?: ReplyUncheckedUpdateManyWithoutUserNestedInput
     retweets?: RetweetUncheckedUpdateManyWithoutUserNestedInput
+    rankingListComments?: RankingListCommentUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutFollowingInput = {
@@ -31295,6 +31673,7 @@ export namespace Prisma {
     rankingLists?: RankingListCreateNestedManyWithoutAuthorInput
     replies?: ReplyCreateNestedManyWithoutUserInput
     retweets?: RetweetCreateNestedManyWithoutUserInput
+    rankingListComments?: RankingListCommentCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutFollowingInput = {
@@ -31320,6 +31699,7 @@ export namespace Prisma {
     rankingLists?: RankingListUncheckedCreateNestedManyWithoutAuthorInput
     replies?: ReplyUncheckedCreateNestedManyWithoutUserInput
     retweets?: RetweetUncheckedCreateNestedManyWithoutUserInput
+    rankingListComments?: RankingListCommentUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutFollowingInput = {
@@ -31350,6 +31730,7 @@ export namespace Prisma {
     rankingLists?: RankingListCreateNestedManyWithoutAuthorInput
     replies?: ReplyCreateNestedManyWithoutUserInput
     retweets?: RetweetCreateNestedManyWithoutUserInput
+    rankingListComments?: RankingListCommentCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutFollowedByInput = {
@@ -31375,6 +31756,7 @@ export namespace Prisma {
     rankingLists?: RankingListUncheckedCreateNestedManyWithoutAuthorInput
     replies?: ReplyUncheckedCreateNestedManyWithoutUserInput
     retweets?: RetweetUncheckedCreateNestedManyWithoutUserInput
+    rankingListComments?: RankingListCommentUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutFollowedByInput = {
@@ -31416,6 +31798,7 @@ export namespace Prisma {
     rankingLists?: RankingListUpdateManyWithoutAuthorNestedInput
     replies?: ReplyUpdateManyWithoutUserNestedInput
     retweets?: RetweetUpdateManyWithoutUserNestedInput
+    rankingListComments?: RankingListCommentUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFollowingInput = {
@@ -31441,6 +31824,7 @@ export namespace Prisma {
     rankingLists?: RankingListUncheckedUpdateManyWithoutAuthorNestedInput
     replies?: ReplyUncheckedUpdateManyWithoutUserNestedInput
     retweets?: RetweetUncheckedUpdateManyWithoutUserNestedInput
+    rankingListComments?: RankingListCommentUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUpsertWithoutFollowedByInput = {
@@ -31477,6 +31861,7 @@ export namespace Prisma {
     rankingLists?: RankingListUpdateManyWithoutAuthorNestedInput
     replies?: ReplyUpdateManyWithoutUserNestedInput
     retweets?: RetweetUpdateManyWithoutUserNestedInput
+    rankingListComments?: RankingListCommentUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFollowedByInput = {
@@ -31502,6 +31887,7 @@ export namespace Prisma {
     rankingLists?: RankingListUncheckedUpdateManyWithoutAuthorNestedInput
     replies?: ReplyUncheckedUpdateManyWithoutUserNestedInput
     retweets?: RetweetUncheckedUpdateManyWithoutUserNestedInput
+    rankingListComments?: RankingListCommentUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type TrendingTagCreateManyTagInput = {
@@ -31635,6 +32021,13 @@ export namespace Prisma {
   export type RetweetCreateManyUserInput = {
     id?: string
     feedItemId: string
+    createdAt?: Date | string
+  }
+
+  export type RankingListCommentCreateManyUserInput = {
+    id?: string
+    listId: string
+    content: string
     createdAt?: Date | string
   }
 
@@ -31901,6 +32294,27 @@ export namespace Prisma {
   export type RetweetUncheckedUpdateManyWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     feedItemId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RankingListCommentUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    listId?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RankingListCommentUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    listId?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RankingListCommentUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    listId?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 

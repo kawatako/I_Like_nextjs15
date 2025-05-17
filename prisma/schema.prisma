@@ -25,29 +25,30 @@ model Tag {
 }
 
 model User {
-  id                     String          @id @default(cuid())
-  clerkId                String          @unique
-  username               String          @unique
+  id                     String               @id @default(cuid())
+  clerkId                String               @unique
+  username               String               @unique
   name                   String?
   bio                    String?
   image                  String?
   coverImageUrl          String?
   socialLinks            Json?
-  createdAt              DateTime        @default(now())
-  updatedAt              DateTime        @updatedAt
-  isPrivate              Boolean         @default(false)
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @updatedAt
+  isPrivate              Boolean              @default(false)
   birthday               DateTime?
   location               String?
   feedItems              FeedItem[]
-  following              Follow[]        @relation("Following")
-  followedBy             Follow[]        @relation("FollowedBy")
-  receivedFollowRequests FollowRequest[] @relation("ReceivedRequests")
-  sentFollowRequests     FollowRequest[] @relation("SentRequests")
+  following              Follow[]             @relation("Following")
+  followedBy             Follow[]             @relation("FollowedBy")
+  receivedFollowRequests FollowRequest[]      @relation("ReceivedRequests")
+  sentFollowRequests     FollowRequest[]      @relation("SentRequests")
   likes                  Like[]
   posts                  Post[]
   rankingLists           RankingList[]
   replies                Reply[]
   retweets               Retweet[]
+  rankingListComments    RankingListComment[] @relation("CommentOnRanking")
 }
 
 model RankingList {
@@ -101,11 +102,12 @@ model RankingListTag {
 }
 
 model RankingListComment {
-  id         String   @id @default(cuid())
-  listId     String
-  userId     String
-  content    String
-  createdAt  DateTime @default(now())
+  id        String   @id @default(cuid())
+  listId    String
+  userId    String
+  content   String
+  createdAt DateTime @default(now())
+  user      User     @relation("CommentOnRanking", fields: [userId], references: [id])
 
   @@index([listId])
   @@index([userId])
@@ -167,11 +169,11 @@ model AverageItemRank {
 
 //AverageItemRankに対するコメント
 model AverageItemComment {
-  id              String    @id @default(cuid())
-  subject         String             // テーマ名（AverageItemRank.subject と対応）
-  userId          String             // コメント投稿者のユーザID
-  content         String             // コメント本文
-  createdAt       DateTime  @default(now())
+  id        String   @id @default(cuid())
+  subject   String // テーマ名（AverageItemRank.subject と対応）
+  userId    String // コメント投稿者のユーザID
+  content   String // コメント本文
+  createdAt DateTime @default(now())
 
   @@index([userId])
 }
