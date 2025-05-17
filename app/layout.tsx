@@ -7,11 +7,12 @@ import LeftSidebar from "@/components/component/layouts/LeftSidebar";
 import BottomNavbar from "@/components/component/layouts/BottomNavbar";
 import { auth } from "@clerk/nextjs/server";
 import { ClerkProvider } from "@clerk/nextjs";
-import { jaJP } from '@clerk/localizations';
+import { jaJP } from "@clerk/localizations";
 import { Toaster } from "@/components/ui/toaster";
 import { getCurrentLoginUserData } from "@/lib/data/userQueries";
 import { generateImageUrl } from "@/lib/utils/storage";
 import { KeepAlivePing } from "@/components/KeepAlivePing";
+import Script from "next/script";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,13 +26,9 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Edge ランタイム上で動作する Clerk の auth()
+  // Clerk での認証 + ユーザーデータ取得
   const { userId: clerkId } = await auth();
-  const raw = clerkId
-    ? await getCurrentLoginUserData(clerkId)
-    : null;
-
-  // ストレージパスを署名付きURLに変換
+  const raw = clerkId ? await getCurrentLoginUserData(clerkId) : null;
   const currentLoginUserData = raw
     ? {
         ...raw,
@@ -40,10 +37,32 @@ export default async function RootLayout({
       }
     : null;
 
+  // GA4 計測 ID
+  const GA_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID!;
+
   return (
     <html lang="ja" className="h-full">
-      <head />
-      <body className={`${inter.className} flex flex-col h-full bg-gray-100 dark:bg-gray-900`}>
+      <head>
+        {/* GA4 gtag.js の読み込み */}
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+          strategy="afterInteractive"
+        />
+        {/* GA4 初期化コード */}
+        <Script id="ga4-init" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){ dataLayer.push(arguments); }
+            gtag('js', new Date());
+            gtag('config', '${GA_ID}', {
+              page_path: window.location.pathname
+            });
+          `}
+        </Script>
+      </head>
+      <body
+        className={`${inter.className} flex flex-col h-full bg-gray-100 dark:bg-gray-900`}
+      >
         <ClerkProvider
           localization={jaJP}
           publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY!}
