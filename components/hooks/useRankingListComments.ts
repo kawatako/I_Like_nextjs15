@@ -1,4 +1,5 @@
-import useSWR from "swr";
+//component/hooks/useRankingListComments.tsx
+import useSWR from 'swr';
 
 export interface RankingComment {
   id: string;
@@ -6,29 +7,37 @@ export interface RankingComment {
   userId: string;
   content: string;
   createdAt: string;
-  user: {
-    username: string;
-    name: string | null;
-  };
+  user: { username: string; name: string | null };
 }
 
 export function useRankingListComments(listId: string) {
-  const key = ["ranking-comments", listId] as const;
+  const key = ['ranking-comments', listId] as const;
   const fetcher = async (): Promise<RankingComment[]> => {
     const res = await fetch(`/api/ranking-comments/${listId}`);
-    if (!res.ok) throw new Error("Failed to fetch comments");
+    if (!res.ok) throw new Error('Failed to fetch comments');
     return res.json();
   };
   const { data, error, mutate } = useSWR<RankingComment[]>(key, fetcher);
 
   const postComment = async (content: string) => {
     const res = await fetch(`/api/ranking-comments/${listId}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ content }),
     });
-    if (!res.ok) throw new Error("Failed to post comment");
-    mutate();
+    if (!res.ok) throw new Error('Failed to post comment');
+    await mutate();
+  };
+
+  const deleteComment = async (commentId: string) => {
+    const res = await fetch(`/api/ranking-comments/${listId}/${commentId}`, {
+      method: 'DELETE',
+    });
+    if (!res.ok && res.status !== 204) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error(body.error || 'Failed to delete comment');
+    }
+    await mutate();
   };
 
   return {
@@ -36,5 +45,6 @@ export function useRankingListComments(listId: string) {
     isLoading: !error && !data,
     isError: !!error,
     postComment,
+    deleteComment,
   };
 }
