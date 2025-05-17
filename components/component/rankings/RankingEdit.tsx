@@ -45,7 +45,8 @@ interface Props {
       id: string;
       itemName: string;
       itemDescription: string | null;
-      imageUrl: string | null; // これはストレージ内パス
+      imageUrl: string | null;
+      previewUrl: string | null;
     }[];
     rankingListTags: { tag: { id: string; name: string } }[];
   };
@@ -68,7 +69,7 @@ export function RankingEdit({ rankingList }: Props) {
       itemName: item.itemName,
       itemDescription: item.itemDescription,
       imageFile: null,
-      previewUrl: item.imageUrl,
+      previewUrl: item.previewUrl,
       imagePath: item.imageUrl,
     }))
   );
