@@ -4,12 +4,14 @@
 import { serve } from "https://deno.land/std@0.181.0/http/server.ts";
 import { sb } from "../_shared/supabaseClient.ts";
 
-// HTTPサーバーとして動作
 serve(async () => {
+  console.log("DEBUG ▶︎ SUPABASE_URL:           ", Deno.env.get("SUPABASE_URL"));
+  console.log("DEBUG ▶︎ SUPABASE_SERVICE_ROLE_KEY:", Deno.env.get("SUPABASE_SERVICE_ROLE_KEY"));
+
   const now = new Date();
+  console.log(`🏁 calculate-trends invoked at ${now.toISOString()}`);
 
   // ── 期間算出（カレンダー方式） ──
-  // 今週の始まり(月曜日)、先週の月曜～日曜、先月の1日～末日を算出
   const thisMonday = new Date(now);
   thisMonday.setDate(now.getDate() - ((now.getDay() + 6) % 7));
   const lastMonday = new Date(thisMonday);
@@ -23,20 +25,17 @@ serve(async () => {
   lastMonthLast.setHours(23, 59, 59, 999);
   const lastMonthFirst = new Date(now.getFullYear(), now.getMonth() - 1, 1);
 
-  // 週次と月次の2種類でループ
   for (const [period, from, to] of [
     ["WEEKLY", lastMonday, lastSunday],
     ["MONTHLY", lastMonthFirst, lastMonthLast],
   ] as const) {
-    // 集計日時をISO文字列と日付文字列で用意
-    const calcDate =
-      period === "WEEKLY"
-        ? lastSunday.toISOString()
-        : lastMonthLast.toISOString();
+    const calcDate = period === "WEEKLY"
+      ? lastSunday.toISOString()
+      : lastMonthLast.toISOString();
     const calcDateString = calcDate.slice(0, 10);
+    console.log(`\n🔄 Processing ${period} { from: "${from.toISOString()}", to: "${to.toISOString()}", calcDateString: "${calcDateString}" }`);
 
-    // ===== 1) RankingList を期間内で取得 =====
-    // PUBLISHED なランキングリストのIDとテーマを取得
+    // 1) RankingList を期間内で取得
     const { data: lists, error: errLists } = await sb
       .from("RankingList")
       .select("id,subject")
@@ -44,13 +43,13 @@ serve(async () => {
       .gte("createdAt", from.toISOString())
       .lte("createdAt", to.toISOString());
     if (errLists) {
-      console.error("fetch RankingList error:", errLists);
+      console.error("❌ fetch RankingList error:", errLists);
       return new Response("Internal Error", { status: 500 });
     }
+    console.log(`✅ fetched ${lists?.length ?? 0} lists`);
     const listIds = (lists ?? []).map((l: any) => l.id);
 
     // ===== TrendingSubject =====
-    // テーマごとの出現回数を集計し、上位100件を取得
     const subjectCount = new Map<string, number>();
     (lists ?? []).forEach((l: any) => {
       subjectCount.set(l.subject, (subjectCount.get(l.subject) || 0) + 1);
@@ -59,100 +58,105 @@ serve(async () => {
       .map(([subject, count]) => ({ subject, count }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 100);
+    console.log(`→ topSubjects (${topSubjects.length}):`, topSubjects);
 
-    // 古い期間のトレンドデータを削除
     await sb
       .from("TrendingSubject")
       .delete()
       .eq("period", period)
       .eq("calculationDate", calcDateString);
+    console.log("→ old TrendingSubject deleted");
 
-    // 新データを挿入
     if (topSubjects.length) {
-      await sb.from("TrendingSubject").insert(
-        topSubjects.map((r) => ({
-          subject: r.subject,
-          count: r.count,
-          period,
-          calculationDate: calcDate,
-        }))
-      );
+      const { data: insertedSubjects, error: subjectError } = await sb
+        .from("TrendingSubject")
+        .insert(
+          topSubjects.map((r) => ({
+            subject: r.subject,
+            count: r.count,
+            period,
+            calculationDate: calcDate,
+          }))
+        );
+      console.log("📝 insert TrendingSubject response:", {
+        insertedSubjects,
+        subjectError,
+      });
     }
 
     // ===== TrendingTag =====
-    // 中間テーブル RankingListTag からタグIDを取得
     const { data: pivots, error: errPivots } = await sb
       .from("RankingListTag")
-      .select("listId, tagId")
+      .select("listId,tagId")
       .in("listId", listIds);
     if (errPivots) {
-      console.error("fetch RankingListTag error:", errPivots);
+      console.error("❌ fetch RankingListTag error:", errPivots);
       return new Response("Internal Error", { status: 500 });
     }
+    console.log(`✅ fetched ${pivots?.length ?? 0} pivots`);
 
-    // タグごとの出現回数をマップで集計
     const tagCount = new Map<string, number>();
-    (pivots ?? []).forEach((p: { listId: string; tagId: string }) => {
+    (pivots ?? []).forEach((p: any) => {
       tagCount.set(p.tagId, (tagCount.get(p.tagId) || 0) + 1);
     });
-
-    // 上位100件のタグIDを取得
     const topTagEntries = Array.from(tagCount.entries())
       .map(([tagId, count]) => ({ tagId, count }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 100);
-    const tagIds = topTagEntries.map((e) => e.tagId);
+    console.log(`→ topTagEntries (${topTagEntries.length}):`, topTagEntries);
 
-    // タグテーブルからタグ名を取得
-    const { data: tagRows, error: errTags } = await sb
-      .from("Tag")
-      .select("id,name")
-      .in("id", tagIds);
-    if (errTags) {
-      console.error("fetch Tag error:", errTags);
-      return new Response("Internal Error", { status: 500 });
-    }
-    const nameMap = new Map<string, string>();
-    (tagRows ?? []).forEach((t: any) => {
-      nameMap.set(t.id, t.name);
-    });
-
-    // 古いタグトレンドを削除
     await sb
       .from("TrendingTag")
       .delete()
       .eq("period", period)
       .eq("calculationDate", calcDateString);
+    console.log("→ old TrendingTag deleted");
 
-    // 新しいタグトレンドを挿入
     if (topTagEntries.length) {
-      await sb.from("TrendingTag").insert(
-        topTagEntries.map((r) => ({
-          tagId: r.tagId,
-          tagName: nameMap.get(r.tagId)!,
-          count: r.count,
-          period,
-          calculationDate: calcDate,
-        }))
-      );
+      // タグ名マップ取得
+      const tagIds = topTagEntries.map((e) => e.tagId);
+      const { data: tagRows, error: errTags } = await sb
+        .from("Tag")
+        .select("id,name")
+        .in("id", tagIds);
+      if (errTags) {
+        console.error("❌ fetch Tag error:", errTags);
+        return new Response("Internal Error", { status: 500 });
+      }
+      const nameMap = new Map<string, string>();
+      (tagRows ?? []).forEach((t: any) => nameMap.set(t.id, t.name));
+
+      const { data: insertedTags, error: tagError } = await sb
+        .from("TrendingTag")
+        .insert(
+          topTagEntries.map((r) => ({
+            tagId: r.tagId,
+            tagName: nameMap.get(r.tagId)!,
+            count: r.count,
+            period,
+            calculationDate: calcDate,
+          }))
+        );
+      console.log("📝 insert TrendingTag response:", {
+        insertedTags,
+        tagError,
+      });
     }
 
     // ===== TrendingItem =====
-    // 各ランキングの上位3位までにポイントを付与してスコア集計
     const { data: items, error: errItems } = await sb
       .from("RankedItem")
       .select("itemName,rank")
       .in("listId", listIds);
     if (errItems) {
-      console.error("fetch RankedItem error:", errItems);
+      console.error("❌ fetch RankedItem error:", errItems);
       return new Response("Internal Error", { status: 500 });
     }
+    console.log(`✅ fetched ${items?.length ?? 0} RankedItems`);
+
     const itemScore = new Map<string, number>();
     (items ?? []).forEach((it: any) => {
-      let pts = 0;
-      if (it.rank === 1) pts = 3;
-      else if (it.rank === 2) pts = 2;
-      else if (it.rank === 3) pts = 1;
+      let pts = it.rank === 1 ? 3 : it.rank === 2 ? 2 : it.rank === 3 ? 1 : 0;
       if (pts > 0) {
         itemScore.set(it.itemName, (itemScore.get(it.itemName) || 0) + pts);
       }
@@ -161,28 +165,34 @@ serve(async () => {
       .map(([itemName, rankScore]) => ({ itemName, rankScore }))
       .sort((a, b) => b.rankScore - a.rankScore)
       .slice(0, 100);
+    console.log(`→ topItems (${topItems.length}):`, topItems);
 
-    // 古いアイテムトレンドを削除
     await sb
       .from("TrendingItem")
       .delete()
       .eq("period", period)
       .eq("calculationDate", calcDateString);
+    console.log("→ old TrendingItem deleted");
 
-    // 新しいアイテムトレンドを挿入
     if (topItems.length) {
-      await sb.from("TrendingItem").insert(
-        topItems.map((r) => ({
-          itemName: r.itemName,
-          rankScore: r.rankScore,
-          period,
-          calculationDate: calcDate,
-        }))
-      );
+      const { data: insertedItems, error: itemError } = await sb
+        .from("TrendingItem")
+        .insert(
+          topItems.map((r) => ({
+            itemName: r.itemName,
+            rankScore: r.rankScore,
+            period,
+            calculationDate: calcDate,
+          }))
+        );
+      console.log("📝 insert TrendingItem response:", {
+        insertedItems: insertedItems?.slice(0, 5),
+        itemError,
+      });
     }
   }
 
-  // 成功レスポンスを返す
+  console.log("✅ calculate-trends done");
   return new Response(JSON.stringify({ status: "ok" }), {
     headers: { "Content-Type": "application/json" },
   });
