@@ -4,11 +4,10 @@
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Trophy, Heart, MessageCircle, Share2 } from "lucide-react";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import type { RankingListViewData } from "@/lib/types";
-import { UsersIcon, PlusSquareIcon } from '@/components/component/Icons';
+import { UsersIcon, CrownIcon,Trophy,HeartIcon } from '@/components/component/Icons';
 import Link from "next/link";
 import CommentSection from './CommentSection';
 import { ShareButton } from "@/components/component/rankings/ShareButton";
@@ -34,15 +33,15 @@ export function RankingDetailView({ ranking, isOwner }: Props) {
 
       {/* エンゲージメント */}
       <div className="flex gap-4 mb-8 items-center">
-        <Heart className="h-5 w-5" /> <span>{ranking.likeCount}</span>
+        <HeartIcon className="h-5 w-5" /> <span>{ranking.likeCount}</span>
         <Link
           href={`/trends/average/${encodeURIComponent(ranking.subject)}`} >
           <UsersIcon className="h-5 w-5" />
         </Link>
         <Link
-          href={`/rankings/create`} // クエリパラメータで subject を渡す
+          href={`/rankings/create`}
         >
-          <PlusSquareIcon className="h-5 w-5" />
+          <CrownIcon className="h-5 w-5" />
         </Link>
           <ShareButton
     subject={ranking.subject}
