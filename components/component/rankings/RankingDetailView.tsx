@@ -11,6 +11,7 @@ import type { RankingListViewData } from "@/lib/types";
 import { UsersIcon, PlusSquareIcon } from '@/components/component/Icons';
 import Link from "next/link";
 import CommentSection from './CommentSection';
+import { ShareButton } from "@/components/component/rankings/ShareButton";
 
 
 interface Props {
@@ -34,7 +35,6 @@ export function RankingDetailView({ ranking, isOwner }: Props) {
       {/* エンゲージメント */}
       <div className="flex gap-4 mb-8 items-center">
         <Heart className="h-5 w-5" /> <span>{ranking.likeCount}</span>
-        <MessageCircle className="h-5 w-5" />
         <Link
           href={`/trends/average/${encodeURIComponent(ranking.subject)}`} >
           <UsersIcon className="h-5 w-5" />
@@ -44,7 +44,7 @@ export function RankingDetailView({ ranking, isOwner }: Props) {
         >
           <PlusSquareIcon className="h-5 w-5" />
         </Link>
-        <Share2 className="h-5 w-5" />
+        <ShareButton subject={ranking.subject} tags={ranking.rankingListTags} />
       </div>
 
       {/* タブ */}
