@@ -44,7 +44,11 @@ export function RankingDetailView({ ranking, isOwner }: Props) {
         >
           <PlusSquareIcon className="h-5 w-5" />
         </Link>
-        <ShareButton subject={ranking.subject} tags={ranking.rankingListTags} />
+          <ShareButton
+    subject={ranking.subject}
+    tags={ranking.rankingListTags}
+    url={`https://topme.jp/rankings/${ranking.id}`}
+  />
       </div>
 
       {/* タブ */}
