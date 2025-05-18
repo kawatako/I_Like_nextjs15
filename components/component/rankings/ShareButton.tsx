@@ -12,8 +12,8 @@ export function ShareButton({ subject, tags }: ShareButtonProps) {
   // タグ配列を "#タグ名" 形式で連結
   const tagString = tags.map((t) => `#${t.tag.name}`).join(" ");
   // ツイート用テキスト
-  const shareText = `${subject}のランキングを作成しました
-あなたもランキングに参加しよう
+  const shareText = `『${subject}』のランキングを作成しました
+みんなもランキングに投票しよう
 #TopMe ${tagString}`;
   const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`;
 
