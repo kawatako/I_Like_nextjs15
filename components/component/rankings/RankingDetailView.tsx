@@ -4,7 +4,6 @@
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Trophy, Heart, MessageCircle, Share2 } from "lucide-react";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import type { RankingListViewData } from "@/lib/types";
@@ -41,11 +40,12 @@ export function RankingDetailView({ ranking, isOwner }: Props) {
           <UsersIcon className='h-5 w-5' />
         </Link>
         <Link
-          href={`/rankings/create`} // クエリパラメータで subject を渡す
+          href={`/rankings/create`}
         >
           <PlusSquareIcon className='h-5 w-5' />
         </Link>
         <Share2 className='h-5 w-5' />
+
       </div>
 
       {/* タブ */}
