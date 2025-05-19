@@ -7,7 +7,7 @@ import { ListStatus } from "@prisma/client";
 import type { RankingListSnippet } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
-import { FeedLike } from "@/components/likes/FeedLike";
+import { FeedLikeButton } from "@/components/likes/FeedLikeButton";
 
 interface LikedRankingListItemProps {
   list: RankingListSnippet;
@@ -106,7 +106,7 @@ export default function LikedRankingListItem({
           </div>
           {/* ★★★ 右側: いいねボタンを追加 ★★★ */}
           <div>
-            <FeedLike
+            <FeedLikeButton
               targetType='RankingList'
               targetId={list.id}
               likeCount={list.likeCount}

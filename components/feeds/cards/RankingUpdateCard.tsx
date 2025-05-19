@@ -11,12 +11,10 @@ import {
   MessageCircleIcon,
   Loader2,
 } from "@/components/Icons";
-import type {
-  FeedItemWithRelations,
-} from "@/lib/types";
+import type { FeedItemWithRelations } from "@/lib/types";
 import type { Prisma } from "@prisma/client";
-import { ListStatus, FeedType } from "@prisma/client";
-import { FeedLike } from "@/components/likes/FeedLike";
+import { ListStatus } from "@prisma/client";
+import { FeedLikeButton } from "@/components/likes/FeedLikeButton";
 import { RetweetQuoteDialog } from "@/components/posts/modals/RetweetQuoteDialog";
 import { QuoteCommentModal } from "@/components/posts/modals/QuoteCommentModal";
 import { useCardInteraction } from "@/lib/hooks/useCardInteraction";
@@ -80,7 +78,6 @@ export default function RankingUpdateCard({
     isQuoteModalOpen,
     setIsQuoteModalOpen,
     selectedItemForQuote,
-    setSelectedItemForQuote, // ★ 追加 ★
     handleOpenQuoteModal,
     isDeleting,
     handleDelete,
@@ -174,7 +171,7 @@ export default function RankingUpdateCard({
         <div className='flex justify-start pt-2 -ml-2 text-gray-500 dark:text-gray-400'>
           {likeTargetId && likeTargetType && (
             // ★ FeedLike を使用 ★
-            <FeedLike
+            <FeedLikeButton
               targetType={likeTargetType}
               targetId={likeTargetId}
               likeCount={likeCount}
