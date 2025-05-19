@@ -1,3 +1,4 @@
+//components/component/rankings/ShareButton.tsx
 "use client";
 
 import { Share2Icon } from "@/components/component/Icons";
