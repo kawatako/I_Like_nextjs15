@@ -1,5 +1,5 @@
 // app/profile/[username]/tabs/RankingLikesTab.tsx
-import LikedRankingList from "@/components/component/profiles/LikedRankingList"; // ★ 作成したクライアントコンポーネントのパスを確認 ★
+import LikedRankingList from "@/components/profiles/LikedRankingList"; // ★ 作成したクライアントコンポーネントのパスを確認 ★
 
 // Props 型定義
 interface RankingLikesTabProps {

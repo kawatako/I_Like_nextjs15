@@ -1,5 +1,5 @@
 // app/profile/[username]/tabs/RankingTab.tsx
-import { ProfileRankingLists } from "@/components/component/profiles/ProfileRankingLists";
+import { ProfileRankingLists } from "@/components/profiles/ProfileRankingLists";
 
 interface RankingTabProps {
   targetUserId: string;

@@ -1,5 +1,5 @@
 // app/trends/average/[subject]/page.tsx
-import AverageItemRankList from "@/components/component/trends/AverageItemRankList";
+import AverageItemRankList from "@/components/trends/AverageItemRankList";
 
 interface PageProps {
   params: Promise<{ subject: string }>;

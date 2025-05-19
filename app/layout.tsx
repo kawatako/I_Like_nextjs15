@@ -2,9 +2,9 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/component/layouts/Header";
-import LeftSidebar from "@/components/component/layouts/LeftSidebar";
-import BottomNavbar from "@/components/component/layouts/BottomNavbar";
+import Header from "@/components/layouts/Header";
+import LeftSidebar from "@/components/layouts/LeftSidebar";
+import BottomNavbar from "@/components/layouts/BottomNavbar";
 import { auth } from "@clerk/nextjs/server";
 import { ClerkProvider } from "@clerk/nextjs";
 import { jaJP } from "@clerk/localizations";

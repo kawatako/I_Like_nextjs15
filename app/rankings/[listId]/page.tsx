@@ -5,11 +5,11 @@ import { getRankingDetailsForView } from "@/lib/data/rankingQueries";
 import { getUserProfileData, getUserDbIdByClerkId } from "@/lib/data/userQueries";
 import { getFollowStatus } from "@/lib/actions/followActions";
 import { generateImageUrl } from "@/lib/utils/storage";
-import { ProfileHeader } from "@/components/component/profiles/ProfileHeader";
-import { RankingDetailView } from "@/components/component/rankings/RankingDetailView";
+import { ProfileHeader } from "@/components/profiles/ProfileHeader";
+import { RankingDetailView } from "@/components//rankings/RankingDetailView";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { DeleteRankingButton } from "@/components/component/rankings/DeleteRankingButton";
+import { DeleteRankingButton } from "@/components/rankings/DeleteRankingButton";
 
 export const dynamic = "force-dynamic";
 

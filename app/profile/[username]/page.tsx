@@ -4,7 +4,7 @@ import { auth } from "@clerk/nextjs/server";
 import { getUserProfileData, getUserDbIdByClerkId } from "@/lib/data/userQueries";
 import { getFollowStatus } from "@/lib/actions/followActions";
 import { generateImageUrl } from "@/lib/utils/storage";
-import { ProfileHeader } from "@/components/component/profiles/ProfileHeader";
+import { ProfileHeader } from "@/components/profiles/ProfileHeader";
 import ProfileTabsClient from "./tabs/ProfileTabsClient";
 import type { UserProfileData } from "@/lib/types";
 

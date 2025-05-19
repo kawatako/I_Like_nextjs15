@@ -1,7 +1,7 @@
 // app/rankings/create/page.tsx
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
-import { NewRankingForm } from "@/components/component/rankings/NewRankingForm";
+import { NewRankingForm } from "@/components/rankings/NewRankingForm";
 
 export default async function CreateRankingPage() {
   const { userId } =  await auth();
