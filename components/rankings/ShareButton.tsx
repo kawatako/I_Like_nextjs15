@@ -1,7 +1,7 @@
 //components/rankings/ShareButton.tsx
 "use client";
 
-import { Share2Icon } from "@/components/Icons";
+import { XIcon } from "@/components/Icons";
 
 interface ShareButtonProps {
   subject: string;
@@ -26,7 +26,7 @@ export function ShareButton({ subject, tags, url }: ShareButtonProps) {
       title='Xでシェア'
       className='flex items-center'
     >
-      <Share2Icon className='h-5 w-5 cursor-pointer' />
+      <XIcon className='h-5 w-5 cursor-pointer' />
     </a>
   );
 }
