@@ -9,7 +9,7 @@ import { ClerkLoading, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useTutorial } from "@/lib/hooks/useTutorial";
 import TutorialModal from "@/components/TutorialModal";
-import { LightBulbIcon } from "@/components/Icons";
+import { BulbIcon } from "@/components/Icons";
 
 interface HeaderProps {
   currentLoginUserData: { id: string; username: string | null; image: string | null } | null;
@@ -54,7 +54,7 @@ export default function Header({ currentLoginUserData }: HeaderProps) {
           }`}
           title="使い方を見る"
         >
-          <LightBulbIcon className="h-6 w-6" />
+          <BulbIcon className="h-6 w-6" />
           {!seen && <span className="absolute top-1 right-1 block h-2 w-2 rounded-full bg-red-500" />}
         </button>
         {/* ユーザー関連 */}
