@@ -10,11 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-//コンポーネント (Swiper, SwiperSlide) で実際のカルーセルを組み立て、モジュール (Pagination) でナビゲーション機能を拡張し、CSS (swiper/css, swiper/css/pagination) で見た目（レイアウト・装飾）を当てている
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/pagination";
+import  useEmblaCarousel  from "embla-carousel-react";
 import Image from "next/image";
 
 export default function TutorialModal({
@@ -27,6 +23,9 @@ export default function TutorialModal({
   const searchParams = useSearchParams();
   const router = useRouter();
   const [visible, setVisible] = useState(open); //<Dialog> の open に渡す、内部管理用の開閉フラグ
+
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false });
+
   //親からの開閉指示を同期 openが変わったら visible も変更
   useEffect(() => {
     setVisible(open);
@@ -56,39 +55,44 @@ export default function TutorialModal({
 
   return (
     <Dialog open={visible} onOpenChange={handleClose}>
-      <DialogContent className='max-w-3xl'>
+      <DialogContent className="max-w-3xl">
         <DialogHeader>
           <DialogTitle>はじめての使い方</DialogTitle>
         </DialogHeader>
 
-        <Swiper
-          modules={[Pagination]}
-          pagination={{ clickable: true }}
-          spaceBetween={20}
-          slidesPerView={1}
-          className='h-80'
-        >
-          {slides.map((file) => (
-            <SwiperSlide
-              key={file}
-              className='flex items-center justify-center'
-            >
-              <div className='relative w-full h-80'>
-                <Image
-                  src={`/tutorial/${file}`}
-                  alt={`チュートリアル ${file}`}
-                  fill
-                  style={{ objectFit: "contain" }}
-                />
+        {/* Embla コンテナ */}
+        <div className="embla h-80">
+          <div className="embla__container" ref={emblaRef}>
+            {slides.map((file) => (
+              <div key={file} className="embla__slide flex items-center justify-center">
+                <div className="relative w-full h-80">
+                  <Image
+                    src={`/tutorial/${file}`}
+                    alt={`チュートリアル ${file}`}
+                    fill
+                    style={{ objectFit: "contain" }}
+                  />
+                </div>
               </div>
-            </SwiperSlide>
-          ))}
-        </Swiper>
+            ))}
+          </div>
+        </div>
 
-        <div className='mt-6 flex justify-end'>
+        {/* 簡易ドットナビ */}
+        <div className="flex justify-center space-x-2 mt-4">
+          {slides.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={() => emblaApi && emblaApi.scrollTo(idx)}
+              className="w-3 h-3 rounded-full bg-gray-300 hover:bg-primary transition-colors"
+            />
+          ))}
+        </div>
+
+        <div className="mt-6 flex justify-end">
           <button
             onClick={handleClose}
-            className='text-sm text-primary hover:underline'
+            className="text-sm text-primary hover:underline"
           >
             閉じる
           </button>
