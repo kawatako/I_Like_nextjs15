@@ -96,8 +96,6 @@ export async function POST(req: Request) {
         console.warn(
           `Username is missing in user.created payload for ${clerkUserId}`
         );
-        // username が必須ならエラーを返すなどの対応が必要かもしれません
-        // return new Response("Username is required.", { status: 400 });
       }
 
       await prisma.user.upsert({

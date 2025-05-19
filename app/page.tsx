@@ -1,5 +1,5 @@
 // app/page.tsx
-import MainContentForHome from "@/components/component/layouts/MainContentForHome";
+import MainContentForHome from "@/components/layouts/MainContentForHome";
 import { getCurrentLoginUserData } from "@/lib/data/userQueries";
 import { auth } from "@clerk/nextjs/server";
 import { notFound, redirect } from "next/navigation";

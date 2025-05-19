@@ -5,8 +5,8 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { getUserByUsername, getUserDbIdByClerkId } from "@/lib/data/userQueries";
-import { FollowingList } from "@/components/component/follows/FollowingList";
-import { FollowersList } from "@/components/component/follows/FollowersList";
+import { FollowingList } from "@/components/follows/FollowingList";
+import { FollowersList } from "@/components/follows/FollowersList";
 
 interface FollowsPageProps {
   params: Promise<{ username: string }>;

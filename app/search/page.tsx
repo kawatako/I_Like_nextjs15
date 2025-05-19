@@ -1,6 +1,6 @@
 // app/search/page.tsx
 
-import SearchPageClient from "@/components/component/search/SearchPageClient";
+import SearchPageClient from "@/components/search/SearchPageClient";
 import { searchRankingListsAction,searchUsersAction } from "@/lib/actions/searchActions";
 import type { Metadata } from "next";
 

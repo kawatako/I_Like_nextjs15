@@ -1,6 +1,6 @@
 // app/profile/[username]/tabs/DraftTab.tsx
 import { ListStatus } from "@prisma/client";
-import { ProfileRankingLists } from "@/components/component/profiles/ProfileRankingLists"; // 作成したクライアントコンポーネント
+import { ProfileRankingLists } from "@/components/profiles/ProfileRankingLists";
 
 interface RankingTabProps {
   targetUserId: string;

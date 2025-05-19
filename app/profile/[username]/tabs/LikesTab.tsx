@@ -1,5 +1,5 @@
 // app/profile/[username]/tabs/LikesTab.tsx
-import LikedFeedList from "@/components/component/profiles/LikedFeedList"; // ★ 作成したクライアントコンポーネントのパスを確認 ★
+import LikedFeedList from "@/components/profiles/LikedFeedList"; // ★ 作成したクライアントコンポーネントのパスを確認 ★
 
 // Props 型定義
 interface LikesTabProps {

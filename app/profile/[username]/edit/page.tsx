@@ -1,7 +1,7 @@
 // app/profile/[username]/edit/page.tsx
 import { notFound } from 'next/navigation'
 import { createClient } from '@supabase/supabase-js'
-import ProfileEditForm from '@/components/component/profiles/ProfileEditForm'
+import ProfileEditForm from '@/components/profiles/ProfileEditForm'
 import prisma from '@/lib/client'
 import { supabaseAdmin } from '@/lib/utils/storage'
 

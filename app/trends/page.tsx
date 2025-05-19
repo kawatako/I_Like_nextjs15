@@ -2,9 +2,9 @@
 "use client";
 
 import { useState } from "react";
-import NewList from "@/components/component/trends/NewList";
-import TrendingSubjects from "@/components/component/trends/TrendingSubjects";
-import { useNewList, useTrendingSubjects } from "@/components/hooks/useTrends";
+import NewList from "@/components/trends/NewList";
+import TrendingSubjects from "@/components/trends/TrendingSubjects";
+import { useNewList, useTrendingSubjects } from "@/lib/hooks/useTrends";
 
 export default function TrendsPage() {
   // セクション：新着 / 週間 / 月間

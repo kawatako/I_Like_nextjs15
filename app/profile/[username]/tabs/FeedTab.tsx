@@ -1,5 +1,5 @@
 // app/profile/[username]/tabs/FeedTab.tsx
-import {ProfileTimelineFeed} from "@/components/component/profiles/ProfileTimelineFeed"; // ★ インポートパス修正 ★
+import {ProfileTimelineFeed} from "@/components/profiles/ProfileTimelineFeed"; // ★ インポートパス修正 ★
 
 interface FeedTabProps {
   targetUserId: string; // page.tsx から渡される

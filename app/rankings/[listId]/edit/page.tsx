@@ -2,7 +2,7 @@
 import { notFound } from "next/navigation";
 import { getRankingListForEdit } from "@/lib/data/rankingQueries";
 import { generateImageUrl } from "@/lib/utils/storage";
-import { RankingEdit } from "@/components/component/rankings/RankingEdit";
+import { RankingEdit } from "@/components/rankings/RankingEdit";
 
 export const dynamic = "force-dynamic";
 
