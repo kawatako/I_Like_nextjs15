@@ -1,6 +1,23 @@
 // components/Icons.tsx
 import { SVGProps } from "react";
 
+export const LightBulbIcon = (props: SVGProps<SVGSVGElement>) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={2}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    {...props}
+  >
+    <path d="M9 21h6" />
+    <path d="M12 3s-3 2-3 6c0 1.5.5 3 2 4h2c1.5-1 2-2.5 2-4 0-4-3-6-3-6z" />
+    <path d="M9 17h6" />
+  </svg>
+);
+
 export const Check = (props: SVGProps<SVGSVGElement>) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"

@@ -22,7 +22,7 @@ export default function SearchForm() {
     <form onSubmit={handleSubmit} className='relative w-full max-w-md'>
       <Input
         type='text'
-        placeholder='ランキングやアイテムを検索…'
+        placeholder='ランキングやユーザーを検索…'
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
         className='pr-10 rounded-full border h-9'
