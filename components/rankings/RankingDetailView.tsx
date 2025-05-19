@@ -12,6 +12,7 @@ import { UsersIcon, CrownIcon, HeartIcon, Trophy } from "@/components/Icons";
 import Link from "next/link";
 import CommentSection from "./CommentSection";
 import { ShareButton } from "@/components/rankings/ShareButton";
+import { RankingLikeButton } from "@/components/likes/rankingLikeButton";
 
 interface Props {
   ranking: RankingListViewData;
@@ -21,7 +22,6 @@ interface Props {
 export function RankingDetailView({ ranking, isOwner }: Props) {
   const [tab, setTab] = useState<string>("ranking");
   const pathname = usePathname();
-  // window が存在すれば origin を含めたフルURLを組み立て
   const shareUrl =
     typeof window !== "undefined" ? window.location.origin + pathname : "";
 
@@ -40,7 +40,10 @@ export function RankingDetailView({ ranking, isOwner }: Props) {
 
       {/* エンゲージメント */}
       <div className='flex gap-4 mb-8 items-center'>
-        <HeartIcon className='h-5 w-5' /> <span>{ranking.likeCount}</span>
+        <RankingLikeButton
+          listId={ranking.id}
+          likeCount={ranking.likeCount}
+       />
         <Link href={`/trends/average/${encodeURIComponent(ranking.subject)}`}>
           <UsersIcon className='h-5 w-5' />
         </Link>

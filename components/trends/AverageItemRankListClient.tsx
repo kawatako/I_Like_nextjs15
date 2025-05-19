@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import RankingItem from "./RankingItem";
 import CommentSection from "./CommentSection";
-import { useBordaItemRank, BordaRank } from "@/lib/hooks/useTrends";
+import { useBordaItemRank } from "@/lib/hooks/useTrends";
 
 interface Props {
   subject: string

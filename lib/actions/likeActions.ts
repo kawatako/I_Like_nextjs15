@@ -1,3 +1,4 @@
+//lib/actions/likeActions.ts
 "use server";
 
 import { auth } from "@clerk/nextjs/server";
@@ -83,7 +84,6 @@ async function toggleLike(
     })
   );
 }
-
 
 /** --- アクション関数 --- **/
 

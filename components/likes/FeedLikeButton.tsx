@@ -1,5 +1,5 @@
-// components/likes/FeedLike.tsx
-// 主な責任: 投稿またはランキングリストへの「いいね」UI とロジック
+// components/likes/FeedLikeBtton.tsx
+// 投稿またはランキングリストへの「いいね」UI とロジック
 
 "use client";
 
@@ -25,7 +25,7 @@ interface FeedLikeProps {
   initialLiked: boolean;
 }
 
-export function FeedLike({
+export function FeedLikeButton({
   targetType,
   targetId,
   likeCount,

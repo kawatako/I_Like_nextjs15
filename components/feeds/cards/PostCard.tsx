@@ -11,7 +11,7 @@ import {
 } from "@/components/Icons";
 import type { FeedItemWithRelations } from "@/lib/types";
 import { PostDetail } from "@/components/posts/PostDetail";
-import { FeedLike } from "@/components/likes/FeedLike";
+import { FeedLikeButton } from "@/components/likes/FeedLikeButton";
 import { RetweetQuoteDialog } from "@/components/posts/modals/RetweetQuoteDialog";
 import { QuoteCommentModal } from "@/components/posts/modals/QuoteCommentModal";
 import { useCardInteraction } from "@/lib/hooks/useCardInteraction";
@@ -89,7 +89,7 @@ export default function PostCard({ item, loggedInUserDbId }: PostCardProps) {
 
         <div className='flex justify-start pt-2 text-gray-500 dark:text-gray-400'>
           {likeTargetId && likeTargetType && (
-            <FeedLike
+            <FeedLikeButton
               targetType={likeTargetType}
               targetId={likeTargetId}
               likeCount={likeCount}
