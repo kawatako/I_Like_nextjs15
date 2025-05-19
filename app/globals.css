@@ -1,8 +1,6 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@import "swiper/css";
-@import "swiper/css/pagination";
 
 @layer base {
   :root {
@@ -75,4 +73,17 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.embla {
+  overflow: hidden;
+  position: relative;
+}
+.embla__container {
+  display: flex;
+}
+.embla__slide {
+  position: relative;
+  min-width: 100%;
+  flex-shrink: 0;
 }
