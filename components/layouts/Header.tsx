@@ -10,20 +10,14 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useTutorial } from "@/lib/hooks/useTutorial";
 import TutorialModal from "@/components/TutorialModal";
 import { BulbIcon } from "@/components/Icons";
+import { SettingsIcon } from "@/components/Icons";
 
 interface HeaderProps {
   currentLoginUserData: { id: string; username: string | null; image: string | null } | null;
 }
 
 export default function Header({ currentLoginUserData }: HeaderProps) {
-  const { seen, markAsSeen } = useTutorial();
-  const [modalOpen, setModalOpen] = useState(false);
-
-  const openTutorial = () => setModalOpen(true);
-  const closeTutorial = () => {
-    markAsSeen();
-    setModalOpen(false);
-  };
+const { seen, open, openTutorial, closeTutorial } = useTutorial();
 
   return (
     <>
@@ -62,12 +56,9 @@ export default function Header({ currentLoginUserData }: HeaderProps) {
           <ClerkLoading><div className="h-8 w-8 animate-pulse rounded-full bg-muted" /></ClerkLoading>
           <SignedIn>
             {currentLoginUserData && (
-              <UserButton afterSignOutUrl="/">
-                <Avatar className="w-8 h-8 border">
-                  <AvatarImage src={currentLoginUserData.image ?? undefined} alt={currentLoginUserData.username ?? undefined} />
-                  <AvatarFallback>{currentLoginUserData.username?.slice(0,2).toUpperCase() ?? "?"}</AvatarFallback>
-                </Avatar>
-              </UserButton>
+            <UserButton afterSignOutUrl="/">
+              <SettingsIcon className="h-6 w-6 text-foreground/80" />
+            </UserButton>
             )}
           </SignedIn>
           <SignedOut>
@@ -76,7 +67,7 @@ export default function Header({ currentLoginUserData }: HeaderProps) {
         </div>
       </header>
       {/* チュートリアルモーダル */}
-      <TutorialModal open={modalOpen} onClose={closeTutorial} />
+      <TutorialModal open={open} onClose={closeTutorial} />
     </>
   );
 }
