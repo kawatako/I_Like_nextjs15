@@ -1,4 +1,6 @@
+//component/component/trends/TrendingSubjects.tsx
 import React from "react";
+import Link from "next/link";
 
 export interface TrendingSubject {
   subject: string;
@@ -22,9 +24,10 @@ export default function TrendingSubjects({
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
       {subjects.map((s, idx) => (
-        <div
+        <Link
           key={idx}
-          className="rounded-lg shadow-sm bg-white p-4 hover:bg-gray-50 hover:shadow-lg transition-shadow"
+          href={`/trends/average/${encodeURIComponent(s.subject)}`}
+          className="block rounded-lg shadow-sm bg-white p-4 hover:bg-gray-50 hover:shadow-lg transition-shadow"
         >
           <div className="flex items-center">
             <div className="w-6 text-center">
@@ -49,7 +52,7 @@ export default function TrendingSubjects({
               </div>
             </div>
           </div>
-        </div>
+        </Link>
       ))}
     </div>
   );

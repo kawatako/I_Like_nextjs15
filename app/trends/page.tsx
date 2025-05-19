@@ -1,28 +1,19 @@
+// app/trends/page.tsx
 "use client";
 
 import { useState } from "react";
 import NewList from "@/components/component/trends/NewList";
 import TrendingSubjects from "@/components/component/trends/TrendingSubjects";
-import TrendingTags from "@/components/component/trends/TrendingTags";
-import TrendingItems from "@/components/component/trends/TrendingItems";
-import {
-  useNewList,
-  useTrendingSubjects,
-  useTrendingTags,
-  useTrendingItems,
-} from "@/components/hooks/useTrends";
+import { useNewList, useTrendingSubjects } from "@/components/hooks/useTrends";
 
 export default function TrendsPage() {
+  // セクション：新着 / 週間 / 月間
   const [section, setSection] = useState<"new" | "weekly" | "monthly">("new");
-  const [category, setCategory] = useState<"titles" | "tags" | "items">("titles");
 
-  const newList         = useNewList();
+  // フックでデータ取得
+  const newList = useNewList();
   const weeklySubjects  = useTrendingSubjects("WEEKLY");
   const monthlySubjects = useTrendingSubjects("MONTHLY");
-  const weeklyTags      = useTrendingTags("WEEKLY");
-  const monthlyTags     = useTrendingTags("MONTHLY");
-  const weeklyItems     = useTrendingItems("WEEKLY");
-  const monthlyItems    = useTrendingItems("MONTHLY");
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
@@ -43,51 +34,15 @@ export default function TrendsPage() {
         ))}
       </div>
 
-      {/* 小タブ（週間／月間のみ） */}
-      {section !== "new" && (
-        <div className="flex space-x-4">
-          {[
-            ["titles","タイトル"],
-            ["tags","タグ"],
-            ["items","アイテム"],
-          ].map(([val,label]) => (
-            <button
-              key={val}
-              onClick={() => setCategory(val as any)}
-              className={`pb-1 ${
-                category === val
-                  ? "border-b-2 border-primary text-primary font-medium"
-                  : "text-muted-foreground"
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-      )}
-
       {/* コンテンツ */}
       <div>
         {section === "new" && <NewList {...newList} />}
 
-        {section === "weekly" && category === "titles" && (
+        {section === "weekly" && (
           <TrendingSubjects {...weeklySubjects} />
         )}
-        {section === "weekly" && category === "tags" && (
-          <TrendingTags {...weeklyTags} />
-        )}
-        {section === "weekly" && category === "items" && (
-          <TrendingItems {...weeklyItems} />
-        )}
-
-        {section === "monthly" && category === "titles" && (
+        {section === "monthly" && (
           <TrendingSubjects {...monthlySubjects} />
-        )}
-        {section === "monthly" && category === "tags" && (
-          <TrendingTags {...monthlyTags} />
-        )}
-        {section === "monthly" && category === "items" && (
-          <TrendingItems {...monthlyItems} />
         )}
       </div>
     </div>
