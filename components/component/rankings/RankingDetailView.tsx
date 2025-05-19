@@ -5,11 +5,13 @@ import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import type { RankingListViewData } from "@/lib/types";
-import { UsersIcon, PlusSquareIcon } from "@/components/component/Icons";
+import { UsersIcon, CrownIcon,HeartIcon, MessageCircleIcon, Trophy } from "@/components/component/Icons";
 import Link from "next/link";
 import CommentSection from "./CommentSection";
+import { ShareButton } from "@/components/component/rankings/ShareButton";
 
 interface Props {
   ranking: RankingListViewData;
@@ -18,6 +20,12 @@ interface Props {
 
 export function RankingDetailView({ ranking, isOwner }: Props) {
   const [tab, setTab] = useState<string>("ranking");
+  const pathname = usePathname();
+  // window が存在すれば origin を含めたフルURLを組み立て
+  const shareUrl =
+    typeof window !== "undefined"
+      ? window.location.origin + pathname
+      : "";
 
   return (
     <div className='max-w-4xl mx-auto p-4'>
@@ -34,18 +42,21 @@ export function RankingDetailView({ ranking, isOwner }: Props) {
 
       {/* エンゲージメント */}
       <div className='flex gap-4 mb-8 items-center'>
-        <Heart className='h-5 w-5' /> <span>{ranking.likeCount}</span>
-        <MessageCircle className='h-5 w-5' />
+        <HeartIcon className='h-5 w-5' /> <span>{ranking.likeCount}</span>
+        <MessageCircleIcon className='h-5 w-5' />
         <Link href={`/trends/average/${encodeURIComponent(ranking.subject)}`}>
           <UsersIcon className='h-5 w-5' />
         </Link>
         <Link
           href={`/rankings/create`}
         >
-          <PlusSquareIcon className='h-5 w-5' />
+          <CrownIcon className='h-5 w-5' />
         </Link>
-        <Share2 className='h-5 w-5' />
-
+        <ShareButton
+          subject={ranking.subject}
+          tags={ranking.rankingListTags}
+          url={shareUrl}
+        />
       </div>
 
       {/* タブ */}
