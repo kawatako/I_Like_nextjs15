@@ -15,10 +15,11 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
+import Image from "next/image";
 
 export default function TutorialModal({
-  open,//親コンポーネントから「モーダルを開く／閉じる」を指示されるフラグ
-  onClose,//閉じるときに呼ばれるコールバック
+  open, //親コンポーネントから「モーダルを開く／閉じる」を指示されるフラグ
+  onClose, //閉じるときに呼ばれるコールバック
 }: {
   open: boolean;
   onClose: () => void;
@@ -45,11 +46,18 @@ export default function TutorialModal({
     router.replace(window.location.pathname, { scroll: false });
   };
 
-  const slides = ["slide1.png", "slide2.png", "slide3.png", "slide4.png",, "slide5.png"];
+  const slides = [
+    "slide1.png",
+    "slide2.png",
+    "slide3.png",
+    "slide4.png",
+    ,
+    "slide5.png",
+  ];
 
   return (
     <Dialog open={visible} onOpenChange={handleClose}>
-      <DialogContent className="max-w-3xl">
+      <DialogContent className='max-w-3xl'>
         <DialogHeader>
           <DialogTitle>はじめての使い方</DialogTitle>
         </DialogHeader>
@@ -59,23 +67,29 @@ export default function TutorialModal({
           pagination={{ clickable: true }}
           spaceBetween={20}
           slidesPerView={1}
-          className="h-80"
+          className='h-80'
         >
           {slides.map((file) => (
-            <SwiperSlide key={file} className="flex items-center justify-center">
-              <img
-                src={`/tutorial/${file}`}
-                alt={`チュートリアル ${file}`}
-                className="object-contain h-full"
-              />
+            <SwiperSlide
+              key={file}
+              className='flex items-center justify-center'
+            >
+              <div className='relative w-full h-80'>
+                <Image
+                  src={`/tutorial/${file}`}
+                  alt={`チュートリアル ${file}`}
+                  fill
+                  style={{ objectFit: "contain" }}
+                />
+              </div>
             </SwiperSlide>
           ))}
         </Swiper>
 
-        <div className="mt-6 flex justify-end">
+        <div className='mt-6 flex justify-end'>
           <button
             onClick={handleClose}
-            className="text-sm text-primary hover:underline"
+            className='text-sm text-primary hover:underline'
           >
             閉じる
           </button>

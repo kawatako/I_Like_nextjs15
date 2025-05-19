@@ -12,9 +12,26 @@ export const LightBulbIcon = (props: SVGProps<SVGSVGElement>) => (
     strokeLinejoin="round"
     {...props}
   >
-    <path d="M9 21h6" />
-    <path d="M12 3s-3 2-3 6c0 1.5.5 3 2 4h2c1.5-1 2-2.5 2-4 0-4-3-6-3-6z" />
-    <path d="M9 17h6" />
+    <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" />
+    <path d="M9 18h6" />
+    <path d="M10 22h4" />
+  </svg>
+);
+
+export const BulbIcon = (props: SVGProps<SVGSVGElement>) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={2}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    {...props}
+  >
+    <circle cx="12" cy="9" r="7" />
+    <rect x="9" y="18" width="6" height="2" />
+    <rect x="10" y="20" width="4" height="2" />
   </svg>
 );
 
