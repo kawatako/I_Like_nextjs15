@@ -18,7 +18,6 @@ model Tag {
   id              String           @id @default(cuid())
   name            String           @unique
   createdAt       DateTime         @default(now())
-  trendingStats   TrendingTag[]    @relation("TagToTrendingTag")
   rankingListTags RankingListTag[]
 
   @@index([name])
@@ -115,7 +114,7 @@ model RankingListComment {
 }
 
 model TrendingSubject {
-  id              String      @id @default(cuid())
+  id              String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   subject         String
   count           Int
   period          TrendPeriod
@@ -124,32 +123,6 @@ model TrendingSubject {
   @@unique([subject, period, calculationDate])
   @@index([period, calculationDate, count(sort: Desc)])
   @@index([period, calculationDate], map: "idx_trendingsubject_period_calcdate")
-}
-
-model TrendingTag {
-  id              String      @id @default(cuid())
-  tagId           String
-  tagName         String
-  count           Int
-  period          TrendPeriod
-  calculationDate DateTime
-  tag             Tag         @relation("TagToTrendingTag", fields: [tagId], references: [id], onDelete: Cascade)
-
-  @@unique([tagId, period, calculationDate])
-  @@index([period, calculationDate, count(sort: Desc)])
-  @@index([period, calculationDate], map: "idx_trendingtag_period_calcdate")
-}
-
-model TrendingItem {
-  id              String      @id @default(cuid())
-  itemName        String
-  rankScore       Float
-  period          TrendPeriod
-  calculationDate DateTime
-
-  @@index([itemName])
-  @@index([period, calculationDate, rankScore(sort: Desc)])
-  @@index([period, calculationDate], map: "idx_trendingitem_period_calcdate")
 }
 
 model AverageItemRank {
