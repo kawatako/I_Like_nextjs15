@@ -1,27 +1,37 @@
 // hooks/useTutorial.ts
-//チュートリアルの既読管理フック
-
+//チュートリアルモーダル表示の起動フック
 import { useState, useEffect, useCallback } from "react";
 
-//ローカルストレージに保存する際のキー名。
 const STORAGE_KEY = "seenTutorial";
 
 export function useTutorial() {
-  //seen: チュートリアルを「既に見たか」を表す真偽値
-  //初期値を true にしている のは、サーバーサイドで実行される場合（window がない環境）に安全に置くため。
+  // seen: 既読かどうか
   const [seen, setSeen] = useState<boolean>(true);
-  //サーバー上では window が undefined なので、localStorage.getItem を呼ぶ前に必ずチェックする
+  // open: モーダル開閉状態
+  const [open, setOpen] = useState<boolean>(false);
+
+  // マウント時に localStorage をチェック → 未読なら自動オープン＋既読フラグを立てる
   useEffect(() => {
     if (typeof window === "undefined") return;
     const v = localStorage.getItem(STORAGE_KEY);
-    setSeen(v === "true");
+    const hasSeen = v === "true";
+    setSeen(hasSeen);
+
+    if (!hasSeen) {
+      // 初回／未読: 自動的に開いて即マーク既読
+      setOpen(true);
+      localStorage.setItem(STORAGE_KEY, "true");
+      setSeen(true);
+    }
   }, []);
 
-  const markAsSeen = useCallback(() => {
-    if (typeof window === "undefined") return;
-    localStorage.setItem(STORAGE_KEY, "true");
-    setSeen(true);
+  const openTutorial = useCallback(() => {
+    setOpen(true);
   }, []);
-  //seen（既読フラグ） markAsSeen()（既読にする関数）
-  return { seen, markAsSeen };
+
+  const closeTutorial = useCallback(() => {
+    setOpen(false);
+  }, []);
+
+  return { seen, open, openTutorial, closeTutorial };
 }
