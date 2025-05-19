@@ -61,8 +61,8 @@ export default function TutorialModal({
         </DialogHeader>
 
         {/* Embla コンテナ */}
-        <div className="embla h-80">
-          <div className="embla__container" ref={emblaRef}>
+        <div className="embla h-80" ref={emblaRef}>
+          <div className="embla__container">
             {slides.map((file) => (
               <div key={file} className="embla__slide flex items-center justify-center">
                 <div className="relative w-full h-80">
