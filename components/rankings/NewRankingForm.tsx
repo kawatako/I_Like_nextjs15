@@ -238,7 +238,7 @@ export function NewRankingForm() {
               ? "下書き保存しました。"
               : "作成・公開しました。",
         });
-        router.push(`/rankings/${result.newListId}`);
+        router.push(`/rankings/${result.newListId}?share=1`);
       } else {
         const errMsg = result.error || "保存中にエラーが発生しました。";
         setFormError(errMsg);

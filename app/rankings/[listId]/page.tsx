@@ -2,7 +2,10 @@
 import { notFound } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
 import { getRankingDetailsForView } from "@/lib/data/rankingQueries";
-import { getUserProfileData, getUserDbIdByClerkId } from "@/lib/data/userQueries";
+import {
+  getUserProfileData,
+  getUserDbIdByClerkId,
+} from "@/lib/data/userQueries";
 import { getFollowStatus } from "@/lib/actions/followActions";
 import { generateImageUrl } from "@/lib/utils/storage";
 import { ProfileHeader } from "@/components/profiles/ProfileHeader";
@@ -10,6 +13,7 @@ import { RankingDetailView } from "@/components//rankings/RankingDetailView";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { DeleteRankingButton } from "@/components/rankings/DeleteRankingButton";
+import ShareModal from "@/components/rankings/ShareModal";
 
 export const dynamic = "force-dynamic";
 
@@ -38,9 +42,7 @@ export default async function RankingDetailPage({
   const items = await Promise.all(
     raw.items.map(async (item) => ({
       ...item,
-      imageUrl: item.imageUrl
-        ? await generateImageUrl(item.imageUrl)
-        : null,
+      imageUrl: item.imageUrl ? await generateImageUrl(item.imageUrl) : null,
     }))
   );
 
@@ -53,20 +55,21 @@ export default async function RankingDetailPage({
           coverImageUrl: headerCoverUrl,
         }}
         isCurrentUser={isOwner}
-        initialFollowStatus={await getFollowStatus(loggedInDbId, userProfileData.id)}
+        initialFollowStatus={await getFollowStatus(
+          loggedInDbId,
+          userProfileData.id
+        )}
       />
-      <RankingDetailView
-        ranking={{ ...raw, items }}
-        isOwner={isOwner}
-      />
+      <RankingDetailView ranking={{ ...raw, items }} isOwner={isOwner} />
       {isOwner && (
-        <div className="mb-4 flex justify-end px-4">
+        <div className='mb-4 flex justify-end px-4'>
           <Link href={`/rankings/${listId}/edit`}>
-            <Button variant="outline">編集する</Button>
+            <Button variant='outline'>編集する</Button>
           </Link>
           <DeleteRankingButton listId={listId} />
         </div>
       )}
+      <ShareModal subject={raw.subject} tags={raw.rankingListTags} />
     </>
   );
 }
