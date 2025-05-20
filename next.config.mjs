@@ -1,6 +1,11 @@
+// next.config.js
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  env: {
+    // Node.js／サーバーのタイムゾーンを日本時間に
+    TZ: "Asia/Tokyo",
+  },
   images: {
     remotePatterns: [
       {

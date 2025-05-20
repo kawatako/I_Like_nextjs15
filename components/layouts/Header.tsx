@@ -35,7 +35,7 @@ export default function Header({ currentLoginUserData }: HeaderProps) {
 
         {/* アンケート */}
         <Link
-          href="https://docs.google.com/forms/…"
+          href="https://forms.gle/JF95dpZ8izBrQc7C8"
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center justify-center h-8 w-8 rounded-full hover:bg-muted transition-colors"

@@ -86,7 +86,7 @@ export default function LeftSidebar({
 
       <div className="mt-auto pt-4 border-t">
         <Link
-          href="https://docs.google.com/forms/d/e/1FAIpQLSdLbVn1Wwbzfa9Zdq6ZjAnrrRMzur-ZKhu4-EXrmT8Q8__p0g/viewform"
+          href="https://forms.gle/JF95dpZ8izBrQc7C8"
           className="block"
           target="_blank"
           rel="noopener noreferrer"

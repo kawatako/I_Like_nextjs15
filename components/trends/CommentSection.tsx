@@ -10,6 +10,7 @@ import {
   useAverageItemComments,
   AverageComment,
 } from '@/lib/hooks/useAverageItemComments'
+import { DateText } from '@/components/Date.Text'
 
 interface Props {
   subject: string
@@ -63,7 +64,7 @@ export default function CommentSection({ subject }: Props) {
                 @{c.user.username}
               </span>
               <span className="ml-auto text-xs text-muted-foreground">
-                {new Date(c.createdAt).toLocaleString()}
+              <DateText date={c.createdAt} />
               </span>
             </Link>
             <p className="mb-6">{c.content}</p>
