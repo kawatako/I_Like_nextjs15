@@ -7,20 +7,38 @@ export default async function handler(
   res: NextApiResponse<string[]>
 ) {
   const { subject = "", prefix = "", limit = "10" } = req.query;
-  const s = String(subject);
-  const p = String(prefix);
-  const l = Number(limit);
-  if (!s) return res.status(400).json([]);
+  const s = String(subject).trim();
+  const p = String(prefix).trim();
+  const l = Math.min(Number(limit) || 10, 10);
+
+  console.log("[items] subject=", s, "prefix=", p);
+  if (!s) {
+    return res.status(200).json([]);
+  }
+
   const whereClause: any = {
-    rankingList: { subject: s, status: "PUBLISHED" },
+    rankingList: {
+      status: "PUBLISHED",
+      subject: {
+        equals: s,
+        mode: "insensitive",  // ← 大文字小文字を無視
+      },
+    },
   };
-  if (p) whereClause.itemName = { startsWith: p };
+  if (p.length > 0) {
+    whereClause.itemName = {
+      startsWith: p,
+      mode: "insensitive",  // ← 大文字小文字を無視
+    };
+  }
+
   const items = await prisma.rankedItem.findMany({
     where: whereClause,
     distinct: ["itemName"],
     select: { itemName: true },
     orderBy: { itemName: "asc" },
-    take: Math.min(l, 10),
+    take: l,
   });
-  res.status(200).json(items.map(i => i.itemName));
+
+  return res.status(200).json(items.map((i) => i.itemName));
 }
