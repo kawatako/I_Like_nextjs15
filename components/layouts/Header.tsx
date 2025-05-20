@@ -1,23 +1,23 @@
 // components/layouts/Header.tsx
 "use client";
 
-import { useState } from "react";
+import { Menu, MenuContent, MenuItem, MenuTrigger } from "@/components/ui/munu"
+import { SettingsIcon } from "@/components/Icons";
 import Link from "next/link";
 import SearchForm from "../search/SearchForm";
-import { LogInIcon, ChatBubbleIcon } from "@/components/Icons";
-import { ClerkLoading, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { LogInIcon, ChatBubbleIcon, BulbIcon } from "@/components/Icons";
+import { ClerkLoading, SignedIn, SignedOut, useClerk } from "@clerk/nextjs";
 import { useTutorial } from "@/lib/hooks/useTutorial";
 import TutorialModal from "@/components/TutorialModal";
-import { BulbIcon } from "@/components/Icons";
-import { SettingsIcon } from "@/components/Icons";
 
 interface HeaderProps {
   currentLoginUserData: { id: string; username: string | null; image: string | null } | null;
 }
 
 export default function Header({ currentLoginUserData }: HeaderProps) {
-const { seen, open, openTutorial, closeTutorial } = useTutorial();
+  const { seen, open, openTutorial, closeTutorial } = useTutorial();
+
+  const { signOut, openUserProfile } = useClerk();
 
   return (
     <>
@@ -27,10 +27,12 @@ const { seen, open, openTutorial, closeTutorial } = useTutorial();
           <LogInIcon className="h-6 w-6 text-primary" />
           <span className="text-lg font-bold text-primary hidden sm:inline">TopMe</span>
         </Link>
+
         {/* 検索 */}
         <div className="flex-1 flex justify-center px-2 sm:px-4">
           <SearchForm />
         </div>
+
         {/* アンケート */}
         <Link
           href="https://docs.google.com/forms/…"
@@ -40,6 +42,7 @@ const { seen, open, openTutorial, closeTutorial } = useTutorial();
         >
           <ChatBubbleIcon className="h-5 w-5 text-foreground/80" />
         </Link>
+
         {/* チュートリアルアイコン */}
         <button
           onClick={openTutorial}
@@ -49,24 +52,49 @@ const { seen, open, openTutorial, closeTutorial } = useTutorial();
           title="使い方を見る"
         >
           <BulbIcon className="h-6 w-6" />
-          {!seen && <span className="absolute top-1 right-1 block h-2 w-2 rounded-full bg-red-500" />}
+          {!seen && (
+            <span className="absolute top-1 right-1 block h-2 w-2 rounded-full bg-red-500" />
+          )}
         </button>
-        {/* ユーザー関連 */}
+
+        {/* ユーザー関連 (歯車メニュー) */}
         <div className="flex items-center gap-4 flex-shrink-0">
-          <ClerkLoading><div className="h-8 w-8 animate-pulse rounded-full bg-muted" /></ClerkLoading>
+          <ClerkLoading>
+            <div className="h-8 w-8 animate-pulse rounded-full bg-muted" />
+          </ClerkLoading>
+
           <SignedIn>
-            {currentLoginUserData && (
-            <UserButton afterSignOutUrl="/">
-              <SettingsIcon className="h-6 w-6 text-foreground/80" />
-            </UserButton>
-            )}
+            <Menu>
+              <MenuTrigger asChild>
+                <button
+                  className="p-2 rounded-full hover:bg-muted transition-colors text-foreground/80"
+                  title="アカウント設定"
+                >
+                  <SettingsIcon className="h-6 w-6" />
+                </button>
+              </MenuTrigger>
+              <MenuContent align="end">
+                <MenuItem onSelect={() => openUserProfile()}>
+                  プロフィール設定
+                </MenuItem>
+                <MenuItem onSelect={() => signOut({ redirectUrl: "/" })}>
+                  サインアウト
+                </MenuItem>
+              </MenuContent>
+            </Menu>
           </SignedIn>
+
           <SignedOut>
-            <Link href="/sign-in" className="text-sm font-medium hover:text-primary transition-colors">ログイン</Link>
+            <Link
+              href="/sign-in"
+              className="text-sm font-medium hover:text-primary transition-colors"
+            >
+              ログイン
+            </Link>
           </SignedOut>
         </div>
       </header>
-      {/* チュートリアルモーダル */}
+
       <TutorialModal open={open} onClose={closeTutorial} />
     </>
   );
