@@ -1,7 +1,7 @@
 // components/rankings/common/EditableRankedItem.tsx
-// 各ランキングアイテム行の編集・削除・並び替えハンドラを提供するコンポーネント
+"use client";
 
-import React, { useRef, useState, ChangeEvent } from "react";
+import React, { useRef, useState, ChangeEvent, FC } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import {
@@ -46,7 +46,8 @@ interface Props {
   isSaving: boolean;
 }
 
-export function EditableRankedItem({
+// EditableRankedItem: 各ランキングアイテム行の編集・削除・並び替えハンドラを提供するコンポーネント
+export const EditableRankedItem: FC<Props> = ({
   subject,
   clientId,
   item,
@@ -55,7 +56,7 @@ export function EditableRankedItem({
   handleDeleteItem,
   handleItemImageChange,
   isSaving,
-}: Props) {
+}) => {
   const {
     attributes,
     listeners,
@@ -65,12 +66,13 @@ export function EditableRankedItem({
     isDragging,
   } = useSortable({ id: clientId });
 
-  // 入力中クエリと選択済み itemName を分離
+  // 入力中クエリと候補取得フラグ
   const [itemQuery, setItemQuery] = useState(item.itemName);
-  const { options: itemOptions, isLoading: isItemLoading } = useItemSuggestions(
-    subject,
-    itemQuery
-  );
+  const [suggestEnabled, setSuggestEnabled] = useState(false);
+
+  // suggestEnabledがtrueのときのみ、空prefixでフェッチ
+  const { options: itemOptions, isLoading: isItemLoading } =
+    useItemSuggestions(subject, itemQuery, suggestEnabled);
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -81,10 +83,10 @@ export function EditableRankedItem({
   const itemImageInputRef = useRef<HTMLInputElement>(null);
 
   // ファイル選択時にプレビューを更新
-  const onFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0] ?? null;
+  const onFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] ?? null;
     handleItemImageChange(clientId, file);
-    event.target.value = "";
+    e.target.value = "";
   };
   // 画像削除時に呼ばれる
   const onRemoveImage = () => {
@@ -173,13 +175,15 @@ export function EditableRankedItem({
             <Combobox.Input
               className="w-full bg-background font-medium"
               placeholder={`${index + 1}位のアイテム名*`}
-              // 入力中のクエリをバインド
               value={itemQuery}
               onChange={(e) => setItemQuery(e.target.value)}
-              // 選択済みの itemName を表示
               displayValue={() => item.itemName}
               maxLength={100}
               disabled={isSaving}
+              // フォーカス時に候補取得を有効化
+              onFocus={() => {
+                if (subject) setSuggestEnabled(true);
+              }}
             />
             <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2">
               <ChevronsUpDown className="h-5 w-5 text-muted-foreground" />
@@ -195,9 +199,7 @@ export function EditableRankedItem({
                   value={opt}
                   className={({ active }) =>
                     `cursor-pointer select-none p-2 ${
-                      active
-                        ? "bg-primary text-primary-foreground"
-                        : ""
+                      active ? "bg-primary text-primary-foreground" : ""
                     }`
                   }
                 >
@@ -234,4 +236,4 @@ export function EditableRankedItem({
       </Button>
     </li>
   );
-}
+};
