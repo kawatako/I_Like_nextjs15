@@ -11,10 +11,12 @@ import { useRouter } from "next/navigation";
 import { ListStatus } from "@/lib/types";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/lib/hooks/use-toast";
+import { Combobox } from "@headlessui/react";
+import { ChevronsUpDown } from "lucide-react";
+import { useSubjectSuggestions } from "@/lib/hooks/useSubjectSuggestions";
 import {
   DndContext,
   closestCenter,
@@ -34,7 +36,6 @@ import { EditableRankedItem, type EditableItem } from "./EditableRankedItem";
 import { saveRankingListItemsAction } from "@/lib/actions/rankingActions";
 import { useImageUploader } from "@/lib/hooks/useImageUploader";
 
-
 interface Props {
   rankingList: {
     id: string;
@@ -44,7 +45,7 @@ interface Props {
       id: string;
       itemName: string;
       itemDescription: string | null;
-      imageUrl: string | null; // 署名付きURL
+      imageUrl: string | null;  // 署名付きURL
       imagePath: string | null; // 元のキー文字列
     }[];
     rankingListTags: { tag: { id: string; name: string } }[];
@@ -57,8 +58,17 @@ export function RankingEdit({ rankingList }: Props) {
   const { uploadImage, isLoading: isUploading } = useImageUploader();
   const [isSaving, startSaveTransition] = useTransition();
 
+  // --- サジェスト用 state ---
   const [subject, setSubject] = useState(rankingList.subject);
-  const [description, setDescription] = useState(rankingList.description ?? "");
+  const [subjectQuery, setSubjectQuery] = useState(rankingList.subject);
+  const {
+    options: subjectOptions,
+    isLoading: isSubjectLoading,
+  } = useSubjectSuggestions(subjectQuery);
+
+  const [description, setDescription] = useState(
+    rankingList.description ?? ""
+  );
   const [editableItems, setEditableItems] = useState<EditableItem[]>(
     rankingList.items.map((item) => ({
       clientId: item.id,
@@ -66,7 +76,7 @@ export function RankingEdit({ rankingList }: Props) {
       itemName: item.itemName,
       itemDescription: item.itemDescription,
       imageFile: null,
-      previewUrl: item.imageUrl,
+      previewUrl: item.imageUrl ?? null,
       imagePath: item.imagePath,
     }))
   );
@@ -104,7 +114,7 @@ export function RankingEdit({ rankingList }: Props) {
       clientId: string,
       field: keyof Omit<
         EditableItem,
-        "clientId" | "id" | "imageFile" | "previewUrl" | "imageUrl"
+        "clientId" | "id" | "imageFile" | "previewUrl" | "imagePath"
       >,
       value: string | null
     ) => {
@@ -167,10 +177,10 @@ export function RankingEdit({ rankingList }: Props) {
     startSaveTransition(async () => {
       setFormError(null);
       try {
-        // 1) 編集中アイテムをクローン
+        // 1) アイテム副本
         const items = [...editableItems];
 
-        // 2) 新規アップロード分だけ順次アップロードし、clientId→path マップを作成
+        // 2) 画像アップロードマッピング
         const uploadResults = await Promise.all(
           items.map(async (item) => {
             if (item.imageFile) {
@@ -187,16 +197,16 @@ export function RankingEdit({ rankingList }: Props) {
             .map((r) => [r.clientId, r.path])
         );
 
-        // 3) 保存用データを組み立てる
+        // 3) 保存データ組立
         const itemsData = items.map((item) => ({
           id: item.id,
           itemName: item.itemName,
           itemDescription: item.itemDescription,
-          // 新規アップロードがあればそのパス、それ以外は既存 path
-          imageUrl: uploadMap.get(item.clientId) ?? item.imagePath ?? null,
+          imageUrl:
+            uploadMap.get(item.clientId) ?? item.imagePath ?? null,
         }));
 
-        // 4) DB に保存
+        // 4) サーバーアクション呼び出し
         const result = await saveRankingListItemsAction(
           rankingList.id,
           itemsData,
@@ -211,7 +221,9 @@ export function RankingEdit({ rankingList }: Props) {
 
         toast({
           title:
-            status === "DRAFT" ? "下書きを保存しました" : "公開更新しました",
+            status === "DRAFT"
+              ? "下書きを保存しました"
+              : "公開更新しました",
         });
         router.push(`/rankings/${rankingList.id}`);
       } catch (err: any) {
@@ -225,7 +237,7 @@ export function RankingEdit({ rankingList }: Props) {
     });
   };
 
-  if (!isMounted) return <div className='p-4 text-center'>読み込み中…</div>;
+  if (!isMounted) return <div className="p-4 text-center">読み込み中…</div>;
 
   return (
     <DndContext
@@ -233,27 +245,68 @@ export function RankingEdit({ rankingList }: Props) {
       collisionDetection={closestCenter}
       onDragEnd={handleDragEnd}
     >
-      <div className='space-y-6'>
+      <div className="space-y-6">
         {/* ─── タイトル & 説明 編集フォーム ─── */}
         <Card>
           <CardHeader>
-            <h3 className='text-lg font-semibold'>ランキング情報</h3>
+            <h3 className="text-lg font-semibold">ランキング情報</h3>
           </CardHeader>
-          <CardContent className='space-y-4'>
+          <CardContent className="space-y-4">
             <div>
-              <Label htmlFor='subject'>タイトル*</Label>
-              <Input
-                id='subject'
+              <Label htmlFor="subject">タイトル*</Label>
+              <Combobox<string>
                 value={subject}
-                onChange={(e) => setSubject(e.target.value)}
-                disabled={isSaving || isUploading}
-                maxLength={50}
-              />
+                onChange={(val: string) => {
+                  setSubject(val);
+                  setSubjectQuery(val);
+                }}
+              >
+                <div className="relative">
+                  <Combobox.Input
+                    id="subject"
+                    className="w-full bg-background"
+                    placeholder="タイトルを入力（3文字以上）"
+                    onChange={(e) => setSubjectQuery(e.target.value)}
+                    displayValue={(val: string) => val}
+                    value={subjectQuery}
+                    disabled={isSaving || isUploading}
+                    maxLength={50}
+                  />
+                  <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2">
+                    <ChevronsUpDown className="h-5 w-5 text-muted-foreground" />
+                  </Combobox.Button>
+                  <Combobox.Options className="absolute z-10 mt-1 w-full bg-popover shadow-md max-h-60 overflow-auto rounded-md">
+                    {isSubjectLoading && (
+                      <div className="p-2">読み込み中…</div>
+                    )}
+                    {!isSubjectLoading && subjectOptions.length === 0 && (
+                      <div className="p-2 text-muted-foreground">
+                        該当なし
+                      </div>
+                    )}
+                    {subjectOptions.map((opt) => (
+                      <Combobox.Option
+                        key={opt}
+                        value={opt}
+                        className={({ active }) =>
+                          `cursor-pointer select-none p-2 ${
+                            active
+                              ? "bg-primary text-primary-foreground"
+                              : ""
+                          }`
+                        }
+                      >
+                        {opt}
+                      </Combobox.Option>
+                    ))}
+                  </Combobox.Options>
+                </div>
+              </Combobox>
             </div>
             <div>
-              <Label htmlFor='description'>説明（任意）</Label>
+              <Label htmlFor="description">説明（任意）</Label>
               <Textarea
-                id='description'
+                id="description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 disabled={isSaving || isUploading}
@@ -265,20 +318,21 @@ export function RankingEdit({ rankingList }: Props) {
         </Card>
 
         {/* ─── アイテム編集部分 ─── */}
-        <Card className='max-h-[60vh] overflow-y-auto pr-3'>
+        <Card className="max-h-[60vh] overflow-y-auto pr-3">
           <CardHeader>ランキングアイテム</CardHeader>
-          <CardContent className='pt-0 space-y-3'>
+          <CardContent className="pt-0 space-y-3">
             {editableItems.length === 0 && (
-              <p>下の「+ アイテム追加」ボタンでアイテムを追加できます。</p>
+              <p>「+ アイテム追加」ボタンでアイテムを追加できます。</p>
             )}
             <SortableContext
               items={editableItems.map((i) => i.clientId)}
               strategy={verticalListSortingStrategy}
             >
-              <ul className='space-y-3'>
+              <ul className="space-y-3">
                 {editableItems.map((item, idx) => (
                   <EditableRankedItem
                     key={item.clientId}
+                    subject={subject}
                     clientId={item.clientId}
                     item={item}
                     index={idx}
@@ -299,12 +353,14 @@ export function RankingEdit({ rankingList }: Props) {
           </CardContent>
         </Card>
 
-        {formError && <p className='text-red-600 px-1'>{formError}</p>}
+        {formError && (
+          <p className="text-red-600 px-1">{formError}</p>
+        )}
 
         {/* ─── 保存ボタン ─── */}
-        <div className='flex justify-end space-x-2'>
+        <div className="flex justify-end space-x-2">
           <Button
-            variant='outline'
+            variant="outline"
             onClick={() => handleSave("DRAFT")}
             disabled={isSaving || isUploading}
           >
