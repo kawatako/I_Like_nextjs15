@@ -46,7 +46,7 @@ const subjectAllowedCharsRegex =
 const SubjectSchema = z
   .string()
   .trim()
-  .min(1, "テーマを入力してください。")
+  .min(3, "テーマを入力してください。")
   .max(50, "テーマは50字以内")
   .regex(subjectAllowedCharsRegex, {
     message: "タイトルに使用できない文字です。",
