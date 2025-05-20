@@ -1,6 +1,7 @@
 // components/trends/NewList.tsx
 import React from "react";
 import Link from "next/link";
+import { DateText } from "@/components/Date.Text";
 
 export interface NewListEntry {
   id: string;
@@ -28,7 +29,7 @@ export default function NewList({ lists, isLoading, isError }: Props) {
           <Link href={`/rankings/${item.id}`} className="block h-full">
             <h3 className="font-bold text-base">{item.subject}</h3>
             <div className="text-sm text-muted-foreground mt-1">
-              {new Date(item.createdAt).toLocaleString()}
+             <DateText date={item.createdAt} />
             </div>
           </Link>
         </li>

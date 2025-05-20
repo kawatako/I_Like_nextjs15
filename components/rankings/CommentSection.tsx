@@ -10,6 +10,7 @@ import {
   useRankingListComments,
   RankingComment,
 } from "@/lib/hooks/useRankingListComments";
+import { DateText } from "@/components/Date.Text"
 
 interface Props {
   listId: string;
@@ -64,7 +65,7 @@ export default function CommentSection({ listId }: Props) {
                 @{c.user.username}
               </span>
               <span className="ml-auto text-xs text-muted-foreground">
-                {new Date(c.createdAt).toLocaleString()}
+              <DateText date={c.createdAt} />
               </span>
             </Link>
             <p className="mb-6">{c.content}</p> {/* 下に余白を確保 */}
