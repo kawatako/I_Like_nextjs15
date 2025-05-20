@@ -5,43 +5,20 @@ import React, { useState, useCallback, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { arrayMove } from "@dnd-kit/sortable";
 import { ListStatus } from "@/lib/types";
-import { z } from "zod";
 import { useToast } from "@/lib/hooks/use-toast";
 import { useSubjectSuggestions } from "@/lib/hooks/useSubjectSuggestions";
 import { useImageUploader } from "@/lib/hooks/useImageUploader";
 import { createCompleteRankingAction } from "@/lib/actions/rankingActions";
+import { validateRankingForm } from "@/lib/validation/rankings";
 import { RankingBasicInfo } from "./common/RankingBasicInfo";
 import { RankingItemsList } from "./common/RankingItemsList";
 import { RankingFormActions } from "./common/RankingFormActions";
 import type { EditableItem } from "./common/EditableRankedItem";
 
-// --- Zod schemas ---
-const subjectAllowedCharsRegex =
-  /^[\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}a-zA-Z0-9 ]+$/u;
-const SubjectSchema = z
-  .string()
-  .trim()
-  .min(3, "テーマを入力してください。")
-  .max(50, "テーマは50字以内")
-  .regex(subjectAllowedCharsRegex, {
-    message: "タイトルに使用できない文字です。",
-  });
-const DescriptionSchema = z
-  .string()
-  .trim()
-  .max(500, "説明は500字以内です。")
-  .optional();
-const TagNameSchema = z
-  .string()
-  .trim()
-  .min(1, "タグ名は1文字以上入力してください。")
-  .max(30, "タグ名は30文字以内です。");
-
 export function NewRankingForm() {
   const router = useRouter();
   const { toast } = useToast();
   const { uploadImage, isLoading: isUploading } = useImageUploader();
-  // フォーム送信状態
   const [isSubmitting, startSubmitTransition] = useTransition();
 
   // ─── 基本情報 state ───
@@ -134,25 +111,22 @@ export function NewRankingForm() {
       startSubmitTransition(async () => {
         setFormError(null);
 
-        // バリデーション
-        try {
-          SubjectSchema.parse(subject);
-          DescriptionSchema.parse(description);
-          if (status === "PUBLISHED" && editableItems.length === 0)
-            throw new Error("公開にはアイテムを1つ以上登録してください。");
-          editableItems.forEach((item, i) => {
-            if (!item.itemName.trim())
-              throw new Error(`${i + 1}番目: アイテム名は必須です。`);
-            if ((item.itemDescription ?? "").length > 500)
-              throw new Error(`${i + 1}番目: 説明は500字以内です。`);
-          });
-          if (tags.length > 5) throw new Error("タグは5個までです。");
-        } catch (e) {
-          setFormError((e as Error).message);
+        // ----- ① 共通バリデーション呼び出し -----
+        const error = validateRankingForm(
+          subject,
+          description,
+          editableItems.map((it) => ({
+            itemName: it.itemName,
+            itemDescription: it.itemDescription,
+          })),
+          tags
+        );
+        if (error) {
+          setFormError(error);
           return;
         }
 
-        // 画像アップロード＆データ整形
+        // ----- ② 画像アップロード＆データ整形 -----
         let itemsData: {
           itemName: string;
           itemDescription?: string | null;
@@ -184,7 +158,7 @@ export function NewRankingForm() {
           return;
         }
 
-        // サーバーアクション呼び出し
+        // ----- ③ サーバーアクション呼び出し -----
         const result = await createCompleteRankingAction(
           { subject, description, tags },
           itemsData,
@@ -209,7 +183,7 @@ export function NewRankingForm() {
         }
       });
     },
-    [subject, description, editableItems, tags, uploadImage]
+    [subject, description, editableItems, tags, uploadImage, router, toast]
   );
 
   return (
@@ -239,9 +213,7 @@ export function NewRankingForm() {
         isLoading={isSubmitting || isUploading}
       />
 
-      {formError && (
-        <p className="text-sm text-red-500 px-1">{formError}</p>
-      )}
+      {formError && <p className="text-sm text-red-500 px-1">{formError}</p>}
 
       <RankingFormActions
         onSaveDraft={() => handleSave("DRAFT")}

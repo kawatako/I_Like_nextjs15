@@ -6,7 +6,6 @@ import prisma from "@/lib/client";
 import { safeQuery } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { z } from "zod";
 import { getProfileRankingsPaginated } from "@/lib/data/rankingQueries";
 import { supabaseAdmin } from "@/lib/utils/storage";
 import type {
@@ -15,6 +14,14 @@ import type {
   RankingListSnippet,
   ListStatus,
 } from "@/lib/types";
+import {
+  SubjectSchema,
+  DescriptionSchema,
+  ItemNameSchema,
+  ItemDescSchema,
+  TagNameSchema,
+  validateRankingForm,
+} from "@/lib/validation/rankings";
 
 /** 認証済みユーザーの DB ID と username を取得 */
 async function requireUser() {
@@ -62,13 +69,6 @@ async function updateTags(listId: string, tags: string[]) {
   });
 }
 
-// Zod スキーマ
-const subjectAllowed = /^[\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}A-Za-z0-9 ]+$/u;
-const SubjectSchema = z.string().trim().min(1, "テーマを入力してください。").max(50, "テーマは50字以内です。").regex(subjectAllowed, "日本語・英数字・半角スペースのみ使用できます。");
-const DescriptionSchema = z.string().trim().max(500, "説明は500字以内です。").optional();
-const ItemNameSchema = z.string().trim().min(1, "アイテム名は必須です。").max(100, "アイテム名は100字以内です。");
-const ItemDescSchema = z.string().trim().max(500, "説明は500字以内です。").optional();
-
 /** 新規ランキング作成 */
 export async function createCompleteRankingAction(
   rankingData: { subject: string; description: string | null; listImageUrl?: string | null; tags?: string[] },
@@ -82,7 +82,7 @@ export async function createCompleteRankingAction(
   if (status === "PUBLISHED" && itemsData.length === 0) throw new Error("公開にはアイテムが必要です。");
   itemsData.forEach((item, i) => {
     ItemNameSchema.parse(item.itemName);
-    ItemDescSchema.parse(item.itemDescription ?? "");
+    ItemNameSchema.parse(item.itemDescription ?? "");
     if (status === "PUBLISHED" && !item.itemName.trim()) throw new Error(`${i + 1}番目のアイテム名が必要です。`);
   });
 

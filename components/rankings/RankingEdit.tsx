@@ -8,6 +8,7 @@ import { useToast } from "@/lib/hooks/use-toast";
 import { useSubjectSuggestions } from "@/lib/hooks/useSubjectSuggestions";
 import { useImageUploader } from "@/lib/hooks/useImageUploader";
 import { saveRankingListItemsAction } from "@/lib/actions/rankingActions";
+import { validateRankingForm } from "@/lib/validation/rankings";
 import { RankingBasicInfo } from "./common/RankingBasicInfo";
 import { RankingItemsList } from "./common/RankingItemsList";
 import { RankingFormActions } from "./common/RankingFormActions";
@@ -36,11 +37,12 @@ export function RankingEdit({ rankingList }: Props) {
   const { uploadImage, isLoading: isUploading } = useImageUploader();
   const [isSaving, startSaveTransition] = useTransition();
 
-  // --- フックは常に同一の順序で ---
+  // フックは常に同じ順序で
   const [isMounted, setIsMounted] = useState(false);
   const [subject, setSubject] = useState(rankingList.subject);
   const [subjectQuery, setSubjectQuery] = useState(rankingList.subject);
-  const { options: subjectOptions, isLoading: isSubjectLoading } = useSubjectSuggestions(subjectQuery);
+  const { options: subjectOptions, isLoading: isSubjectLoading } =
+    useSubjectSuggestions(subjectQuery);
   const [description, setDescription] = useState(rankingList.description ?? "");
   const [tags, setTags] = useState<string[]>(
     rankingList.rankingListTags.map((t) => t.tag.name)
@@ -62,6 +64,7 @@ export function RankingEdit({ rankingList }: Props) {
     setIsMounted(true);
   }, []);
 
+  // ① 新しいアイテムスロットを追加
   const handleAddItem = useCallback(() => {
     if (editableItems.length >= 10) {
       toast({ title: "アイテムは10個までです。", variant: "destructive" });
@@ -70,10 +73,18 @@ export function RankingEdit({ rankingList }: Props) {
     const newClientId = `new-${Date.now()}-${Math.random()}`;
     setEditableItems((prev) => [
       ...prev,
-      { clientId: newClientId, itemName: "", itemDescription: null, imageFile: null, previewUrl: null, imagePath: null },
+      {
+        clientId: newClientId,
+        itemName: "",
+        itemDescription: null,
+        imageFile: null,
+        previewUrl: null,
+        imagePath: null,
+      },
     ]);
   }, [editableItems.length, toast]);
 
+  // ② 項目フィールド変更
   const handleItemChange = useCallback(
     (
       clientId: string,
@@ -89,12 +100,14 @@ export function RankingEdit({ rankingList }: Props) {
     []
   );
 
+  // ③ 項目削除
   const handleDeleteItem = useCallback((clientId: string) => {
     setEditableItems((items) =>
       items.filter((item) => item.clientId !== clientId)
     );
   }, []);
 
+  // ④ 画像変更／削除
   const handleImageChange = useCallback(
     (clientId: string, file: File | null) => {
       setEditableItems((items) =>
@@ -115,29 +128,33 @@ export function RankingEdit({ rankingList }: Props) {
     []
   );
 
+  // ⑤ 並び替え
   const handleReorder = useCallback((oldIndex: number, newIndex: number) => {
     setEditableItems((items) => arrayMove(items, oldIndex, newIndex));
   }, []);
 
+  // ⑥ 保存処理
   const handleSave = useCallback(
     (status: ListStatus) => {
       startSaveTransition(async () => {
         setFormError(null);
-        try {
-          if (status === "PUBLISHED" && editableItems.length === 0) {
-            throw new Error("公開にはアイテムを1つ以上登録してください。");
-          }
-          editableItems.forEach((item, i) => {
-            if (!item.itemName.trim())
-              throw new Error(`${i + 1}番目: アイテム名は必須です。`);
-            if ((item.itemDescription ?? "").length > 500)
-              throw new Error(`${i + 1}番目: 説明は500字以内です。`);
-          });
-          if (tags.length > 5) throw new Error("タグは5個までです。");
-        } catch (e) {
-          setFormError((e as Error).message);
+
+        // —— ① 共通バリデーション呼び出し ——
+        const valError = validateRankingForm(
+          subject,
+          description,
+          editableItems.map((it) => ({
+            itemName: it.itemName,
+            itemDescription: it.itemDescription,
+          })),
+          tags
+        );
+        if (valError) {
+          setFormError(valError);
           return;
         }
+
+        // —— ② 画像アップロード & マッピング ——
         try {
           const uploadResults = await Promise.all(
             editableItems.map(async (item) => {
@@ -160,6 +177,8 @@ export function RankingEdit({ rankingList }: Props) {
             itemDescription: item.itemDescription?.trim() || null,
             imageUrl: uploadMap.get(item.clientId) ?? item.imagePath ?? null,
           }));
+
+          // —— ③ サーバーアクション呼び出し ——
           const result = await saveRankingListItemsAction(
             rankingList.id,
             itemsData,
@@ -171,6 +190,7 @@ export function RankingEdit({ rankingList }: Props) {
           );
           if (!result.success)
             throw new Error(result.error || "保存に失敗しました");
+
           toast({
             title:
               status === "DRAFT"
@@ -185,7 +205,16 @@ export function RankingEdit({ rankingList }: Props) {
         }
       });
     },
-    [editableItems, tags, subject, description, uploadImage, isSaving]
+    [
+      subject,
+      description,
+      editableItems,
+      tags,
+      uploadImage,
+      rankingList.id,
+      toast,
+      router,
+    ]
   );
 
   return (
