@@ -14,7 +14,6 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { PlusIcon, Loader2 } from "@/components/Icons";
@@ -37,6 +36,9 @@ import {
 import { EditableRankedItem, type EditableItem } from "./EditableRankedItem";
 import TagInput from "./TagInput";
 import { useImageUploader } from "@/lib/hooks/useImageUploader";
+import { Combobox } from "@headlessui/react";
+import { ChevronsUpDown } from "lucide-react";
+import { useSubjectSuggestions } from "@/lib/hooks/useSubjectSuggestions";
 
 // --- Zod schemas ---
 const subjectAllowedCharsRegex =
@@ -60,14 +62,13 @@ const TagNameSchema = z
   .min(1, "タグ名は1文字以上入力してください。")
   .max(30, "タグ名は30文字以内です。");
 
-// EditableItem type comes from EditableRankedItem.tsx
-// export type EditableItem = { clientId: string; id?: string; itemName: string; itemDescription?: string | null; imageUrl?: string | null; imageFile?: File | null; previewUrl?: string | null; };
-
 export function NewRankingForm() {
   const router = useRouter();
   const { toast } = useToast();
   const { uploadImage, isLoading: isUploading } = useImageUploader();
   const [subject, setSubject] = useState("");
+  const [subjectQuery, setSubjectQuery] = useState("");
+  const { options: subjectOptions, isLoading: isSubjectLoading } =useSubjectSuggestions(subjectQuery);
   const [description, setDescription] = useState("");
   const [editableItems, setEditableItems] = useState<EditableItem[]>([]);
   const [tags, setTags] = useState<string[]>([]);
@@ -251,129 +252,165 @@ export function NewRankingForm() {
     });
   };
 
-  return (
-    <DndContext
-      sensors={sensors}
-      collisionDetection={closestCenter}
-      onDragEnd={handleDragEnd}
-    >
-      <div className='space-y-6'>
-        {/* Basic Info */}
-        <Card>
-          <CardHeader>
-            <CardTitle>ランキング基本情報</CardTitle>
-            <CardDescription>
-              タイトル、説明、タグを設定します。
-            </CardDescription>
-          </CardHeader>
-          <CardContent className='space-y-4'>
-            <div>
-              <Label htmlFor='subject'>タイトル*</Label>
-              <Input
-                id='subject'
-                value={subject}
-                onChange={(e) => setSubject(e.target.value)}
-                maxLength={50}
-                disabled={isSubmitting || isUploading}
-              />
-            </div>
-            <div>
-              <Label htmlFor='description'>説明（任意）</Label>
-              <Textarea
-                id='description'
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                maxLength={500}
-                rows={3}
-                disabled={isSubmitting || isUploading}
-              />
-            </div>
-            <div>
-              <Label htmlFor='tags'>タグ（任意, 5個まで）</Label>
-              <TagInput
-                value={tags}
-                onChange={setTags}
-                placeholder='タグを追加'
-                maxTags={5}
-                maxLength={30}
-                disabled={isSubmitting || isUploading}
-              />
-            </div>
-          </CardContent>
-        </Card>
+return (
+  <DndContext
+    sensors={sensors}
+    collisionDetection={closestCenter}
+    onDragEnd={handleDragEnd}
+  >
+    <div className="space-y-6">
+      {/* ─── 基本情報 ─── */}
+      <Card>
+        <CardHeader>
+          <CardTitle>ランキング基本情報</CardTitle>
+          <CardDescription>
+            タイトル、説明、タグを設定します。
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <Label htmlFor="subject">タイトル*</Label>
+  <Combobox<string>
+    value={subject}
+    onChange={(val: string) => {
+      setSubject(val);
+      setSubjectQuery(val);
+    }}
+  >
+    <div className="relative">
+      <Combobox.Input
+        id="subject"
+        className="w-full bg-background"
+        placeholder="タイトルを入力（3文字以上）"
+        onChange={(e) => setSubjectQuery(e.target.value)}
+        displayValue={(val: string) => val}
+        value={subjectQuery}
+        disabled={isSubmitting || isUploading}
+        maxLength={50}
+      />
+      <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2">
+        <ChevronsUpDown className="h-5 w-5 text-muted-foreground" />
+      </Combobox.Button>
+      <Combobox.Options className="absolute z-10 mt-1 w-full bg-popover shadow-md max-h-60 overflow-auto rounded-md">
+        {isSubjectLoading && <div className="p-2">読み込み中…</div>}
+        {!isSubjectLoading && subjectOptions.length === 0 && (
+          <div className="p-2 text-muted-foreground">該当なし</div>
+        )}
+        {subjectOptions.map((opt) => (
+          <Combobox.Option
+            key={opt}
+            value={opt}
+            className={({ active }) =>
+              `cursor-pointer select-none p-2 ${
+                active ? "bg-primary text-primary-foreground" : ""
+              }`
+            }
+          >
+            {opt}
+          </Combobox.Option>
+        ))}
+      </Combobox.Options>
+    </div>
+  </Combobox>
+          </div>
+          <div>
+            <Label htmlFor="description">説明（任意）</Label>
+            <Textarea
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              maxLength={500}
+              rows={3}
+              disabled={isSubmitting || isUploading}
+            />
+          </div>
+          <div>
+            <Label htmlFor="tags">タグ（任意, 5個まで）</Label>
+            <TagInput
+              value={tags}
+              onChange={setTags}
+              placeholder="タグを追加"
+              maxTags={5}
+              maxLength={30}
+              disabled={isSubmitting || isUploading}
+            />
+          </div>
+        </CardContent>
+      </Card>
 
-        {/* Items */}
-        <Card>
-          <CardHeader>
-            <CardTitle>ランキングアイテム</CardTitle>
-            <CardDescription>
-              アイテムを追加・編集・並び替えしてください。
-            </CardDescription>
-          </CardHeader>
-          <CardContent className='pt-0 space-y-3'>
-            {editableItems.length === 0 && (
-              <p className='text-muted-foreground px-3'>
-                「＋」ボタンでアイテムを追加できます。
-              </p>
-            )}
-            <SortableContext
-              items={editableItems.map((i) => i.clientId)}
-              strategy={verticalListSortingStrategy}
+      {/* ─── アイテム ─── */}
+      <Card>
+        <CardHeader>
+          <CardTitle>ランキングアイテム</CardTitle>
+          <CardDescription>
+            アイテムを追加・編集・並び替えしてください。
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="pt-0 space-y-3">
+          {editableItems.length === 0 && (
+            <p className="text-muted-foreground px-3">
+              「＋」ボタンでアイテムを追加できます。
+            </p>
+          )}
+          <SortableContext
+            items={editableItems.map((i) => i.clientId)}
+            strategy={verticalListSortingStrategy}
+          >
+            <ul className="space-y-3">
+              {editableItems.map((item, idx) => (
+                <EditableRankedItem
+                  subject={subject}
+                  key={item.clientId}
+                  clientId={item.clientId}
+                  item={item}
+                  index={idx}
+                  handleItemChange={handleItemChange}
+                  handleDeleteItem={handleDeleteItem}
+                  handleItemImageChange={handleItemImageChange}
+                  isSaving={isSubmitting || isUploading}
+                />
+              ))}
+            </ul>
+          </SortableContext>
+          <div className="pt-3">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleAddItemSlot}
+              disabled={isSubmitting || isUploading}
             >
-              <ul className='space-y-3'>
-                {editableItems.map((item, idx) => (
-                  <EditableRankedItem
-                    key={item.clientId}
-                    clientId={item.clientId}
-                    item={item}
-                    index={idx}
-                    handleItemChange={handleItemChange}
-                    handleDeleteItem={handleDeleteItem}
-                    handleItemImageChange={handleItemImageChange}
-                    isSaving={isSubmitting || isUploading}
-                  />
-                ))}
-              </ul>
-            </SortableContext>
-            <div className='pt-3'>
-              <Button
-                variant='outline'
-                size='sm'
-                onClick={handleAddItemSlot}
-                disabled={isSubmitting || isUploading}
-              >
-                <PlusIcon className='h-4 w-4 mr-2' /> アイテムを追加 (
-                {editableItems.length + 1}位)
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+              <PlusIcon className="h-4 w-4 mr-2" /> アイテムを追加 (
+              {editableItems.length + 1}位)
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
-        {formError && <p className='text-sm text-red-500 px-1'>{formError}</p>}
+      {formError && <p className="text-sm text-red-500 px-1">{formError}</p>}
 
-        {/* Save Buttons */}
-        <div className='flex justify-end items-center space-x-2 pt-4 border-t'>
-          <Button
-            variant='outline'
-            onClick={() => handleSave("DRAFT")}
-            disabled={isSubmitting || isUploading}
-          >
-            {(isSubmitting || isUploading) && (
-              <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-            )}{" "}
-            下書き保存
-          </Button>
-          <Button
-            onClick={() => handleSave("PUBLISHED")}
-            disabled={isSubmitting || isUploading}
-          >
-            {(isSubmitting || isUploading) && (
-              <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-            )}{" "}
-            保存して公開
-          </Button>
-        </div>
+      {/* ─── 保存ボタン ─── */}
+      <div className="flex justify-end items-center space-x-2 pt-4 border-t">
+        <Button
+          variant="outline"
+          onClick={() => handleSave("DRAFT")}
+          disabled={isSubmitting || isUploading}
+        >
+          {(isSubmitting || isUploading) && (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          )}{" "}
+          下書き保存
+        </Button>
+        <Button
+          onClick={() => handleSave("PUBLISHED")}
+          disabled={isSubmitting || isUploading}
+        >
+          {(isSubmitting || isUploading) && (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          )}{" "}
+          保存して公開
+        </Button>
       </div>
-    </DndContext>
-  );
+    </div>
+  </DndContext>
+);
 }
