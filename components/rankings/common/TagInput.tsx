@@ -1,13 +1,15 @@
-// components/rankings/TagInput.tsx
+// components/rankings/common/TagInput.tsx
+// // タグ入力欄を提供するコンポーネント
 "use client";
 
 import React, { useState, useCallback, KeyboardEvent } from "react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { XIcon } from "@/components/Icons"; // 削除アイコン
+import { XIcon } from "@/components/Icons";
 import { useToast } from "@/lib/hooks/use-toast";
 
 interface TagInputProps {
+  id?: string; // タグ入力欄の識別子 (任意)
   value: string[]; // 現在のタグ配列 (親コンポーネントで管理)
   onChange: (tags: string[]) => void; // タグ配列が変更されたときに親に通知する関数
   placeholder?: string; // 入力欄のプレースホルダー
@@ -18,11 +20,12 @@ interface TagInputProps {
 }
 
 export default function TagInput({
+  id,
   value = [], // デフォルトは空配列
   onChange,
   placeholder = "タグを入力 (Enter, カンマ, スペースで追加)",
-  maxTags = 5, // デフォルト上限5個
-  maxLength = 30, // デフォルト上限30文字
+  maxTags = 5,
+  maxLength = 30,
   disabled = false,
   className,
 }: TagInputProps) {
@@ -96,6 +99,7 @@ export default function TagInput({
     <div className={`space-y-2 ${className}`}>
       {/* タグ入力欄 */}
       <Input
+        id={id}
         type='text'
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
