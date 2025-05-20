@@ -17,10 +17,10 @@ import { ChevronsUpDown } from "lucide-react";
 
 // Props: ランキング基本情報入力に必要な state とハンドラ
 interface Props {
-  subject: string;
-  subjectQuery: string;
-  onSubjectChange: (val: string) => void;
-  onSubjectQueryChange: (q: string) => void;
+  subject: string;                   // 選択済みのタイトル
+  subjectQuery: string;              // 入力中のクエリ
+  onSubjectChange: (val: string) => void;        // 候補選択時に selected を更新
+  onSubjectQueryChange: (q: string) => void;     // 入力時に query を更新
   subjectOptions: string[];
   isSubjectLoading: boolean;
   description: string;
@@ -49,31 +49,36 @@ export const RankingBasicInfo: FC<Props> = ({
       <CardTitle>ランキング基本情報</CardTitle>
       <CardDescription>タイトル、説明、タグを設定します。</CardDescription>
     </CardHeader>
-    <CardContent className='space-y-4'>
+    <CardContent className="space-y-4">
       <div>
-        <Label htmlFor='subject'>タイトル*</Label>
+        <Label htmlFor="subject">タイトル*</Label>
         <Combobox
           value={subject}
-          onChange={(val: string) => onSubjectChange(val)}
+          onChange={(val: string) => {
+            onSubjectChange(val);
+            onSubjectQueryChange(val);
+          }}
         >
-          <div className='relative'>
+          <div className="relative">
             <Combobox.Input
-              id='subject'
-              name='subject'
-              className='w-full bg-background'
-              placeholder='タイトルを入力（3文字以上）'
-              onChange={(e) => onSubjectQueryChange(e.target.value)}
-              displayValue={(val: string) => val}
+              id="subject"
+              name="subject"
+              className="w-full bg-background"
+              placeholder="タイトルを入力（3文字以上）"
+              // 入力中のクエリをバインド
               value={subjectQuery}
+              onChange={(e) => onSubjectQueryChange(e.target.value)}
+              // 選択済みのタイトルを表示
+              displayValue={() => subject}
               disabled={disabled}
             />
-            <Combobox.Button className='absolute inset-y-0 right-0 flex items-center pr-2'>
-              <ChevronsUpDown className='h-5 w-5 text-muted-foreground' />
+            <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2">
+              <ChevronsUpDown className="h-5 w-5 text-muted-foreground" />
             </Combobox.Button>
-            <Combobox.Options className='absolute z-10 mt-1 w-full bg-popover shadow-md max-h-60 overflow-auto rounded-md'>
-              {isSubjectLoading && <div className='p-2'>読み込み中…</div>}
+            <Combobox.Options className="absolute z-10 mt-1 w-full bg-popover shadow-md max-h-60 overflow-auto rounded-md">
+              {isSubjectLoading && <div className="p-2">読み込み中…</div>}
               {!isSubjectLoading && subjectOptions.length === 0 && (
-                <div className='p-2 text-muted-foreground'>該当なし</div>
+                <div className="p-2 text-muted-foreground">該当なし</div>
               )}
               {subjectOptions.map((opt) => (
                 <Combobox.Option
@@ -93,10 +98,10 @@ export const RankingBasicInfo: FC<Props> = ({
         </Combobox>
       </div>
       <div>
-        <Label htmlFor='description'>説明（任意）</Label>
+        <Label htmlFor="description">説明（任意）</Label>
         <Textarea
-          id='description'
-          name='description'
+          id="description"
+          name="description"
           value={description}
           onChange={(e) => onDescriptionChange(e.target.value)}
           disabled={disabled}
@@ -105,9 +110,9 @@ export const RankingBasicInfo: FC<Props> = ({
         />
       </div>
       <div>
-        <Label htmlFor='tags'>タグ（任意, 5個まで）</Label>
+        <Label htmlFor="tags">タグ（任意, 5個まで）</Label>
         <TagInput
-          id='tags'
+          id="tags"
           value={tags}
           onChange={onTagsChange}
           disabled={disabled}

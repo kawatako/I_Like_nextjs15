@@ -64,11 +64,14 @@ export function EditableRankedItem({
     transition,
     isDragging,
   } = useSortable({ id: clientId });
+
+  // 入力中クエリと選択済み itemName を分離
   const [itemQuery, setItemQuery] = useState(item.itemName);
   const { options: itemOptions, isLoading: isItemLoading } = useItemSuggestions(
     subject,
     itemQuery
   );
+
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
@@ -94,94 +97,97 @@ export function EditableRankedItem({
       ref={setNodeRef}
       style={style}
       {...attributes}
-      className='flex items-start gap-3 p-3 bg-secondary/50 dark:bg-secondary/30 rounded relative border'
+      className="flex items-start gap-3 p-3 bg-secondary/50 dark:bg-secondary/30 rounded relative border"
     >
       {/* ドラッグハンドル */}
       <button
         {...listeners}
-        className='cursor-grab touch-none p-1 mt-6 text-muted-foreground hover:text-foreground'
-        title='ドラッグして並び替え'
-        type='button'
+        className="cursor-grab touch-none p-1 mt-6 text-muted-foreground hover:text-foreground"
+        title="ドラッグして並び替え"
+        type="button"
       >
-        <GripVertical className='h-5 w-5' />
+        <GripVertical className="h-5 w-5" />
       </button>
 
       {/* 順位表示 */}
-      <span className='font-semibold w-8 text-center text-muted-foreground pt-7 whitespace-nowrap'>
+      <span className="font-semibold w-8 text-center text-muted-foreground pt-7 whitespace-nowrap">
         {`${index + 1}位`}
       </span>
 
       {/* 画像アップロード／プレビュー */}
-      <div className='flex-shrink-0 pt-1'>
+      <div className="flex-shrink-0 pt-1">
         {item.previewUrl ? (
-          <div className='relative w-20 h-20 rounded border bg-muted'>
+          <div className="relative w-20 h-20 rounded border bg-muted">
             <Image
               src={item.previewUrl}
               alt={`${item.itemName || "Item"} preview`}
               fill
-              className='object-cover rounded'
+              className="object-cover rounded"
             />
             <Button
-              type='button'
-              variant='destructive'
-              size='icon'
-              className='absolute -top-2 -right-2 h-6 w-6 rounded-full z-10'
+              type="button"
+              variant="destructive"
+              size="icon"
+              className="absolute -top-2 -right-2 h-6 w-6 rounded-full z-10"
               onClick={onRemoveImage}
               disabled={isSaving}
-              title='画像削除'
+              title="画像削除"
             >
-              <XIcon className='h-4 w-4' />
+              <XIcon className="h-4 w-4" />
             </Button>
           </div>
         ) : (
           <Button
-            type='button'
-            variant='outline'
-            size='sm'
-            className='w-20 h-20 flex flex-col items-center justify-center text-muted-foreground bg-background'
+            type="button"
+            variant="outline"
+            size="sm"
+            className="w-20 h-20 flex flex-col items-center justify-center text-muted-foreground bg-background"
             onClick={() => itemImageInputRef.current?.click()}
             disabled={isSaving}
           >
-            <ImagePlus className='h-6 w-6 mb-1' />
-            <span className='text-xs'>画像選択</span>
+            <ImagePlus className="h-6 w-6 mb-1" />
+            <span className="text-xs">画像選択</span>
           </Button>
         )}
         <input
-          type='file'
-          accept='image/*'
+          type="file"
+          accept="image/*"
           ref={itemImageInputRef}
           onChange={onFileChange}
-          className='hidden'
+          className="hidden"
           disabled={isSaving}
         />
       </div>
 
       {/* アイテム入力 */}
-      <div className='flex-1 space-y-1 pt-1'>
+      <div className="flex-1 space-y-1 pt-1">
         {/* アイテム名オートコンプ */}
         <Combobox
           value={item.itemName}
-          onChange={(val: string) =>
-            handleItemChange(clientId, "itemName", val)
-          }
+          onChange={(val: string) => {
+            handleItemChange(clientId, "itemName", val);
+            setItemQuery(val);
+          }}
         >
-          <div className='relative'>
+          <div className="relative">
             <Combobox.Input
-              className='w-full bg-background font-medium'
+              className="w-full bg-background font-medium"
               placeholder={`${index + 1}位のアイテム名*`}
-              onChange={(e) => setItemQuery(e.target.value)}
-              displayValue={(val: string) => val}
+              // 入力中のクエリをバインド
               value={itemQuery}
+              onChange={(e) => setItemQuery(e.target.value)}
+              // 選択済みの itemName を表示
+              displayValue={() => item.itemName}
               maxLength={100}
               disabled={isSaving}
             />
-            <Combobox.Button className='absolute inset-y-0 right-0 flex items-center pr-2'>
-              <ChevronsUpDown className='h-5 w-5 text-muted-foreground' />
+            <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2">
+              <ChevronsUpDown className="h-5 w-5 text-muted-foreground" />
             </Combobox.Button>
-            <Combobox.Options className='absolute z-10 mt-1 w-full bg-popover shadow-md max-h-60 overflow-auto rounded-md'>
-              {isItemLoading && <div className='p-2'>読み込み中…</div>}
+            <Combobox.Options className="absolute z-10 mt-1 w-full bg-popover shadow-md max-h-60 overflow-auto rounded-md">
+              {isItemLoading && <div className="p-2">読み込み中…</div>}
               {!isItemLoading && itemOptions.length === 0 && (
-                <div className='p-2 text-muted-foreground'>該当なし</div>
+                <div className="p-2 text-muted-foreground">該当なし</div>
               )}
               {itemOptions.map((opt) => (
                 <Combobox.Option
@@ -189,7 +195,9 @@ export function EditableRankedItem({
                   value={opt}
                   className={({ active }) =>
                     `cursor-pointer select-none p-2 ${
-                      active ? "bg-primary text-primary-foreground" : ""
+                      active
+                        ? "bg-primary text-primary-foreground"
+                        : ""
                     }`
                   }
                 >
@@ -205,24 +213,24 @@ export function EditableRankedItem({
           onChange={(e) =>
             handleItemChange(clientId, "itemDescription", e.target.value)
           }
-          placeholder='アイテムの説明・コメント（任意）'
+          placeholder="アイテムの説明・コメント（任意）"
           rows={2}
           maxLength={500}
-          className='text-sm bg-background'
+          className="text-sm bg-background"
           disabled={isSaving}
         />
       </div>
 
       {/* アイテム削除 */}
       <Button
-        variant='ghost'
-        size='icon'
+        variant="ghost"
+        size="icon"
         onClick={() => handleDeleteItem(clientId)}
         disabled={isSaving}
-        className='mt-1 text-muted-foreground hover:text-destructive'
-        title='アイテム削除'
+        className="mt-1 text-muted-foreground hover:text-destructive"
+        title="アイテム削除"
       >
-        <TrashIcon className='h-4 w-4' />
+        <TrashIcon className="h-4 w-4" />
       </Button>
     </li>
   );
