@@ -8,7 +8,7 @@ export function useItemSuggestions(
   subject: string,
   query: string
 ) {
-  const debounced = useDebounce(query, 300);
+  const debounced = useDebounce(query ?? "", 300);
   const shouldFetch = subject && debounced.length >= 1;
   const prefixParam = debounced
     ? `&prefix=${encodeURIComponent(debounced)}`
@@ -17,7 +17,7 @@ export function useItemSuggestions(
     ? `/api/suggestions/items?subject=${encodeURIComponent(
         subject
       )}${prefixParam}`
-    : null;
+    : undefined;
   const { data, error, isLoading } = useSWR<string[]>(key, fetcher);
   return {
     options: data ?? [],
