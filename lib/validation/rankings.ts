@@ -8,10 +8,10 @@ export const subjectAllowedCharsRegex =
   /^[\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}A-Za-z0-9 ]+$/u;
 
 export const SubjectSchema = z
-  .string()
+  .string({ required_error: "を入力してください。", invalid_type_error: "タイトルを入力してください。" })
   .trim()
-  .min(3, "テーマを入力してください。")
-  .max(20, "テーマは20字以内です。")
+  .min(5, "タイトルは5文字以上で入力してください。")
+  .max(20, "タイトルは20字以内です。")
   .regex(subjectAllowedCharsRegex, {
     message: "ひらがな・カタカナ・漢字・英数字・半角スペースのみを入力してください。",
   });
