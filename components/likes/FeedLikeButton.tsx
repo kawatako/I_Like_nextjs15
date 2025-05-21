@@ -28,6 +28,13 @@ export function FeedLikeButton({
   const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
 
+  console.log("🌟 FeedLikeButton mounted:", {
+    targetType,
+    targetId,
+    initialLikedProp,
+    initialLikeCount,
+  });
+
   // ジェネリクスを明示して useOptimistic を呼び出し
   const [optimisticLiked, setOptimisticLiked] = useOptimistic<boolean, boolean>(
     initialLikedProp,
@@ -36,10 +43,7 @@ export function FeedLikeButton({
   const [optimisticLikeCount, setOptimisticLikeCount] = useOptimistic<
     number,
     number
-  >(
-    initialLikeCount,
-    (count, delta) => count + delta
-  );
+  >(initialLikeCount, (count, delta) => count + delta);
 
   // props が変わったときのみリセット
   useEffect(() => {
@@ -50,6 +54,11 @@ export function FeedLikeButton({
   }, [initialLikedProp, initialLikeCount]);
 
   const handleLikeToggle = () => {
+    console.log("🔔 handleLikeToggle fired:", {
+      optimisticLiked,
+      optimisticLikeCount,
+    });
+
     const nextLiked = !optimisticLiked;
 
     // ① 楽観的に更新（直接 boolean / number を渡す）
@@ -90,8 +99,8 @@ export function FeedLikeButton({
 
   return (
     <Button
-      variant="ghost"
-      size="sm"
+      variant='ghost'
+      size='sm'
       className={`flex items-center space-x-1 ${
         optimisticLiked
           ? "text-red-500 hover:text-red-600"
@@ -106,7 +115,7 @@ export function FeedLikeButton({
           optimisticLiked ? "fill-current text-red-500" : ""
         }`}
       />
-      <span className="text-xs">{optimisticLikeCount}</span>
+      <span className='text-xs'>{optimisticLikeCount}</span>
     </Button>
   );
 }
