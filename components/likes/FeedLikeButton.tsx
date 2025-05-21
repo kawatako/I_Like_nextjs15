@@ -1,10 +1,8 @@
 // components/likes/FeedLikeButton.tsx
 "use client";
 
-import React from "react";
-import { useTransition, useOptimistic, useEffect } from "react";
+import React, { useState, useEffect, useTransition } from "react";
 import { useSWRConfig } from "swr";
-import { Button } from "@/components/ui/button";
 import { HeartIcon } from "@/components/Icons";
 import {
   likePostAction,
@@ -22,45 +20,58 @@ interface FeedLikeProps {
 export function FeedLikeButton({
   targetType,
   targetId,
-  likeCount: initialLikeCount,
-  initialLiked: initialLikedProp,
+  likeCount: propCount,
+  initialLiked: propLiked,
 }: FeedLikeProps) {
   const { mutate } = useSWRConfig();
   const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
 
-  // ジェネリクスを明示
-  const [optimisticLiked, setOptimisticLiked] = useOptimistic<boolean, boolean>(
-    initialLikedProp,
-    (_prev, newVal) => newVal
-  );
-  const [optimisticLikeCount, setOptimisticLikeCount] = useOptimistic<
-    number,
-    number
-  >(
-    initialLikeCount,
-    (count, delta) => count + delta
-  );
+  // ネイティブ useState で楽観更新
+  const [liked, setLiked] = useState(propLiked);
+  const [count, setCount] = useState(propCount);
 
-  // props 変化時にリセット
+  // ① マウント時に一度だけ出るログ
   useEffect(() => {
-    setOptimisticLiked(initialLikedProp);
-    setOptimisticLikeCount(initialLikeCount - optimisticLikeCount);
-  }, [initialLikedProp, initialLikeCount]);
+    console.log("🌟 FeedLikeButton mounted:", {
+      targetType,
+      targetId,
+      propLiked,
+      propCount,
+    });
+  }, []);
 
-  // クリック時に親の Link イベントを止めてから処理
+  // prop が変わったらリセット
+  useEffect(() => {
+    setLiked(propLiked);
+    setCount(propCount);
+  }, [propLiked, propCount]);
+
+  // ② キャプチャフェーズでも伝搬を止める
+  const captureStop = (e: React.MouseEvent<HTMLButtonElement>) => {
+    console.log("🔒 onClickCapture: stopPropagation");
+    e.stopPropagation();
+    e.nativeEvent.stopImmediatePropagation();
+    e.preventDefault();
+  };
+
+  // ① handleClick のログ確認
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    console.log("✅ FeedLikeButton.handleClick fired", {
+      targetType,
+      targetId,
+      liked,
+      count,
+    });
     e.stopPropagation();
     e.preventDefault();
 
-    const next = !optimisticLiked;
-    console.log("🔔 FeedLikeButton clicked:", { next, targetType, targetId });
+    const next = !liked;
+    // 楽観的更新
+    setLiked(next);
+    setCount((c) => c + (next ? 1 : -1));
 
-    // 楽観更新
-    setOptimisticLiked(next);
-    setOptimisticLikeCount(next ? 1 : -1);
-
-    // サーバー処理
+    // サーバーアクション
     startTransition(async () => {
       try {
         const result =
@@ -73,7 +84,7 @@ export function FeedLikeButton({
 
         // homeFeed/profileFeed のみ再検証
         await mutate(
-          (key) =>
+          (key: any) =>
             Array.isArray(key) &&
             (key[0] === "homeFeed" || key[0] === "profileFeed"),
           undefined,
@@ -81,35 +92,41 @@ export function FeedLikeButton({
         );
       } catch (err: any) {
         console.error("🔥 like toggle error:", err);
-        // rollback
-        setOptimisticLiked(initialLikedProp);
-        setOptimisticLikeCount(next ? -1 : 1);
+        // ロールバック
+        setLiked(propLiked);
+        setCount(propCount);
         toast({
           title: "エラー",
-          description: err.message,
+          description: err.message || "いいねに失敗しました",
           variant: "destructive",
         });
       }
     });
   };
 
+  // ③ ネイティブボタンでテスト
   return (
-    <Button
-      variant="ghost"
-      size="sm"
-      className={`flex items-center space-x-1 ${
-        optimisticLiked ? "text-red-500 hover:text-red-600" : "hover:text-red-500"
-      }`}
+    <button
+      onClickCapture={captureStop}
       onClick={handleClick}
       disabled={isPending}
-      aria-label={optimisticLiked ? "いいねを取り消す" : "いいねする"}
+      style={{
+        background: "transparent",
+        border: "none",
+        padding: 0,
+        cursor: "pointer",
+        display: "flex",
+        alignItems: "center",
+        gap: "4px",
+      }}
+      aria-label={liked ? "いいねを取り消す" : "いいねする"}
     >
       <HeartIcon
         className={`h-[18px] w-[18px] ${
-          optimisticLiked ? "fill-current text-red-500" : ""
+          liked ? "fill-current text-red-500" : ""
         }`}
       />
-      <span className="text-xs">{optimisticLikeCount}</span>
-    </Button>
+      <span className="text-xs">{count}</span>
+    </button>
   );
 }
