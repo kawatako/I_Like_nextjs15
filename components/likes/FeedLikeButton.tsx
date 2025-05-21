@@ -31,7 +31,7 @@ export function FeedLikeButton({
   const [liked, setLiked] = useState(propLiked);
   const [count, setCount] = useState(propCount);
 
-  // ① マウント時に一度だけ出るログ
+  // ① マウント時にログ
   useEffect(() => {
     console.log("🌟 FeedLikeButton mounted:", {
       targetType,
@@ -41,33 +41,26 @@ export function FeedLikeButton({
     });
   }, []);
 
-  // prop が変わったらリセット
+  // prop 変化でリセット
   useEffect(() => {
     setLiked(propLiked);
     setCount(propCount);
   }, [propLiked, propCount]);
 
-  // ② キャプチャフェーズでも伝搬を止める
-  const captureStop = (e: React.MouseEvent<HTMLButtonElement>) => {
-    console.log("🔒 onClickCapture: stopPropagation");
-    e.stopPropagation();
-    e.nativeEvent.stopImmediatePropagation();
-    e.preventDefault();
-  };
-
-  // ① handleClick のログ確認
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    // ここでのみ伝搬とデフォルトを止める
+    e.stopPropagation();
+    e.preventDefault();
+
     console.log("✅ FeedLikeButton.handleClick fired", {
       targetType,
       targetId,
       liked,
       count,
     });
-    e.stopPropagation();
-    e.preventDefault();
 
     const next = !liked;
-    // 楽観的更新
+    // 楽観更新
     setLiked(next);
     setCount((c) => c + (next ? 1 : -1));
 
@@ -104,10 +97,9 @@ export function FeedLikeButton({
     });
   };
 
-  // ③ ネイティブボタンでテスト
+  // プレーンな <button> で動作確認
   return (
     <button
-      onClickCapture={captureStop}
       onClick={handleClick}
       disabled={isPending}
       style={{
