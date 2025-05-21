@@ -77,6 +77,7 @@ export interface RankingListViewData {
   createdAt: Date;
   updatedAt: Date;
   likeCount: number;
+  isLikedByCurrentUser: boolean;
   author: UserSnippet;
   items: {
     id: string;

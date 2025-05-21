@@ -8,7 +8,7 @@ import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import type { RankingListViewData } from "@/lib/types";
-import { UsersIcon, CrownIcon, HeartIcon, Trophy } from "@/components/Icons";
+import { UsersIcon, CrownIcon, Trophy } from "@/components/Icons";
 import Link from "next/link";
 import CommentSection from "./CommentSection";
 import { ShareButton } from "@/components/rankings/ShareButton";
@@ -43,6 +43,7 @@ export function RankingDetailView({ ranking, isOwner }: Props) {
         <RankingLikeButton
           listId={ranking.id}
           likeCount={ranking.likeCount}
+          initialLiked={ranking.isLikedByCurrentUser}
           title="いいね"
        />
         <Link href={`/trends/average/${encodeURIComponent(ranking.subject)}`} title="みんなのランキングを見る">
