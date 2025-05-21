@@ -51,6 +51,8 @@ export default function TutorialModal({
     "slide3.png",
     "slide4.png",
     "slide5.png",
+    "slide6.png",
+    "slide7.png",
   ];
 
   return (
