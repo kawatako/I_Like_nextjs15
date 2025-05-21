@@ -7,6 +7,7 @@ interface ShareButtonProps {
   subject: string;
   tags: { tag: { name: string } }[];
   url: string;
+  title?: string;
 }
 
 export function ShareButton({ subject, tags, url }: ShareButtonProps) {

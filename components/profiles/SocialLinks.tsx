@@ -9,35 +9,57 @@ import {
 } from "@/components/Icons";
 
 export interface SocialLinksProps {
-  links: Partial<
-    Record<"website" | "x" | "instagram" | "tiktok", string | null>
-  >;
-  className?: string;
+  links: {
+    website?: string;
+    x?: string;
+    instagram?: string;
+    tiktok?: string;
+  };
 }
 
-export function SocialLinks({ links, className }: SocialLinksProps) {
-  // キーとアイコンのマップ
-  const iconMap: Record<string, React.ReactNode> = {
-    website: <LinkIcon className='w-5 h-5' />,
-    x: <TwitterIcon className='w-5 h-5' />,
-    instagram: <InstagramIcon className='w-5 h-5' />,
-    tiktok: <TikTokIcon className='w-5 h-5' />,
-  };
+export function SocialLinks({ links }: SocialLinksProps) {
+  // 「名前・URL・アイコン・ラベル」をまとめた配列
+  const items = [
+    {
+      name: "website",
+      url: links.website,
+      icon: <LinkIcon   className="w-5 h-5" />,
+      label: "ウェブサイト",
+    },
+    {
+      name: "x",
+      url: links.x,
+      icon: <TwitterIcon className="w-5 h-5" />,
+      label: "X（旧Twitter）",
+    },
+    {
+      name: "instagram",
+      url: links.instagram,
+      icon: <InstagramIcon className="w-5 h-5" />,
+      label: "Instagram",
+    },
+    {
+      name: "tiktok",
+      url: links.tiktok,
+      icon: <TikTokIcon  className="w-5 h-5" />,
+      label: "TikTok",
+    },
+  ];
 
   return (
-    <div className={`flex items-center gap-4 ${className ?? ""}`}>
-      {(Object.entries(links) as [keyof typeof links, string | null][])
-        .filter(([, url]) => Boolean(url)) // url が null/空文字でないものだけ
-        .map(([key, url]) => (
+    <div className="flex items-center gap-4 mt-2">
+      {items
+        .filter(item => Boolean(item.url)) //Boolean(item.url) が true を返す要素だけを新しい配列に残す
+        .map(item => (
           <a
-            key={key}
-            href={url!}
-            target='_blank'
-            rel='noopener noreferrer nofollow'
-            className='text-primary hover:text-primary/80'
-            title={key}
+            key={item.name}
+            href={item.url}
+            target="_blank"
+            rel="noopener noreferrer nofollow"
+            className="text-primary hover:text-primary/80"
+            title={item.label}
           >
-            {iconMap[key]}
+            {item.icon}
           </a>
         ))}
     </div>

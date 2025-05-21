@@ -138,7 +138,6 @@ export function ProfileHeader({
     instagram:social.instagram,
     tiktok:   social.tiktok,
   }}
-  className="mt-2"
 />
           </div>
 

@@ -9,6 +9,7 @@ import { likeRankingListAction } from "@/lib/actions/likeActions";
 interface LikeButtonProps {
   listId: string;
   likeCount: number;
+  title?: string;
 }
 
 export function RankingLikeButton({ listId, likeCount }: LikeButtonProps) {

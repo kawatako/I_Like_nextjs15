@@ -155,6 +155,7 @@ export default function PostForm({ currentLoginUserData }: PostFormProps) {
             size='icon'
             onClick={() => fileInputRef.current?.click()}
             disabled={isPending || isUploading || !!selectedFile}
+            title="画像を選択"
           >
             <ImagePlus className='h-5 w-5' />
           </Button>

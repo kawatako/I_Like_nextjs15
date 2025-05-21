@@ -23,13 +23,13 @@ export default function Header({ currentLoginUserData }: HeaderProps) {
     <>
       <header className="bg-background shadow-md px-4 md:px-6 py-3 flex items-center justify-between gap-4">
         {/* ロゴ */}
-        <Link href="/" className="flex items-center gap-2 flex-shrink-0" prefetch={false}>
+        <Link href="/" className="flex items-center gap-2 flex-shrink-0" prefetch={false} title="ホーム画面へ">
           <LogInIcon className="h-6 w-6 text-primary" />
           <span className="text-lg font-bold text-primary hidden sm:inline">TopMe</span>
         </Link>
 
         {/* 検索 */}
-        <div className="flex-1 flex justify-center px-2 sm:px-4">
+        <div className="flex-1 flex justify-center px-2 sm:px-4" title="検索">
           <SearchForm />
         </div>
 
@@ -39,6 +39,7 @@ export default function Header({ currentLoginUserData }: HeaderProps) {
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center justify-center h-8 w-8 rounded-full hover:bg-muted transition-colors"
+          title="アンケートに答える"
         >
           <ChatBubbleIcon className="h-5 w-5 text-foreground/80" />
         </Link>
