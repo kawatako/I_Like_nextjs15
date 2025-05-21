@@ -41,9 +41,14 @@ export function FeedLikeButton({
   // Props が変わったらリセット
   useEffect(() => {
     setOptimisticLiked(initialLikedProp);
-    // reducer が「加算」なので、初期値との差分を渡してリセット
     setOptimisticLikeCount(initialLikeCount - optimisticLikeCount);
-  }, [initialLikedProp, initialLikeCount, setOptimisticLiked, setOptimisticLikeCount]);
+  }, [
+    initialLikedProp,
+    initialLikeCount,
+    optimisticLikeCount,
+    setOptimisticLiked,
+    setOptimisticLikeCount,
+  ]);
 
   const handleLikeToggle = () => {
     const nextLiked = !optimisticLiked;
@@ -52,11 +57,13 @@ export function FeedLikeButton({
     setOptimisticLiked(nextLiked);
     setOptimisticLikeCount(nextLiked ? 1 : -1);
 
-    // ② サーバー呼び出しとキャッシュ再検証だけを低優先度更新に
+    // ② サーバー呼び出しとキャッシュ再検証を低優先度で実行
     startTransition(async () => {
       try {
         const action =
-          targetType === "Post" ? likePostAction : likeRankingListAction;
+          targetType === "Post"
+            ? likePostAction
+            : likeRankingListAction;
         const result = await action(targetId);
 
         if (!result.success) {
@@ -69,8 +76,14 @@ export function FeedLikeButton({
             variant: "destructive",
           });
         } else {
-          // 成功時はフィードだけ再検証
-          mutate("/api/timelineFeed", undefined, { revalidate: true });
+          // 成功時は homeFeed/profileFeed のキャッシュだけ再検証
+          mutate(
+            (key: any) =>
+              Array.isArray(key) &&
+              (key[0] === "homeFeed" || key[0] === "profileFeed"),
+            undefined,
+            { revalidate: true }
+          );
         }
       } catch (err: any) {
         // 例外時もロールバック
