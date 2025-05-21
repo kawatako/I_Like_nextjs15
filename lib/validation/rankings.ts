@@ -11,7 +11,7 @@ export const SubjectSchema = z
   .string({ required_error: "を入力してください。", invalid_type_error: "タイトルを入力してください。" })
   .trim()
   .min(5, "タイトルは5文字以上で入力してください。")
-  .max(20, "タイトルは20字以内です。")
+  .max(30, "タイトルは30字以内です。")
   .regex(subjectAllowedCharsRegex, {
     message: "ひらがな・カタカナ・漢字・英数字・半角スペースのみを入力してください。",
   });
@@ -21,7 +21,7 @@ export const SubjectSchema = z
 export const DescriptionSchema = z
   .string()
   .trim()
-  .max(100, "説明は100字以内です。")
+  .max(200, "タイトルの説明は200字以内です。")
   .nullable()
   .or(z.literal("")) // 空文字も許容
   .transform((v) => (v === "" ? null : v));
@@ -32,12 +32,12 @@ export const ItemNameSchema = z
   .string()
   .trim()
   .min(1, "アイテム名は必須です。")
-  .max(20, "アイテム名は20字以内です。");
+  .max(30, "アイテム名は30字以内です。");
 
 export const ItemDescSchema = z
   .string()
   .trim()
-  .max(30, "説明は30字以内です。")
+  .max(200, "アイテムの説明は200字以内です。")
   .nullable()
   .or(z.literal(""))
   .transform((v) => (v === "" ? null : v));
