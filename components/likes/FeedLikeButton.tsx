@@ -1,6 +1,7 @@
 // components/likes/FeedLikeButton.tsx
 "use client";
 
+import React from "react";
 import { useTransition, useOptimistic, useEffect } from "react";
 import { useSWRConfig } from "swr";
 import { Button } from "@/components/ui/button";
@@ -28,14 +29,7 @@ export function FeedLikeButton({
   const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
 
-  console.log("🌟 FeedLikeButton mounted:", {
-    targetType,
-    targetId,
-    initialLikedProp,
-    initialLikeCount,
-  });
-
-  // ジェネリクスを明示して useOptimistic を呼び出し
+  // ジェネリクスを明示
   const [optimisticLiked, setOptimisticLiked] = useOptimistic<boolean, boolean>(
     initialLikedProp,
     (_prev, newVal) => newVal
@@ -43,29 +37,30 @@ export function FeedLikeButton({
   const [optimisticLikeCount, setOptimisticLikeCount] = useOptimistic<
     number,
     number
-  >(initialLikeCount, (count, delta) => count + delta);
+  >(
+    initialLikeCount,
+    (count, delta) => count + delta
+  );
 
-  // props が変わったときのみリセット
+  // props 変化時にリセット
   useEffect(() => {
     setOptimisticLiked(initialLikedProp);
-    // 現在の optimisticLikeCount と初期値の差分をアクションとして渡す
-    const resetDelta = initialLikeCount - optimisticLikeCount;
-    setOptimisticLikeCount(resetDelta);
+    setOptimisticLikeCount(initialLikeCount - optimisticLikeCount);
   }, [initialLikedProp, initialLikeCount]);
 
-  const handleLikeToggle = () => {
-    console.log("🔔 handleLikeToggle fired:", {
-      optimisticLiked,
-      optimisticLikeCount,
-    });
+  // クリック時に親の Link イベントを止めてから処理
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    e.preventDefault();
 
-    const nextLiked = !optimisticLiked;
+    const next = !optimisticLiked;
+    console.log("🔔 FeedLikeButton clicked:", { next, targetType, targetId });
 
-    // ① 楽観的に更新（直接 boolean / number を渡す）
-    setOptimisticLiked(nextLiked);
-    setOptimisticLikeCount(nextLiked ? 1 : -1);
+    // 楽観更新
+    setOptimisticLiked(next);
+    setOptimisticLikeCount(next ? 1 : -1);
 
-    // ② サーバー呼び出しとキャッシュ再検証
+    // サーバー処理
     startTransition(async () => {
       try {
         const result =
@@ -73,9 +68,10 @@ export function FeedLikeButton({
             ? await likePostAction(targetId)
             : await likeRankingListAction(targetId);
 
-        if (!result.success) throw new Error(result.error ?? "");
+        console.log("🔔 likeAction result:", result);
+        if (!result.success) throw new Error(result.error || "いいね失敗");
 
-        // homeFeed / profileFeed のキーだけリフェッチ
+        // homeFeed/profileFeed のみ再検証
         await mutate(
           (key) =>
             Array.isArray(key) &&
@@ -84,13 +80,13 @@ export function FeedLikeButton({
           { revalidate: true }
         );
       } catch (err: any) {
-        // ロールバック：いいねトグル前の状態に戻す
+        console.error("🔥 like toggle error:", err);
+        // rollback
         setOptimisticLiked(initialLikedProp);
-        setOptimisticLikeCount(nextLiked ? -1 : 1);
-
+        setOptimisticLikeCount(next ? -1 : 1);
         toast({
           title: "エラー",
-          description: err.message || "いいねに失敗しました",
+          description: err.message,
           variant: "destructive",
         });
       }
@@ -99,14 +95,12 @@ export function FeedLikeButton({
 
   return (
     <Button
-      variant='ghost'
-      size='sm'
+      variant="ghost"
+      size="sm"
       className={`flex items-center space-x-1 ${
-        optimisticLiked
-          ? "text-red-500 hover:text-red-600"
-          : "hover:text-red-500"
+        optimisticLiked ? "text-red-500 hover:text-red-600" : "hover:text-red-500"
       }`}
-      onClick={handleLikeToggle}
+      onClick={handleClick}
       disabled={isPending}
       aria-label={optimisticLiked ? "いいねを取り消す" : "いいねする"}
     >
@@ -115,7 +109,7 @@ export function FeedLikeButton({
           optimisticLiked ? "fill-current text-red-500" : ""
         }`}
       />
-      <span className='text-xs'>{optimisticLikeCount}</span>
+      <span className="text-xs">{optimisticLikeCount}</span>
     </Button>
   );
 }
