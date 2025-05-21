@@ -28,70 +28,60 @@ export function FeedLikeButton({
   const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
 
-  // 楽観的 UI 用の状態
-  const [optimisticLiked, setOptimisticLiked] = useOptimistic(
+  // ジェネリクスを明示して useOptimistic を呼び出し
+  const [optimisticLiked, setOptimisticLiked] = useOptimistic<boolean, boolean>(
     initialLikedProp,
-    (_, newVal: boolean) => newVal
+    (_prev, newVal) => newVal
   );
-  const [optimisticLikeCount, setOptimisticLikeCount] = useOptimistic(
+  const [optimisticLikeCount, setOptimisticLikeCount] = useOptimistic<
+    number,
+    number
+  >(
     initialLikeCount,
-    (count, delta: number) => count + delta
+    (count, delta) => count + delta
   );
 
-  // Props が変わったらリセット
+  // props が変わったときのみリセット
   useEffect(() => {
     setOptimisticLiked(initialLikedProp);
-    setOptimisticLikeCount(initialLikeCount - optimisticLikeCount);
-  }, [
-    initialLikedProp,
-    initialLikeCount,
-    optimisticLikeCount,
-    setOptimisticLiked,
-    setOptimisticLikeCount,
-  ]);
+    // 現在の optimisticLikeCount と初期値の差分をアクションとして渡す
+    const resetDelta = initialLikeCount - optimisticLikeCount;
+    setOptimisticLikeCount(resetDelta);
+  }, [initialLikedProp, initialLikeCount]);
 
   const handleLikeToggle = () => {
     const nextLiked = !optimisticLiked;
 
-    // ① 即時に画面を更新（同期更新）
+    // ① 楽観的に更新（直接 boolean / number を渡す）
     setOptimisticLiked(nextLiked);
     setOptimisticLikeCount(nextLiked ? 1 : -1);
 
-    // ② サーバー呼び出しとキャッシュ再検証を低優先度で実行
+    // ② サーバー呼び出しとキャッシュ再検証
     startTransition(async () => {
       try {
-        const action =
+        const result =
           targetType === "Post"
-            ? likePostAction
-            : likeRankingListAction;
-        const result = await action(targetId);
+            ? await likePostAction(targetId)
+            : await likeRankingListAction(targetId);
 
-        if (!result.success) {
-          // エラー時はロールバックして通知
-          setOptimisticLiked(initialLikedProp);
-          setOptimisticLikeCount(nextLiked ? -1 : 1);
-          toast({
-            title: "エラー",
-            description: result.error ?? "いいねに失敗しました",
-            variant: "destructive",
-          });
-        } else {
-          // 成功時は homeFeed/profileFeed のキャッシュだけ再検証
-          mutate(
-            (key: any) =>
-              Array.isArray(key) &&
-              (key[0] === "homeFeed" || key[0] === "profileFeed"),
-            undefined,
-            { revalidate: true }
-          );
-        }
+        if (!result.success) throw new Error(result.error ?? "");
+
+        // homeFeed / profileFeed のキーだけリフェッチ
+        await mutate(
+          (key) =>
+            Array.isArray(key) &&
+            (key[0] === "homeFeed" || key[0] === "profileFeed"),
+          undefined,
+          { revalidate: true }
+        );
       } catch (err: any) {
-        // 例外時もロールバック
+        // ロールバック：いいねトグル前の状態に戻す
         setOptimisticLiked(initialLikedProp);
         setOptimisticLikeCount(nextLiked ? -1 : 1);
+
         toast({
           title: "エラー",
-          description: err.message ?? "予期せぬエラーです",
+          description: err.message || "いいねに失敗しました",
           variant: "destructive",
         });
       }
