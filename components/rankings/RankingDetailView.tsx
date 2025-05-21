@@ -43,17 +43,19 @@ export function RankingDetailView({ ranking, isOwner }: Props) {
         <RankingLikeButton
           listId={ranking.id}
           likeCount={ranking.likeCount}
+          title="いいね"
        />
-        <Link href={`/trends/average/${encodeURIComponent(ranking.subject)}`}>
+        <Link href={`/trends/average/${encodeURIComponent(ranking.subject)}`} title="みんなのランキングを見る">
           <UsersIcon className='h-5 w-5' />
         </Link>
-        <Link href={`/rankings/create`}>
+        <Link href={`/rankings/create`} title="ランキングを作成する">
           <CrownIcon className='h-5 w-5' />
         </Link>
         <ShareButton
           subject={ranking.subject}
           tags={ranking.rankingListTags}
           url={shareUrl}
+          title='ランキングをシェア'
         />
       </div>
 
