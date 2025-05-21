@@ -9,27 +9,41 @@ import { likeRankingListAction } from "@/lib/actions/likeActions";
 interface LikeButtonProps {
   listId: string;
   likeCount: number;
+  initialLiked: boolean;
   title? : string;
 }
 
-export function RankingLikeButton({ listId, likeCount }: LikeButtonProps) {
+export function RankingLikeButton({
+  listId,
+  likeCount,
+  initialLiked,
+}: LikeButtonProps) {
   const router = useRouter();
 
-  // ① 初期値としてサーバーから渡された likeCount をセット
-  // ② reducer: action（今回渡すのは更新後の数値）をそのまま state にする
-  const [optimisticCount, dispatchOptimistic] = useOptimistic(
+  // ① いいね済みフラグの楽観的更新用
+  const [optimisticLiked, setOptimisticLiked] = useOptimistic(
+    initialLiked,
+    (_, newState: boolean) => newState
+  );
+  // ② いいね数の楽観的更新用
+  const [optimisticCount, setOptimisticCount] = useOptimistic(
     likeCount,
-    (state, action: number) => action
+    (count, delta: number) => count + delta
   );
 
   const handleClick = () => {
-    // 1. Optimistic にすぐ +1 して見た目を先行更新
-    dispatchOptimistic(optimisticCount + 1);
+    const nextLiked = !optimisticLiked;
 
-    // 2. サーバーアクションを起動
+    // ————————————————————————
+    // 楽観的に先行更新（同期）
+    setOptimisticLiked(nextLiked);
+    // 増減は +1 or -1
+    setOptimisticCount(nextLiked ? 1 : -1);
+
+    // ————————————————————————
+    // サーバーアクション＆リフレッシュだけを遅延更新に
     startTransition(() => {
       likeRankingListAction(listId).then(() => {
-        // 3. 本来の最新値を反映するためにリフレッシュ
         router.refresh();
       });
     });
@@ -39,10 +53,14 @@ export function RankingLikeButton({ listId, likeCount }: LikeButtonProps) {
     <button
       onClick={handleClick}
       className="flex items-center gap-1"
-      aria-label="いいねトグル"
+      aria-label={optimisticLiked ? "いいねを取り消す" : "いいねする"}
     >
-      <HeartIcon className="h-5 w-5" />
-      {/* ここを likeCount ではなく optimisticCount に */}
+      <HeartIcon
+        // liked なら赤く塗りつぶす
+        className={`h-5 w-5 ${
+          optimisticLiked ? "fill-current text-red-500" : ""
+        }`}
+      />
       <span>{optimisticCount}</span>
     </button>
   );

@@ -2,6 +2,7 @@
 import { notFound } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
 import { getRankingDetailsForView } from "@/lib/data/rankingQueries";
+import { getRankingListLikeStatus } from "@/lib/data/likeQueries";
 import {
   getUserProfileData,
   getUserDbIdByClerkId,
@@ -45,6 +46,10 @@ export default async function RankingDetailPage({
       imageUrl: item.imageUrl ? await generateImageUrl(item.imageUrl) : null,
     }))
   );
+  //ログインユーザーがそのランキングにいいねしているか
+  const isLiked = loggedInDbId
+  ? await getRankingListLikeStatus(listId, loggedInDbId)
+  : false;
 
   return (
     <>
@@ -60,7 +65,7 @@ export default async function RankingDetailPage({
           userProfileData.id
         )}
       />
-      <RankingDetailView ranking={{ ...raw, items }} isOwner={isOwner} />
+      <RankingDetailView ranking={{ ...raw, items,isLikedByCurrentUser: isLiked }} isOwner={isOwner} />
       {isOwner && (
         <div className='mb-4 flex justify-end px-4'>
           <Link href={`/rankings/${listId}/edit`}>
