@@ -21,7 +21,7 @@ export const SubjectSchema = z
 export const DescriptionSchema = z
   .string()
   .trim()
-  .max(200, "タイトルの説明は200字以内です。")
+  .max(300, "タイトルの説明は300字以内です。")
   .nullable()
   .or(z.literal("")) // 空文字も許容
   .transform((v) => (v === "" ? null : v));
@@ -32,12 +32,12 @@ export const ItemNameSchema = z
   .string()
   .trim()
   .min(1, "アイテム名は必須です。")
-  .max(30, "アイテム名は30字以内です。");
+  .max(50, "アイテム名は50字以内です。");
 
 export const ItemDescSchema = z
   .string()
   .trim()
-  .max(200, "アイテムの説明は200字以内です。")
+  .max(300, "アイテムの説明は300字以内です。")
   .nullable()
   .or(z.literal(""))
   .transform((v) => (v === "" ? null : v));
@@ -48,7 +48,7 @@ export const TagNameSchema = z
   .string()
   .trim()
   .min(1, "タグ名は1文字以上入力してください。")
-  .max(20, "タグ名は20文字以内です。");
+  .max(50, "タグ名は50文字以内です。");
 
 // ─── フォーム全体のバリデーションヘルパー ───
 

@@ -106,7 +106,7 @@ export const RankingBasicInfo: FC<Props> = ({
           value={description}
           onChange={(e) => onDescriptionChange(e.target.value)}
           disabled={disabled}
-          maxLength={500}
+          maxLength={300}
           rows={3}
         />
       </div>

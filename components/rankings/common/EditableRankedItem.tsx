@@ -66,9 +66,10 @@ export const EditableRankedItem: FC<Props> = ({
     isDragging,
   } = useSortable({ id: clientId });
 
-  // 入力中クエリと候補取得フラグ
+  // 入力中クエリ、候補取得フラグ、エラー状態
   const [itemQuery, setItemQuery] = useState(item.itemName);
   const [suggestEnabled, setSuggestEnabled] = useState(false);
+  const [itemNameError, setItemNameError] = useState<string | null>(null);
 
   // suggestEnabledがtrueのときのみフェッチ
   const { options: itemOptions, isLoading: isItemLoading } =
@@ -165,6 +166,12 @@ export const EditableRankedItem: FC<Props> = ({
           <Combobox
             value={item.itemName}
             onChange={(val: string) => {
+              // 直接選択時にもエラーリセット
+              if (val.length > 50) {
+                setItemNameError("アイテム名は50字以内で入力してください。");
+              } else {
+                setItemNameError(null);
+              }
               handleItemChange(clientId, "itemName", val);
               setItemQuery(val);
             }}
@@ -174,16 +181,24 @@ export const EditableRankedItem: FC<Props> = ({
                 className="w-full bg-background font-medium"
                 placeholder={`${index + 1}位のアイテム名*`}
                 value={itemQuery}
+                maxLength={50}
                 onChange={(e) => {
                   const v = e.target.value;
+                  if (v.length > 50) {
+                    setItemNameError("アイテム名は50字以内で入力してください。");
+                  } else {
+                    setItemNameError(null);
+                  }
                   setItemQuery(v);
                   handleItemChange(clientId, "itemName", v);
                 }}
                 displayValue={() => item.itemName}
-                maxLength={100}
                 disabled={isSaving}
                 onFocus={() => subject && setSuggestEnabled(true)}
               />
+              {itemNameError && (
+                <p className="text-xs text-red-500 mt-1">{itemNameError}</p>
+              )}
               <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2">
                 <ChevronsUpDown className="h-5 w-5 text-muted-foreground" />
               </Combobox.Button>
