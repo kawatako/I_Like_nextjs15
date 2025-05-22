@@ -99,7 +99,6 @@ export const EditableRankedItem: FC<Props> = ({
       ref={setNodeRef}
       style={style}
       {...attributes}
-      // 小画面では縦積み、sm以上で横並び
       className="flex flex-col sm:flex-row items-start gap-3 p-3 bg-secondary/50 dark:bg-secondary/30 rounded relative border"
     >
       {/* 1行目：ドラッグ＆順位＆画像 */}
@@ -175,7 +174,11 @@ export const EditableRankedItem: FC<Props> = ({
                 className="w-full bg-background font-medium"
                 placeholder={`${index + 1}位のアイテム名*`}
                 value={itemQuery}
-                onChange={(e) => setItemQuery(e.target.value)}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setItemQuery(v);
+                  handleItemChange(clientId, "itemName", v);
+                }}
                 displayValue={() => item.itemName}
                 maxLength={100}
                 disabled={isSaving}
