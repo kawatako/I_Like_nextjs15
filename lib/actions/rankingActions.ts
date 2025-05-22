@@ -82,7 +82,7 @@ export async function createCompleteRankingAction(
   if (status === "PUBLISHED" && itemsData.length === 0) throw new Error("公開にはアイテムが必要です。");
   itemsData.forEach((item, i) => {
     ItemNameSchema.parse(item.itemName);
-    ItemNameSchema.parse(item.itemDescription ?? "");
+    ItemDescSchema.parse(item.itemDescription ?? "");
     if (status === "PUBLISHED" && !item.itemName.trim()) throw new Error(`${i + 1}番目のアイテム名が必要です。`);
   });
 

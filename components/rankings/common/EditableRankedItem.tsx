@@ -230,7 +230,7 @@ export const EditableRankedItem: FC<Props> = ({
             }
             placeholder="アイテムの説明・コメント（任意）"
             rows={2}
-            maxLength={500}
+            maxLength={300}
             className="text-sm bg-background"
             disabled={isSaving}
           />
